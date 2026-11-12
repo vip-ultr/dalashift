@@ -177,6 +177,12 @@ licence choice (ADR-0001), not the visibility choice.**
 - [ ] Confirm the remote and branch after the push.
 - [ ] Configure branch protection on `main`: 1 approving review, CI passing,
       no unresolved conversations.
+      **[Verified 2026-11-13]** This is currently **not possible on a private
+      repository without GitHub Pro** — the API returns *"Upgrade to GitHub Pro
+      or make this repository public to enable this feature."* Making the
+      repository public enables it immediately; otherwise the team needs a Pro
+      plan. Until then, the protection is a **team convention** enforced by
+      `CONTRIBUTING.md`, not a GitHub setting.
 - [ ] Add the repository URL to `README.md` and to the NASA submission's
       "Link to Final Project" field.
 
