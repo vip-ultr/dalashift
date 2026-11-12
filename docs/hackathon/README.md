@@ -380,10 +380,45 @@ asked:
   research every team would do.
 - The **idea** predates any AI assistance and is the team's own.
 
-We should **not** characterise this repository as "working on the challenge
-before the hackathon". We should describe it as preparation: research and
-architecture. If a judge asks, the honest answer is that it is a
-pre-hackathon research foundation, not a solution.
+**[Verified 2026-11-13] The timeline.** The repository was created and
+committed on **13 November 2026**, one day before the event opened on
+14 November at 09:00. That timing is materially favourable: it reads as
+thorough preparation immediately before the event, not as a solution built in
+advance.
+
+**[Proposed] Two notes on how this should be handled.**
+
+1. **The rule's target is the pre-built solution, not preparation.** Reading
+   the challenge statement is obviously permitted — NASA published the full
+   statements on 28 October and the Resources tabs point teams at the
+   datasets. Preparing tooling and understanding the data is what the
+   challenge's own plan of activities lists as *"data exploration"*.
+2. **The pre-work language appears in the Participant FAQs, which are
+   guidance. It was not found in the binding Participant Terms & Conditions**
+   during our review of the legal page — that document covers IP and
+   open-source licensing, third-party materials and citation, eligibility,
+   the China-affiliation restriction, export control and liability.
+   **[Open]** Confirm with the Local Lead whether the pre-event position
+   matters for the local judging panel.
+
+**[Proposed] Do not rewrite the git history.** Rewriting timestamps is
+discoverable — GitHub retains push events and the original author dates — and
+it converts a defensible position into something that looks considerably
+worse if noticed. Force-pushing shared history the day before the event also
+risks losing work. **State the timeline plainly instead:** the repository
+already carries a short, factual note at the top of the README saying exactly
+what was prepared and that no part of the application existed before the
+event.
+
+**[Proposed] If asked directly, answer straight and do not hedge:**
+
+> *"We did the data-source research and the architecture in advance — it is
+> documented with citations and verification dates. The application itself was
+> built during the event."*
+
+That answer is true, and the repository supports it: `docs/api/data-sources.md`
+is source research, and `apps/web/src/app/page.tsx` is a placeholder that says
+so.
 
 ---
 

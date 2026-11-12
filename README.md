@@ -14,6 +14,31 @@
 > **Working name.** "DalaShift" is provisional. It is not a final brand and
 > should not be presented as one.
 
+### About this repository and the challenge timeline
+
+This repository was created on **13 November 2026** — the day before the 2026
+NASA Space Apps Challenge began — and was committed before the event started.
+
+What exists here is **preparation, not a solution**:
+
+| In this repository (before the event)                                     | Not in this repository |
+| ---------------------------------------------------------------------------- | --------------------- |
+| Research into NASA and other open data sources, with citations and verification dates | Authentication, the farmer dashboard, functional maps |
+| Product definition — requirements, personas, user flows                     | Live NASA API integration |
+| Technical architecture, database design, RLS design                         | The crop recommendation engine |
+| A working repository skeleton, tooling and CI                               | Database migrations, reports, product pages |
+
+`apps/web/src/app/page.tsx` is a placeholder page whose only job is to say
+this out loud. **No part of the working application existed before the
+event.** The application itself is built during the challenge.
+
+Where an agronomic value or a recommendation appears anywhere in this
+repository, it comes from a cited source or from the documented rules engine —
+never from an AI model generating agronomic facts.
+
+> The full rules, including NASA's position on work before the event, are
+> recorded in [`docs/hackathon/README.md`](./docs/hackathon/README.md).
+
 ---
 
 ## NASA Space Apps Challenge 2026
