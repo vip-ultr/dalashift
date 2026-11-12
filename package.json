@@ -20,6 +20,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "validate:links": "node scripts/validation/check-markdown-links.mjs",
+    "validate:notices": "node scripts/validation/generate-third-party-notices.mjs",
     "clean": "pnpm -r exec rm -rf .next node_modules && rm -rf node_modules"
   },
   "devDependencies": {

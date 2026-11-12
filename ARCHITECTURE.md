@@ -1278,7 +1278,7 @@ decision index below is a summary; **the ADR is the source of truth.**
 | [ADR-0002](docs/decisions/ADR-0002-monorepo-and-tooling.md) | Monorepo structure and tooling  | Accepted |
 | [ADR-0003](docs/decisions/ADR-0003-supabase-postgis-as-data-platform.md) | Supabase + PostGIS as the data platform | Accepted |
 | [ADR-0004](docs/decisions/ADR-0004-rules-based-recommendation-engine.md) | Rules-based recommendation engine | Accepted |
-| [ADR-0005](docs/decisions/ADR-0005-geospatial-resolution-and-aggregation.md) | Geospatial resolution and aggregation strategy | Accepted |
+| [ADR-0005](docs/decisions/ADR-0005-geospatial-resolution-and-aggregation-strategy.md) | Geospatial resolution and aggregation strategy | Accepted |
 | [ADR-0006](docs/decisions/ADR-0006-data-retention-and-consent.md) | Data retention and consent | **Open** |
 | [ADR-0007](docs/decisions/ADR-0007-map-tile-provider.md) | Map tile provider strategy | **Open** |
 | [ADR-0008](docs/decisions/ADR-0008-google-earth-engine-dependency.md) | Google Earth Engine as an optional dependency | **Open** |

@@ -189,6 +189,12 @@ convention: **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
 | `docs/decisions/`     | Architecture decision records (ADRs)                                       |
 | `THIRD_PARTY_NOTICES.md` | **Required by the NASA rules.** Every dependency and data source with its licence. |
 
+**Repository:** <https://github.com/vip-ultr/dalashift> — currently **private**
+pending the team's visibility decision
+([`ADR-0009`](./docs/decisions/ADR-0009-repository-visibility.md)). The NASA
+submission requires a publicly reachable link, so this must be resolved before
+the submission deadline.
+
 ---
 
 ## Data sources and attribution

@@ -50,6 +50,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Check documentation links
+        run: pnpm validate:links
+
   secrets:
     name: Secret scan
     runs-on: ubuntu-latest

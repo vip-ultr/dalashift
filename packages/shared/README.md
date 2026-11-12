@@ -5,7 +5,7 @@ web application and any future server, worker or script.
 
 **Status: Phase 1 (foundation).** Contains only the scaffolding needed for the
 workspace to type-check. Entity types and Zod schemas are Phase 2 deliverables
-and are specified in [`docs/database/database-design.md`](../../docs/database/database-design.md).
+and are specified in [`docs/database/data-model.md`](../../docs/database/data-model.md).
 
 ## Intended contents
 

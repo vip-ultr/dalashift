@@ -5,8 +5,8 @@ process: data ingestion, geospatial processing and validation.
 
 **Status: Phase 1 (foundation).** The directories exist; the scripts that will
 populate them are Phase 2 deliverables and are specified in
-[`docs/api/data-retrieval-strategy.md`](../../docs/api/data-retrieval-strategy.md)
-and [`docs/database/data-model.md`](../../docs/database/data-model.md).
+[`docs/api/data-retrieval-strategy.md`](../docs/api/data-retrieval-strategy.md)
+and [`docs/database/data-model.md`](../docs/database/data-model.md).
 
 ## Directories
 
