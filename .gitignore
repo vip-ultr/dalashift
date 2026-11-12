@@ -1,0 +1,116 @@
+# ─────────────────────────────────────────────────────────────
+# Dependencies
+# ─────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+
+# ─────────────────────────────────────────────────────────────
+# Environment / secrets — NEVER commit real values
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+service-account*.json
+*-service-account*.json
+
+# ─────────────────────────────────────────────────────────────
+# Build output
+# ─────────────────────────────────────────────────────────────
+.next/
+out/
+build/
+dist/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# ─────────────────────────────────────────────────────────────
+# Geospatial data — large rasters and derived tiles must not enter git
+# ─────────────────────────────────────────────────────────────
+data/processed/*
+!data/processed/.gitkeep
+data/raw/
+data/cache/
+*.tif
+*.tiff
+*.nc
+*.nc4
+*.hdf
+*.h5
+*.zarr
+*.cog
+*.gpkg
+*.geojson
+*.geojsonl
+*.shp
+*.dbf
+*.prj
+*.shx
+*.pbf
+*.mbtiles
+*.pmtiles
+*.gbtiles
+
+# Small, curated sample files are allowed under data/samples
+data/samples/*
+!data/samples/.gitkeep
+!data/samples/README.md
+
+# ─────────────────────────────────────────────────────────────
+# Generated reports / user uploads (Supabase Storage holds the real ones)
+# ─────────────────────────────────────────────────────────────
+reports/
+uploads/
+tmp/
+.cache/
+
+# ─────────────────────────────────────────────────────────────
+# Test output
+# ─────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+/tests/e2e/screenshots/
+
+# ─────────────────────────────────────────────────────────────
+# Editor / OS
+# ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─────────────────────────────────────────────────────────────
+# Logs
+# ─────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─────────────────────────────────────────────────────────────
+# Misc
+# ─────────────────────────────────────────────────────────────
+.vercel/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache

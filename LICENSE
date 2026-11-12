@@ -1,0 +1,76 @@
+================================================================================
+DalaShift — LICENSE NOT YET SELECTED
+================================================================================
+
+NO OPEN-SOURCE LICENSE HAS BEEN APPROVED FOR THIS PROJECT YET.
+
+This file is a placeholder, NOT a license. Until the team records an approved
+license in this file, no grant of rights is made to copy, distribute, modify
+or sublicense the contents of this repository.
+
+STATUS: OPEN — awaiting team decision.
+TRACKED IN: docs/decisions/ADR-0001-open-source-license.md
+DECISION OWNER: all three team members (unanimous)
+DEADLINE: before the NASA Space Apps submission is finalised.
+
+--------------------------------------------------------------------------------
+WHY THIS IS DELIBERATELY UNRESOLVED
+--------------------------------------------------------------------------------
+
+Choosing a license is a legal and strategic decision that must be made by the
+team, not by a tool. It determines:
+
+  - Whether the code may be reused, modified and redistributed by others.
+  - Whether the project can satisfy the NASA Space Apps open-source
+    participation requirement (verify against the official rules — see
+    docs/hackathon/README.md).
+  - Whether third-party datasets and APIs embedded in the project impose
+    additional obligations (see docs/api/data-sources.md).
+
+--------------------------------------------------------------------------------
+PENDING DECISION — the team must choose exactly one
+--------------------------------------------------------------------------------
+
+  Option A — MIT / Apache-2.0
+      Permissive, the most common choice for hackathon and community projects.
+      Maximum adoption. Requires the Apache-2.0 patent grant if Apache-2.0 is
+      chosen.
+
+  Option B — AGPL-3.0
+      Strong copyleft. Any derivative deployed as a network service must
+      release its source. Prevents a closed hosted fork of the work.
+
+  Option C — GPL-3.0
+      Strong copyleft for distributed derivatives, with a network-use
+      carve-out.
+
+  Option D — A dedicated or restricted license
+      For example, a "source-available" license, or one that restricts use by
+      commercial agritech competitors. Requires legal review before use.
+
+--------------------------------------------------------------------------------
+DATA AND DATASET LICENSING IS SEPARATE FROM CODE LICENSING
+--------------------------------------------------------------------------------
+
+The software license does NOT grant rights to the data it consumes. Each
+external source has its own terms — NASA data is generally open under the
+NASA Open Data / Earth Science Data policies, ISRIC SoilGrids is CC BY 4.0,
+and basemap tiles carry provider-specific attribution and usage conditions
+(see docs/api/data-sources.md). Any license chosen for the code must be
+accompanied by the correct attribution and usage compliance for each dataset.
+
+--------------------------------------------------------------------------------
+HOW TO RESOLVE THIS
+--------------------------------------------------------------------------------
+
+  1. Discuss and agree the option as a team (unanimous).
+  2. Record the decision in docs/decisions/ADR-0001-open-source-license.md.
+  3. Replace THIS file with the full, unmodified, official text of the chosen
+     license.
+  4. Update the "License" section of README.md.
+  5. Add the SPDX identifier to each package.json ("license" field).
+  6. Re-tag the release commit.
+
+Until step 3 is complete, treat the repository as UNLICENSED and do not
+redistribute it or submit it as an open-source project.
+================================================================================

@@ -1,0 +1,22 @@
+{
+  "name": "@dalashift/config-eslint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared ESLint flat configuration for the DalaShift monorepo.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "globals": "^17.14.0",
+    "typescript-eslint": "^8.19.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=9"
+  }
+}

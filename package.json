@@ -1,0 +1,34 @@
+{
+  "name": "dalashift",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DalaShift — agricultural intelligence platform (NASA Space Apps). Working name, pending team confirmation.",
+  "license": "SEE-LICENSE-FILE",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "scripts": {
+    "dev": "pnpm --filter @dalashift/web dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter @dalashift/web start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "clean": "pnpm -r exec rm -rf .next node_modules && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@dalashift/config-eslint": "workspace:*",
+    "@dalashift/config-typescript": "workspace:*",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "prettier": "./packages/config/prettier/index.mjs"
+}

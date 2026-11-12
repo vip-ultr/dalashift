@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages/config/*'
+
+# Only workspace packages are linked by default; everything else must be
+# declared explicitly in the consuming package's dependencies.
+linkWorkspacePackages: true

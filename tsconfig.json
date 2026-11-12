@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./packages/config/typescript/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@dalashift/shared/*": ["./packages/shared/*"]
+    }
+  },
+  "files": [],
+  "references": [{ "path": "./packages/shared" }, { "path": "./apps/web" }],
+  "exclude": ["node_modules", "**/node_modules", "**/.next", "**/out", "**/dist"]
+}
