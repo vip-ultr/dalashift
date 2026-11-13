@@ -81,5 +81,5 @@ jobs:
           # comment step would fail with "Resource not accessible by
           # integration" and fail the whole job. The scan itself still runs
           # and still fails the job when it finds something.
-          GITLEAKS_ENABLE_COMMENTS: "false"
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+          GITLEAKS_ENABLE_COMMENTS: 'false'
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: 'false'
