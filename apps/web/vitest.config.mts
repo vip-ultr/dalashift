@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 /**
  * Vitest configuration for the DalaShift web application.
- * Phase 1: test harness only — product tests land with the Phase 2 features.
+ * Phase 1: test harness only. Product tests land with the Phase 2 features.
  */
 export default defineConfig({
   plugins: [react()],

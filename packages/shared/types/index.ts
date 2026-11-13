@@ -39,9 +39,9 @@ export interface ProvenancedValue {
   readonly spatialResolutionM: number;
   /** Temporal resolution of the underlying observation. */
   readonly temporalResolution: TemporalResolution | string;
-  /** ISO 8601 UTC — when the observation was made. */
+  /** ISO 8601 UTC: when the observation was made. */
   readonly observedAt: string;
-  /** ISO 8601 UTC — when we retrieved it. */
+  /** ISO 8601 UTC: when we retrieved it. */
   readonly retrievedAt: string;
   /** True when the source modelled or interpolated the value rather than measuring it. */
   readonly isModelled: boolean;
@@ -49,7 +49,7 @@ export interface ProvenancedValue {
   readonly aggregationMethod?: AggregationMethod;
   /** Assessment of the value's fitness for use. */
   readonly qualityFlag?: QualityFlag;
-  /** Fraction of the target geometry with valid data (0–1). */
+  /** Fraction of the target geometry with valid data (0 to 1). */
   readonly coverageFraction?: number;
   /** Source-specific identifiers retained for the audit trail. */
   readonly rawMetadata?: Record<string, unknown>;
@@ -158,9 +158,9 @@ export interface Recommendation {
   readonly farmId: string;
   readonly cropId: string | null;
   readonly verdict: RecommendationVerdict;
-  /** Weighted total, 0–1. */
+  /** Weighted total, 0 to 1. */
   readonly score: number;
-  /** Per-dimension scores, 0–1. */
+  /** Per-dimension scores, 0 to 1. */
   readonly subscores: Readonly<Record<string, number>>;
   /** Human-readable reasoning that cites the inputs. */
   readonly rationale: string;

@@ -1,6 +1,6 @@
 # Database Design
 
-**Status: Phase 1 — specification only. No migrations exist yet.**
+**Status: Phase 1 (specification only). No migrations exist yet.**
 The schema is implemented in Phase 2 under `supabase/migrations/`.
 
 Related: [`postgis-design.md`](./postgis-design.md) ·
@@ -95,7 +95,7 @@ Extends `auth.users`. Created by a trigger on user insert.
 
 **Constraints:**
 - `CHECK (NOT ST_IsEmpty(boundary))`
-- `CHECK (ST_IsValid(boundary))` — or normalise with `ST_MakeValid` on write
+- `CHECK (ST_IsValid(boundary))` (or normalise with `ST_MakeValid` on write)
 - `CHECK (area_ha > 0 AND area_ha < 100000)`
 
 **Indexes:**
@@ -129,7 +129,7 @@ crop records and recomputing every historical analysis. Carrying a nullable
 
 ---
 
-### 3.4 `crops` — the reference catalog
+### 3.4 `crops`: the reference catalog
 
 Seeded from the versioned catalog in the repository. **Every agronomic value
 must cite a source.**
@@ -147,7 +147,7 @@ must cite a source.**
 | `ruleset_version`        | `text`      | Catalog version this row belongs to                         |
 | `created_at`             | `timestamptz` |                                                           |
 
-**Constraint:** `CHECK (jsonb_array_length(source_citations) > 0)` — a crop
+**Constraint:** `CHECK (jsonb_array_length(source_citations) > 0)`. A crop
 without a citation cannot be inserted.
 
 ---
@@ -161,12 +161,12 @@ without a citation cannot be inserted.
 | `plot_id`                | `uuid` FK   | → `farm_plots(id)` `on delete set null`. Nullable.           |
 | `crop_id`                | `uuid` FK   | → `crops(id)`                                                |
 | `status`                 | `text`      | `current` \| `previous` \| `planned`. **Check constraint.**   |
-| `planting_date`          | `date`      | Nullable — often unknown                                     |
+| `planting_date`          | `date`      | Nullable: often unknown                                      |
 | `expected_harvest_date`  | `date`      | Nullable                                                     |
-| `harvest_date`           | `date`      | Nullable — actual                                            |
+| `harvest_date`           | `date`      | Nullable: actual                                             |
 | `season`                 | `text`      | `rainy` \| `dry` \| `harmattan` \| `year_round` \| `unknown`  |
 | `intended_use`           | `text`      | `commercial` \| `household` \| `both` \| `unknown`            |
-| `area_ha`                 | `numeric(10,3)` | Nullable — may differ from the plot area                |
+| `area_ha`                 | `numeric(10,3)` | Nullable: may differ from the plot area                 |
 | `notes`                  | `text`      |                                                              |
 | `created_at`             | `timestamptz` |                                                            |
 
@@ -189,7 +189,7 @@ The farmer's stated objectives for a farm. **Required by the NASA Space Apps
 | `farm_id`         | `uuid` FK   | → `farms(id)` `on delete cascade`. Unique.                         |
 | `goals`           | `text[]`    | e.g. `['improve_soil_fertility','conserve_water','increase_income','food_security']` |
 | `risk_tolerance`  | `numeric(3,2)` | 0 (risk-averse) to 1 (risk-seeking). Nullable.                   |
-| `open_to_change`  | `boolean`   | Nullable — whether the farmer will accept a different crop.         |
+| `open_to_change`  | `boolean`   | Nullable: whether the farmer will accept a different crop.          |
 | `notes`           | `text`      | Free-text priorities the farmer types.                              |
 | `updated_at`      | `timestamptz` |                                                                 |
 
@@ -232,7 +232,7 @@ Avoids repeating a cell geometry on every observation row.
 | `id`               | `uuid` PK   |                                                            |
 | `source_id`        | `uuid` FK   | → `data_sources(id)`                                       |
 | `cell_key`         | `text`      | e.g. `power:8.125:12.5`, `smap:h18v07`                     |
-| `geometry`         | `geometry`  | `Polygon`, SRID 4326 — the cell footprint                  |
+| `geometry`         | `geometry`  | `Polygon`, SRID 4326: the cell footprint                   |
 | `resolution_m`     | `numeric`   |                                                            |
 | `resolution_label` | `text`      | e.g. "0.5° × 0.625°"                                      |
 | `metadata`         | `jsonb`     | Cell-specific identifiers                                  |
@@ -240,7 +240,7 @@ Avoids repeating a cell geometry on every observation row.
 **Unique constraint:** `(source_id, cell_key)`.
 
 **[Proposed]** This table is what lets the UI draw *"this 55 km cell, and
-here is your farm inside it"* — the single most effective way to communicate
+here is your farm inside it"*, the single most effective way to communicate
 resolution honestly.
 
 ---
@@ -266,19 +266,19 @@ The core provenance-bearing table.
 | `retrieved_at`        | `timestamptz`  | When we fetched it                                                     |
 | `is_modelled`         | `boolean`      | `not null`                                                            |
 | `quality_flag`        | `text`         | `good` \| `suspect` \| `missing` \| `partial`                          |
-| `coverage_fraction`   | `numeric(4,3)` | 0–1. Fraction of the target geometry with valid data.                 |
+| `coverage_fraction`   | `numeric(4,3)` | 0 to 1. Fraction of the target geometry with valid data.              |
 | `raw_metadata`        | `jsonb`        | Source identifiers kept for the audit trail                            |
 | `created_at`          | `timestamptz`  |                                                                       |
 
 **Indexes:**
-- `btree (source_id, variable, observed_at DESC)` — time-series reads
-- `btree (farm_id, variable, observed_at DESC)` — the farm's own series
-- `GIST (cell_id)` — not needed on a uuid; the GIST index belongs on
+- `btree (source_id, variable, observed_at DESC)`: time-series reads
+- `btree (farm_id, variable, observed_at DESC)`: the farm's own series
+- `GIST (cell_id)`: not needed on a uuid; the GIST index belongs on
   `grid_cells.geometry`
 - `btree (analysis_id)`
 
 **Unique constraint:** `(source_id, farm_id, variable, observed_at,
-aggregation_method)` — prevents duplicate observations for the same thing.
+aggregation_method)`; prevents duplicate observations for the same thing.
 On conflict, update the value and `retrieved_at` only if the quality improved.
 
 ---
@@ -295,7 +295,7 @@ An immutable record of a computation over a farm's observations.
 | `status`         | `text`        | `pending` \| `complete` \| `partial` \| `failed`                            |
 | `period_start`   | `date`        |                                                                           |
 | `period_end`     | `date`        |                                                                           |
-| `inputs`         | `jsonb`       | **Snapshot of the inputs** — farm boundary hash, crop ids, observation ids, farmer priorities snapshot. |
+| `inputs`         | `jsonb`       | **Snapshot of the inputs**: farm boundary hash, crop ids, observation ids, farmer priorities snapshot.  |
 | `inputs_hash`    | `text`        | Hash of the inputs, to detect when a re-analysis is needed                |
 | `code_version`   | `text`        | Git SHA of the analysis code                                               |
 | `limitations`    | `jsonb`       | Machine-readable limitations surfaced to the user                          |
@@ -333,11 +333,11 @@ diffed and audited.
 | `farm_id`         | `uuid` FK    | → `farms(id)` `on delete cascade`                             |
 | `crop_id`         | `uuid` FK    | → `crops(id)`. Nullable for a farm-level assessment.          |
 | `verdict`         | `text`       | `suitable` \| `conditional` \| `not_suitable` \| `insufficient_information` |
-| `score`           | `numeric(4,3)` | 0–1. **Null when the verdict is `insufficient_information`.** |
-| `subscores`       | `jsonb`      | Per-dimension scores, 0–1                                    |
+| `score`           | `numeric(4,3)` | 0 to 1. **Null when the verdict is `insufficient_information`.** |
+| `subscores`       | `jsonb`      | Per-dimension scores, 0 to 1                                 |
 | `rationale`       | `text`       | Human-readable reasoning citing the inputs                    |
 | `limitations`     | `text[]`     | **Explicit statement of what is unknown**                     |
-| `confidence`      | `numeric(4,3)` | 0–1. Computed separately from the score.                     |
+| `confidence`      | `numeric(4,3)` | 0 to 1. Computed separately from the score.                  |
 | `ruleset_version` | `text`       | FK-ish to `recommendation_rulesets.version`                  |
 | `requires_local_review` | `boolean` | Default `true` for rotation advice.                          |
 | `created_at`      | `timestamptz` |                                                              |
@@ -361,7 +361,7 @@ strategy is the comparison unit.
 | `kind`                | `text`       | `existing` \| `alternative`                                    |
 | `label`               | `text`       | e.g. "Current rotation (millet → cowpea)"                     |
 | `rationale`           | `text`       | **Why it was suggested** (challenge requirement)               |
-| `evidence`            | `jsonb`      | **The evidence supporting it** — inputs, values, citations     |
+| `evidence`            | `jsonb`      | **The evidence supporting it**: inputs, values, citations      |
 | `benefits`            | `text[]`     | **What benefits it may offer** (challenge requirement)         |
 | `information_gaps`    | `text[]`     | **Where information gaps exist** (challenge requirement)       |
 | `local_review_risks`  | `text[]`     | **Risks needing local review** (challenge requirement)        |
@@ -419,7 +419,7 @@ stale binary. The stored file is a convenience, not the source of truth.
 | ------------- | ------------- | ----------------------------------------------------------- |
 | `id`          | `uuid` PK     |                                                              |
 | `source_id`   | `uuid` FK     | → `data_sources(id)`                                         |
-| `cache_key`   | `text`        | Deterministic key — see below                                 |
+| `cache_key`   | `text`        | Deterministic key: see below                                  |
 | `payload`     | `jsonb`       | The normalised result                                         |
 | `fetched_at`  | `timestamptz` |                                                              |
 | `expires_at`  | `timestamptz` |                                                              |
@@ -454,10 +454,10 @@ local table rather than calling the API at request time.
 | `geometry`    | `geometry`   | Cell polygon, SRID 4326                                  |
 | `property`    | `text`       | `clay` \| `sand` \| `silt` \| `phh2o` \| `soc` \| `bdod`    |
 | `depth`       | `text`       | `0-5cm` … `100-200cm`                                    |
-| `mean`        | `numeric`    | Converted using `d_factor` — **already in target units** |
+| `mean`        | `numeric`    | Converted using `d_factor`: **already in target units**  |
 | `q0_05`       | `numeric`    |                                                              |
 | `q0_95`       | `numeric`    |                                                              |
-| `uncertainty` | `numeric`    | `(Q0.95 − Q0.05) / Q0.50` — **the 90 % interval width**   |
+| `uncertainty` | `numeric`    | `(Q0.95 − Q0.05) / Q0.50`: **the 90 % interval width**    |
 | `source_id`   | `uuid` FK    | → `data_sources(id)`                                       |
 | `fetched_at`  | `timestamptz` |                                                              |
 
@@ -501,10 +501,10 @@ model is uncertain here; that range is wide".
 - [ ] Enable PostGIS on the Supabase project.
 - [ ] Write the migrations for all tables above.
 - [ ] Write the RLS policies (see [`rls-policies.md`](./rls-policies.md)).
-- [ ] Write the cross-account isolation test — **before** the first user-facing
+- [ ] Write the cross-account isolation test **before** the first user-facing
       migration.
 - [ ] Write the `generated always as` area computation and test it against a
       known polygon.
 - [ ] Seed `crops` and `recommendation_rulesets` from the versioned catalog.
-- [ ] Decide the Supabase plan (free vs Pro) — `pg_cron` and pooler mode may
+- [ ] Decide the Supabase plan (free vs Pro): `pg_cron` and pooler mode may
       require Pro.

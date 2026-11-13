@@ -21,8 +21,8 @@ and crop recommendations for *that specific piece of land*.
 
 **Field validation location:** Tofa Local Government Area, Kano State, Nigeria.
 This is where the team has (or intends to have) contact with real farmers. It
-is **not** the geographical limit of the product — the architecture is
-geographically extensible — and it is **not** a claim of validation across
+is **not** the geographical limit of the product: the architecture is
+geographically extensible, and it is **not** a claim of validation across
 Nigeria or globally. State validation claims only for what has actually been
 validated.
 
@@ -53,15 +53,15 @@ validated.
 
 ## 3. Current development phase
 
-**Phase 1 — Research, product definition, architecture and repository
+**Phase 1. Research, product definition, architecture and repository
 foundation. COMPLETE.**
 
-**Phase 2 — Build.** Implementation begins at the hackathon venue.
+**Phase 2. Build.** Implementation begins at the hackathon venue.
 
 Phase 1 explicitly did **not** include: authentication, the farmer dashboard,
 functional maps, live NASA API integration, the recommendation engine,
 database migrations, or report generation. Do not treat the existence of
-`apps/web/src/app/page.tsx` as product code — it is a placeholder so the
+`apps/web/src/app/page.tsx` as product code: it is a placeholder so the
 workspace builds.
 
 When you start Phase 2 work, first check `docs/decisions/` for any ADR that
@@ -104,7 +104,7 @@ separate pull requests.
    directly.
 2. **Never expose secrets.** The service-role key, Earthdata token, GEE
    credentials and provider keys are server-only. `NEXT_PUBLIC_` means
-   "shipped to the browser" — never put a secret in one.
+   "shipped to the browser". Never put a secret in one.
 3. **PostGIS is the geospatial authority.** Polygons are stored with SRID 4326;
    all area, distance and containment computation happens in PostGIS
    (`ST_Area`, `ST_Intersects`), not in JavaScript approximations.
@@ -134,11 +134,11 @@ separate pull requests.
 
 ```
 dalashift/
-├── AGENTS.md                      # this file — read first
+├── AGENTS.md                      # this file, read first
 ├── CONTRIBUTING.md                # human setup, branch and PR conventions
 ├── PRD.md                         # product requirements
 ├── ARCHITECTURE.md                # full technical architecture
-├── ARCHITECTURE_ESSENTIALS.md     # condensed reference — read often
+├── ARCHITECTURE_ESSENTIALS.md     # condensed reference, read often
 ├── SECURITY.md                    # vulnerability reporting
 ├── apps/web/                      # the Next.js application
 ├── packages/shared/               # types, Zod schemas, constants
@@ -153,9 +153,9 @@ dalashift/
 | Directory        | Responsibility                                                       |
 | ---------------- | -------------------------------------------------------------------- |
 | `app/`           | App Router routes. `(marketing)`, `(auth)`, `(dashboard)` are route groups. `api/` holds route handlers. |
-| `components/ui/`| shadcn/ui primitives — generated, not hand-edited.                  |
+| `components/ui/`| shadcn/ui primitives, generated, not hand-edited.                  |
 | `components/`    | Shared presentational components (`layout/`, `dashboard/`, `farms/`, `maps/`, `charts/`, `forms/`). |
-| `features/`      | **Vertical slices** — the unit of product work. Each slice owns its UI, hooks, server actions and queries. |
+| `features/`      | **Vertical slices**, the unit of product work. Each slice owns its UI, hooks, server actions and queries. |
 | `lib/integrations/` | **Server-only.** One module per external data source. Owns fetching, caching, parsing, and error handling. |
 | `lib/geospatial/`  | Geospatial computation shared across features (area, zonal stats, coordinate utilities). |
 | `lib/supabase/`    | Server and browser Supabase clients, RLS-aware query helpers.   |
@@ -185,14 +185,14 @@ Read the relevant subdirectory before working in the matching area:
 | `docs/design/`   | UI/UX work                                                      |
 | `docs/research/` | Background on a data source or domain topic                      |
 | `docs/hackathon/` | Participation requirements, rules, deadlines                      |
-| `docs/decisions/` | Architecture decisions — **read all of these**                    |
+| `docs/decisions/` | Architecture decisions: **read all of these**                    |
 
 ---
 
 ## 7. Coding conventions
 
 - **TypeScript strict mode.** `strict`, `noUncheckedIndexedAccess`,
-  `noImplicitOverride` are on. No `any` — if you need one, you need a type.
+  `noImplicitOverride` are on. No `any`: if you need one, you need a type.
 - **`import type` for type-only imports** (`verbatimModuleSyntax`).
 - **Server/client boundary:** mark server-only modules with
   `import "server-only";` at the top of `lib/integrations/*`.
@@ -205,6 +205,49 @@ Read the relevant subdirectory before working in the matching area:
 - **No barrel files** unless they are genuinely stable public surfaces.
 - **No dead code.** If it is not used by the end of the branch, delete it.
 
+### Writing conventions
+
+**Never use an em dash (U+2014) anywhere in this repository.** Not in
+documentation, comments, commit messages, code strings, issue templates, or
+user-facing copy. Not a single one.
+
+The em dash is the most recognisable sign that a document was generated rather
+than written. A reviewer who spots one loses confidence in the whole
+document, and the people this project is meant to serve, extension workers and
+farmers, will read it as machine output. It is also simply easier to read
+without.
+
+Use these instead:
+
+| Instead of an em dash          | Use                                                        |
+| ------------------------------ | ---------------------------------------------------------- |
+| An aside or explanation        | A full stop, or parentheses: `the farm (measured over 30 m pixels)` |
+| Introducing an explanation     | A colon: `the binding constraint: soil pH`                  |
+| A parenthetical aside          | A comma, if the sentence still reads correctly              |
+| A strong break in a sentence   | Two sentences                                              |
+
+**Rules:**
+
+1. **Punctuation only.** When replacing an em dash, do not reword, rephrase or
+   restructure the sentence beyond what the punctuation change requires. Keep
+   the meaning, the links, the numbers, the table structure and the technical
+   content exactly as they are.
+2. **En dashes (U+2013) are permitted inside numeric ranges only**, where they
+   are standard typography. Everywhere else, use a plain hyphen or the word
+   "to". Verbatim quotations from external sources keep the punctuation the
+   source used.
+3. **A missing value in a table is written `n/a` or `None`,** never as an em
+   dash. It is the same convention as writing "not applicable", and it keeps
+   the rule absolute with no exceptions to remember.
+4. **This is enforced mechanically.** `pnpm validate:style` fails the build if
+   an em dash appears anywhere in a tracked text file, and it runs in CI. If
+   it fails, fix the punctuation rather than skipping the check.
+
+**[Proposed]** The same rule applies to the product's own user-facing copy.
+Screen copy is read by farmers with limited formal education and by extension
+workers under time pressure. Short sentences and plain punctuation are not
+just a style preference here, they are a usability requirement.
+
 ### Commands
 
 ```bash
@@ -214,8 +257,13 @@ pnpm lint             # ESLint
 pnpm typecheck        # tsc --noEmit across the workspace
 pnpm test             # Vitest
 pnpm format           # Prettier write
-pnpm check            # format:check + lint + typecheck — run before pushing
+pnpm check            # format:check + lint + typecheck: run before pushing
+pnpm validate:style   # writing convention check: no em dashes
+pnpm validate:links   # relative Markdown link check
 ```
+
+`pnpm validate:style` and `pnpm validate:links` both run in CI. If either
+fails, fix the underlying file rather than skipping the check.
 
 ---
 
@@ -252,8 +300,9 @@ pnpm check            # format:check + lint + typecheck — run before pushing
   spatial resolution, temporal resolution, observation date, retrieval date,
   and an `is_modelled` flag.
 - **Resolution honesty:** SMAP is ~9 km, POWER is ~0.5° (~50 km), CHIRPS is
-  ~5 km, SoilGrids is 250 m, MODIS NDVI is 250 m–1 km, Landsat is 30 m. State
-  the real number. Do not round a 9 km soil-moisture pixel down to "your farm".
+  ~5 km, SoilGrids is 250 m, MODIS NDVI is 250 m to 1 km, Landsat is 30 m.
+  State the real number. Do not round a 9 km soil-moisture pixel down to
+  "your farm".
 - **Attribution is mandatory** for NASA data, ISRIC SoilGrids, basemap tiles
   and any other source. Record it in `docs/api/data-sources.md` and render it
   in-product where the data appears.
@@ -266,7 +315,7 @@ pnpm check            # format:check + lint + typecheck — run before pushing
 
 - **Unit tests** for pure logic: recommendation scoring rules, geospatial
   calculations, unit conversions, Zod schemas, date/season logic. This is where
-  the highest value is — these are deterministic and easy to test.
+  the highest value is: these are deterministic and easy to test.
 - **Integration tests** for external integrations, with the upstream response
   **recorded as a fixture** (sanitised, trimmed). Never call the real API in
   the test suite.
@@ -308,12 +357,12 @@ deployment model or the recommendation methodology:
 3. For anything beyond a local, reversible choice, mark the ADR as
    `Status: Proposed` and raise it with the team for approval.
 4. Update `ARCHITECTURE.md` and `ARCHITECTURE_ESSENTIALS.md` once approved.
-5. Never silently replace an agreed technology. Never remove an ADR — supersede
+5. Never silently replace an agreed technology. Never remove an ADR: supersede
    it.
 
 ---
 
-## 13. Hard rules — do not violate these
+## 13. Hard rules: do not violate these
 
 1. **Do not invent API endpoints, response shapes, rate limits or credentials.**
    If you have not read it in official documentation, you do not know it. Use

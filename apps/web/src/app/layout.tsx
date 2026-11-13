@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: '%s | DalaShift',
   },
   description:
-    'DalaShift — farm-level agricultural intelligence from NASA Earth observation data. ' +
+    'DalaShift: farm-level agricultural intelligence from NASA Earth observation data. ' +
     'Working name; see docs/product/ for the product definition.',
 };
 

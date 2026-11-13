@@ -1,6 +1,6 @@
 # User Flows
 
-**Status: Phase 1 — the flows are specified; they are not implemented.**
+**Status: Phase 1. The flows are specified; they are not implemented.**
 
 Companion: [`../../PRD.md`](../../PRD.md) § 10 ·
 [`recommendation-methodology.md`](./recommendation-methodology.md)
@@ -14,17 +14,17 @@ the most common design mistake in agricultural platforms.
 
 | Mode                    | Who                          | The question                       | The answer                                    |
 | ----------------------- | ---------------------------- | ---------------------------------- | --------------------------------------------- |
-| **A — Existing farmer** | Cultivates the land now      | "How do I do this better?"         | Per-crop management guidance for the current season |
-| **B — Prospective farmer** | Has land, no crop chosen   | "What should I plant?"             | A ranked, explained crop shortlist            |
-| **C — Returning farmer** | Comes back later             | "What has changed?"                | Monitoring, season-over-season comparison      |
+| **A: Existing farmer**  | Cultivates the land now      | "How do I do this better?"         | Per-crop management guidance for the current season |
+| **B: Prospective farmer**  | Has land, no crop chosen   | "What should I plant?"             | A ranked, explained crop shortlist            |
+| **C: Returning farmer**  | Comes back later             | "What has changed?"                | Monitoring, season-over-season comparison      |
 
 **[Proposed]** Mode is determined at onboarding and reflected in the dashboard
-structure. It is **not** a toggle on the dashboard — the information hierarchy
+structure. It is **not** a toggle on the dashboard; the information hierarchy
 differs. See PRD OQ-2.
 
 ---
 
-## 2. Flow A — the existing farmer
+## 2. Flow A: the existing farmer
 
 ```mermaid
 flowchart TD
@@ -36,7 +36,7 @@ flowchart TD
     O4 --> F["Add your farm"]
     F --> F1["Search for the location"]
     F1 --> F2["Draw the boundary"]
-    F2 --> F3["Review the calculated area — 1.4 ha<br/>confirm or adjust"]
+    F2 --> F3["Review the calculated area: 1.4 ha<br/>confirm or adjust"]
     F3 --> F4["Add details: irrigation, soil notes, photos"]
     F4 --> C["Add your crops"]
     C --> C1["Current crops"]
@@ -56,13 +56,13 @@ flowchart TD
 | ---- | --------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
 | 1    | Landing              | Understands the proposition                                | States plainly what it uses and what it cannot do           |
 | 2    | Auth                 | Creates an account or signs in                            | Supabase Auth; a `profiles` row is created by trigger       |
-| 3    | Onboarding — crops   | Taps their crops from a searchable list                   | Stores `farm_crops` with `status`                          |
-| 4    | Onboarding — land    | Says whether the land is in use                            | Sets the mode                                              |
-| 5    | Onboarding — water   | Says rainfed or irrigated, and how                        | Stores `irrigation_method` — a direct input to the water dimension |
-| 6    | Onboarding — goals   | Taps their priorities                                    | Stores `farm_priorities` — weights the recommendation      |
-| 7    | Add farm — map       | Searches, pans, draws                                     | Computes an area **preview** with Turf                      |
-| 8    | Add farm — confirm   | Checks the area, adjusts the polygon if needed            | **PostGIS computes the authoritative area**                 |
-| 9    | Add farm — details   | Optionally adds irrigation, soil notes, a photo           | Stores them; marks the data as complete or incomplete       |
+| 3    | Onboarding: crops    | Taps their crops from a searchable list                   | Stores `farm_crops` with `status`                          |
+| 4    | Onboarding: land     | Says whether the land is in use                            | Sets the mode                                              |
+| 5    | Onboarding: water    | Says rainfed or irrigated, and how                        | Stores `irrigation_method`: a direct input to the water dimension |
+| 6    | Onboarding: goals    | Taps their priorities                                    | Stores `farm_priorities`: weights the recommendation       |
+| 7    | Add farm: map        | Searches, pans, draws                                     | Computes an area **preview** with Turf                      |
+| 8    | Add farm: confirm    | Checks the area, adjusts the polygon if needed            | **PostGIS computes the authoritative area**                 |
+| 9    | Add farm: details    | Optionally adds irrigation, soil notes, a photo           | Stores them; marks the data as complete or incomplete       |
 | 10   | Crops                | Adds current, previous and planned crops with dates       | Stores `farm_crops`                                        |
 | 11   | Farm dashboard       | Reads their farm                                          | Fetches and caches observations; computes the analysis      |
 | 12   | Recommendations      | Reads the guidance and its limitations                    | Runs the rules engine; stores the recommendation            |
@@ -74,7 +74,7 @@ flowchart TD
 The area the farmer sees after drawing must be **the area that gets stored**.
 The browser computes a preview; the database computes the truth. If they
 disagree beyond a small tolerance, the farmer is shown the database value and
-told the boundary was adjusted — not silently overridden.
+told the boundary was adjusted, not silently overridden.
 
 ### The second critical moment: step 12
 
@@ -89,14 +89,14 @@ measurement. The UI distinguishes three cases, in plain language:
 
 ---
 
-## 3. Flow B — the prospective farmer
+## 3. Flow B: the prospective farmer
 
 ```mermaid
 flowchart TD
     L["Land on the site"] --> S["Sign up"]
     S --> O1["Onboarding: I have land but no crop yet"]
     O1 --> O2["What do you want from it?<br/>(priorities)"]
-    O2 --> F["Add the farm — draw the boundary"]
+    O2 --> F["Add the farm: draw the boundary"]
     F --> F1["Review the area"]
     F1 --> A["Suitability assessment"]
     A --> A1["Ranked shortlist of crops"]
@@ -125,7 +125,7 @@ That sentence is more useful than a false ranking.
 
 ---
 
-## 4. Flow C — monitoring
+## 4. Flow C: monitoring
 
 ```mermaid
 flowchart LR
@@ -138,8 +138,8 @@ flowchart LR
 
 **[Proposed] Two baselines, always together:**
 
-1. **The farm's own record** — this farm, this crop, previous seasons.
-2. **The climate climatology** — the multi-year average for the grid cell.
+1. **The farm's own record**: this farm, this crop, previous seasons.
+2. **The climate climatology**: the multi-year average for the grid cell.
 
 A rainfall bar chart on its own is not actionable. *"June was 14% below the
 long-term average for this area"* is.
@@ -173,7 +173,7 @@ recommendation.
 
 ---
 
-## 6. Flow D — the rotation comparison
+## 6. Flow D: the rotation comparison
 
 **Added for the NASA Space Apps "Field Shift" challenge brief.**
 
@@ -228,7 +228,7 @@ yet."* These need different copy and different actions.
 
 ---
 
-## 9. Onboarding — the order of questions
+## 9. Onboarding: the order of questions
 
 **[Proposed] The onboarding sequence is deliberately short and front-loads what
 changes the recommendation most.**
@@ -238,7 +238,7 @@ changes the recommendation most.**
 | 1     | What do you farm?                     | Determines the mode and the crop set                 |
 | 2     | Do you already have land in use?       | Mode: existing vs prospective                        |
 | 3     | Is it rainfed or irrigated?            | Directly changes the water dimension                 |
-| 4     | What do you want to improve?           | Sets the weights — the "farmer priorities" requirement |
+| 4     | What do you want to improve?           | Sets the weights: the "farmer priorities" requirement |
 | 5     | Where is your land?                    | Leads straight into drawing the boundary            |
 
 **[Proposed] Optional, skippable:** name, phone (phone is needed for account
@@ -266,6 +266,6 @@ connection.
 | One-handed use        | Primary actions in the lower third.                               |
 
 **[Proposed]** The map is the hardest interaction on mobile. **[Open]** Whether
-the MVP needs a non-map path for adding a farm — for example a
-centroid-plus-radius entry with a manual adjustment — should be decided from
+the MVP needs a non-map path for adding a farm (for example a
+centroid-plus-radius entry with a manual adjustment) should be decided from
 the Tofa field testing, not in advance.

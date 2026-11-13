@@ -12,10 +12,10 @@ Both are treated as sensitive.
 problem.**
 
 Report it privately to the team. Since this repository is new, the reporting
-channel is the team itself — create a **private** issue or contact the
+channel is the team itself; create a **private** issue or contact the
 repository owner directly:
 
-**Contact:** the repository owner (`vip-ultr`) — see
+**Contact:** the repository owner (`vip-ultr`); see
 <https://github.com/vip-ultr>
 
 Include:
@@ -116,8 +116,8 @@ These are acknowledged, not hidden. They are tracked as open issues.
 | ------------------------------------------------------ | -------- | ------------------------------------------ |
 | RLS policies are specified but not yet implemented     | High     | Phase 2 first task                         |
 | No automated dependency vulnerability audit yet         | Medium   | Add `pnpm audit` to CI                     |
-| Rate limiting not implemented                           | Medium   | Phase 2 — use Vercel firewall or Postgres-backed limiter |
-| No CSP configured yet                                   | Medium   | Phase 2 — required before any external script loads |
+| Rate limiting not implemented                           | Medium   | Phase 2: use Vercel firewall or Postgres-backed limiter |
+| No CSP configured yet                                   | Medium   | Phase 2: required before any external script loads |
 | GitHub branch protection not configured                 | Medium   | Team action, outside the repository        |
 | No account deletion flow                                | Medium   | Phase 2                                    |
 | Supplier keys rotate on a schedule                     | Low      | Post-hackathon                             |

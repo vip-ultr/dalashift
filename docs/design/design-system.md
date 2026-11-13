@@ -1,6 +1,6 @@
 # Design Direction
 
-**Status: Phase 1 — direction proposed. No brand identity is finalised.**
+**Status: Phase 1. Direction proposed. No brand identity is finalised.**
 
 Companion: [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) § 3.5 ·
 [`../../PRD.md`](../../PRD.md) § 11
@@ -18,7 +18,7 @@ a data portal that shows you everything and helps you with nothing.
 
 ---
 
-## 2. What to avoid — and why
+## 2. What to avoid, and why
 
 | Avoid                            | Why                                                                        |
 | -------------------------------- | -------------------------------------------------------------------------- |
@@ -61,13 +61,13 @@ Farm page
 ├── Header
 │   ├── Farm name + area (1.4 ha) + location
 │   └── Season selector + refresh control
-├── PRIMARY — the situation (one sentence)
+├── PRIMARY: the situation (one sentence)
 │   └── "The rains started 9 days late and rainfall is 14% below normal."
 ├── THE MEASUREMENTS (with resolution labels on every one)
-│   ├── Rainfall — chart + current value + baseline
-│   ├── Temperature — chart + range
-│   ├── Soil moisture — value + "9 km area around your farm"
-│   └── Vegetation — index + "measured over your field"
+│   ├── Rainfall: chart + current value + baseline
+│   ├── Temperature: chart + range
+│   ├── Soil moisture: value + "9 km area around your farm"
+│   └── Vegetation: index + "measured over your field"
 ├── THE ADVICE
 │   ├── Your millet: conditional, confidence 0.42
 │   ├── What this means (rationale)
@@ -89,17 +89,17 @@ more precision than the underlying data supports.
 
 ---
 
-## 5. Visual direction — proposed, not final
+## 5. Visual direction: proposed, not final
 
 **[Proposed] The direction: "field instrument".**
 
 The reference points are **weather stations, agronomic field trial records and
-professional mapping tools** — not consumer health apps. Concretely:
+professional mapping tools**, not consumer health apps. Concretely:
 
 | Property        | Direction                                                                        |
 | --------------- | -------------------------------------------------------------------------------- |
 | **Ground**      | A neutral off-white (`oklch(0.99 0.002 250)`) with a very slightly cool cast. Reads as paper, not as a screen. |
-| **Ink**         | A near-black slate (`oklch(0.21 0.01 250)`) for text. Never pure `#000` — it vibrates on screen. |
+| **Ink**         | A near-black slate (`oklch(0.21 0.01 250)`) for text. Never pure `#000`: it vibrates on screen. |
 | **Primary**     | A single restrained blue-slate (`oklch(0.48 0.09 250)`). It reads as *measurement*, not as agriculture, and it is what the current token set already defines. |
 | **Semantic colours** | Amber for warnings, red for genuine failure, green only where something is genuinely good. **Never green as a brand colour.** |
 | **Charts**      | A small, fixed categorical palette. One colour per meaning, reused everywhere. Never a rainbow. |
@@ -108,11 +108,11 @@ professional mapping tools** — not consumer health apps. Concretely:
 | **Borders**     | Hairline `oklch(0.92 0.005 250)`. Structure comes from spacing, not from heavy borders or shadows. |
 | **Shadows**     | Almost none. Elevation is expressed by spacing and background steps. |
 
-**[Proposed] On the "green" question.** There is a real argument for green —
+**[Proposed] On the "green" question.** There is a real argument for green:
 agriculture. And a real argument against: every agricultural platform is
 green, so green carries no meaning, and a full-saturation green background
 degrades the readability of charts and numbers. **A restrained, earthy green is
-acceptable as an accent** — for a "good condition" indicator, a vegetation
+acceptable as an accent**, for a "good condition" indicator, a vegetation
 series, a crop chip. **A green brand palette is not.**
 
 **[Proposed] The final brand identity is a design-phase decision and requires
@@ -131,7 +131,7 @@ deliberately neutral so that no brand colour is asserted prematurely.
 | Body               | 16 / 400        | 1.6 line height                                             |
 | Secondary text     | 14 / 400        | `muted-foreground`                                          |
 | Label / caption    | 12 / 500        | Uppercase with letter-spacing for field labels only        |
-| **Measurement**    | 28–36 / 600     | Tabular figures. **The headline number on a card.**        |
+| **Measurement**    | 28 to 36 / 600  | Tabular figures. **The headline number on a card.**        |
 | Axis / chart label | 12 / 400        | Never smaller than 12px                                     |
 
 **[Proposed] Tabular figures on every number.** Proportional digits make a
@@ -187,7 +187,7 @@ controls in a bottom sheet, so the map remains the largest visible element.
 ### 9.1 Cards
 
 One idea per card. A card has a title, an optional one-line explanation, the
-content, and — where relevant — a provenance line.
+content, and (where relevant) a provenance line.
 
 **[Proposed] Every data card carries a provenance line.** It is small, muted,
 and always present. Example:
@@ -208,7 +208,7 @@ lecturing. It appears on every measurement, everywhere, without exception.
 | **Numbers** | Tabular figures. Units always present, in a smaller muted style beside them. |
 | **Dates**   | Relative for recent ("3 days ago"), absolute beyond a week ("12 Nov 2026"). |
 | **Missing** | Never a blank. A dash with a tooltip saying why it is missing.              |
-| **Ranges**  | Always show the range and the mean: *"0.11 – 0.24 (avg 0.16)"*.            |
+| **Ranges**  | Always show the range and the mean: *"0.11 to 0.24 (avg 0.16)"*.         |
 | **Percentages** | One decimal place, not rounded to a whole number.                     |
 | **Comparisons** | Always against a stated baseline, never in the abstract.                |
 
@@ -266,7 +266,7 @@ not "Submit".
 | ------------ | --------------------------------------------------------------- |
 | Contrast     | Text ≥ 4.5:1; large text and meaningful graphics ≥ 3:1. The current token set is designed to satisfy this. |
 | Focus        | A visible focus ring on every interactive element. Never `outline: none` without a replacement. |
-| Keyboard     | Every flow completable by keyboard. The map draw control needs a keyboard alternative — **[Open]** see below. |
+| Keyboard     | Every flow completable by keyboard. The map draw control needs a keyboard alternative. **[Open]** See below. |
 | Semantics    | Real `<button>`, `<label>`, `<fieldset>`. Landmark elements.     |
 | Charts       | A text alternative conveying the same information.               |
 | Motion       | `prefers-reduced-motion` respected.                             |
@@ -277,8 +277,8 @@ not "Submit".
 **[Proposed] The map's keyboard accessibility is a genuine problem.** Drawing
 a polygon with a mouse is not keyboard accessible. Options:
 
-1. Accept it and provide a **non-map alternative** — a centroid + radius
-   entry with a numeric area field. **[Proposed]** This also serves farmers
+1. Accept it and provide a **non-map alternative** (a centroid + radius
+   entry with a numeric area field). **[Proposed]** This also serves farmers
    with lower digital literacy, so it solves two problems.
 2. Build a full keyboard polygon editor. Out of scope.
 
@@ -318,9 +318,17 @@ sentence can do it better.
 | Lead with the conclusion, then the evidence.                            |
 | Never imply more certainty than the data has.                           |
 | Say what is missing, not just what is present.                           |
-| Use the farmer's words: "millet", not "Pennisetum glaucum" — though the Latin name can appear in parentheses on the crop detail page. |
+| Use the farmer's words: "millet", not "Pennisetum glaucum", though the Latin name can appear in parentheses on the crop detail page. |
 | No exclamation marks. No emoji in data contexts.                          |
 | **Never** say "we know", "accurately", or "precisely" about an environmental value. |
+| **Never use an em dash (U+2014) in any user-facing copy.** Use a full stop, a colon, a comma or parentheses. The same rule applies to the whole repository, and it is enforced by `pnpm validate:style` in CI. |
+
+**[Proposed]** Why this matters more for a screen than for a document. A farmer
+reading a short message on a phone, or an extension worker scanning a report
+between visits, parses punctuation quickly and unconsciously. Em dashes are
+dense, they break the rhythm of a short sentence, and they are a well-known
+marker of machine-written text. Short sentences and plain punctuation are a
+usability requirement here, not a style preference.
 
 ---
 

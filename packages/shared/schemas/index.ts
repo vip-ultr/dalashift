@@ -2,7 +2,7 @@
  * Shared Zod validation schemas for the DalaShift monorepo.
  *
  * These are the runtime validation layer at every boundary: route handler
- * inputs, server action inputs, and — critically — **upstream API responses**.
+ * inputs, server action inputs, and, critically, **upstream API responses**.
  * An upstream payload is never trusted without passing through a schema here.
  *
  * @packageDocumentation

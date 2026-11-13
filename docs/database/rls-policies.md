@@ -1,6 +1,6 @@
 # Row Level Security Policies
 
-**Status: Phase 1 — specification only. No policies exist yet.**
+**Status: Phase 1. Specification only. No policies exist yet.**
 
 Companion to [`data-model.md`](./data-model.md).
 
@@ -35,7 +35,7 @@ flowchart LR
 **Key property:** a denied row produces an **empty result, not an error**. A
 `SELECT` returns zero rows; an `INSERT`/`UPDATE`/`DELETE` affects zero rows.
 The application cannot tell the difference between "does not exist" and "not
-yours" — which is the correct behaviour, and prevents existence disclosure.
+yours" (which is the correct behaviour, and prevents existence disclosure).
 
 ---
 
@@ -45,7 +45,7 @@ yours" — which is the correct behaviour, and prevents existence disclosure.
 farmer-scoped table stores `farmer_id` (or derives it through a parent) so
 that the policy is a single equality check.
 
-**`profiles.id = auth.users.id`** — the profile row *is* the auth user. There
+**`profiles.id = auth.users.id`**: the profile row *is* the auth user. There
 is no separate identity mapping to get wrong.
 
 ---
@@ -74,8 +74,8 @@ CREATE POLICY profiles_update_own ON profiles
 
 **[Proposed]** Note the deliberate absence of an `INSERT` policy. The profile
 is created by a `SECURITY DEFINER` trigger, which bypasses RLS by design.
-Without that trigger, the user could not create their own profile — and with
-an `INSERT` policy, a user could create a profile for *someone else*.
+Without that trigger, the user could not create their own profile. With an
+`INSERT` policy, a user could create a profile for *someone else*.
 
 ### 4.2 `farms`
 
@@ -98,7 +98,7 @@ CREATE POLICY farms_delete_own ON farms
 **The `WITH CHECK` clause is the important one.** `USING` filters which rows
 can be read or modified; `WITH CHECK` validates the rows *after* the
 modification. Without `WITH CHECK`, a user could update their own farm and
-set `farmer_id` to someone else's — **transferring the farm out of their
+set `farmer_id` to someone else's, **transferring the farm out of their
 control and into someone else's**. This is the single most common RLS
 mistake.
 
@@ -122,7 +122,7 @@ CREATE POLICY plots_all_own ON farm_plots
   );
 ```
 
-`farm_plots` has no `farmer_id` of its own — ownership is inherited from the
+`farm_plots` has no `farmer_id` of its own; ownership is inherited from the
 parent farm. The `EXISTS` subquery is the inheritance mechanism.
 
 ### 4.4 `farm_crops`
@@ -220,7 +220,7 @@ CREATE POLICY rotation_strategies_all_own ON rotation_strategies
     EXISTS (SELECT 1 FROM farms f WHERE f.id = rotation_strategies.farm_id AND f.farmer_id = auth.uid())
   );
 
--- rotation_legs — ownership inherited from the strategy
+-- rotation_legs: ownership inherited from the strategy
 CREATE POLICY rotation_legs_all_own ON rotation_legs
   FOR ALL USING (
     EXISTS (
@@ -258,7 +258,7 @@ CREATE POLICY reports_all_own ON reports
 
 ### 4.10 `external_cache`, `grid_cells`, `soil_properties`
 
-**Internal.** No policies for the `authenticated` role — the service role
+**Internal.** No policies for the `authenticated` role: the service role
 bypasses RLS, and the browser has no business reading the raw cache.
 
 ```sql
@@ -267,7 +267,7 @@ ALTER TABLE external_cache ENABLE ROW LEVEL SECURITY;
 ```
 
 **[Proposed]** `grid_cells` and `soil_properties` are reference data and may be
-readable, but there is no need to expose them — the browser gets exactly the
+readable, but there is no need to expose them: the browser gets exactly the
 cells a farm needs through the farm's observations.
 
 ---
@@ -282,8 +282,8 @@ cells a farm needs through the farm's observations.
 | Read from a server-only module                                      | `import "server-only"` makes a client import a build error    |
 | Rotate if it ever leaks                                             | It is the most dangerous secret in the project                |
 
-**A service-role client is created in exactly one place** —
-`lib/supabase/admin.ts` — so there is a single audit point.
+**A service-role client is created in exactly one place**, in
+`lib/supabase/admin.ts`, so there is a single audit point.
 
 ---
 
@@ -296,10 +296,10 @@ cells a farm needs through the farm's observations.
 | User A creates a farm; User B queries `farms`                 | B receives **zero rows**                                      |
 | User A updates their farm, setting `farmer_id = B`            | The `WITH CHECK` clause **rejects** the update                |
 | User A inserts a farm with `farmer_id = B`                     | The insert **fails**                                          |
-| User A queries `crops`                                        | Returns the reference catalog — public data is readable       |
-| User A inserts into `environmental_observations`              | **Fails** — no insert policy                                   |
+| User A queries `crops`                                        | Returns the reference catalog: public data is readable       |
+| User A inserts into `environmental_observations`              | **Fails**: no insert policy                                   |
 | User A queries `external_cache`                               | Returns **zero rows**                                         |
-| The anon key, used outside any application code, queries a farm | Returns zero rows — proving the boundary is in the database, not the app |
+| The anon key, used outside any application code, queries a farm | Returns zero rows, proving the boundary is in the database, not the app |
 
 **The last test is the most valuable.** It proves that RLS is genuinely the
 boundary: even a completely separate client using only the public anon key
@@ -317,9 +317,9 @@ without a schema change, but **no non-farmer workflow is designed in the MVP.**
 
 | Role              | Own farms | Assigned farms | Aggregated multi-farm view | Reference data | Admin |
 | ----------------- | --------- | ------------- | -------------------------- | -------------- | ----- |
-| `farmer`          | ✔         | —             | ✘                          | ✔              | ✘     |
+| `farmer`          | ✔         | n/a           | ✘                          | ✔              | ✘     |
 | `extension_worker`| ✔         | ✔             | ✔ (assigned only)          | ✔              | ✘     |
-| `researcher`      | ✔         | —             | ✔ (de-identified aggregates)| ✔              | ✘     |
+| `researcher`      | ✔         | n/a           | ✔ (de-identified aggregates)| ✔              | ✘     |
 | `admin`           | ✔         | ✔             | ✔                          | ✔              | ✔     |
 
 **Implementation approach [Proposed]:** keep the `profiles.role` column for
@@ -336,14 +336,14 @@ RLS adds a predicate to every query. On small tables this is negligible.
 
 | Concern                          | Mitigation                                                         |
 | -------------------------------- | ------------------------------------------------------------------ |
-| Policy subqueries per row        | The `EXISTS` subquery on `farms` uses the PK index — cheap.       |
+| Policy subqueries per row        | The `EXISTS` subquery on `farms` uses the PK index: cheap.       |
 | RLS preventing index usage       | The policy is on `farmer_id`/`id`, which are indexed.              |
-| `USING` on large observation tables | Keep the `farm_id` b-tree index current — it already exists.      |
+| `USING` on large observation tables | Keep the `farm_id` b-tree index current; it already exists.      |
 | Service-role bypass              | Use it for bulk reads where RLS would add cost without benefit.   |
 
 **[Proposed]** A useful optimisation: policy subqueries can be replaced with a
 `security definer` helper function that reads the farmer's farm ids once per
-statement. Worth doing only if profiling shows it matters — at MVP scale it
+statement. Worth doing only if profiling shows it matters. At MVP scale it
 will not.
 
 ---

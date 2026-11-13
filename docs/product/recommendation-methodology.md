@@ -1,6 +1,6 @@
 # Recommendation Methodology
 
-**Status: Phase 1 — the method is specified; the thresholds are not yet set.**
+**Status: Phase 1 (the method is specified; the thresholds are not yet set).**
 
 Companion: [`ADR-0004`](../decisions/ADR-0004-rules-based-recommendation-engine.md) ·
 [`data-sources.md`](../api/data-sources.md) · [`../../PRD.md`](../../PRD.md) FR-5
@@ -14,12 +14,12 @@ A **recommendation** is a conclusion with four mandatory components:
 | Component        | What it contains                                                                |
 | ---------------- | ------------------------------------------------------------------------------- |
 | **Verdict**      | `suitable` \| `conditional` \| `not_suitable` \| `insufficient_information`      |
-| **Score**        | 0–1, from the weighted dimension scores. **Null** when the verdict is `insufficient_information`. |
+| **Score**        | 0 to 1, from the weighted dimension scores. **Null** when the verdict is `insufficient_information`. |
 | **Rationale**    | Human-readable reasoning that cites the inputs it used                          |
 | **Limitations**  | An explicit list of what is unknown, coarse, stale or contested                  |
-| **Confidence**   | 0–1, computed **separately** from the score                                     |
+| **Confidence**   | 0 to 1, computed **separately** from the score                                  |
 
-Plus `ruleset_version` — the version of the rules that produced it.
+Plus `ruleset_version`: the version of the rules that produced it.
 
 **[Confirmed]** The platform must communicate a limitation rather than invent
 an answer. `insufficient_information` is a first-class outcome, not an error
@@ -65,7 +65,7 @@ flowchart TB
 ```
 
 **[Proposed] Why the combination matters, concretely.** Rainfall alone cannot
-tell you whether to plant maize — it can only tell you the season looks wet.
+tell you whether to plant maize; it can only tell you the season looks wet.
 But rainfall **plus irrigation method** tells you whether water is the binding
 constraint. And rainfall plus **the farmer's priority** (yield vs. risk) tells
 you which of two viable crops to recommend. Each category changes the answer.
@@ -108,15 +108,15 @@ mitigable) regardless of the score.
 decisive, and because a high score on a soft dimension must never override a
 hard failure.
 
-**[Proposed] Where a constraint's *evidence* is weak** — for example, soil pH
-from a 250 m interpolated grid with a wide uncertainty band — the constraint
+**[Proposed] Where a constraint's *evidence* is weak** (for example, soil pH
+from a 250 m interpolated grid with a wide uncertainty band), the constraint
 should downgrade to `conditional` rather than produce a hard `not_suitable`.
 **A constraint that is uncertain should not be decisive.** This is the rule
 that keeps the system honest.
 
 ### 3.2 Scored dimensions
 
-Each dimension is scored 0–1 and then weighted.
+Each dimension is scored 0 to 1 and then weighted.
 
 | Dimension             | What it measures                                                         | Primary inputs                          |
 | --------------------- | ------------------------------------------------------------------------ | --------------------------------------- |
@@ -144,7 +144,7 @@ The farmer's stated priorities (FR-2.13) shift the weights.
 | Food security          | Raise the weight on reliability and risk avoidance over peak yield        |
 | Less work              | **[Proposed]** Raise the weight on the similarity to the existing rotation |
 
-**[Proposed]** The farmer's priorities must be **visible in the output** —
+**[Proposed]** The farmer's priorities must be **visible in the output**:
 "this recommendation ranks higher because you said you want to conserve
 water". A recommendation that silently re-weights is not explainable.
 
@@ -163,7 +163,7 @@ values require agronomic review and are not fixed in Phase 1.**
 **[Proposed] A note on the score thresholds.** Thresholds like 0.7 are
 arbitrary until the ruleset has been tested against real farms. The honest
 approach for the MVP: set them, label them as provisional in the ruleset, and
-record the version. Changing them later is a ruleset version bump — which is
+record the version. Changing them later is a ruleset version bump, which is
 exactly why the version exists.
 
 ### 3.5 Confidence
@@ -276,7 +276,7 @@ interface RotationStrategy {
 
 **The four text fields map one-to-one onto the challenge brief's wording.**
 That is deliberate: it makes the submission visibly compliant, and it forces
-the content to be honest — you cannot fill "evidence" without having evidence.
+the content to be honest. You cannot fill "evidence" without having evidence.
 
 ### 5.2 How a strategy is built
 
@@ -325,11 +325,11 @@ runtime.
 
 ### 6.1 Why versioned in the repository
 
-- **Auditable** — a judge can read the requirements for millet.
-- **Correctable** — a wrong threshold is a one-line edit and a ruleset
+- **Auditable**: a judge can read the requirements for millet.
+- **Correctable**: a wrong threshold is a one-line edit and a ruleset
   version bump.
-- **Offline** — the demo does not depend on a third-party catalog API.
-- **Diffable** — a PR shows exactly which requirement changed and why.
+- **Offline**: the demo does not depend on a third-party catalog API.
+- **Diffable**: a PR shows exactly which requirement changed and why.
 
 ### 6.2 The entry format
 
@@ -396,7 +396,7 @@ interface Ruleset {
 ```
 
 **[Proposed]** `weights` are per crop. `texts` holds the user-facing strings so
-that a ruleset change can improve wording without touching code — and so that
+that a ruleset change can improve wording without touching code, and so that
 the wording is reviewable by the team, not by an engineer.
 
 **Versioning:** the ruleset version is stored on every recommendation. A
@@ -405,22 +405,22 @@ published.
 
 ---
 
-## 8. Worked example — an honest answer
+## 8. Worked example: an honest answer
 
 **Farm:** 1.4 ha in Tofa LGA. Farmer grows millet, plans cowpea. Rainfed. No
 irrigation recorded.
 
 | Stage              | Result                                                                        |
 | ------------------ | ----------------------------------------------------------------------------- |
-| Hard constraints   | Millet: annual rainfall (810 mm vs 600–1200 mm required) passes. Cowpea: passes. |
-| Climate match      | Millet 0.82 — the season's rainfall is within band. Cowpea 0.74.            |
-| Season timing      | Millet 0.88 — the planting window aligns with the local onset (12 May). Cowpea 0.71. |
-| Water availability | Millet 0.55 — rainfed, and the season's rainfall is 14% below normal. Cowpea 0.61 — lower water demand. |
-| Soil match         | Millet 0.70 — SoilGrids pH 6.2 (interpolated; wide uncertainty band). Cowpea 0.78 — pH 6.4 preferred. |
-| Vegetation         | Millet 0.60 — the latest 16-day NDVI composite is at the low end of the field's own history. |
+| Hard constraints   | Millet: annual rainfall (810 mm vs 600 to 1200 mm required) passes. Cowpea: passes. |
+| Climate match      | Millet 0.82: the season's rainfall is within band. Cowpea 0.74.             |
+| Season timing      | Millet 0.88: the planting window aligns with the local onset (12 May). Cowpea 0.71.  |
+| Water availability | Millet 0.55: rainfed, and the season's rainfall is 14% below normal. Cowpea 0.61: lower water demand.   |
+| Soil match         | Millet 0.70: SoilGrids pH 6.2 (interpolated; wide uncertainty band). Cowpea 0.78: pH 6.4 preferred.   |
+| Vegetation         | Millet 0.60: the latest 16-day NDVI composite is at the low end of the field's own history.  |
 | Weighted total     | Millet **0.74**, Cowpea **0.71**                                            |
 | Verdict            | Millet **conditional**, Cowpea **conditional**                                |
-| Confidence         | Millet **0.42** — the binding constraints are rainfall (regional, 55 km) and soil pH (250 m, interpolated) |
+| Confidence         | Millet **0.42**: the binding constraints are rainfall (regional, 55 km) and soil pH (250 m, interpolated)  |
 | Limitations        | *"Rainfall is a regional figure covering about 55 km. Soil pH is an interpolated estimate for a 250 m cell, and the model is uncertain there. The planting window is from a general reference, not from local Tofa practice."* |
 | Rationale          | *"Millet fits the rainfall and temperature this season. The season's rainfall is 14% below the long-term average for this area, and your field is unirrigated, so late planting carries more risk than usual. Cowpea needs less water and may suit the drier part of the season. Check both with an agricultural extension officer before you decide."* |
 

@@ -1,4 +1,4 @@
-# Pull Request Template — DalaShift
+# Pull Request Template: DalaShift
 
 ## Summary
 
@@ -16,11 +16,11 @@
 
 <!-- e.g. apps/web/src/features/farms, packages/shared/schemas, docs/research -->
 
-- [ ] `apps/web` — application
-- [ ] `packages/shared` — shared types/schemas/constants
-- [ ] `scripts/` — ingestion/geospatial/validation
-- [ ] `docs/` — documentation only
-- [ ] `data/` — sample/reference data
+- [ ] `apps/web`: application
+- [ ] `packages/shared`: shared types/schemas/constants
+- [ ] `scripts/`: ingestion/geospatial/validation
+- [ ] `docs/`: documentation only
+- [ ] `data/`: sample/reference data
 
 ## Checklist
 

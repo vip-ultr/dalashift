@@ -14,14 +14,14 @@ export default function HomePage() {
       <h1 className="text-4xl font-semibold tracking-tight">DalaShift</h1>
       <p className="text-lg leading-relaxed text-muted-foreground">
         Farm-level agricultural intelligence built on NASA Earth observation data. The product
-        surface is not yet implemented — this repository currently contains the research,
+        surface is not yet implemented; this repository currently contains the research,
         architecture and database design that the build will follow.
       </p>
       <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-        <li>Product requirements — PRD.md</li>
-        <li>Technical architecture — ARCHITECTURE.md</li>
-        <li>Developer reference — ARCHITECTURE_ESSENTIALS.md</li>
-        <li>Contributing — CONTRIBUTING.md</li>
+        <li>Product requirements: PRD.md</li>
+        <li>Technical architecture: ARCHITECTURE.md</li>
+        <li>Developer reference: ARCHITECTURE_ESSENTIALS.md</li>
+        <li>Contributing: CONTRIBUTING.md</li>
       </ul>
     </main>
   );

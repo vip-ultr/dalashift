@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright configuration for end-to-end tests.
- * Phase 1: harness only — no end-to-end flows exist yet.
+ * Phase 1: harness only. No end-to-end flows exist yet.
  */
 export default defineConfig({
   testDir: './tests/e2e',

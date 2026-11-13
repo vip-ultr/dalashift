@@ -1,4 +1,4 @@
-# NASA Datasets — Research Notes
+# NASA Datasets: Research Notes
 
 **Verification date: 2026-11-13.**
 
@@ -36,39 +36,39 @@ The challenge statement names these explicitly:
 
 **[Proposed]** We should engage with **at least four** of them so that the
 submission's "NASA Data" field is substantive, and so that the Relevance
-judging criterion — *"NASA data is integral to the project's success"* — is
+judging criterion, *"NASA data is integral to the project's success"*, is
 genuinely satisfied rather than asserted.
 
 | Product              | Use it for                        | Effort | Priority        |
 | -------------------- | --------------------------------- | ------ | --------------- |
-| **NASA POWER**       | Rainfall, temperature, radiation, evapotranspiration, growing degree days, soil wetness, climatology | **Low** — no auth, one API | **1 — the backbone** |
+| **NASA POWER**       | Rainfall, temperature, radiation, evapotranspiration, growing degree days, soil wetness, climatology | **Low**: no auth, one API | **1: the backbone** |
 | **GPM / IMERG**      | Precipitation, via POWER's `IMERG_PRECTOT` (no auth) | Low | **2** |
-| **MODIS**            | Vegetation index (250 m) and land surface temperature (1 km) | Medium — Earthdata or GEE | **3** |
-| **Landsat**          | 30 m surface reflectance → NDVI. **The farm-scale source.** | Medium — GEE | **4** |
-| **SMAP**             | Soil moisture (9 km) — with honest labelling | Medium — Earthdata or GEE | **5** |
-| **SRTM**             | Elevation for the farm and for POWER's `site-elevation` correction | Medium — AppEEARS | 6 |
-| **ECOSTRESS**        | Evapotranspiration and crop water stress at 70 m — **genuinely farm-scale**, and named in the challenge | **High** — not yet investigated | **[Open]** |
-| **GRACE / GRACE-FO** | Regional groundwater trends | High, and the resolution is ~300 km | **Probably not — but the challenge names it** |
+| **MODIS**            | Vegetation index (250 m) and land surface temperature (1 km) | Medium: Earthdata or GEE | **3** |
+| **Landsat**          | 30 m surface reflectance → NDVI. **The farm-scale source.** | Medium: GEE | **4** |
+| **SMAP**             | Soil moisture (9 km), with honest labelling | Medium: Earthdata or GEE | **5** |
+| **SRTM**             | Elevation for the farm and for POWER's `site-elevation` correction | Medium: AppEEARS | 6 |
+| **ECOSTRESS**        | Evapotranspiration and crop water stress at 70 m, **genuinely farm-scale**, and named in the challenge | **High**: not yet investigated | **[Open]** |
+| **GRACE / GRACE-FO** | Regional groundwater trends | High, and the resolution is ~300 km | **Probably not, but the challenge names it** |
 
 ---
 
-## 3. ECOSTRESS — the most interesting unexplored option
+## 3. ECOSTRESS: the most interesting unexplored option
 
 **[Open] Not yet researched in depth. Flagged here because it may be the best
 fit in the whole list.**
 
 ECOSTRESS is NASA's **EcoSystem Spaceborne Thermal Radiometer Experiment on
-Space Station**, launched 2018. It measures **evapotranspiration** — the water
-plants actually transpire — at **70 m**, from the International Space Station.
+Space Station**, launched 2018. It measures **evapotranspiration** (the water
+plants actually transpire) at **70 m**, from the International Space Station.
 
 **[Proposed] Why this may matter more than anything else in the list:**
 
-- It is **70 m** — genuinely farm-scale, comparable to MODIS but much finer.
+- It is **70 m**: genuinely farm-scale, comparable to MODIS but much finer.
 - It measures **crop water stress directly**, which is what a farmer in a dry
   spell actually needs to know. Soil moisture is a proxy; evapotranspiration
   is the thing itself.
 - It is **named in the challenge statement.**
-- It has a **diurnal cycle** — it overpasses at different local times across
+- It has a **diurnal cycle**: it overpasses at different local times across
   its orbit, which lets you see how a plant's behaviour changes through the
   day, and build a daily ET time series.
 
@@ -77,7 +77,7 @@ plants actually transpire — at **70 m**, from the International Space Station.
 - It is a **very different beast** to the gridded archive products. Access is
   through the LAADS DAAC (which was refusing to issue tokens when checked)
   and through GEE.
-- Its revisit is **not a fixed 16-day cycle** — it follows the ISS orbit and
+- Its revisit is **not a fixed 16-day cycle**: it follows the ISS orbit and
   the local overpass time shifts across the 16-day cycle. This is a real
   complexity in building a consistent time series.
 - It only covers the ISS ground track, so coverage is a set of narrow swaths
@@ -98,7 +98,7 @@ plants actually transpire — at **70 m**, from the International Space Station.
 
 POWER declares `fill_value: -999.0` in the response header. **A naive mean
 over a daily series containing `-999` produces a number that is not just
-wrong — it is wrong by a factor of several hundred.** This is the single most
+wrong: it is wrong by a factor of several hundred.** This is the single most
 likely implementation bug in the whole project.
 
 ```typescript
@@ -124,7 +124,7 @@ plus a message. **The fill-value trap and the time-standard trap compound.**
 
 A regional request over a box smaller than 2° × 2° returns **HTTP 422**.
 Kano spans about 2° of longitude, so **the regional endpoint is unusable for
-our validation area.** Use the point endpoint per farm — and cache per grid
+our validation area.** Use the point endpoint per farm, and cache per grid
 cell.
 
 ### 4.4 SoilGrids mapped units
@@ -142,10 +142,10 @@ is the reference implementation.
 
 ### 4.5 MODIS NDVI quality flags
 
-`SummaryQA` bits 0–1: `0` good, `1` marginal, `2` snow/ice, `3` cloudy.
+`SummaryQA` bits 0 to 1: `0` good, `1` marginal, `2` snow/ice, `3` cloudy.
 **Averaging raw NDVI without filtering on QA mixes cloud values into the
 mean.** NDVI is already masked for clouds, water, heavy aerosol and cloud
-shadows — so masked pixels are "no data", never zero.
+shadows, so masked pixels are "no data", never zero.
 
 ### 4.6 Landsat band indices are not stable across sensors
 
@@ -169,20 +169,20 @@ a rolling basis; freeze anything older.
 
 ### 4.9 Mixing IMERG runs
 
-Early (4 h), Late (12–14 h) and Final (3.5 months) are **different products**.
-Never mix them in one time series. Store the run identifier.
+Early (4 h), Late (12 to 14 h) and Final (3.5 months) are **different
+products**. Never mix them in one time series. Store the run identifier.
 
 ### 4.10 SMAP's 9 km grid is a posting grid
 
 The native radiometer footprint is ~33 km. The 9 km grid is an interpolation of
 antenna temperatures. **9 km is the posting resolution, not the true
-resolution.** There is no "36 km enhanced" product — it is enhanced 9 km or
+resolution.** There is no "36 km enhanced" product: it is enhanced 9 km or
 standard 36 km.
 
 ### 4.11 Landsat surface temperature has systematic gaps
 
-It depends on the ASTER GED emissivity climatology (2000–2008, clear-sky
-only), and the missing pixels are **consistent through time, 1982–present**.
+It depends on the ASTER GED emissivity climatology (2000 to 2008, clear-sky
+only), and the missing pixels are **consistent through time, 1982 to present**.
 **Do not build a trend on `ST_B10`.**
 
 ### 4.12 The NASA CMR `limit` parameter
@@ -196,20 +196,20 @@ recognized"*). Use **`page_size`**.
 
 | Product        | Resolution | Farm-scale for a 1.4 ha field?                       |
 | -------------- | ---------- | ----------------------------------------------------- |
-| Sentinel-2 (GEE) | 10 m     | **Yes** — ~14 pixels across                            |
-| Landsat C2 L2  | 30 m      | **Yes** — ~5 pixels across, ~150 in area              |
-| ECOSTRESS     | 70 m      | **Yes** — ~2 pixels across                             |
-| MODIS MOD13Q1 | 250 m     | No — the farm is 0.2% of one pixel                    |
-| SoilGrids     | 250 m     | No — the farm is 0.2% of one cell                     |
-| CHIRPS        | 5.5 km    | No — 0.005%                                           |
-| SMAP L3       | 9 km      | No — 0.002%                                           |
-| GPM IMERG     | 11 km     | No — 0.001%                                           |
-| NASA POWER    | 55 km     | No — 0.00005%                                         |
+| Sentinel-2 (GEE) | 10 m     | **Yes**: ~14 pixels across                            |
+| Landsat C2 L2  | 30 m      | **Yes**: ~5 pixels across, ~150 in area              |
+| ECOSTRESS     | 70 m      | **Yes**: ~2 pixels across                             |
+| MODIS MOD13Q1 | 250 m     | No: the farm is 0.2% of one pixel                    |
+| SoilGrids     | 250 m     | No: the farm is 0.2% of one cell                     |
+| CHIRPS        | 5.5 km    | No: 0.005%                                           |
+| SMAP L3       | 9 km      | No: 0.002%                                           |
+| GPM IMERG     | 11 km     | No: 0.001%                                           |
+| NASA POWER    | 55 km     | No: 0.00005%                                         |
 
 **[Proposed]** Three sources genuinely resolve a farm: Sentinel-2, Landsat and
 ECOSTRESS. Two of the three require Google Earth Engine, and ECOSTRESS
 requires investigation. **This is the strongest argument for getting GEE
-working** — and also the strongest argument for the resolution-honest framing,
+working**, and also the strongest argument for the resolution-honest framing,
 because the farm-scale sources answer only the *vegetation and water-stress*
 questions, not the rainfall or soil questions.
 
@@ -217,9 +217,9 @@ questions, not the rainfall or soil questions.
 
 ## 6. Sources
 
-- [`../api/data-sources.md`](../api/data-sources.md) — the full factual
+- [`../api/data-sources.md`](../api/data-sources.md): the full factual
   catalogue with URLs, verification dates and live-verified behaviour.
-- [`../api/data-retrieval-strategy.md`](../api/data-retrieval-strategy.md) —
+- [`../api/data-retrieval-strategy.md`](../api/data-retrieval-strategy.md):
   how we call, cache and fail over.
-- [`../hackathon/README.md`](../hackathon/README.md) — the challenge statement
+- [`../hackathon/README.md`](../hackathon/README.md): the challenge statement
   that names the NASA datasets.

@@ -1,8 +1,8 @@
-# ADR-0001 — Open-Source License
+# ADR-0001: Open-Source License
 
 | Field    | Value                                                            |
 | -------- | ---------------------------------------------------------------- |
-| Status   | **Proposed — awaiting team decision. NOW BLOCKING.**            |
+| Status   | **Proposed: awaiting team decision. NOW BLOCKING.**             |
 | Date     | 2026-11-13 (updated 2026-11-13 with the NASA Space Apps rule)   |
 | Deciders | All three team members (unanimous required)                     |
 | Related  | `LICENSE`, `README.md` § License, `SECURITY.md`, `PRD.md` OQ-7, `docs/hackathon/README.md` § 4.1 |
@@ -45,7 +45,7 @@ And for third-party materials:
 
 ### Deadline
 
-**15 November 2026, 23:59 local** — the NASA project submission deadline. The
+**15 November 2026, 23:59 local**: the NASA project submission deadline. The
 licence must be in place well before that. See
 [`docs/hackathon/README.md`](../hackathon/README.md) § 7.
 
@@ -55,18 +55,18 @@ licence must be in place well before that. See
   this by definition).
 - It must be compatible with our dependencies (verified below).
 
-### Dependency licence compatibility — verified
+### Dependency licence compatibility: verified
 
 | Dependency group          | Licence                              | MIT/Apache-2.0-compatible? |
 | ------------------------- | ------------------------------------ | -------------------------- |
 | Next.js, React            | MIT                                  | Yes                        |
 | Turf                      | MIT                                  | Yes                        |
 | MapLibre GL JS            | BSD-3-Clause                         | Yes                        |
-| PostGIS / PostgreSQL      | GPL-2.0 / PostgreSQL licence         | **Not linked** — used as a managed Supabase service, not distributed |
+| PostGIS / PostgreSQL      | GPL-2.0 / PostgreSQL licence         | **Not linked**: used as a managed Supabase service, not distributed  |
 | shadcn/ui + Radix         | MIT                                  | Yes                        |
-| ISRIC SoilGrids **data**  | CC BY 4.0                            | N/A — attribution required, not a code licence |
-| Open-Meteo **data**       | CC BY 4.0                            | N/A — attribution required |
-| Copernicus Sentinel-2 **data** | Copernicus Sentinel Data Terms  | N/A — attribution expected |
+| ISRIC SoilGrids **data**  | CC BY 4.0                            | N/A: attribution required, not a code licence  |
+| Open-Meteo **data**       | CC BY 4.0                            | N/A: attribution required  |
+| Copernicus Sentinel-2 **data** | Copernicus Sentinel Data Terms  | N/A: attribution expected  |
 
 **Important:** PostGIS and PostgreSQL are consumed as a **hosted Supabase
 service**, not linked into the repository. This does not impose GPL
@@ -75,7 +75,7 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
 
 ## Options considered
 
-### Option A — MIT
+### Option A: MIT
 
 - **Advantages:** The most permissive and most common choice for hackathon and
   community projects. Maximum adoption. Very short text. No patent grant
@@ -85,7 +85,7 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
 - **Risk:** A commercial agritech platform could republish the code with
   minimal changes and no obligation beyond the licence text.
 
-### Option B — Apache-2.0
+### Option B: Apache-2.0
 
 - **Advantages:** MIT-like permissiveness plus an **explicit patent grant** and
   a patent-retaliation clause. Widely accepted. **It is also NASA's own
@@ -95,7 +95,7 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
   reciprocity as MIT.
 - **Risk:** Same closed-derivative risk as MIT.
 
-### Option C — AGPL-3.0
+### Option C: AGPL-3.0
 
 - **Advantages:** Strong copyleft extended to network use. A hosted modified
   version must release its source. Prevents a closed SaaS fork while allowing
@@ -103,20 +103,20 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
 - **Disadvantages:** Discourages adoption by organisations that cannot
   contribute back. Requires careful compliance (source offer, "Powered by
   AGPL" notice). More complex for downstream users. **Must be checked against
-  the official hackathon rules** — it *is* OSI-approved, so it satisfies the
+  the official hackathon rules**; it *is* OSI-approved, so it satisfies the
   open-source requirement, but it adds compliance burden during a 48-hour
   build.
 - **Risk:** May be read as hostile by judges evaluating adoption potential, and
   may complicate any third-party contribution.
 
-### Option D — GPL-3.0
+### Option D: GPL-3.0
 
 - **Advantages:** Strong copyleft for distributed derivatives. Familiar. OSI
   approved.
-- **Disadvantages:** Does not reach network use — a hosted copy need not
+- **Disadvantages:** Does not reach network use: a hosted copy need not
   publish. Leaves the exact gap AGPL was designed to close.
 
-### Option E — A restrictive / source-available licence
+### Option E: A restrictive / source-available licence
 
 - **Description:** e.g. "Commons Clause", BUSL, or a custom licence that
   permits use but prohibits competing commercial services.
@@ -125,12 +125,12 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
   participation requirement.** A source-available licence is generally *not*
   open source by OSI definition. The Terms state the content must be
   *"freely available without restriction or is licensed as open source as
-  defined by the OSI"* — a restrictive clause would fail that test.
+  defined by the OSI"*. A restrictive clause would fail that test.
 - **Risk:** **Rejection of the solution.** Not acceptable.
 
 ## Decision
 
-**Not yet decided by the team — but now blocking, with a hard deadline.**
+**Not yet decided by the team, but now blocking, with a hard deadline.**
 
 **Recommendation to the team: Apache-2.0.**
 
@@ -139,7 +139,7 @@ Rationale for the recommendation:
 - It is **OSI approved**, so it satisfies the NASA requirement unambiguously.
 - It is **NASA's own default**, so if the team cannot agree in time, our
   licence and NASA's fallback agree and nothing is lost.
-- It includes an **explicit patent grant**, which MIT lacks — a genuine
+- It includes an **explicit patent grant**, which MIT lacks: a genuine
   benefit for a team that may later incorporate third-party code.
 - It is compatible with every dependency in our tree.
 
@@ -156,7 +156,7 @@ Until the team decides:
 - The `license` field in `package.json` is `"SEE-LICENSE-FILE"`.
 
 **Interim working assumption for the hackathon:** the code is treated as
-**all rights reserved** by default — no one may redistribute it until the team
+**all rights reserved** by default; no one may redistribute it until the team
 decides. This is the legally conservative default and does not restrict the
 team's own use.
 
@@ -186,18 +186,18 @@ The deadline makes this the highest-priority open decision in the repository.
 
 ### Follow-up work
 
-- [ ] **Team discussion; unanimous decision — before 15 November.** Highest
+- [ ] **Team discussion; unanimous decision before 15 November.** Highest
       priority open item.
 - [ ] Replace the `LICENSE` file with the full official text.
 - [ ] Update the `License` section of `README.md`.
 - [ ] Set the SPDX identifier in `package.json` (`"license": "Apache-2.0"`).
 - [ ] Create `THIRD_PARTY_NOTICES.md` listing every direct dependency and
-      data source with its licence — **required by the NASA Terms**
+      data source with its licence: **required by the NASA Terms**
       (*"Any licenses applicable to your Solution Materials must be identified
       in the documentation that you submit with your Solution."*).
 - [ ] Re-tag the release commit.
 
 ### Revisit when
 
-Never, once accepted — a licence change after publication is legally
+Never, once accepted, a licence change after publication is legally
 significant and requires the agreement of all contributors.

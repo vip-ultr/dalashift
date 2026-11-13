@@ -1,4 +1,4 @@
-# Documentation — `docs/research/`
+# Documentation: `docs/research/`
 
 Background research that informs decisions rather than specifying them.
 
@@ -15,8 +15,8 @@ Background research that informs decisions rather than specifying them.
 
 | Directory     | Contains                                                          |
 | ------------- | ----------------------------------------------------------------- |
-| `docs/api/`   | **Verified facts about a specific service** — endpoints, resolution, auth, rate limits, licences. Usable to write code against. |
-| `docs/research/` | **Analysis and judgement** — which source to use for which question, what the traps are, what the competitive landscape looks like. Not directly consumable by code. |
+| `docs/api/`   | **Verified facts about a specific service**: endpoints, resolution, auth, rate limits, licences. Usable to write code against. |
+| `docs/research/` | **Analysis and judgement**: which source to use for which question, what the traps are, what the competitive landscape looks like. Not directly consumable by code. |
 
 ---
 
@@ -30,14 +30,14 @@ Background research that informs decisions rather than specifying them.
 4. **Do not quote a statistic from memory.** If you cannot find the source
    today, mark it `[UNVERIFIED]` and look it up later, or leave it out.
 5. **A farmer's direct testimony outranks a secondary source.** This is not
-   just a principle — it is the design rule that makes the product correct.
+   just a principle; it is the design rule that makes the product correct.
 
 ---
 
 ## The honesty convention
 
 These research notes contain a deliberately small number of hard numbers. That
-is not an oversight — it is the same discipline the product applies:
+is not an oversight; it is the same discipline the product applies:
 
 > Do not present an estimated or coarse-resolution figure as a precise
 > measurement. Do not present a secondary source as a primary one. Do not

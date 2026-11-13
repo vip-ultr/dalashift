@@ -8,7 +8,7 @@
  *   node scripts/validation/generate-third-party-notices.mjs
  *
  * It prints the table; it does not rewrite the file. The data-source
- * attribution table must be maintained by hand — no script can know which
+ * attribution table must be maintained by hand. No script can know which
  * external APIs the project uses.
  */
 import fs from 'node:fs';
@@ -91,7 +91,7 @@ const unknown = rows.filter(([, value]) => value.license === 'UNKNOWN');
 console.log(`\nTotal: ${rows.length} direct dependencies.`);
 if (unknown.length > 0) {
   console.log(
-    `WARNING — ${unknown.length} licence(s) unresolved: ${unknown.map(([n]) => n).join(', ')}`,
+    `WARNING: ${unknown.length} licence(s) unresolved: ${unknown.map(([n]) => n).join(', ')}`,
   );
   console.log('Resolve these manually before updating THIRD_PARTY_NOTICES.md.');
 }

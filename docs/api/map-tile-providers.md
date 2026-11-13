@@ -1,4 +1,4 @@
-# Map Tile Providers — Research and Options
+# Map Tile Providers: Research and Options
 
 **Verification date: 2026-11-13.** This document informs
 [`ADR-0007`](../decisions/ADR-0007-map-tile-provider.md).
@@ -31,7 +31,7 @@ a rate limit at exactly the wrong moment.
 ## 2. Candidate providers
 
 **[Proposed]** The map style is a runtime configuration
-(`NEXT_PUBLIC_MAP_STYLE_URL`), not hardcoded — so the provider can be changed
+(`NEXT_PUBLIC_MAP_STYLE_URL`), not hardcoded, so the provider can be changed
 without a code change or a redeploy.
 
 ### 2.1 OpenFreeMap
@@ -42,7 +42,7 @@ without a code change or a redeploy.
 | Licence        | Open source (the tiles are built from OpenMapTiles data, itself ODbL)                        |
 | Hosting        | Public instance at `https://tiles.openfreemap.org` (or self-host)                             |
 | Styles         | `https://tiles.openfreemap.org/styles/bright`, `/liberty`, `/positron`                       |
-| Attribution    | Required — *"© OpenMapTiles © OpenStreetMap contributors"*                                    |
+| Attribution    | Required: *"© OpenMapTiles © OpenStreetMap contributors"*                                    |
 | Fit            | **Excellent default.** No key, no signup, no quota, no rate limit to trip during a pitch.     |
 
 **[Proposed]** This is the recommended MVP default. The absence of a
@@ -59,8 +59,8 @@ rate limit removes a whole class of demo-day failure.
 | Fit            | Strong if we want a basemap we fully control. Static hosting on a CDN has no per-request quota. |
 
 **[Proposed]** The fallback if the public OpenFreeMap instance is slow from
-Kano — self-hosted PMTiles served from a CDN we control, or from a static
-host.
+Kano (self-hosted PMTiles served from a CDN we control, or from a static
+host).
 
 ### 2.3 Stadia Maps
 
@@ -68,7 +68,7 @@ host.
 | -------------- | -------------------------------------------------------------------------------------------- |
 | Type           | Raster and vector tiles; hosted basemaps (Alidade Smooth, Alidade Satellite, Stamen Terrain)  |
 | Licence        | Free tier for non-commercial and development use; commercial use requires a paid plan         |
-| Authentication | **API key required** — `NEXT_PUBLIC_MAP_STYLE_URL`                                            |
+| Authentication | **API key required**: `NEXT_PUBLIC_MAP_STYLE_URL`                                            |
 | Attribution    | Required                                                                                      |
 | Rate limits    | Free tier has a monthly tile quota                                                          |
 | Fit            | Good quality; the API key is the friction                                                    |
@@ -92,7 +92,7 @@ host.
 | Licence        | Free for non-commercial use with attribution; commercial use requires a paid plan            |
 | Authentication | Optional for light use; a key is needed for commercial terms                                 |
 | Attribution    | Required                                                                                      |
-| Fit            | Reasonable. Style is pleasant and neutral — fits our "professional, not decorative" direction |
+| Fit            | Reasonable. Style is pleasant and neutral: fits our "professional, not decorative" direction |
 
 ### 2.6 Esri World Imagery
 
@@ -112,27 +112,27 @@ immediately legible; against a street map it is not.
 
 | Aspect         | Detail                                                                                      |
 | -------------- | -------------------------------------------------------------------------------------------- |
-| Type           | Cloudless Sentinel-2 mosaic tiles — **10 m, far better than Esri's imagery for crop fields**    |
+| Type           | Cloudless Sentinel-2 mosaic tiles: **10 m, far better than Esri's imagery for crop fields**    |
 | Licence        | Free for non-commercial use; the underlying data is Copernicus Sentinel (see the Sentinel terms) |
 | Attribution    | Required: Copernicus Sentinel data, EOX, and the applicable processing statement             |
-| Fit            | **Technically the best fit for a farm product** — 10 m true-colour, cloudless, refreshed regularly |
+| Fit            | **Technically the best fit for a farm product**: 10 m true-colour, cloudless, refreshed regularly |
 
 **[Proposed]** Worth evaluating against Esri for the satellite layer, because
 10 m resolves smallholdings far better than 15 m Esri imagery. **[Open]** The
 exact tiling endpoint and current usage terms should be confirmed before
 relying on it.
 
-### 2.8 NASA GIBS — Global Imagery Browse Services
+### 2.8 NASA GIBS: Global Imagery Browse Services
 
 | Aspect         | Detail                                                                                      |
 | -------------- | -------------------------------------------------------------------------------------------- |
-| Type           | **NASA's own** imagery tile service — MODIS, VIIRS, and derived products, updated daily       |
+| Type           | **NASA's own** imagery tile service: MODIS, VIIRS, and derived products, updated daily       |
 | Licence        | NASA open data                                                                              |
 | Authentication | None for the public WMTS endpoints                                                          |
-| Attribution    | Required — cite the NASA product and the GIBS service                                        |
+| Attribution    | Required: cite the NASA product and the GIBS service                                        |
 | Fit            | **Strategically valuable**: it is NASA data in the map. Using it strengthens the NASA-data requirement and the challenge's Relevance criterion. |
 
-**[Proposed]** Use NASA GIBS as the **NASA layer** over the basemap — a
+**[Proposed]** Use NASA GIBS as the **NASA layer** over the basemap: a
 MODIS true-colour or vegetation-index tile. It directly supports the
 "NASA data is integral to the project" claim that the challenge's Relevance
 criterion rewards.
@@ -148,7 +148,7 @@ The brief requires a farmer to "search for their farm location". Two options:
 
 | Option                | Notes                                                                                    |
 | --------------------- | ---------------------------------------------------------------------------------------- |
-| **Nominatim** (OpenStreetMap) | Free, no key, but a strict usage policy — max 1 request/second, must identify the application, no heavy use. |
+| **Nominatim** (OpenStreetMap) | Free, no key, but a strict usage policy: max 1 request/second, must identify the application, no heavy use. |
 | **Provider geocoder** (MapTiler, Stadia, Photon, Geoapify) | Usually needs a key; higher quality and better coverage in Nigeria. |
 
 **[Proposed]** Make geocoding **optional and non-blocking**. The primary flow
@@ -164,7 +164,7 @@ A place-name search is an enhancement.
 | ------------------- | ---------- | --------- | --------------- | --------------- | ---------------------------------- |
 | **OpenFreeMap**     | No         | Free      | **None**        | Good            | **Recommended MVP default**        |
 | Protomaps (self-host) | No       | Hosting cost | Low           | Under our control | Strong fallback; PMTiles from a CDN |
-| NASA GIBS           | No         | Free      | Low            | Good            | NASA layer — high strategic value  |
+| NASA GIBS           | No         | Free      | Low            | Good            | NASA layer: high strategic value   |
 | Esri World Imagery  | No*        | Free (non-commercial) | Medium | Good    | Satellite layer                    |
 | Sentinel-2 Cloudless| No         | Free (non-commercial) | Medium | Good | Best 10 m imagery                 |
 | Stadia Maps         | Yes        | Free tier | Medium         | Good            | Good quality; key friction         |
@@ -181,9 +181,9 @@ A place-name search is an enhancement.
 
 **[Proposed] A two-layer map:**
 
-1. **Base layer** — OpenFreeMap (or self-hosted Protomaps) in a neutral style.
+1. **Base layer:** OpenFreeMap (or self-hosted Protomaps) in a neutral style.
    No key, no quota, no demo-day rate limit.
-2. **Satellite / NASA layer** — Esri World Imagery, plus NASA GIBS as the
+2. **Satellite / NASA layer:** Esri World Imagery, plus NASA GIBS as the
    explicit NASA layer. Both are toggleable and both carry correct
    attribution.
 
@@ -191,8 +191,8 @@ A place-name search is an enhancement.
 
 - `NEXT_PUBLIC_MAP_STYLE_URL` holds the MapLibre style JSON URL. Switching
   providers is a configuration change.
-- Attribution is **rendered in the map corner from a single source of truth** —
-  a `map-attribution` table or a constant in the map feature — so a provider
+- Attribution is **rendered in the map corner from a single source of truth**
+  (a `map-attribution` table or a constant in the map feature), so a provider
   change cannot leave a stale or missing credit.
 - **The satellite layer is optional at runtime.** If the satellite tile host
   is unreachable, the base layer still works and the map still functions.
@@ -215,7 +215,7 @@ blank grey map during judging is an avoidable loss.
 | ------------------- | ---------------------------------------------------------------------------------- |
 | OpenFreeMap         | *"© OpenMapTiles © OpenStreetMap contributors"*                                      |
 | Protomaps           | OpenMapTiles / Natural Earth attribution                                            |
-| Esri World Imagery  | Esri attribution — *"Powered by Esri"* and the applicable source credit             |
+| Esri World Imagery  | Esri attribution: *"Powered by Esri"* and the applicable source credit             |
 | Sentinel-2 Cloudless| *"Contains modified Copernicus Sentinel data [year], processed by [processing]"*   |
 | NASA GIBS           | The NASA product credit and the GIBS service                                         |
 | CARTO               | *"© OpenStreetMap contributors © CARTO"*                                            |
@@ -237,7 +237,7 @@ cannot drift from the provider actually in use.
 | 2 | Confirm Sentinel-2 Cloudless (EOX) endpoint and current usage terms    | Before adopting it over Esri                  |
 | 3 | Verify tile latency from the Kano venue for each shortlisted provider  | Before the pitch                              |
 | 4 | Confirm the current free-tier quotas for Stadia, MapTiler and CARTO   | Before adopting a keyed provider              |
-| 5 | Decide whether to add a geocoder, and under which policy              | Phase 3 — not on the MVP critical path        |
+| 5 | Decide whether to add a geocoder, and under which policy              | Phase 3: not on the MVP critical path         |
 
 ---
 

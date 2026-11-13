@@ -1,8 +1,8 @@
-# ADR-0006 — Data Retention, Consent and Farmer Data
+# ADR-0006: Data Retention, Consent and Farmer Data
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
-| Status   | **Proposed — awaiting team decision**                            |
+| Status   | **Proposed (awaiting team decision)**                            |
 | Date     | 2026-11-13                                                       |
 | Deciders | Team                                                             |
 | Related  | `SECURITY.md`, `PRD.md` FR-1, `docs/database/rls-policies.md`     |
@@ -18,8 +18,8 @@ being collected by a third party in the way a typical SaaS product does:
    sensitive. It reveals what a household is growing, whether they are
    vulnerable, and where land disputes may exist.
 2. **Field-validation data.** Anything collected from farmers during the
-   hackathon in Tofa — interview notes, photographs, yield observations,
-   planting dates — is the highest-sensitivity data the project will touch.
+   hackathon in Tofa (interview notes, photographs, yield observations,
+   planting dates) is the highest-sensitivity data the project will touch.
 
 **[Confirmed]** The platform must collect only information with a clear
 product purpose.
@@ -29,7 +29,7 @@ product purpose.
 | # | Question                                                     |
 | - | ------------------------------------------------------------- |
 | 1 | What is the retention period for a farmer's farm and analysis data? |
-| 2 | What happens on account deletion — immediate hard delete, or a soft delete with a grace period? |
+| 2 | What happens on account deletion: immediate hard delete, or a soft delete with a grace period? |
 | 3 | Is a farmer's farm polygon ever exposed outside their account? |
 | 4 | What consent is required for field-validation data, and how is it recorded? |
 | 5 | Does the platform require an explicit opt-in for any data sharing? |
@@ -39,7 +39,7 @@ product purpose.
 
 ## Options considered
 
-### Option A — Store everything indefinitely
+### Option A: Store everything indefinitely
 
 - **Advantages:** Simplest. Full history for research.
 - **Disadvantages:** No basis for indefinite retention of a farmer's precise
@@ -48,7 +48,7 @@ product purpose.
 - **Risks:** A data breach exposes every farmer's location. Deleting an
   account becomes impossible.
 
-### Option B — Delete everything on account deletion
+### Option B: Delete everything on account deletion
 
 - **Advantages:** Maximum privacy. Simple to explain. Aligns with
   GDPR-style erasure.
@@ -56,7 +56,7 @@ product purpose.
   cannot take their records with them.
 - **Risks:** A cascading delete could be slow and could fail partially.
 
-### Option C — Tiered retention with a grace period and export
+### Option C: Tiered retention with a grace period and export
 
 - **Description:** A defined retention period for analysis data, a soft-delete
   grace window, and a self-service export.
@@ -66,12 +66,12 @@ product purpose.
   export endpoint, a soft-delete column.
 - **Risks:** The grace period means some data outlives the account briefly.
 
-### Option D — Aggregated, anonymised research data
+### Option D: Aggregated, anonymised research data
 
 - **Description:** Strip the farmer identifier and the precise geometry from
   data used for research, retaining only coarse aggregates.
 - **Advantages:** Research value without keeping the sensitive link.
-- **Disadvantages:** The anonymisation itself must be done carefully — farm
+- **Disadvantages:** The anonymisation itself must be done carefully: farm
   polygons in a sparsely populated area can be re-identifiable from their
   shape and location.
 - **Risks:** False confidence in the anonymity.
@@ -80,8 +80,8 @@ product purpose.
 
 ## Decision
 
-**Not yet decided — but the following are proposed and the reasoning is
-recorded so the team can approve or amend it.**
+**Not yet decided (but the following are proposed and the reasoning is
+recorded so the team can approve or amend it).**
 
 ### Proposed retention
 
@@ -112,10 +112,10 @@ hard delete that cascades to every dependent row.
 
 ### Proposed export
 
-**[Proposed]** A farmer can export their complete data as JSON and CSV —
-their farms, boundaries (as GeoJSON), crops, analyses, recommendations and
-reports — from a settings page. This is the fair counterpart to a deletion
-right, and it is cheap to build once the queries exist.
+**[Proposed]** A farmer can export their complete data as JSON and CSV (their
+farms, boundaries (as GeoJSON), crops, analyses, recommendations and reports)
+from a settings page. This is the fair counterpart to a deletion right, and it
+is cheap to build once the queries exist.
 
 ### Proposed consent
 
@@ -178,7 +178,7 @@ synthetic farms; real farmer data stays on paper.**
 ### Positive
 
 - A defensible, explainable privacy position.
-- The repository and the demo database contain no real farmer data — a
+- The repository and the demo database contain no real farmer data: a
   requirement that also satisfies the NASA rule about not including
   copyrighted or restricted material.
 - Farmers can take their data with them.

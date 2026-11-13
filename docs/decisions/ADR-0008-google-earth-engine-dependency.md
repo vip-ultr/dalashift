@@ -1,8 +1,8 @@
-# ADR-0008 — Google Earth Engine as an Optional Dependency
+# ADR-0008: Google Earth Engine as an Optional Dependency
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
-| Status   | **Proposed — awaiting team decision**                            |
+| Status   | **Proposed (awaiting team decision)**                            |
 | Date     | 2026-11-13                                                       |
 | Deciders | Team                                                             |
 | Related  | `docs/api/google-earth-engine.md`, `ADR-0005`, `docs/api/data-sources.md` |
@@ -11,7 +11,7 @@
 
 ## Context
 
-Google Earth Engine (GEE) is the only route to **10–30 m farm-scale pixels**
+Google Earth Engine (GEE) is the only route to **10 to 30 m farm-scale pixels**
 available for free:
 
 | Product                    | Resolution | Farm-scale for a 1.4 ha field?      |
@@ -44,13 +44,13 @@ intent as commercial, which would force a paid plan **mid-hackathon**.
 10 MB query payload, 100 MiB aggregation cache, 3,000 READY tasks.
 
 **[Verified]** M2M access to Landsat via the USGS API requires a manual
-approval that takes *"a couple of days"* — **not viable in 48 hours**.
+approval that takes *"a couple of days"*: **not viable in 48 hours**.
 
 ---
 
 ## Options considered
 
-### Option A — No GEE. Use only no-auth, low-friction sources
+### Option A: No GEE. Use only no-auth, low-friction sources
 
 - **Description:** NASA POWER (no auth), SoilGrids (no auth, but degraded),
   Open-Meteo (no auth), plus Earthdata CMR/AppEEARS for SMAP and MODIS.
@@ -58,11 +58,11 @@ approval that takes *"a couple of days"* — **not viable in 48 hours**.
   Nothing can go wrong during the build.
 - **Disadvantages:** **No farm-scale vegetation product.** The best
   farm-resolution source becomes Landsat via AppEEARS (async, Earthdata
-  login, cloud-limited in the wet season) — if it is available at all.
-- **Risks:** The product's strongest claim — "we can measure your field" — is
+  login, cloud-limited in the wet season), if it is available at all.
+- **Risks:** The product's strongest claim ("we can measure your field") is
   weakened.
 
-### Option B — GEE as the primary raster path
+### Option B: GEE as the primary raster path
 
 - **Description:** All raster work through GEE: Sentinel-2, Landsat, MODIS,
   SMAP, IMERG.
@@ -74,13 +74,13 @@ approval that takes *"a couple of days"* — **not viable in 48 hours**.
 - **Risks:** **If verification fails or is slow, the product has no
   farm-scale data at all.** This is a real possibility in a 48-hour window.
 
-### Option C — GEE as an optional enhancement with a documented fallback
+### Option C: GEE as an optional enhancement with a documented fallback
 
 - **Description:** The MVP path works without GEE. GEE is registered at hour
   zero, and if it lands, it is switched on as an enhancement. The
   architecture treats the raster provider as a swappable dependency.
 - **Advantages:** The demo cannot fail because of a GEE problem. The
-  upside, if verification succeeds, is substantial — Sentinel-2 at 10 m is
+  upside, if verification succeeds, is substantial: Sentinel-2 at 10 m is
   the difference between "an estimate for your area" and "measured over your
   field".
 - **Disadvantages:** Two code paths for the raster work. The fallback must
@@ -88,7 +88,7 @@ approval that takes *"a couple of days"* — **not viable in 48 hours**.
 - **Risks:** The fallback may be neglected. Mitigation: build the fallback
   first.
 
-### Option D — Self-hosted raster pipeline
+### Option D: Self-hosted raster pipeline
 
 - **Description:** Download tiles, process with GDAL / rasterio, store
   zonal statistics.
@@ -101,7 +101,7 @@ approval that takes *"a couple of days"* — **not viable in 48 hours**.
 
 ## Decision
 
-**Option C — GEE as an optional enhancement, with a documented fallback. The
+**Option C: GEE as an optional enhancement, with a documented fallback. The
 MVP must not depend on it.**
 
 ### The rules
@@ -123,7 +123,7 @@ MVP must not depend on it.**
 
 ### The fallback table
 
-**[Proposed]** If GEE is unavailable, these substitute — and each substitute
+**[Proposed]** If GEE is unavailable, these substitute, and each substitute
 has a **coarser resolution that must be reflected in the resolution label**:
 
 | Wanted                        | Fallback                                                    | Resolution |
@@ -147,8 +147,8 @@ The decision criteria for a 48-hour build are:
 1. **The demo must not depend on an approval that might not arrive.** Option B
    violates this directly.
 2. **The upside must be worth the setup cost.** Sentinel-2 at 10 m with a
-   5-day revisit is genuinely transformative for the product's honesty story
-   — it is one of only two or three sources that resolve a farm.
+   5-day revisit is genuinely transformative for the product's honesty story;
+   it is one of only two or three sources that resolve a farm.
 3. **The integration must not be a dead end.** Treating the raster provider
    as an interface keeps the door open.
 
@@ -159,8 +159,8 @@ adapter is additive.
 The real argument against GEE is not technical. It is **procedural**: the
 verification questionnaire asks about the project's nature, and a team
 building a product is a genuinely ambiguous case. If the questionnaire answers
-"commercial", the Community tier is unavailable and a paid plan is needed —
-a purchase decision in the middle of a hackathon. Choosing Contributor or
+"commercial", the Community tier is unavailable and a paid plan is needed
+(a purchase decision in the middle of a hackathon). Choosing Contributor or
 commercial-Limited up front removes that cliff edge.
 
 ---

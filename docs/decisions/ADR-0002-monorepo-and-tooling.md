@@ -1,4 +1,4 @@
-# ADR-0002 — Monorepo Structure and Tooling
+# ADR-0002: Monorepo Structure and Tooling
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
@@ -16,7 +16,7 @@ agents working alongside them. The repository must:
 
 - Hold a Next.js application, shared types, and operational scripts.
 - Let three people work in parallel without colliding on files.
-- Support a monorepo layout **if** that is the right structure — the brief
+- Support a monorepo layout **if** that is the right structure: the brief
   proposed it, but the structure must serve the timeline, not precede it.
 - Be type-safe end to end, with a single source of truth for shared types.
 - Install reproducibly on macOS, Linux and Windows.
@@ -33,7 +33,7 @@ agents working alongside them. The repository must:
 
 ## Options considered
 
-### Option A — pnpm workspaces monorepo, as proposed in the brief
+### Option A: pnpm workspaces monorepo, as proposed in the brief
 
 - **Advantages:** One repo, one lockfile, one `pnpm install`. Workspace
   packages give real TypeScript path resolution with no build step.
@@ -43,30 +43,30 @@ agents working alongside them. The repository must:
 - **Disadvantages:** Requires disciplined boundary enforcement (a feature
   slice must not import another feature's internals). Root scripts need to
   fan out correctly.
-- **Risks:** Boundary erosion under deadline pressure — the main risk,
+- **Risks:** Boundary erosion under deadline pressure: the main risk,
   mitigated by `AGENTS.md` and by the file-ownership split in
   `CONTRIBUTING.md`.
 
-### Option B — Single Next.js application, no workspaces
+### Option B: Single Next.js application, no workspaces
 
 - **Advantages:** Simplest possible. One `package.json`, no workspace
   configuration.
 - **Disadvantages:** No clean home for shared types used by both the app and
   the `scripts/` directory; scripts would have to import across a path
   boundary. The proposed structure explicitly calls for `packages/shared`.
-- **Risks:** Types drift between the app and the analysis scripts — exactly
+- **Risks:** Types drift between the app and the analysis scripts: exactly
   where a provenance or unit mismatch would be expensive.
 
-### Option C — Turborepo / Nx on top of pnpm workspaces
+### Option C: Turborepo / Nx on top of pnpm workspaces
 
 - **Advantages:** Task caching, affected-only builds, a dependency graph.
 - **Disadvantages:** Adds a build orchestrator, a config file, and a
-  conceptual layer — for a project with one application and two small
+  conceptual layer (for a project with one application and two small
   packages.
 - **Risks:** Configuration time competing against feature time. Caching adds
   little when the workspace is this small.
 
-### Option D — Nx with integrated tooling
+### Option D: Nx with integrated tooling
 
 - **Advantages:** Strong conventions, generators, enforced boundaries.
 - **Disadvantages:** Heavy for the scale. Significant learning curve.
@@ -74,7 +74,7 @@ agents working alongside them. The repository must:
 
 ## Decision
 
-**Option A — a pnpm workspaces monorepo.**
+**Option A: a pnpm workspaces monorepo.**
 
 ```
 apps/web/          the Next.js application
@@ -94,7 +94,7 @@ docs/              documentation
 | TypeScript      | Strict + `noUncheckedIndexedAccess`                    | Matches the codebase's data-handling reality      |
 | ESLint          | v9 flat config, shared via `packages/config/eslint`    | One config, no per-package drift                  |
 | Prettier        | v3, shared via `packages/config/prettier`              | Formatting decisions made once                    |
-| Formatting      | Prettier only — no ESLint formatting rules              | Avoids conflicting formatters                     |
+| Formatting      | Prettier only: no ESLint formatting rules               | Avoids conflicting formatters                     |
 | Unit testing    | Vitest                                                  | Fast, native ESM, good TS support                 |
 | E2E             | Playwright                                              | Cross-browser, mobile device emulation            |
 | CI              | GitHub Actions                                          | Format, lint, typecheck, test, secret scan        |
@@ -119,7 +119,7 @@ add configuration and a cache layer to save seconds. The time is better spent
 on the product.
 
 The file-ownership split in `CONTRIBUTING.md` is a deliberate part of this
-decision — a monorepo that forces three people into the same files during a
+decision: a monorepo that forces three people into the same files during a
 48-hour build is worse than three repositories.
 
 ## Consequences
@@ -135,7 +135,7 @@ decision — a monorepo that forces three people into the same files during a
 ### Negative / accepted costs
 
 - Boundary discipline must be maintained by convention and review.
-- `pnpm-workspace.yaml` must list nested package globs (`packages/config/*`) —
+- `pnpm-workspace.yaml` must list nested package globs (`packages/config/*`),
   a mistake already made once during setup.
 - Workspace dependency resolution adds a layer when debugging installs.
 

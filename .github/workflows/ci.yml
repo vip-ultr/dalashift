@@ -53,6 +53,9 @@ jobs:
       - name: Check documentation links
         run: pnpm validate:links
 
+      - name: Check writing conventions
+        run: pnpm validate:style
+
   secrets:
     name: Secret scan
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-# DalaShift — Shared Package
+# DalaShift: Shared Package
 
 Framework-agnostic types, validation schemas and constants shared between the
 web application and any future server, worker or script.

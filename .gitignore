@@ -10,7 +10,7 @@ node_modules/
 !.yarn/plugins
 
 # ─────────────────────────────────────────────────────────────
-# Environment / secrets — NEVER commit real values
+# Environment / secrets: NEVER commit real values
 # ─────────────────────────────────────────────────────────────
 .env
 .env.*
@@ -37,7 +37,7 @@ dist/
 next-env.d.ts
 
 # ─────────────────────────────────────────────────────────────
-# Geospatial data — large rasters and derived tiles must not enter git
+# Geospatial data: large rasters and derived tiles must not enter git
 # ─────────────────────────────────────────────────────────────
 data/processed/*
 !data/processed/.gitkeep

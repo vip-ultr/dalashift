@@ -1,4 +1,4 @@
-# Documentation — `docs/product/`
+# Documentation: `docs/product/`
 
 Product behaviour: flows, onboarding, and the recommendation method.
 
@@ -26,14 +26,14 @@ useful to a farmer than one that always produces an answer.
 
 ## Reading order
 
-1. [`../../PRD.md`](../../PRD.md) — what we are building and why.
-2. [`user-flows.md`](./user-flows.md) — how the farmer moves through it.
-3. [`recommendation-methodology.md`](./recommendation-methodology.md) — how the
+1. [`../../PRD.md`](../../PRD.md): what we are building and why.
+2. [`user-flows.md`](./user-flows.md): how the farmer moves through it.
+3. [`recommendation-methodology.md`](./recommendation-methodology.md): how the
    answer is produced.
 
 ---
 
 ## Status
 
-Phase 1 — specified, not implemented. The implementation order is in
+Phase 1: specified, not implemented. The implementation order is in
 [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) § 19.

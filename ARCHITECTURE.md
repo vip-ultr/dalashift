@@ -1,8 +1,8 @@
-# Technical Architecture — DalaShift
+# Technical Architecture: DalaShift
 
 | Field           | Value                                                             |
 | --------------- | ----------------------------------------------------------------- |
-| Status          | Phase 1 — approved baseline, implementation pending              |
+| Status          | Phase 1: approved baseline, implementation pending               |
 | Version         | 1.0.0                                                            |
 | Last updated    | 2026-11-13                                                       |
 | Audience        | The three-person team and any AI coding agent working on the repo |
@@ -17,14 +17,14 @@ that converts NASA Earth observation data and agricultural knowledge into
 farm-specific guidance for smallholder farmers.
 
 It covers the system through to deployment. It deliberately stops short of
-product implementation — that is Phase 2.
+product implementation: that is Phase 2.
 
 ### 1.1 The architectural problem in one paragraph
 
 Every input dataset is far coarser than the thing we are describing. A
-smallholder farm is 0.5–20 hectares. NASA POWER resolves the atmosphere at
+smallholder farm is 0.5 to 20 hectares. NASA POWER resolves the atmosphere at
 roughly 0.5° × 0.625° (≈ 55 km × 70 km). SMAP soil moisture is 9 km. CHIRPS
-rainfall is 5 km. SoilGrids is 250 m. MODIS NDVI is 250 m–1 km. Landsat is
+rainfall is 5 km. SoilGrids is 250 m. MODIS NDVI is 250 m to 1 km. Landsat is
 30 m. **A farmer's field is smaller than a single pixel in every source except
 Landsat and MODIS.** The architecture exists to manage that mismatch honestly:
 aggregate what can be aggregated, interpolate what can be interpolated, label
@@ -39,7 +39,7 @@ precision the data does not have.
    database, not in JavaScript.
 3. **Provenance is mandatory.** Every stored environmental value carries its
    source, resolution, observation date and observed-vs-modelled flag.
-4. **Deterministic recommendations.** A versioned, explainable rules engine —
+4. **Deterministic recommendations.** A versioned, explainable rules engine,
    not a language model.
 5. **Degrade, never fabricate.** Missing or coarse input lowers confidence and
    is stated. It never becomes a silent default.
@@ -61,7 +61,7 @@ flowchart LR
     Farmer["👨‍🌾 Farmer<br/>(mobile web)"]
     Ext["🌾 Extension worker<br/>(post-MVP)"]
 
-    subgraph Platform["DalaShift — Next.js on Vercel"]
+    subgraph Platform["DalaShift: Next.js on Vercel"]
         Web["Next.js App Router<br/>(UI + API routes)"]
         Engine["Analysis &<br/>Recommendation Engine"]
     end
@@ -137,17 +137,17 @@ Next.js App Router (v16), React 19, TypeScript strict mode.
 
 ```mermaid
 flowchart LR
-    subgraph Public["(marketing) — public"]
+    subgraph Public["(marketing): public"]
         L["/"]
         About["/about"]
         Method["/methodology"]
     end
-    subgraph Auth["(auth) — unauthenticated"]
+    subgraph Auth["(auth): unauthenticated"]
         Login["/login"]
         Reg["/register"]
         CB["/auth/callback"]
     end
-    subgraph Dash["(dashboard) — authenticated, RLS-scoped"]
+    subgraph Dash["(dashboard): authenticated, RLS-scoped"]
         Farms["/farms"]
         Farm["/farms/[farmId]"]
         FarmEnv["/farms/[farmId]/environment"]
@@ -155,7 +155,7 @@ flowchart LR
         Reports["/reports"]
         Profile["/profile"]
     end
-    API["/api/* — Route Handlers"]
+    API["/api/*: Route Handlers"]
 
     Public -.-> Auth -.-> Dash
     Dash --> API
@@ -199,7 +199,7 @@ but only for data the RLS policies allow, and only through
   polygon drawing. Both are MapLibre-native; `@mapbox/mapbox-gl-draw` requires
   compatibility shims and is avoided.
 - The basemap style is a runtime configuration (`NEXT_PUBLIC_MAP_STYLE_URL`),
-  not hardcoded — this lets the team switch providers (and fall back) without
+  not hardcoded: this lets the team switch providers (and fall back) without
   a code change. See `docs/api/map-tile-providers.md` for provider options,
   attribution obligations and usage policies.
 - Farm polygons render from PostGIS as GeoJSON via a server component or
@@ -216,7 +216,7 @@ but only for data the RLS policies allow, and only through
 
 Tailwind CSS v4 + shadcn/ui, with the token set in
 `apps/web/src/app/globals.css`. The design phase must define the visual
-direction in `docs/design/`. The current token set is deliberately neutral —
+direction in `docs/design/`. The current token set is deliberately neutral:
 no brand colour is asserted before the team confirms the direction.
 
 ---
@@ -235,7 +235,7 @@ everything a small API would.
 made under pressure):
 
 1. A workload requires long-running jobs exceeding Vercel's function timeout
-   (> 60s on Pro, 300s on Enterprise) — e.g. raster zonal statistics over
+   (> 60s on Pro, 300s on Enterprise), e.g. raster zonal statistics over
    many farms.
 2. The integration layer needs to run on a schedule independent of user
    traffic (bulk refresh of many farms).
@@ -244,7 +244,7 @@ made under pressure):
 4. Vercel function invocations or bandwidth costs exceed the budget.
 
 If any of these is reached, the natural extraction is the **integration and
-processing layer** (a worker), keeping the Next.js app as the web/API tier —
+processing layer** (a worker), keeping the Next.js app as the web/API tier,
 not a rewrite.
 
 ### 4.2 Server-side module boundaries
@@ -286,7 +286,7 @@ Each integration module has the same contract:
 
 | Contract element     | Responsibility                                                  |
 | -------------------- | --------------------------------------------------------------- |
-| `fetch*` functions   | Return a typed, validated, normalised domain value — never a raw upstream payload. |
+| `fetch*` functions   | Return a typed, validated, normalised domain value. Never a raw upstream payload. |
 | Provenance           | Every returned value carries `sourceId`, `spatialResolutionM`, `temporalResolution`, `observedAt`, `retrievedAt`, `isModelled`. |
 | Timeouts + retries   | Explicit timeout; bounded retries with backoff; no infinite retry. |
 | Rate limiting        | Respect the provider's documented limits; back off rather than hammer. |
@@ -486,11 +486,11 @@ erDiagram
 | ------------------- | ------------------------------------------------------------------------------ |
 | SRID                | 4326 (WGS 84) for all stored geometry.                                         |
 | Geometry types      | `POINT` for centroid and observation locations; `POLYGON` (with `MULTIPOLYGON` allowance) for farm and plot boundaries. |
-| Area computation    | `ST_Area(boundary::geography)` — spherical, correct on a real earth, in m². `ST_Area` on the projected geometry returns degrees² and is wrong. |
+| Area computation    | `ST_Area(boundary::geography)`: spherical, correct on a real earth, in m². `ST_Area` on the projected geometry returns degrees² and is wrong. |
 | Crop-area fractions | `ST_Area(ST_Intersection(farm_boundary, plot_boundary)::geography)` for plots overlapping the farm. |
 | Containment        | `ST_Contains` / `ST_Intersects` against a `GIST` index.                        |
 | Validation          | `ST_IsValid`, `ST_MakeValid`, and a check that the polygon's area is within a sane range. |
-| Coordinate order    | GeoJSON is `(lng, lat)`. PostGIS 4326 is `(lat, lng)`. **This is a classic bug source — normalise at the boundary and test it.** |
+| Coordinate order    | GeoJSON is `(lng, lat)`. PostGIS 4326 is `(lat, lng)`. **This is a classic bug source: normalise at the boundary and test it.** |
 | Snapshots           | A farm boundary change creates a new geometry and re-runs affected analyses; prior analyses retain their input snapshot. |
 
 ### 5.4 Indexing strategy
@@ -574,7 +574,7 @@ flowchart TB
 | Coordinate formatting, GeoJSON conversion     | Application (`lib/geospatial`) | Pure functions, easy to unit test                          |
 | Client-side area preview while drawing       | Turf (browser)                 | Immediate feedback; PostGIS value wins on save             |
 
-### 6.4 Raster handling — the explicit non-goal
+### 6.4 Raster handling: the explicit non-goal
 
 **[Confirmed]** Large raw satellite raster datasets must not be stored in
 PostgreSQL and must not be committed to Git.
@@ -586,7 +586,7 @@ PostgreSQL and must not be committed to Git.
 | **Query the provider's API / GEE**   | Where an on-the-fly service exists (MODIS/Landsat via GEE)      | **Recommended.** No storage, no pipeline.      |
 | **Pre-compute zonal stats on demand** | Where the farm's value can be computed once and cached           | **Recommended.** Cheap, cacheable, auditable. |
 | **Store tiles in object storage**     | Where a tile server is needed for map display                     | Optional; e.g. COG + a tile service           |
-| **Store rasters in Postgres**        | —                                                                | **Prohibited.** Blob bloat, slow backups.     |
+| **Store rasters in Postgres**        | Never                                                           | **Prohibited.** Blob bloat, slow backups.     |
 
 Pre-computed zonal statistics are cached in `environmental_observations` with
 their provenance, so a repeated view of a farm costs nothing.
@@ -606,16 +606,16 @@ document is the human-readable record. The full research is in
 
 ```mermaid
 flowchart LR
-    subgraph Tier1["Tier 1 — no auth friction"]
+    subgraph Tier1["Tier 1: no auth friction"]
         POWER["NASA POWER API<br/>no key"]
         SOIL["ISRIC SoilGrids<br/>no key"]
     end
-    subgraph Tier2["Tier 2 — Earthdata Login"]
+    subgraph Tier2["Tier 2: Earthdata Login"]
         CMR["Earthdata CMR<br/>token"]
         GES["GES DISC<br/>token"]
         LAADS["LAADS DAAC<br/>token"]
     end
-    subgraph Tier3["Tier 3 — optional / heavier"]
+    subgraph Tier3["Tier 3: optional / heavier"]
         GEE["Google Earth Engine<br/>project + service account"]
         CHIRPS["CHIRPS<br/>no key / mirror-dependent"]
     end
@@ -703,10 +703,10 @@ flowchart TB
 frequency limits depend on the plan; the Hobby plan allows daily crons only.
 Options, in order of preference:
 
-1. **Vercel Cron** — simplest; adequate if daily refresh is enough.
-2. **GitHub Actions scheduled workflow** — calls a protected refresh endpoint.
+1. **Vercel Cron**: simplest; adequate if daily refresh is enough.
+2. **GitHub Actions scheduled workflow**: calls a protected refresh endpoint.
    Flexible frequency, but adds a secret and an auth handshake.
-3. **Supabase `pg_cron` + Edge Function** — keeps it inside the platform.
+3. **Supabase `pg_cron` + Edge Function**: keeps it inside the platform.
    Requires the Supabase Pro plan for `pg_cron`.
 
 For a 48-hour MVP, on-demand plus a manual "Refresh" button is sufficient;
@@ -746,7 +746,7 @@ output into plain language for a farmer. It receives the engine's structured
 output and may only paraphrase it. It may not add a number, a verdict, or an
 agronomic claim. If the LLM is unavailable, the structured output renders
 directly. **This is a strict boundary and should be enforced structurally, not
-by convention** — see § 9.4.
+by convention**: see § 9.4.
 
 ### 9.2 The three information categories
 
@@ -772,7 +772,7 @@ flowchart TB
 
 ### 9.3 Scoring model
 
-**[Proposed]** — the exact thresholds require agricultural review and are not
+**[Proposed]**: the exact thresholds require agricultural review and are not
 fixed in Phase 1. The *structure* is fixed.
 
 **Hard constraints** (any failure ⇒ not suitable, regardless of score):
@@ -784,7 +784,7 @@ fixed in Phase 1. The *structure* is fixed.
 | Temperature outside range | POWER climatology                   |
 | Growing season length insufficient | POWER climatology + crop calendar |
 
-**Scored dimensions** (each 0–1, then weighted):
+**Scored dimensions** (each 0 to 1, then weighted):
 
 | Dimension            | Meaning                                                       |
 | -------------------- | ------------------------------------------------------------- |
@@ -805,7 +805,7 @@ confidence = data_completeness × resolution_factor × recency_factor × constra
 A recommendation therefore carries a verdict (`suitable` / `conditional` /
 `not_suitable` / `insufficient_information`), a score, per-dimension
 sub-scores, a rationale, an explicit limitations list, and a confidence
-value — with the ruleset version that produced it.
+value, with the ruleset version that produced it.
 
 ### 9.4 Enforcing the LLM boundary
 
@@ -815,7 +815,7 @@ value — with the ruleset version that produced it.
 2. The LLM prompt receives only that object's fields and a strict instruction
    to paraphrase. It has **no tools and no data access**.
 3. The output is validated against a schema that **cannot express a new
-   number or verdict** — only prose.
+   number or verdict**, only prose.
 4. If validation fails, the raw structured output is shown instead.
 5. A unit test asserts that the LLM path cannot change `verdict`, `score` or
    `confidence`.
@@ -826,7 +826,7 @@ value — with the ruleset version that produced it.
 the repository** (JSON/TypeScript, seeded into a `crops` table), not fetched
 from an API at runtime. Why:
 
-- It is auditable and diffable — a judge can read the requirements for millet.
+- It is auditable and diffable: a judge can read the requirements for millet.
 - It works offline, so the demo does not depend on a third-party catalog API.
 - It can be corrected in minutes during the hackathon.
 
@@ -848,7 +848,7 @@ has not selected a crop *and* the suitability assessment lacks the soil or
 climate data needed to discriminate between candidates.
 
 In every case the response names **what is missing** and **what would fix
-it** — e.g. "Soil pH is unavailable for this area, so I cannot confirm maize
+it**, e.g. "Soil pH is unavailable for this area, so I cannot confirm maize
 is suitable. Adding your own note about the soil would let me check."
 
 ---
@@ -858,7 +858,7 @@ is suitable. Adding your own note about the soil would let me check."
 ### 10.1 Authentication
 
 Supabase Auth. Email/password for the MVP. **[Open]** Whether to add OTP or
-social login — deferred; it is a Phase 3 decision and does not affect the
+social login: deferred; it is a Phase 3 decision and does not affect the
 architecture.
 
 Sessions are cookie-based via `@supabase/ssr`, which keeps the token out of
@@ -883,7 +883,7 @@ non-farmer workflow is designed in the MVP**.
 the boundary.**
 
 - Every farmer-scoped table has RLS policies keyed on `auth.uid()`.
-- The anon key can only do what RLS permits — a forged request cannot read
+- The anon key can only do what RLS permits: a forged request cannot read
   another farmer's farms.
 - The service-role key bypasses RLS and is used only for: scheduled refresh
   jobs, and admin operations. It is never used to serve a user request
@@ -1103,7 +1103,7 @@ flowchart TB
 | Data protection at rest          | Supabase managed encryption; private Storage buckets              |
 | Secret scanning                  | gitleaks in CI; `.gitignore` rules; `.env.example` placeholders only |
 | Dependency hygiene               | Dependabot; `pnpm audit`                                         |
-| CSP                              | **[Open]** — required before the demo loads any third-party script |
+| CSP                              | **[Open]**: required before the demo loads any third-party script |
 
 ### 14.1 Threat considerations specific to this product
 
@@ -1197,9 +1197,9 @@ teammates test a branch without touching the demo data.
 | Dimension         | Current (MVP)          | Growth path                                                 |
 | ----------------- | ---------------------- | ------------------------------------------------------------ |
 | Users             | Tens                  | Supabase scales; no change needed                            |
-| Farms per user    | 1–10                  | No change needed                                             |
+| Farms per user    | 1 to 10                 | No change needed                                             |
 | Farms total       | Hundreds               | Cache hit rate does the work                                 |
-| Observations      | ~10³–10⁵ rows          | Partition `environmental_observations` by `observed_at`       |
+| Observations      | ~10³ to 10⁵ rows       | Partition `environmental_observations` by `observed_at`       |
 | Concurrent users  | Low                   | Vercel autoscales                                           |
 | Analysis jobs     | Ad hoc                 | Move to a queue + worker if sustained (see § 4.1)           |
 
@@ -1223,12 +1223,12 @@ during the hackathon:
 | Decision                          | Trade-off accepted                                                          | When to revisit             |
 | --------------------------------- | ----------------------------------------------------------------------------- | --------------------------- |
 | One Next.js app, no backend service | Simpler deployment; less isolation. Heavy CPU jobs block the request path.   | A background job exceeds the function timeout |
-| PostGIS for all spatial work       | Adds a PostGIS dependency and a migration path; slower than in-memory JS for tiny queries. | Never — PostGIS is the right call |
+| PostGIS for all spatial work       | Adds a PostGIS dependency and a migration path; slower than in-memory JS for tiny queries. | Never: PostGIS is the right call |
 | Rules engine, not ML              | Less "impressive"; far more explainable and correctable.                      | If validated labelled data becomes available |
 | Cache in the database              | Writes to the same DB as the product data; some query contention.            | Cache write volume threatens farm-data performance |
 | Versioned catalog in the repo     | Requires a seed step and a deploy to change crop requirements.               | If a maintained external catalog with a stable API becomes available |
-| Farm boundary required            | Adds a difficult step to onboarding (draw on a map).                         | If field testing shows farmers cannot draw — add an assisted path |
-| Raster zonal stats via GEE        | Adds a GEE dependency, quota and a project setup burden.                     | If GEE access cannot be obtained — fall back to pre-computed tiles |
+| Farm boundary required            | Adds a difficult step to onboarding (draw on a map).                         | If field testing shows farmers cannot draw: add an assisted path |
+| Raster zonal stats via GEE        | Adds a GEE dependency, quota and a project setup burden.                     | If GEE access cannot be obtained: fall back to pre-computed tiles |
 
 ### 17.2 Open technical risks
 
@@ -1253,16 +1253,16 @@ during the hackathon:
 
 A 9 km soil-moisture pixel over a 1.4 ha field is 800 hectares of information
 about 1.4 hectares of land. The product must not pretend otherwise. The
-architecture supports this — zonal statistics, coverage fractions, mandatory
-provenance, explicit limitation strings, confidence decay — but the *content*
+architecture supports this (zonal statistics, coverage fractions, mandatory
+provenance, explicit limitation strings, confidence decay), but the *content*
 still has to be honest and the *interface* still has to make the caveat
 impossible to miss.
 
 The honest version of this product is still valuable: "rainfall over your
 district this season is 15% below the 30-year average for this cell, and
-your field's vegetation index is tracking at the low end of its neighbours —
-consider planting later" is genuinely useful. The dishonest version — "your
-farm's soil moisture is 18%" — is not, and it is the version that is easiest
+your field's vegetation index is tracking at the low end of its neighbours,
+consider planting later" is genuinely useful. The dishonest version ("your
+farm's soil moisture is 18%") is not, and it is the version that is easiest
 to build by accident.
 
 ---
@@ -1288,11 +1288,11 @@ decision index below is a summary; **the ADR is the source of truth.**
 
 ## 19. Phase 2 implementation sequence
 
-**[Proposed]** — a build order that front-loads the risky parts.
+**[Proposed]**: a build order that front-loads the risky parts.
 
 | Step | Deliverable                                              | Depends on |
 | ---- | -------------------------------------------------------- | ---------- |
-| 1    | Supabase project, PostGIS enabled, migrations, RLS        | —          |
+| 1    | Supabase project, PostGIS enabled, migrations, RLS        | None       |
 | 2    | Auth: sign-up, sign-in, session, dashboard shell          | 1          |
 | 3    | `lib/integrations` for POWER + SoilGrids, with cache      | 1          |
 | 4    | Farm CRUD + polygon drawing + area computation            | 1, 2       |

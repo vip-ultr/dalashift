@@ -1,4 +1,4 @@
-# Architecture Essentials — DalaShift
+# Architecture Essentials: DalaShift
 
 **Condensed reference. Read this before implementing anything.**
 Full detail: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Rules for agents:
@@ -6,7 +6,7 @@ Full detail: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Rules for agents:
 
 | Field        | Value                        |
 | ------------ | ---------------------------- |
-| Status       | Phase 2 — approved baseline  |
+| Status       | Phase 2: approved baseline  |
 | Last updated | 2026-11-13                   |
 
 ---
@@ -19,25 +19,25 @@ Full detail: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Rules for agents:
 | UI library        | React                                           | 19.x       |
 | Language          | TypeScript (strict)                             | 5.7+       |
 | Styling           | Tailwind CSS                                    | 4.x        |
-| Components        | shadcn/ui (new-york), Lucide icons             | —          |
+| Components        | shadcn/ui (new-york), Lucide icons             | n/a        |
 | Charts            | Recharts                                        | 3.x        |
 | Maps              | MapLibre GL JS + Terra Draw                     | 6.x / 1.x  |
-| Backend           | Next.js server-side (Route Handlers, Actions)   | —          |
-| Database          | Supabase PostgreSQL + PostGIS                   | —          |
-| Auth              | Supabase Auth                                   | —          |
-| Storage           | Supabase Storage (private buckets)              | —          |
-| DB security       | Row Level Security                              | —          |
-| Hosting           | Vercel                                          | —          |
-| Tooling           | Node 22 LTS, pnpm 9.6, ESLint 9, Prettier 3     | —          |
+| Backend           | Next.js server-side (Route Handlers, Actions)   | n/a        |
+| Database          | Supabase PostgreSQL + PostGIS                   | n/a        |
+| Auth              | Supabase Auth                                   | n/a        |
+| Storage           | Supabase Storage (private buckets)              | n/a        |
+| DB security       | Row Level Security                              | n/a        |
+| Hosting           | Vercel                                          | n/a        |
+| Tooling           | Node 22 LTS, pnpm 9.6, ESLint 9, Prettier 3     | n/a        |
 | Testing           | Vitest, Playwright                              | 5.x / 1.x  |
-| Repo              | GitHub monorepo, `main` branch                  | —          |
+| Repo              | GitHub monorepo, `main` branch                  | n/a        |
 
 **Changing any of these requires a team-approved ADR.** Do not silently swap a
 library.
 
 ---
 
-## 2. Core principles — the short list
+## 2. Core principles: the short list
 
 1. **External API calls happen only in `src/lib/integrations/`**, which is
    `import "server-only"`.
@@ -48,7 +48,7 @@ library.
    licence, spatial resolution, temporal resolution, observation date,
    retrieved date and `isModelled`.
 5. **The recommendation engine is deterministic and rules-based.** An LLM may
-   paraphrase output only — never score, verdict or add a number.
+   paraphrase output only, never score, verdict or add a number.
 6. **Missing data lowers confidence and is stated.** It is never a silent
    default and never a fabricated value.
 7. **The database is the cache.** Serverless has no persistent disk.
@@ -87,9 +87,9 @@ Every file in `lib/integrations/<source>/` must expose:
 ```
 apps/web/src/
   app/                 Routes. (marketing) | (auth) | (dashboard) | api/
-  components/ui/       shadcn primitives — generated, don't hand-edit
+  components/ui/       shadcn primitives: generated, don't hand-edit
   components/          Shared presentational (layout, dashboard, farms, maps, charts, forms)
-  features/            Vertical slices — the unit of product work
+  features/            Vertical slices: the unit of product work
   lib/integrations/    SERVER-ONLY. One module per external data source
   lib/geospatial/      Area, zonal stats, coordinate utilities
   lib/supabase/        Browser + server clients, query helpers
@@ -98,9 +98,9 @@ apps/web/src/
   types/               App-local types (shared ones go in packages/shared)
   styles/              Styles Tailwind can't express
 
-packages/shared/       types/ schemas/ constants/ — framework-agnostic, zod allowed
-packages/config/       eslint/ typescript/ prettier/ — shared configs
-scripts/               data/ geospatial/ validation/ — run outside Next.js
+packages/shared/       types/ schemas/ constants/: framework-agnostic, zod allowed
+packages/config/       eslint/ typescript/ prettier/: shared configs
+scripts/               data/ geospatial/ validation/: run outside Next.js
 data/                  samples/ (committed, small) + processed/ (gitignored)
 docs/                  research/ api/ database/ product/ design/ hackathon/ decisions/
 ```
@@ -149,7 +149,7 @@ recency → limitations list → persist with `ruleset_version` → render.
 
 ---
 
-## 7. The resolution ladder — copy these numbers, not the source names
+## 7. The resolution ladder: copy these numbers, not the source names
 
 | Product              | Spatial resolution        | Temporal          | Honest description                                     |
 | -------------------- | ------------------------- | ----------------- | ------------------------------------------------------ |
@@ -198,7 +198,7 @@ Never write "your farm's soil moisture".
 9. **Never let an LLM produce a number or verdict.** Paraphrase only.
 10. **Never skip provenance.** A value without source/resolution/date is not
     acceptable to store or display.
-11. **Never write an ADR out of order** — supersede, don't delete.
+11. **Never write an ADR out of order**, supersede, don't delete.
 12. **Never implement ahead of the current phase** without saying so.
 
 ---

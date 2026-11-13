@@ -6,7 +6,7 @@ Terms & Conditions state:
 > *"Any licenses applicable to your Solution Materials must be identified in
 > the documentation that you submit with your Solution. NASA will not accept
 > or post any Solutions that do not include appropriate license documentation."*
-> — <https://www.spaceappschallenge.org/legal/>
+> Source: <https://www.spaceappschallenge.org/legal/>
 
 and
 
@@ -20,7 +20,7 @@ and
 
 ## 1. Software dependencies
 
-Licences below were read from each installed package's `package.json` — not
+Licences below were read from each installed package's `package.json`, not
 recalled. **Every entry is compatible with MIT, Apache-2.0 and AGPL-3.0.**
 
 ### Runtime dependencies
@@ -88,16 +88,16 @@ enough to name:
 
 | Package          | Licence                       | Why it matters                                  |
 | ---------------- | ----------------------------- | ----------------------------------------------- |
-| `caniuse-lite`   | CC-BY-4.0                     | Browserslist data — a data licence, not a code licence |
+| `caniuse-lite`   | CC-BY-4.0                     | Browserslist data: a data licence, not a code licence |
 | `postcss`        | MIT                           |                                               |
 | `sharp`          | Apache-2.0                    | Next.js image optimisation                      |
 | `vite`           | MIT                           | Vitest's engine                                |
 | `@swc/*`         | MIT / Apache-2.0              | Fast transpilation                             |
-| `lightningcss`   | MPL-2.0                       | CSS transforms — **note: MPL-2.0 is file-level copyleft** |
+| `lightningcss`   | MPL-2.0                       | CSS transforms, **note: MPL-2.0 is file-level copyleft** |
 
 **[Proposed]** `lightningcss` (MPL-2.0) is worth flagging: MPL-2.0 is
 file-level copyleft. It is a transitive dependency of the toolchain and is not
-distributed with our code, so it imposes no obligation on the project — but it
+distributed with our code, so it imposes no obligation on the project, but it
 is listed here rather than omitted.
 
 ---
@@ -111,23 +111,23 @@ register is in § 10 of that document.
 
 | Source                      | Licence / terms                                    | Attribution required |
 | --------------------------- | -------------------------------------------------- | -------------------- |
-| **NASA POWER**              | NASA open data; courtesy citation requested         | **Yes** — service + data reference |
-| **NASA SMAP**               | Public domain (US Government work)                   | **Yes** — citation + DOI |
-| **NASA GPM IMERG**          | Free for public use                                 | **Yes** — citation + DOI |
-| **NASA MODIS**              | No restrictions on use, sale or redistribution      | **Yes** — LP DAAC citation + DOI |
-| **NASA Landsat**            | Public domain                                       | Requested — *"courtesy of the U.S. Geological Survey"* |
+| **NASA POWER**              | NASA open data; courtesy citation requested         | **Yes**: service + data reference |
+| **NASA SMAP**               | Public domain (US Government work)                   | **Yes**: citation + DOI |
+| **NASA GPM IMERG**          | Free for public use                                 | **Yes**: citation + DOI |
+| **NASA MODIS**              | No restrictions on use, sale or redistribution      | **Yes**: LP DAAC citation + DOI |
+| **NASA Landsat**            | Public domain                                       | Requested: *"courtesy of the U.S. Geological Survey"* |
 | **NASA SRTM**               | Public domain                                       | Requested |
-| **NASA ECOSTRESS**          | Public domain                                       | **Yes** — citation |
-| **NASA GRACE / GRACE-FO**   | Public domain                                       | **Yes** — citation |
-| **NASA GIBS**                | NASA open data                                      | **Yes** — product credit + GIBS service |
-| **ISRIC SoilGrids 2.0**     | **CC BY 4.0**                                       | **Yes** — credit, licence notice, indicate changes |
-| **Open-Meteo**              | **CC BY 4.0** (data); AGPL-3.0 (source)             | **Yes** — *"Data provided by Open-Meteo"* |
-| **Copernicus Sentinel-2**   | Copernicus Sentinel Data Terms and Conditions        | **Yes** — *"Contains modified Copernicus Sentinel data [year]"* |
-| **CHIRPS**                   | Attribution required (CC BY 4.0 on the NOAA record; CHC waives copyright) | **Yes** — citation + DOI |
-| **FAOSTAT**                 | **CC BY 4.0** + FAO Statistical Database Terms      | **Yes** — citation + licence notice |
-| **Overture Maps**           | Per-feature; ODbL-derived                            | **Yes** — *"Overture Maps Foundation, overturemaps.org"* |
-| **Sacks et al. crop calendar** | CC BY 4.0 (verify)                                | **Yes** — citation + courtesy email |
-| **OpenStreetMap / OpenMapTiles** | ODbL                                            | **Yes** — *"© OpenStreetMap contributors"* |
+| **NASA ECOSTRESS**          | Public domain                                       | **Yes**: citation |
+| **NASA GRACE / GRACE-FO**   | Public domain                                       | **Yes**: citation |
+| **NASA GIBS**                | NASA open data                                      | **Yes**: product credit + GIBS service |
+| **ISRIC SoilGrids 2.0**     | **CC BY 4.0**                                       | **Yes**: credit, licence notice, indicate changes |
+| **Open-Meteo**              | **CC BY 4.0** (data); AGPL-3.0 (source)             | **Yes**: *"Data provided by Open-Meteo"* |
+| **Copernicus Sentinel-2**   | Copernicus Sentinel Data Terms and Conditions        | **Yes**: *"Contains modified Copernicus Sentinel data [year]"* |
+| **CHIRPS**                   | Attribution required (CC BY 4.0 on the NOAA record; CHC waives copyright) | **Yes**: citation + DOI |
+| **FAOSTAT**                 | **CC BY 4.0** + FAO Statistical Database Terms      | **Yes**: citation + licence notice |
+| **Overture Maps**           | Per-feature; ODbL-derived                            | **Yes**: *"Overture Maps Foundation, overturemaps.org"* |
+| **Sacks et al. crop calendar** | CC BY 4.0 (verify)                                | **Yes**: citation + courtesy email |
+| **OpenStreetMap / OpenMapTiles** | ODbL                                            | **Yes**: *"© OpenStreetMap contributors"* |
 | **Google Earth Engine**     | EE Terms of Service + tier rules                     | Per-dataset terms apply |
 
 **[Proposed] Every one of these attributions is rendered in the product** in
@@ -139,7 +139,7 @@ obligation for a user who sees the data in the app.
 
 ## 3. Fonts and imagery
 
-**[Open]** The interface currently uses the system font stack — no web font is
+**[Open]** The interface currently uses the system font stack; no web font is
 bundled, so there is no font licence obligation. **If a web font is added in
 the design phase, its licence must be added here.** The same applies to any
 icon set beyond Lucide (ISC) and any imagery used in the marketing pages.
@@ -149,8 +149,8 @@ icon set beyond Lucide (ISC) and any imagery used in the marketing pages.
 ## 4. Content and text
 
 **[Confirmed]** No third-party copyrighted text, music or imagery is included
-in this repository. All written content — the product requirements,
-architecture, research notes and code — was written for this project.
+in this repository. All written content (the product requirements,
+architecture, research notes and code) was written for this project.
 
 **[Proposed]** The crop requirements catalog is the one place where this
 needs checking: every value in it must carry a source citation, and where a
@@ -167,7 +167,7 @@ node scripts/validation/generate-third-party-notices.mjs
 The script reads the direct dependencies from every workspace `package.json`
 and resolves each one's licence from the installed package metadata. **Run it
 whenever a dependency is added or removed**, and re-check the data-source
-table by hand — the script cannot know about external APIs.
+table by hand; the script cannot know about external APIs.
 
 ---
 

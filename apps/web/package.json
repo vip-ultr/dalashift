@@ -2,7 +2,7 @@
   "name": "@dalashift/web",
   "version": "0.1.0",
   "private": true,
-  "description": "DalaShift web application — Next.js App Router frontend and server-side API.",
+  "description": "DalaShift web application: Next.js App Router frontend and server-side API.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

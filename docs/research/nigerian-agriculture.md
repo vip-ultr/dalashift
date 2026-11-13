@@ -1,4 +1,4 @@
-# Nigerian Agricultural Conditions — Research Notes
+# Nigerian Agricultural Conditions: Research Notes
 
 **Verification date: 2026-11-13.**
 
@@ -31,7 +31,7 @@ Two reasons:
 
 **[Verified]** Tofa is a Local Government Area in Kano State, northern Nigeria.
 **[Verified]** The Kano Space Apps Local Event is in-person at EHealth Africa,
-Badawa, Kano — our field base for the hackathon weekend.
+Badawa, Kano, our field base for the hackathon weekend.
 
 **[Verified]** The Kano event page itself describes the regional context:
 
@@ -42,7 +42,7 @@ Badawa, Kano — our field base for the hackathon weekend.
 
 **[Verified]** The event page lists the priority problem areas for the region:
 crop monitoring, soil conditions, drought, irrigation, agricultural
-productivity, weather information and food security — plus flood monitoring,
+productivity, weather information and food security, plus flood monitoring,
 drought prediction, desertification, extreme temperatures, climate adaptation,
 water management and environmental monitoring.
 
@@ -50,7 +50,7 @@ water management and environmental monitoring.
 relevance. It is the best available local signal, and it aligns closely with
 what we have built.
 
-**[UNVERIFIED] — to be confirmed with the Local Lead and farmers:**
+**[UNVERIFIED] (to be confirmed with the Local Lead and farmers):**
 
 - Tofa LGA's specific agro-ecological zone.
 - The dominant cropping systems and their typical sizes.
@@ -65,7 +65,7 @@ what we have built.
 
 ## 3. What is known about Nigerian agriculture from public data
 
-### 3.1 FAOSTAT — national statistics
+### 3.1 FAOSTAT: national statistics
 
 **[Verified]** FAOSTAT provides national annual crop and livestock production,
 yield, harvested area, trade and food-security indicators, from ~1961 to
@@ -76,17 +76,17 @@ present. The production domain code is `QCL`. API:
 
 - **National annual only. Not farm level, and not sub-national.** FAOSTAT
   cannot tell you about Tofa.
-- **Licence: CC BY 4.0 plus FAO terms** — *"Datasets shall not be used for or
+- **Licence: CC BY 4.0 plus FAO terms**, *"Datasets shall not be used for or
   in conjunction with the promotion of a commercial enterprise… or in any way
   that suggests that FAO endorses any specific company, products or
   services."*
 - API V2 replaces V1; V1 calls are no longer supported.
 
-**[Proposed] Use:** a national benchmark panel — *"Nigerian millet yields over
-the last decade"* — and a citation for the national crop list. **Do not use
+**[Proposed] Use:** a national benchmark panel, *"Nigerian millet yields over
+the last decade"*, and a citation for the national crop list. **Do not use
 it as farm data.**
 
-### 3.2 Nigeria NBS — state statistics
+### 3.2 Nigeria NBS: state statistics
 
 **[Verified]** The National Bureau of Statistics publishes statistical
 abstracts and reports in PDF and Excel, including meteorological statistics
@@ -98,7 +98,7 @@ periodic, not time series.
 **[Proposed] Use:** background context for the Kano State profile in reports.
 Not a data integration.
 
-### 3.3 NiMet — the national meteorological agency
+### 3.3 NiMet: the national meteorological agency
 
 **[Verified]** Nigeria Meteorological Agency runs an AgroMet unit and publishes
 an **Agrometeorological Bulletin every 10 days**, a Seasonal Climate
@@ -119,7 +119,7 @@ ABUJA, BAUCHI, MAIDUGURI, MAKURDI.
 
 1. **Request access.** The NGO/researcher category may be free or heavily
    discounted, and if it comes through, Kano station observations would be the
-   single best local data source we could have — an actual measurement near
+   single best local data source we could have, an actual measurement near
    the farm, rather than a 55 km grid cell. **Do this in the week after the
    hackathon; do not depend on it for the MVP.**
 2. **Keep the adapter behind the integration-module interface** so it can be
@@ -131,12 +131,12 @@ ABUJA, BAUCHI, MAIDUGURI, MAKURDI.
 Forest land cover for Nigeria, with 83 % overall accuracy and a national
 legend adapted from the West African Land Cover Reference System.
 
-**[Verified] Coverage: Kebbi, Niger, Ondo and Cross River — NOT Kano.**
+**[Verified] Coverage: Kebbi, Niger, Ondo and Cross River (NOT Kano).**
 
 **[Proposed] Use:** interesting if the pilot moves to Niger State, which borders
 Kano. Not for the MVP.
 
-### 3.5 Overture Maps and GRID3 — geography
+### 3.5 Overture Maps and GRID3: geography
 
 **[Verified]** Overture Maps provides monthly OSM-derived releases with
 `land_use` subtypes including **farmland, orchard, plant_nursery**,
@@ -145,8 +145,8 @@ requested attribution is *"Overture Maps Foundation, overturemaps.org"*.
 
 **[Verified] Limitation:** OSM land use in rural northern Nigeria is **sparse**.
 
-**[Proposed] Use:** to *validate* farmer-supplied polygons — e.g. flagging a
-boundary that overlaps a mapped orchard — not as the primary geometry. The
+**[Proposed] Use:** to *validate* farmer-supplied polygons, e.g. flagging a
+boundary that overlaps a mapped orchard, not as the primary geometry. The
 farmer's drawn boundary is always authoritative.
 
 **[Verified]** GRID3 NGA (CIESIN) provides Nigeria roads and settlement
@@ -166,18 +166,18 @@ NASRDA after the hackathon is the highest-value follow-up in this document.**
 
 ---
 
-## 4. Regional crops — what to check
+## 4. Regional crops: what to check
 
-**[UNVERIFIED — to validate in Tofa]** The crop list for the ruleset must come
+**[UNVERIFIED (to validate in Tofa)]** The crop list for the ruleset must come
 from the farmers, not from a national list. The national list is a starting
 point for the catalog.
 
-**Proposed] The process:**
+**[Proposed] The process:**
 
 1. Take the national crop list from FAOSTAT and the FAO land cover legend as
    a **starting candidate set**.
 2. Ask farmers in Tofa what they actually grow, and in what proportions.
-3. **Build the catalog from the intersection** — the crops the farmers name,
+3. **Build the catalog from the intersection**: the crops the farmers name,
    restricted to what the regional evidence supports.
 4. For each crop, record the **local name**, the scientific name, the
    varieties used, and the sowing and harvest months **as the farmers
@@ -189,7 +189,7 @@ is a small, high-value detail that most platforms get wrong.
 
 ---
 
-## 5. The growing calendar — the hard question
+## 5. The growing calendar: the hard question
 
 **[Verified]** NASA POWER gives us the **rainfall series** from 1981, which
 lets us **derive** the local rainy-season onset and length for any cell.
@@ -214,11 +214,11 @@ for any given claim:
 | Source              | Use                                                                 |
 | ------------------- | -------------------------------------------------------------------- |
 | **POWER-derived**   | The default. Rainfall onset and season length from the actual record. |
-| **Sacks et al.**    | Where available and non-null — an independently published calendar.    |
+| **Sacks et al.**    | Where available and non-null: an independently published calendar.    |
 | **Farmer-reported** | **The tiebreaker.** Where a farmer says they plant in May, that is the ground truth for their farm. |
 
 **[Proposed]** Every planting window in the product should carry its source:
-*"Planting window: derived from the 1981–2025 rainfall record for this area."*
+*"Planting window: derived from the 1981 to 2025 rainfall record for this area."*
 or *"…from Sacks et al. (2010)."* or *"…as reported by the farmer."*
 
 ---
@@ -231,13 +231,13 @@ become product decisions.
 
 ### About the farm
 
-1. How big is your farm? How do you measure it — hectares, acres, or
+1. How big is your farm? How do you measure it: hectares, acres, or
    something else?
 2. Do you farm it as one piece, or in separate plots? Do the plots grow
    different crops?
 3. Do you own the land or rent it? (Affects whether rotation advice is
    actionable across seasons.)
-4. Is it rainfed, or do you irrigate? From where — a well, a river, a
+4. Is it rainfed, or do you irrigate? From where: a well, a river, a
    borehole? How often?
 
 ### About the crops
@@ -254,12 +254,12 @@ become product decisions.
 ### About the environment
 
 11. **When did the rains start this year?** Compared with last year?
-    *(This is the single most valuable question — it tests our onset
+    *(This is the single most valuable question: it tests our onset
     detection directly.)*
 12. Do you know when the rains normally start?
 13. Is there a period in the season when you are most worried about drought?
     When?
-14. Do you know what your soil is like — sandy, clayey? Do you know the
+14. Do you know what your soil is like: sandy, clayey? Do you know the
     water-holding capacity of your soil?
 15. Is there anywhere on your farm that holds water longer than elsewhere?
     *(A farmer's own micro-topography is data we cannot get from any
@@ -306,9 +306,9 @@ hackathon weekend.
 | <https://www.fao.org/faostat/en/docs/redoc-static.html> | FAOSTAT docs | Verified |
 | <https://www.nigerianstat.gov.ng/> | Nigeria NBS | Verified |
 | <https://nimet.gov.ng/datarequest> | NiMet data request | Verified |
-| <https://nimet.gov.ng/weatherapi> | NiMet API docs | Verified — **all routes 404** |
-| <https://data.apps.fao.org/?lang=en&share=f-06e9ea55-704c-4e3c-8bc7-785dab86906c> | FAO Nigeria land cover | Verified — **not Kano** |
-| <https://central.nasrda.gov.ng/> | NASRDA | Verified — Space Agency Partner |
+| <https://nimet.gov.ng/weatherapi> | NiMet API docs | Verified: **all routes 404** |
+| <https://data.apps.fao.org/?lang=en&share=f-06e9ea55-704c-4e3c-8bc7-785dab86906c> | FAO Nigeria land cover | Verified: **not Kano** |
+| <https://central.nasrda.gov.ng/> | NASRDA | Verified: Space Agency Partner |
 | <https://overturemaps.org/> | Overture Maps | Verified |
 | <https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset> | Sacks crop calendar | Verified |
 | <https://www.spaceappschallenge.org/2026/local-events/kano/> | Kano event context | Verified |

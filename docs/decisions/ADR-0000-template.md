@@ -1,4 +1,4 @@
-# ADR-0000 — ADR Template
+# ADR-0000: ADR Template
 
 Copy this file to `docs/decisions/ADR-NNNN-short-slug.md` and fill it in.
 
@@ -15,7 +15,7 @@ Copy this file to `docs/decisions/ADR-NNNN-short-slug.md` and fill it in.
 
 ---
 
-# ADR-NNNN — Title
+# ADR-NNNN: Title
 
 | Field    | Value                              |
 | -------- | ---------------------------------- |
@@ -38,18 +38,18 @@ State facts, not opinions. Cite sources.
 
 ## Options considered
 
-### Option A — <name>
+### Option A: <name>
 
 - **Description:** what it is.
 - **Advantages:** …
 - **Disadvantages:** …
 - **Risks:** …
 
-### Option B — <name>
+### Option B: <name>
 
 - …
 
-### Option C — <name>
+### Option C: <name>
 
 - …
 
@@ -65,7 +65,7 @@ re-deriving the reasoning. Name the specific technology, schema, or approach.
 Why this option, over the others?
 
 Tie the reasoning back to the decision criteria. If a criterion was not met by
-the chosen option, say so — an ADR that claims no downsides is not credible.
+the chosen option, say so. An ADR that claims no downsides is not credible.
 
 ## Consequences
 

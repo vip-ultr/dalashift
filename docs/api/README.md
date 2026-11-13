@@ -1,4 +1,4 @@
-# Documentation — `docs/api/`
+# Documentation: `docs/api/`
 
 Integration and external-service documentation.
 
@@ -17,7 +17,7 @@ Integration and external-service documentation.
    If you inferred it, mark it UNVERIFIED.
 2. **Every fact carries a source URL and a verification date.**
 3. **Live behaviour beats documentation.** If the documentation and the live
-   service disagree, record both — and trust the live service.
+   service disagree, record both and trust the live service.
 4. **Every source carries its licence and attribution requirement**, because
    NASA Space Apps requires that *"all resources, even open source resources,
    must be cited."* See [`../hackathon/README.md`](../hackathon/README.md) § 4.4.
@@ -30,7 +30,7 @@ Integration and external-service documentation.
 
 ```
 lib/integrations/<source>/
-├── index.ts        public surface — typed, normalised, provenance-bearing
+├── index.ts        public surface: typed, normalised, provenance-bearing
 ├── client.ts       fetch, timeout, bounded retry, rate-limit handling
 ├── normalise.ts    units, time standard, fill values, mapped-unit factors
 ├── params.ts       upstream parameter ↔ canonical variable mapping
@@ -42,7 +42,7 @@ without it. See [`data-retrieval-strategy.md`](./data-retrieval-strategy.md) § 
 
 ---
 
-## Adding a new source — checklist
+## Adding a new source: checklist
 
 - [ ] Read the official documentation. Record the URL and today's date.
 - [ ] Verify the live response shape with a real call.

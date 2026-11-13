@@ -15,7 +15,7 @@ agreement for how work is done.
 | Requirement | Version | Notes                                                          |
 | ------------ | ------- | -------------------------------------------------------------- |
 | Node.js      | 22 LTS  | `.nvmrc` is committed. Node 20.9+ works but 22 is the target. |
-| pnpm        | 9.6.0   | Managed via Corepack — do not install it globally by hand.    |
+| pnpm        | 9.6.0   | Managed via Corepack. Do not install it globally by hand.     |
 | Git         | 2.40+   | Any recent version.                                            |
 | GitHub CLI  | optional| Only needed to create repositories or manage issues.          |
 | Docker      | optional| Only needed if you run a local Supabase stack.                 |
@@ -86,8 +86,8 @@ Minimum set for local development:
 | Variable                        | Why                                              |
 | ------------------------------- | ------------------------------------------------ |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Database, auth and storage                       |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser client (safe — RLS is the real boundary)  |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Server-side admin operations — **server only**   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser client (safe: RLS is the real boundary)   |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Server-side admin operations: **server only**    |
 | `NEXT_PUBLIC_MAP_STYLE_URL`     | MapLibre basemap style                           |
 
 Additional variables are needed for external data sources. See
@@ -105,8 +105,8 @@ pnpm dev     # http://localhost:3000
 The Phase 1 repository intentionally contains **no migrations**. When Phase 2
 opens, the first task is to write the schema described in
 `docs/database/data-model.md` into `supabase/migrations/`, enable PostGIS, and
-apply the RLS policies. Do not create ad-hoc tables in the Supabase dashboard —
-schema changes go through migrations in the repository.
+apply the RLS policies. Do not create ad-hoc tables in the Supabase dashboard.
+Schema changes go through migrations in the repository.
 
 ---
 
@@ -132,12 +132,12 @@ except for documentation-only fixes.
 To avoid three people editing the same files, split by **area**, not by
 feature:
 
-- **Owner A — Data & backend:** `apps/web/src/lib/integrations/**`,
+- **Owner A: Data & backend:** `apps/web/src/lib/integrations/**`,
   `apps/web/src/lib/geospatial/**`, `packages/shared/**`, `supabase/**`,
   `scripts/**`
-- **Owner B — Product UI:** `apps/web/src/features/**`,
+- **Owner B: Product UI:** `apps/web/src/features/**`,
   `apps/web/src/components/**`, `apps/web/src/app/**`
-- **Owner C — Map, charts, reports:** `apps/web/src/components/maps/**`,
+- **Owner C: Map, charts, reports:** `apps/web/src/components/maps/**`,
   `apps/web/src/components/charts/**`, `apps/web/src/features/reports/**`
 
 When two people must touch the same file, agree it in the pull request before
@@ -197,7 +197,7 @@ Rules:
 2. Make your change.
 3. Run `pnpm check && pnpm test` locally.
 4. Open a PR using the template in `.github/PULL_REQUEST_TEMPLATE.md`.
-5. Fill in the template honestly — the "Claim integrity" and "Data and API
+5. Fill in the template honestly: the "Claim integrity" and "Data and API
    changes" sections exist to catch overstated accuracy claims before review.
 
 **Branch protection.** `main` should require: 1 approving review, passing CI
@@ -218,24 +218,24 @@ three people, "1 approving review" means a different person authored the change.
 
 Reviewers check, in this order:
 
-1. **Correctness** — does it do what the PR says?
-2. **Claim integrity** — are accuracy and resolution statements accurate? Is
+1. **Correctness**: does it do what the PR says?
+2. **Claim integrity**: are accuracy and resolution statements accurate? Is
    any NASA endorsement implied? Is validation scope overstated?
-3. **Security** — are secrets server-side? Is RLS updated? Is input validated?
-4. **Boundaries** — does external I/O stay in `lib/integrations`? Is the
+3. **Security**: are secrets server-side? Is RLS updated? Is input validated?
+4. **Boundaries**: does external I/O stay in `lib/integrations`? Is the
    recommendation logic still deterministic?
-5. **Documentation** — is `docs/` updated? Is an ADR needed?
-6. **Tests** — is the new behaviour covered?
+5. **Documentation**: is `docs/` updated? Is an ADR needed?
+6. **Tests**: is the new behaviour covered?
 
 Review comments should be prefixed to indicate severity:
 
-- `blocking:` — must change before merge
-- `suggestion:` — should change, author's call
-- `nit:` — optional, non-blocking
-- `question:` — asking for clarification, not a change request
+- `blocking:` must change before merge
+- `suggestion:` should change, author's call
+- `nit:` optional, non-blocking
+- `question:` asking for clarification, not a change request
 
 **Review turnaround:** within a few hours during the hackathon, end of day
-otherwise. If a PR is blocking someone, say so in the team channel — do not
+otherwise. If a PR is blocking someone, say so in the team channel; do not
 sit on it.
 
 ---
@@ -270,6 +270,8 @@ Rules:
 - Prefer a smaller correct change over a larger speculative one.
 - Update the docs in the same PR as the code.
 - Ask in the team channel when two ways of doing something are both reasonable.
+- **Use plain punctuation.** No em dashes, anywhere. See the writing
+  conventions in `AGENTS.md` § 7.
 
 ### Don't
 
@@ -277,16 +279,20 @@ Rules:
 - Don't commit secrets, tokens or `.env` files.
 - Don't commit large rasters or generated tiles.
 - Don't change the approved technology stack without an ADR and team approval.
-- Don't remove or rewrite an existing ADR — supersede it.
+- Don't remove or rewrite an existing ADR. Supersede it.
 - Don't write a new document that duplicates an existing one.
 - Don't claim the platform is validated somewhere it has not been validated.
+- **Don't use an em dash (U+2014).** It is the clearest tell that a document was
+  machine generated, and reviewers read it that way. Use a full stop, a
+  colon, a comma or parentheses. This is enforced by `pnpm validate:style`
+  in CI.
 
 ---
 
 ## 9. Code of conduct
 
 Be respectful and constructive. Assume good faith. Technical disagreement is
-settled with evidence — a citation, a measurement, a reproducible test — not
+settled with evidence (a citation, a measurement, a reproducible test), not
 with seniority. Reviews are about the code, not the person.
 
 ---

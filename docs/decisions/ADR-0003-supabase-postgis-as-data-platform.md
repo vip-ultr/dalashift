@@ -1,4 +1,4 @@
-# ADR-0003 — Supabase + PostGIS as the Data Platform
+# ADR-0003: Supabase + PostGIS as the Data Platform
 
 | Field    | Value                                                              |
 | -------- | ------------------------------------------------------------------ |
@@ -14,7 +14,7 @@
 DalaShift needs a database that stores:
 
 - Relational farmer, farm, crop and analysis records.
-- **Geospatial data** — farm boundary polygons and plot polygons.
+- **Geospatial data:** farm boundary polygons and plot polygons.
 - Authentication with per-user access control.
 - Object storage for farm photographs and generated reports.
 - A durable cache for upstream API responses (serverless has no persistent
@@ -36,23 +36,23 @@ data**. That is a security property, not a feature.
 
 ## Options considered
 
-### Option A — Supabase (PostgreSQL + PostGIS + Auth + Storage + RLS)
+### Option A: Supabase (PostgreSQL + PostGIS + Auth + Storage + RLS)
 
 - **Advantages:** All five needs in one managed platform. PostGIS is
   PostgreSQL-native, so `ST_Area`, `ST_Intersects` and GIST indexes work
   alongside the relational model with no separate spatial database. RLS is a
-  first-class, database-enforced authorisation layer — the authorisation
+  first-class, database-enforced authorisation layer: the authorisation
   boundary is not an application-layer convention that can be bypassed by a
   forgotten `where` clause. `@supabase/ssr` integrates cleanly with Next.js.
   Row Level Security also means the browser can read the database directly
-  without every read going through an API route — a significant simplification.
+  without every read going through an API route, a significant simplification.
 - **Disadvantages:** Vendor coupling. Free-tier rate limits and project
-  pausing need watching. RLS policies must be written correctly — a wrong
+  pausing need watching. RLS policies must be written correctly: a wrong
   policy is a security hole, and policies are code that needs review.
 - **Risks:** A badly written RLS policy leaks data. Mitigated by policy
   review and by tests that assert cross-account isolation.
 
-### Option B — PostgreSQL + PostGIS on a managed host, separate Auth provider
+### Option B: PostgreSQL + PostGIS on a managed host, separate Auth provider
 
 - **Advantages:** Full database control; the auth provider is a swappable
   concern.
@@ -61,7 +61,7 @@ data**. That is a security property, not a feature.
   where mistakes happen.
 - **Risks:** More time spent on plumbing instead of product.
 
-### Option C — MongoDB with geospatial indexes + a separate auth provider
+### Option C: MongoDB with geospatial indexes + a separate auth provider
 
 - **Advantages:** Flexible document model.
 - **Disadvantages:** The domain model is strongly relational (farms → crops →
@@ -70,7 +70,7 @@ data**. That is a security property, not a feature.
   no equivalent.
 - **Risks:** Rewriting spatial queries by hand.
 
-### Option D — A spatial database (PostGIS, SpatiaLite, or a dedicated raster
+### Option D: A spatial database (PostGIS, SpatiaLite, or a dedicated raster
 store) as the primary store
 
 - **Advantages:** Purpose-built for the hardest requirement.
@@ -78,7 +78,7 @@ store) as the primary store
   primary store splits the data across systems and breaks transactions.
 - **Risks:** Over-engineering for the actual bottleneck.
 
-### Option E — Firebase / Firestore + Cloud Storage
+### Option E: Firebase / Firestore + Cloud Storage
 
 - **Advantages:** Excellent mobile client sync; simple security rules.
 - **Disadvantages:** Firestore's security rules model is unfamiliar to most
@@ -89,7 +89,7 @@ store) as the primary store
 
 ## Decision
 
-**Option A — Supabase as the single platform for database, authentication,
+**Option A: Supabase as the single platform for database, authentication,
 storage and cache.**
 
 **PostGIS is the geospatial authority.** All spatial computation happens in
@@ -97,7 +97,7 @@ PostgreSQL, not in JavaScript:
 
 | Operation                       | Implementation                              |
 | ------------------------------- | -------------------------------------------- |
-| Farm area                       | `ST_Area(boundary::geography)` — spherical, correct |
+| Farm area                       | `ST_Area(boundary::geography)`: spherical, correct |
 | Plot area within a farm         | `ST_Area(ST_Intersection(...)::geography)`    |
 | Point-in-polygon                | `ST_Contains` / `ST_Intersects`              |
 | Spatial indexing                | GIST indexes on `boundary`, `centroid`, `location` |
@@ -118,8 +118,8 @@ filesystem.
 
 ## Reasoning
 
-The decisive factor is that **the hardest requirement — per-farmer data
-isolation — is enforced by the database, not by application code.**
+The decisive factor is that **the hardest requirement (per-farmer data
+isolation) is enforced by the database, not by application code.**
 
 With RLS, a whole class of bug disappears: a forgotten `where farmer_id = ?`
 in a query cannot leak data, because the policy rejects the row regardless of
@@ -129,8 +129,8 @@ query is a potential leak, and every future contributor has to remember.
 That matters more than usual here: three people, an AI agent writing code, and
 a 48-hour build. The design should make the safe path the default path.
 
-PostGIS was also decisive on the geospatial side. Alternatives — computing
-areas with Turf and storing them as columns — look equivalent until you need
+PostGIS was also decisive on the geospatial side. Alternatives (computing
+areas with Turf and storing them as columns) look equivalent until you need
 to ask "which farms intersect this plot?" or "which farms fall inside this
 rainfall cell?". Those questions are natural in SQL with a spatial index and
 painful without one. A smallholder farm being a sub-hectare polygon makes
@@ -146,7 +146,7 @@ recommendations) are already relational in the product thinking.
 
 ### Positive
 
-- One platform, one credential set, one dashboard — minimal operational load.
+- One platform, one credential set, one dashboard, minimal operational load.
 - Authorisation is database-enforced and auditable.
 - Spatial and relational queries combine in a single statement.
 - The browser can read farmer-scoped data directly, so many read paths need no
@@ -160,7 +160,7 @@ recommendations) are already relational in the product thinking.
 - **RLS policies are security-critical code.** They get reviewed like code.
   `docs/database/rls-policies.md` defines them before any migration is written.
 - Supabase free-tier limits exist and must be checked against expected demo
-  load. **[Open]** — which plan the team uses is not yet decided; a Pro plan
+  load. **[Open]** Which plan the team uses is not yet decided; a Pro plan
   may be needed for `pg_cron` and for pooler mode.
 - Vendor coupling: moving off Supabase would be a real migration.
 - The service-role key is the most dangerous secret in the project.
@@ -173,12 +173,12 @@ recommendations) are already relational in the product thinking.
       needed for serverless connection management.
 - [ ] Review connection pooling behaviour under Vercel serverless concurrency.
 - [ ] Decide whether generated reports use a signed URL or an inlined
-      render — affects the `storage_path` semantics.
+      render: affects the `storage_path` semantics.
 
 ### Revisit when
 
 - Free-tier limits are consistently exceeded.
-- A requirement emerges that PostGIS/RLS genuinely cannot serve — e.g. heavy
+- A requirement emerges that PostGIS/RLS genuinely cannot serve: e.g. heavy
   raster zonal statistics that need a dedicated processing tier (see ADR-0005
   and ADR-0008).
 - Team size grows enough that independent deployable services become

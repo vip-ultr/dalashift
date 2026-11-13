@@ -29,17 +29,17 @@ sources for the demo path.**
 
 ```mermaid
 flowchart TB
-    subgraph T1["Tier 1 — no auth. MVP path."]
+    subgraph T1["Tier 1: no auth. MVP path."]
         P["NASA POWER<br/>no key, no signup"]
         OM["Open-Meteo<br/>no key, non-commercial"]
         SG["ISRIC SoilGrids<br/>no key, but degraded"]
     end
-    subgraph T2["Tier 2 — Earthdata Login"]
+    subgraph T2["Tier 2: Earthdata Login"]
         CMR["Earthdata CMR<br/>metadata, no auth"]
         AEE["AppEEARS<br/>async task polling"]
         GIO["Giovanni Time Series"]
     end
-    subgraph T3["Tier 3 — optional, heavier"]
+    subgraph T3["Tier 3: optional, heavier"]
         GEE["Google Earth Engine<br/>project + verification"]
         CH["CHIRPS via NOAA ERDDAP"]
     end
@@ -65,22 +65,22 @@ context. Tier 3 → only if there is time.**
 
 | Source | Call pattern | Where it runs | Cache key |
 | ------ | ------------ | ------------- | --------- |
-| **POWER — climatology** | Once per farm, per parameter set | Server, on farm save | `(farm_id, parameter_set)` — **never expires** |
-| **POWER — daily/monthly** | Once per farm per period | Server | `(farm_id, parameter, period)` — rolling 90-day refresh, older rows frozen |
-| **POWER — regional** | **Never for Kano** — bbox < 2° × 2° is rejected (HTTP 422) | — | — |
-| **Open-Meteo forecast** | On demand, hourly | Server | `(farm_id, run_date)` — TTL 1 hour |
-| **Open-Meteo historical** | On demand | Server | `(farm_id, date)` — permanent |
-| **SoilGrids** | **Pre-baked**, not live | `scripts/geospatial/` | `(grid_cell_250m, property, depth)` — never expires |
-| **SMAP (CMR/AppEEARS)** | On demand | Server | `(farm_id, date, am_pm)` — TTL 7 days |
-| **MODIS NDVI (GEE/CMR)** | On demand | Server | `(farm_id, composite_date)` — TTL 20 days |
-| **Landsat (GEE)** | On demand | Server | `(farm_id, scene_date)` — permanent (scenes are immutable) |
-| **Sentinel-2 (GEE)** | On demand | Server | `(farm_id, composite_date)` — TTL 7 days |
-| **IMERG (POWER `IMERG_PRECTOT`)** | On demand | Server | `(farm_id, date)` — TTL 7 days for Early/Late, permanent for Final |
-| **CHIRPS (ERDDAP)** | On demand | Server | `(grid_cell, date)` — TTL 7 days (Preliminary) |
+| **POWER: climatology** | Once per farm, per parameter set | Server, on farm save | `(farm_id, parameter_set)`: **never expires** |
+| **POWER: daily/monthly** | Once per farm per period | Server | `(farm_id, parameter, period)`: rolling 90-day refresh, older rows frozen |
+| **POWER: regional** | **Never for Kano**: bbox < 2° × 2° is rejected (HTTP 422) | n/a | n/a |
+| **Open-Meteo forecast** | On demand, hourly | Server | `(farm_id, run_date)`: TTL 1 hour |
+| **Open-Meteo historical** | On demand | Server | `(farm_id, date)`: permanent |
+| **SoilGrids** | **Pre-baked**, not live | `scripts/geospatial/` | `(grid_cell_250m, property, depth)`: never expires |
+| **SMAP (CMR/AppEEARS)** | On demand | Server | `(farm_id, date, am_pm)`: TTL 7 days |
+| **MODIS NDVI (GEE/CMR)** | On demand | Server | `(farm_id, composite_date)`: TTL 20 days |
+| **Landsat (GEE)** | On demand | Server | `(farm_id, scene_date)`: permanent (scenes are immutable) |
+| **Sentinel-2 (GEE)** | On demand | Server | `(farm_id, composite_date)`: TTL 7 days |
+| **IMERG (POWER `IMERG_PRECTOT`)** | On demand | Server | `(farm_id, date)`: TTL 7 days for Early/Late, permanent for Final |
+| **CHIRPS (ERDDAP)** | On demand | Server | `(grid_cell, date)`: TTL 7 days (Preliminary) |
 
 ### Cache-key design rule
 
-**For gridded products, key on the rounded grid cell — not the exact
+**For gridded products, key on the rounded grid cell, not the exact
 coordinate.** 200 farms in the same 250 m SoilGrids cell, or the same 9 km SMAP
 cell, should share one cached row. This turns an N-farm problem into an
 N-distinct-cells problem.
@@ -111,7 +111,7 @@ a live upstream.
 | **POWER climatology** for the validation region    | One `climatology/point` call per grid cell, batched      | ~20 km around Tofa LGA, every 0.5° cell               |
 | **SoilGrids** for the validation region            | `files.isric.org` WebDAV tiles → clip → tile → store      | Same region, 250 m tiles, all properties × 6 depths    |
 | **Rainfall normals** (CHIRPS or POWER)             | From the climatology + CHIRPS daily series                | Same region                                             |
-| **Demo farm fixtures**                             | Scripted farms with realistic polygons, crops and soil   | 3–5 farms, synthetic but plausible                      |
+| **Demo farm fixtures**                             | Scripted farms with realistic polygons, crops and soil   | 3 to 5 farms, synthetic but plausible                   |
 | **Crop catalog**                                   | Versioned JSON in the repo, seeded into `crops`          | The crops actually grown in the validation area         |
 | **Crop calendar** (Sacks)                           | Download the netCDF once, extract the Nigeria cells      | Crops and cells we care about                          |
 
@@ -139,15 +139,15 @@ interface ProvenancedValue {
   spatialResolutionM: number;
   /** "daily" | "hourly" | "16-day" | "monthly" | "climatology" */
   temporalResolution: string;
-  /** ISO 8601 UTC — when the observation was made */
+  /** ISO 8601 UTC: when the observation was made */
   observedAt: string;
-  /** ISO 8601 UTC — when we fetched it */
+  /** ISO 8601 UTC: when we fetched it */
   retrievedAt: string;
   /** True when the source modelled or interpolated the value */
   isModelled: boolean;
   /** "good" | "suspect" | "missing" | "partial" */
   qualityFlag?: "good" | "suspect" | "missing" | "partial";
-  /** Fraction of the target geometry with valid data, 0–1 */
+  /** Fraction of the target geometry with valid data, 0 to 1 */
   coverageFraction?: number;
   /** Source-specific identifiers kept for the audit trail */
   rawMetadata?: Record<string, unknown>;
@@ -161,14 +161,14 @@ interface ProvenancedValue {
 2. **Normalise units.** `degC` for temperature, `mm` for precipitation,
    `m3_m3` for volumetric soil moisture, `1` for dimensionless soil wetness.
 3. **Normalise time to UTC.** POWER's LST standard must be recorded as
-   metadata, not silently converted — the local solar time offset is
+   metadata, not silently converted: the local solar time offset is
    meaningful for daily aggregation.
 4. **Convert SoilGrids mapped units using `d_factor`.** `phh2o` 67 → 6.7 pH.
    `clay` 137 → 13.7 %. This is a 10× error if missed.
 5. **Preserve the run identifier** for IMERG (Early / Late / Final) so runs are
    never mixed in one series.
 6. **Never fabricate.** A missing period is a `missing` observation with a
-   `coverageFraction` of 0 — not a zero, not an interpolation.
+   `coverageFraction` of 0, not a zero, not an interpolation.
 
 ---
 
@@ -179,7 +179,7 @@ interface ProvenancedValue {
 | HTTP 5xx                       | Status code                            | Retry ≤ 2 with exponential backoff, then `UpstreamError`      |
 | Timeout                        | Abort after the module's timeout       | `UpstreamTimeout`; surface as "temporarily unavailable"       |
 | HTTP 429                       | Status code                            | Honour `Retry-After`; cache the error briefly; do not hammer  |
-| HTTP 404 from an upstream      | Status code                            | `NoDataError` — **not an error**; record a data gap           |
+| HTTP 404 from an upstream      | Status code                            | `NoDataError`, **not an error**; record a data gap           |
 | HTTP 200 with `null` values    | Schema validation                     | Treat as **no data**, not as zero                            |
 | `-999` fill values             | `header.fill_value`                    | Drop and recompute coverage fraction                          |
 | Partial coverage               | `coverageFraction < 1`                 | Store the value with the fraction; confidence drops           |
@@ -197,7 +197,7 @@ pitch.**
 | Source                | Documented limit                                | Our strategy                                       |
 | --------------------- | ----------------------------------------------- | -------------------------------------------------- |
 | NASA POWER            | No published number; **blocks repeated calls**  | Cache per grid cell. One call per cell, ever.       |
-| NASA POWER regional   | 1 parameter per request; bbox ≥ 2° × 2°          | **Not used** — use the point endpoint.              |
+| NASA POWER regional   | 1 parameter per request; bbox ≥ 2° × 2°          | **Not used**: use the point endpoint.              |
 | SoilGrids            | **5 calls / minute** (Fair Use Policy)          | **Pre-baked.** Zero live calls.                     |
 | Open-Meteo            | 600/min, 5,000/hr, 10,000/day, 300,000/mo; **per IP + per app**; Vercel may be limited earlier | Cache 1 hour. Optionally route through a Cloudflare Worker. |
 | Earthdata CMR        | UNVERIFIED                                      | Metadata-only, cached.                              |
@@ -207,7 +207,7 @@ pitch.**
 **The Vercel warning deserves attention.** Open-Meteo applies limits per IP
 *and* per application, and warns that serverless platforms may exhaust them
 faster. If the demo is under pressure, a Cloudflare Worker in front of
-Open-Meteo is the documented escape hatch — a small, cheap mitigation worth
+Open-Meteo is the documented escape hatch, a small, cheap mitigation worth
 keeping in reserve.
 
 ---
@@ -217,7 +217,7 @@ keeping in reserve.
 | Data class                | Refresh                          | Reason                                              |
 | ------------------------- | -------------------------------- | ---------------------------------------------------- |
 | POWER climatology         | Never (annual refresh)           | Multi-year baseline is stable                        |
-| POWER daily (last 90 d)   | **Rolling refresh**              | The archive is superseded for ~2–3 months             |
+| POWER daily (last 90 d)   | **Rolling refresh**              | The archive is superseded for ~2 to 3 months          |
 | POWER daily (> 90 d old)  | **Frozen**                       | Final and immutable                                  |
 | SoilGrids                 | Never                           | Static predictions                                   |
 | SMAP                      | 7 days                          | Near-real-time; a later run may improve a flagged value |
@@ -293,14 +293,14 @@ and the UI can render attribution generically.
 
 | Step | Work                                                              | Risk |
 | ---- | ----------------------------------------------------------------- | ---- |
-| 1    | `lib/integrations/nasa-power` — daily, monthly, climatology, point only | Low |
+| 1    | `lib/integrations/nasa-power`: daily, monthly, climatology, point only | Low |
 | 2    | `lib/cache` + `environmental_observations` + `grid_cells` tables   | Low |
-| 3    | `lib/integrations/soilgrids` — **pre-baked tile lookup**, not live   | Medium (service degraded) |
-| 4    | `lib/integrations/open-meteo` — forecast + historical              | Low |
-| 5    | `scripts/geospatial/precompute-region.ts` — bake the demo region   | Medium |
+| 3    | `lib/integrations/soilgrids`: **pre-baked tile lookup**, not live   | Medium (service degraded) |
+| 4    | `lib/integrations/open-meteo`: forecast + historical              | Low |
+| 5    | `scripts/geospatial/precompute-region.ts`: bake the demo region   | Medium |
 | 6    | `lib/integrations/nasa-cmr` + AppEEARS (SMAP, MODIS)               | Medium (auth) |
-| 7    | `lib/integrations/gee` — Sentinel-2, Landsat, MODIS                | High (setup) |
+| 7    | `lib/integrations/gee`: Sentinel-2, Landsat, MODIS                | High (setup) |
 | 8    | CHIRPS via ERDDAP                                                  | Medium |
 
-**Steps 1–5 are the MVP path** and need no account beyond Supabase.
-Steps 6–8 are enhancements.
+**Steps 1 to 5 are the MVP path** and need no account beyond Supabase.
+Steps 6 to 8 are enhancements.

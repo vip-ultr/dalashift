@@ -1,4 +1,4 @@
-# DalaShift — Web Application
+# DalaShift: Web Application
 
 The Next.js application: user-facing product surface **and** the server-side
 integration layer for NASA Earth observation data, Supabase and the agricultural
@@ -24,7 +24,7 @@ The app is served at <http://localhost:3000>.
 | ---------------- | ------------------------------------------------------------------ |
 | `src/app/`       | App Router routes and API route handlers                            |
 | `src/components/`| Presentational, reusable UI (`ui/`, `layout/`, `dashboard/`, …)     |
-| `src/features/`  | Vertical feature slices — the unit of product work                  |
+| `src/features/`  | Vertical feature slices: the unit of product work                  |
 | `src/lib/`       | Integrations, geospatial helpers, Supabase clients, utilities       |
 | `src/hooks/`     | Shared React hooks                                                  |
 | `src/types/`     | App-local TypeScript types                                          |

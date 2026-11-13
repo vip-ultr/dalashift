@@ -5,7 +5,7 @@
  *   node scripts/validation/check-markdown-links.mjs
  *
  * Exits non-zero if any relative link points at a file that does not exist.
- * Absolute URLs are not fetched — this checks structure, not the network.
+ * Absolute URLs are not fetched. This checks structure, not the network.
  */
 import fs from 'node:fs';
 import path from 'node:path';

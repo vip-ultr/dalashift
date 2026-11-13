@@ -1,15 +1,15 @@
-# NASA Space Apps Challenge 2026 — Participation Reference
+# NASA Space Apps Challenge 2026: Participation Reference
 
 **All facts on this page were verified on 2026-11-13 against official NASA
 Space Apps sources.** Where something could not be verified, it is listed in
-[§ 9 — Unverified / needs confirmation](#9-unverified--needs-confirmation)
+[§ 9: Unverified / needs confirmation](#9-unverified--needs-confirmation)
 rather than asserted.
 
-> **The most important date: the 2026 challenge runs Saturday 14 – Sunday 15
+> **The most important date: the 2026 challenge runs Saturday 14 to Sunday 15
 > November 2026.** That is *tomorrow*. The Kano Local Event starts at 09:00 on
 > Saturday at EHealth Africa, Badawa, Kano.
 >
-> Source: <https://www.spaceappschallenge.org/resources/participant-faqs/> —
+> Source: <https://www.spaceappschallenge.org/resources/participant-faqs/>
 > *"The 2026 NASA Space Apps Challenge will take place November 14-15, 2026."*
 
 ---
@@ -28,7 +28,7 @@ rather than asserted.
 > soil information, crop characteristics, and farmer priorities to help farmers
 > explore rotation strategies that could strengthen soil health and adapt their
 > farms to changing conditions."*
-> — verbatim, official 2026 challenge statement
+> Source: verbatim, official 2026 challenge statement
 
 This is a **direct match** for this product, and the working name **DalaShift**
 is derived from it.
@@ -58,8 +58,8 @@ statement says:
 
 | Addition                                                  | PRD reference |
 | --------------------------------------------------------- | ------------- |
-| **Crop rotation strategy comparison** — the farmer's current rotation plus at least three alternatives, each with evidence, benefits, information gaps and risks | `FR-8` (new) |
-| **Farmer priorities** as an explicit input — what the farmer wants the rotation to achieve | `FR-2.13` (new) |
+| **Crop rotation strategy comparison**: the farmer's current rotation plus at least three alternatives, each with evidence, benefits, information gaps and risks | `FR-8` (new) |
+| **Farmer priorities** as an explicit input: what the farmer wants the rotation to achieve | `FR-2.13` (new) |
 | **ECOSTRESS** (evapotranspiration), **GRACE/GRACE-FO** (groundwater), **SRTM** (elevation) added to the candidate source list | `docs/api/data-sources.md` |
 
 **[Proposed]** The comparison requirement fits our existing architecture
@@ -73,10 +73,10 @@ recommendation engine, not a new subsystem.
 
 | Challenge                                                              | Fit for a Kano team                                                                 |
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Dancing with the SARs](https://www.spaceappschallenge.org/2026/challenges/dancing-with-the-sars/) | Good — NISAR, "farming activities" as a surface-change type. Less aligned with our built product. |
-| [Harmonization of MODIS and VIIRS Hot Spots](https://www.spaceappschallenge.org/2026/challenges/modis-and-viirs-hot-spots/) | Good — "agricultural burns", a real northern Nigeria problem (annual bush burning). A second viable option. |
-| [Be An Earth System Trend Detective!](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/) | Medium — trend analysis across Earth science variables; our monitoring feature fits. |
-| [The Earth Information Jukebox](https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/) | Low — sonification. Different product. |
+| [Dancing with the SARs](https://www.spaceappschallenge.org/2026/challenges/dancing-with-the-sars/) | Good: NISAR, "farming activities" as a surface-change type. Less aligned with our built product. |
+| [Harmonization of MODIS and VIIRS Hot Spots](https://www.spaceappschallenge.org/2026/challenges/modis-and-viirs-hot-spots/) | Good: "agricultural burns", a real northern Nigeria problem (annual bush burning). A second viable option. |
+| [Be An Earth System Trend Detective!](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/) | Medium: trend analysis across Earth science variables; our monitoring feature fits. |
+| [The Earth Information Jukebox](https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/) | Low: sonification. Different product. |
 
 **Decision required from the team.** Our recommendation is **Field Shift**.
 The name of the project already points at it, and the challenge brief is
@@ -88,21 +88,21 @@ written for exactly this product.
 
 | Aspect              | Detail                                                                                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Format**          | One global event, **14–15 November 2026**, with two participation pools: **Local Events** (~596) and the **Universal Event** (virtual, anywhere). |
-| **Our pool**        | **Kano Local Event** — in person. All team members must be registered at the **same** Local Event.                      |
+| **Format**          | One global event, **14 to 15 November 2026**, with two participation pools: **Local Events** (~596) and the **Universal Event** (virtual, anywhere). |
+| **Our pool**        | **Kano Local Event** (in person). All team members must be registered at the **same** Local Event.                      |
 | **Countries**       | 116 countries host local events in 2026.                                                                                |
-| **Challenges**      | **14 global challenges** — the same catalog for Local and Universal Events. Each team addresses **one** challenge.      |
+| **Challenges**      | **14 global challenges**: the same catalog for Local and Universal Events. Each team addresses **one** challenge.       |
 | **Judging**         | Local judges → **Global Nominees** → Global judging → 10 Global Awards. Universal Event projects are judged **separately** against other Universal submissions. |
-| **Nigeria partner** | **NASRDA** (National Space Research and Development Agency) is one of the 17 Space Agency Partners for 2026 — <https://www.spaceappschallenge.org/2026/space-agency-partners/> |
+| **Nigeria partner** | **NASRDA** (National Space Research and Development Agency) is one of the 17 Space Agency Partners for 2026: <https://www.spaceappschallenge.org/2026/space-agency-partners/> |
 
 > *"You may participate in an in-person or virtual Local Event near you or the
 > virtual Universal Event if there is not an event near you."*
-> — Participant FAQs
+> Source: Participant FAQs
 
 > *"We highly encourage participants to join a Local Event near them if they
 > have the option rather than the Universal Event. Local Events provide access
 > to a closer community, coaching opportunities, and many are in-person."*
-> — Participant FAQs
+> Source: Participant FAQs
 
 > **Critical rule:** *"All team members must be confirmed participants at the
 > same Local Event in order for your team's project to be eligible for awards."*
@@ -116,14 +116,14 @@ written for exactly this product.
 
 | Field        | Value                                                                                  |
 | ------------ | -------------------------------------------------------------------------------------- |
-| Name         | NASA Space Apps Challenge – Kano Local Event 2026                                       |
+| Name         | NASA Space Apps Challenge: Kano Local Event 2026                                        |
 | Location     | Kano, Kano State, Nigeria                                                                |
-| Venue        | **EHealth Africa, 4–6 Independence Rd, Badawa, 700213, Kano**                            |
-| Format       | In person — status **"Accepting Participants"**                                          |
-| Local Lead   | **Abdulkadir Nuhu Aminu** — `abduldesertsky@gmail.com` — **+2348097766776** (WhatsApp)     |
+| Venue        | **EHealth Africa, 4 to 6 Independence Rd, Badawa, 700213, Kano**                         |
+| Format       | In person, status **"Accepting Participants"**                                           |
+| Local Lead   | **Abdulkadir Nuhu Aminu**, `abduldesertsky@gmail.com`, **+2348097766776** (WhatsApp)     |
 | Organiser    | Desert Sky Exploration                                                                  |
 | Tagline      | "Think Global. Innovate Local. Build for Earth and Space."                                |
-| Start        | **Saturday, 14 November 2026, 09:00** (livestream 14–15 Nov)                              |
+| Start        | **Saturday, 14 November 2026, 09:00** (livestream 14 to 15 Nov)                           |
 | Registrations| 230 (counted 2026-11-13)                                                                  |
 
 **The Kano event page explicitly steers local problems toward our subject
@@ -166,25 +166,25 @@ local judging → project demonstrations → awards and closing ceremony.
 | City        | Format              | Registrations | Local Lead                    |
 | ----------- | ------------------- | ------------- | ----------------------------- |
 | **Kano**    | In person           | 230           | Abdulkadir Nuhu Aminu         |
-| Lagos       | In person           | 145           | —                             |
+| Lagos       | In person           | 145           | None                          |
 | Abuja       | Virtual & in person | 134           | Isah Daniel Ugbede            |
 | Ibadan      | Virtual             | 90            | `1stspacemanxavier@gmail.com` |
-| Gombe       | In person           | 33            | —                             |
-| Ogbomoso    | Virtual             | 29            | —                             |
-| Tigbo-Ilu   | Virtual & in person | 25            | —                             |
-| Nsukka      | In person           | 14            | —                             |
-| Azare       | In person           | 13            | —                             |
-| Osogbo      | Virtual & in person | 6             | —                             |
+| Gombe       | In person           | 33            | None                          |
+| Ogbomoso    | Virtual             | 29            | None                          |
+| Tigbo-Ilu   | Virtual & in person | 25            | None                          |
+| Nsukka      | In person           | 14            | None                          |
+| Azare       | In person           | 13            | None                          |
+| Osogbo      | Virtual & in person | 6             | None                          |
 
 **[Open]** If any team member cannot be in Kano, **the whole team must move to
-one event together** — a Kano team cannot mix with an Abuja member. Decide
+one event together**: a Kano team cannot mix with an Abuja member. Decide
 before registering.
 
 ---
 
 ## 4. Rules that directly affect this repository
 
-### 4.1 Open source — the licence decision is now binding
+### 4.1 Open source: the licence decision is now binding
 
 Source: <https://www.spaceappschallenge.org/legal/> (Participant Terms &
 Conditions, updated 7 August 2026), "Intellectual Property Rights in
@@ -234,14 +234,14 @@ judging criterion rewards this:
 
 > *"It meaningfully integrates NASA data, utilizing it as a core component of
 > the proposed solution rather than a superficial addition."*
-> — a 5/5 Relevance score is *"NASA data is integral to the project's success."*
+> A 5/5 Relevance score is *"NASA data is integral to the project's success."*
 
 **This is why the challenge says "Field Shift" and why NASA data must be
 structural, not decorative.** Our architecture already satisfies this: NASA
 POWER, SMAP, GPM/IMERG, MODIS and Landsat are the backbone of the
 environmental layer.
 
-### 4.3 Super Intelligence (SI / AI) usage — disclosure is required
+### 4.3 Super Intelligence (SI / AI) usage: disclosure is required
 
 NASA's 2026 rules define "Super Intelligence" (SI) explicitly, and the FAQ
 cites a 29 September 2026 US Executive Order requiring the term.
@@ -251,13 +251,13 @@ cites a 29 September 2026 US Executive Order requiring the term.
 > and problem-solving. Examples include large language models, conversational
 > assistants, image and video generation tools, foundation models, and code
 > generation tools."*
-> — Participant FAQs
+> Source: Participant FAQs
 
 > *"Participants may use SI tools to accelerate innovation, streamline
 > development, and enhance creativity in support of their challenge solution.
 > **Each team's project submission must include a description of how SI tools
 > were used during the development of their project.**"*
-> — Participant FAQs
+> Source: Participant FAQs
 
 From the Project Submission Guide's "Use of Super Intelligence (SI)" field:
 
@@ -276,13 +276,13 @@ From the Project Submission Guide's "Use of Super Intelligence (SI)" field:
 > not be seen by the judges. However, judges will be able to see any SI-generated
   indicators within your project."*
 
-**Consequences for this repository — and they are significant:**
+**Consequences for this repository. They are significant:**
 
 | Requirement                   | How DalaShift must comply                                                                 |
 | ----------------------------- | ----------------------------------------------------------------------------------------- |
 | Describe how SI was used      | A written account of the AI-assisted development of this repository. Must be submitted.      |
 | SI must not originate the idea | The product idea came from the team. The AI-assisted work is implementation and research.   |
-| No NASA branding in SI content | No NASA logos, flags or mission identifiers in anything AI-generated — **including this repo's imagery**. |
+| No NASA branding in SI content | No NASA logos, flags or mission identifiers in anything AI-generated, **including this repo's imagery**. |
 | Acknowledge SI in code        | AI-generated code must be acknowledged in text and metadata. A `NOTICE` / `CONTRIBUTING` note and a per-file convention. |
 
 **[Proposed]** The submission's SI disclosure should state plainly:
@@ -294,9 +294,9 @@ generate any NASA-branded imagery.
 This is also an **ethical and product** matter for us: our entire product
 premise is that recommendations must be traceable and non-fabricated. An AI
 that wrote the agronomic catalog would undermine it. Our rules engine design
-(ADR-0004) and this rule are aligned — good.
+(ADR-0004) and this rule are aligned. Good.
 
-### 4.4 Citation is mandatory — including for open-source resources
+### 4.4 Citation is mandatory, including for open-source resources
 
 Source: <https://www.spaceappschallenge.org/legal/>, "Use of Third-Party
 Materials":
@@ -329,8 +329,8 @@ Required submission checkbox #2:
    References field.**
 2. **Every npm dependency must be citable.** A `THIRD_PARTY_NOTICES` /
    `NOTICE` file listing the direct dependencies and their licences is
-   required — this is also good practice for the repository.
-3. **Our crop-calendar and crop-requirement sources must be cited** — the
+   required. This is also good practice for the repository.
+3. **Our crop-calendar and crop-requirement sources must be cited**: the
    Sacks et al. (2010) dataset and every agronomic reference in the catalog.
 
 ### 4.5 Eligibility and conduct
@@ -358,25 +358,26 @@ Source: <https://www.spaceappschallenge.org/resources/team-formation-guide/>
 - Team photo optional; must not contain under-18 likenesses.
 - Team Owners must publish a "Team Contact Information" field on the About tab.
 
-**[Proposed]** Our team of three is within the limit. The ideal is 4–5, but
+**[Proposed]** Our team of three is within the limit. The ideal is 4 to 5, but
 we cannot invent members. **Freeze the roster before the hackathon starts.**
 
 ### 4.7 Pre-hackathon work
 
 > *"Teams are not allowed to begin working on the challenges prior to the
-> hackathon."* — Participant FAQs
+> hackathon."*
+> Source: Participant FAQs
 
 Challenge **summaries** were released 17 September 2026; **full statements**
 on 28 October 2026; **challenge Resources tabs** on 13 November 2026.
 
-**[Open — team judgement required]** This repository's Phase 1 work was
-research, product definition and architecture — **not** a working solution to
+**[Open: team judgement required]** This repository's Phase 1 work was
+research, product definition and architecture, **not** a working solution to
 the challenge. The distinction matters and should be stated accurately if
 asked:
 
 - We have **not** implemented the challenge solution. No functional product
   exists.
-- We have researched data sources and NASA Space Apps rules — the same
+- We have researched data sources and NASA Space Apps rules, the same
   research every team would do.
 - The **idea** predates any AI assistance and is the team's own.
 
@@ -389,20 +390,20 @@ advance.
 **[Proposed] Two notes on how this should be handled.**
 
 1. **The rule's target is the pre-built solution, not preparation.** Reading
-   the challenge statement is obviously permitted — NASA published the full
+   the challenge statement is obviously permitted: NASA published the full
    statements on 28 October and the Resources tabs point teams at the
    datasets. Preparing tooling and understanding the data is what the
    challenge's own plan of activities lists as *"data exploration"*.
 2. **The pre-work language appears in the Participant FAQs, which are
    guidance. It was not found in the binding Participant Terms & Conditions**
-   during our review of the legal page — that document covers IP and
+   during our review of the legal page: that document covers IP and
    open-source licensing, third-party materials and citation, eligibility,
    the China-affiliation restriction, export control and liability.
    **[Open]** Confirm with the Local Lead whether the pre-event position
    matters for the local judging panel.
 
 **[Proposed] Do not rewrite the git history.** Rewriting timestamps is
-discoverable — GitHub retains push events and the original author dates — and
+discoverable (GitHub retains push events and the original author dates) and
 it converts a defensible position into something that looks considerably
 worse if noticed. Force-pushing shared history the day before the event also
 risks losing work. **State the timeline plainly instead:** the repository
@@ -412,7 +413,7 @@ event.
 
 **[Proposed] If asked directly, answer straight and do not hedge:**
 
-> *"We did the data-source research and the architecture in advance — it is
+> *"We did the data-source research and the architecture in advance: it is
 > documented with citations and verification dates. The application itself was
 > built during the event."*
 
@@ -452,9 +453,9 @@ Best Use of Science · Best Use of Data · Best Use of Technology · Galactic
 Impact · Best Mission Concept · Most Inspirational · Best Storytelling Award ·
 Global Connection Award · Art & Technology Award · **Local Impact Award**
 
-> **Local Impact Award** — *"The project that demonstrates the greatest
+> **Local Impact Award**: *"The project that demonstrates the greatest
 > potential for making a difference in their local community."*
-> — <https://www.spaceappschallenge.org/awards/>
+> Source: <https://www.spaceappschallenge.org/awards/>
 
 **[Proposed]** The Local Impact Award is the most winnable for a Kano team,
 and our validation location (Tofa LGA, Kano State) is exactly the kind of
@@ -478,9 +479,9 @@ Source: <https://www.spaceappschallenge.org/resources/project-submission-guide/>
 | 5 | **Detailed Project Description**             | *"What exactly does it do? How does it work? What benefits does it have? What do you hope to achieve? What tools, coding languages, hardware, or software did you use to develop your project?"* |
 | 6 | **Use of Super Intelligence (SI)**            | Disclosure. Not seen by judges, but SI markers are.                                                          |
 | 7 | **NASA Data**                                | *"Provide specific details about what NASA data and resources you used."*                                     |
-| 8 | **Space Agency Partner Data and Other References** | The full citations list — **everything**, including open-source code.                                     |
+| 8 | **Space Agency Partner Data and Other References** | The full citations list: **everything**, including open-source code.                                      |
 
-### 6.2 The demo — mandatory, with hard limits
+### 6.2 The demo: mandatory, with hard limits
 
 > *"**All teams must create a Project Demo** as part of their project
 > submission."*
@@ -488,7 +489,7 @@ Source: <https://www.spaceappschallenge.org/resources/project-submission-guide/>
 | Constraint           | Rule                                                                                                     |
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | **Format**           | **Video ≤ 30 seconds** OR **slide deck ≤ 7 slides** (including title and intro slides).                     |
-| **Hosting**          | External — *"You will not be able to upload your video or slides to the NASA Space Apps website."*          |
+| **Hosting**          | External: *"You will not be able to upload your video or slides to the NASA Space Apps website."*           |
 | **Accessibility**    | *"The link you provide should not require a password, permission, or registration."* **Test in a private browser.** |
 | **Language**         | *"You must use English language on the project submission page and in any linked materials."* A video may be in another language but **must include English subtitles**. Slide decks must be in English. |
 | **Eligibility**     | *"Projects that exceed these limits will not be eligible for Global Judging."*                              |
@@ -496,13 +497,13 @@ Source: <https://www.spaceappschallenge.org/resources/project-submission-guide/>
 
 Suggested video structure (from the guide): 0:00 introduce yourself/team →
 0:02 which challenge → 0:05 project title + tagline → 0:10 how it works + NASA
-data → 0:20–0:30 the future.
+data → 0:20 to 0:30 the future.
 
 ### 6.3 File upload rules
 
 - The project page **allows** images (JPG, PNG, GIF, up to 10 MB) by upload or
   copy-paste.
-- The project page **does not allow** video or document uploads — host those
+- The project page **does not allow** video or document uploads; host those
   externally.
 - If the project is a website, NASA recommends requesting a **FortiGuard Web
   Filter Classification** (Category: education / personal website / reference /
@@ -511,7 +512,7 @@ data → 0:20–0:30 the future.
 ### 6.4 Submission mechanics
 
 1. Profile icon → **"My Team"** → **"Project"** tab → blue **"Edit"** button.
-2. **"Save Progress"** as you go — changes are team-private until submitted.
+2. **"Save Progress"** as you go: changes are team-private until submitted.
 3. The "Project" tab appears only once the hackathon starts: *"The 'Project'
    tab will appear only when the hackathon begins on November 14, 2026 at 9:00
    a.m. local time."*
@@ -539,11 +540,11 @@ Local awards are **separate** from the Global process. Selected projects become
 | 17 September 2026                        | Challenge summaries available; team formation opens                    |
 | 23 September 2026                        | Team Formation Guide published                                         |
 | 28 October 2026                          | Full challenge statements available                                    |
-| 3 November 2026                         | Space Apps Connect opens (the registration PDF says 2 Nov — treat as 3) |
+| 3 November 2026                         | Space Apps Connect opens (the registration PDF says 2 Nov; treat as 3)  |
 | 12 November 2026                        | Project Submission Guide and Judging & Awards Guide published          |
 | **13 November 2026**                    | Challenge Resources tabs published; Global Offers available            |
 | **14 November 2026, 09:00 local**        | **Project submission opens**; Kano event starts at EHealth Africa      |
-| **15 November 2026, 23:59 local**        | **Project submission CLOSES** — *"Any projects saved or submitted past this deadline will not be eligible for judging."* |
+| **15 November 2026, 23:59 local**        | **Project submission CLOSES**: *"Any projects saved or submitted past this deadline will not be eligible for judging."* |
 | 30 November 2026                        | Participant survey due                                                 |
 | After the hackathon                      | Kano local judging → global judging                                     |
 | 3 December 2026                          | Global Nominees announced                                               |
@@ -552,7 +553,7 @@ Local awards are **separate** from the Global process. Selected projects become
 
 > *"Check with your Local Lead about times for your Local Event's local judging
 > and awards which may differ from the global submission times."*
-> — Participant FAQs
+> Source: Participant FAQs
 
 ---
 
@@ -562,36 +563,36 @@ Local awards are **separate** from the Global process. Selected projects become
 
 - [ ] **Register all three members for the Kano Local Event.** All members must
       be at the same event. <https://www.spaceappschallenge.org>
-- [ ] **Confirm the challenge selection** — recommendation: *Field Shift:
+- [ ] **Confirm the challenge selection**, recommendation: *Field Shift:
       Adapting Farms with NASA Data*.
 - [ ] **Contact the Local Lead** (`abduldesertsky@gmail.com`,
       **+2348097766776**) to confirm: venue, the Sunday schedule, local judging
       time, the demo/pitch slot, internet/power availability, and parking.
-- [ ] **Choose an OSI licence and write it into `LICENSE`** — blocking
+- [ ] **Choose an OSI licence and write it into `LICENSE`**: blocking
       requirement ([ADR-0001](./../decisions/ADR-0001-open-source-license.md)).
 - [ ] **Decide repository visibility** ([ADR-0009](./../decisions/ADR-0009-repository-visibility.md)).
 - [ ] **Create a `THIRD_PARTY_NOTICES.md`** listing every direct dependency and
       data source with its licence.
 - [ ] **Write the SI disclosure text** for the submission.
-- [ ] **Freeze the team roster** — no members added after submission closes.
+- [ ] **Freeze the team roster**: no members added after submission closes.
 - [ ] **Pre-register Google Earth Engine** (Community Tier) if we plan to use
-      it — see `docs/api/google-earth-engine.md`. Registration and the
-      noncommercial questionnaire can take 1–2 hours.
+      it, see `docs/api/google-earth-engine.md`. Registration and the
+      noncommercial questionnaire can take 1 to 2 hours.
 - [ ] **Create the NASA Earthdata account** if any DAAC access is needed
       (<https://urs.earthdata.nasa.gov>).
 - [ ] **Register the Supabase project** and set up the demo farm fixtures.
 - [ ] **Check the challenge Resources tabs** for the authoritative dataset URLs
       the judges expect to be cited.
 
-### 8.2 During the hackathon (14–15 November)
+### 8.2 During the hackathon (14 to 15 November)
 
-- [ ] Build to the MVP list in `PRD.md` § 11 — do not expand scope.
+- [ ] Build to the MVP list in `PRD.md` § 11; do not expand scope.
 - [ ] Produce the demo: **≤30-second video OR ≤7 slides**, in English.
-- [ ] Prepare the References list — **everything**, including open source.
+- [ ] Prepare the References list: **everything**, including open source.
 - [ ] Prepare the NASA Data field with **specific** dataset names and how each
       was used.
 - [ ] Prepare the SI disclosure.
-- [ ] Seed the demo data before the pitch — **never depend on a live upstream
+- [ ] Seed the demo data before the pitch; **never depend on a live upstream
       call during the demo**.
 - [ ] **Save Progress** frequently on the submission page.
 - [ ] **Test every link in a private browser window** before submitting.
@@ -605,9 +606,9 @@ Local awards are **separate** from the Global process. Selected projects become
 | - | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- |
 | 1 | **Kano's detailed schedule.** Only "SATURDAY, NOVEMBER 14 09:00" is published. Local judging time, pitch slots and Sunday's end time are **not published**. | Determines when the demo must be finished. | Ask the Local Lead. |
 | 2 | **Challenge "Resources" tabs** all showed "Resources will be available on Friday, November 13." at the time of checking. | These are the authoritative NASA dataset URLs judges expect to be cited. | Re-check each challenge page's Resources tab. |
-| 3 | **"Global Offers" (13 November)** — listed in the FAQ but no stable page URL was reachable. | Free tools from the 2026 Global Collaborators (Microsoft, Google, Meteomatics, GoDaddy, Miro). | Watch <https://www.spaceappschallenge.org/2026/> and <https://github.com/nasa/spaceapps>. |
+| 3 | **"Global Offers" (13 November)**: listed in the FAQ but no stable page URL was reachable. | Free tools from the 2026 Global Collaborators (Microsoft, Google, Meteomatics, GoDaddy, Miro). | Watch <https://www.spaceappschallenge.org/2026/> and <https://github.com/nasa/spaceapps>. |
 | 4 | Whether non-Kano participants may register for the **in-person** Kano event, and under-18 requirements. | *"Local Events may have additional requirements for persons under 18 to be eligible to participate in person. Check with your Local Lead."* | Ask the Local Lead. |
-| 5 | **Venue logistics** — internet bandwidth, power/charging, catering, parking, whether "EHealth Africa, 4–6 Independence Rd, Badawa" is final. | Determines whether we can rely on cloud APIs and live raster processing on site. | Ask the Local Lead / the event page's "Venue Details" tab. |
+| 5 | **Venue logistics**: internet bandwidth, power/charging, catering, parking, whether "EHealth Africa, 4 to 6 Independence Rd, Badawa" is final. | Determines whether we can rely on cloud APIs and live raster processing on site. | Ask the Local Lead / the event page's "Venue Details" tab. |
 | 6 | **Local judging rubric / local award categories** for Kano. | Local awards are set by the Local Lead. | Ask the Local Lead. |
 | 7 | **Space Apps Connect open date: 2 November (PDF) vs 3 November (FAQ).** | Affects when the team chat opens. | Treat as 3 November; verify on <https://github.com/nasa/spaceapps>. |
 | 8 | Whether members can in practice be added between 14 Nov 09:00 and the 15 Nov 23:59 cut-off (the Team Formation Guide and the Judging Guide differ in emphasis). | Team composition. | **Plan for a frozen roster by 14 Nov 09:00.** |
@@ -625,22 +626,22 @@ All URLs verified reachable on **2026-11-13**.
 | 1 | <https://www.spaceappschallenge.org/resources/participant-faqs/>                                       | Dates, eligibility, team rules, SI definition, important dates, Universal Event rules |
 | 2 | <https://www.spaceappschallenge.org/legal/>                                                            | Participant Terms & Conditions (updated 7 Aug 2026): IP/open source, third-party citation, China restriction, under-18 media, export control |
 | 3 | <https://www.spaceappschallenge.org/resources/project-submission-guide/>                                | Submission window, 8 project fields, demo spec, file rules, SI disclosure, "at least one NASA data or resource", References |
-| 4 | <https://www.spaceappschallenge.org/resources/judging-awards-guide/>                                   | 5 judging criteria + 1–5 rubrics, Global Judging checklist, judging dates, 10 awards |
-| 5 | <https://www.spaceappschallenge.org/resources/team-formation-guide/>                                  | Team size (1–6), one team/one challenge, Team Owner rules, member deadline |
+| 4 | <https://www.spaceappschallenge.org/resources/judging-awards-guide/>                                   | 5 judging criteria + 1 to 5 rubrics, Global Judging checklist, judging dates, 10 awards |
+| 5 | <https://www.spaceappschallenge.org/resources/team-formation-guide/>                                  | Team size (1 to 6), one team/one challenge, Team Owner rules, member deadline |
 | 6 | <https://www.spaceappschallenge.org/2026/challenges/>                                                   | The 14 challenges, verbatim summaries, subjects, difficulty |
-| 7 | <https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/>                     | **The Field Shift statement** — background, objectives, potential considerations |
+| 7 | <https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/>                     | **The Field Shift statement**: background, objectives, potential considerations |
 | 8 | <https://www.spaceappschallenge.org/2026/local-events/kano/>                                           | Kano 2026 event: venue, lead, schedule, local problem areas |
 | 9 | <https://www.spaceappschallenge.org/2026/local-events/abuja/> · `/lagos/` · `/ibadan/` · `/gombe/` · `/nsukka/` · `/azare/` · `/ogbomoso/` · `/osogbo/` · `/tigbo-ilu/` | Other Nigeria 2026 events |
 | 10 | <https://www.spaceappschallenge.org/2026/local-events/universal-event/>                                | Universal Event rules |
 | 11 | <https://www.spaceappschallenge.org/2026/space-agency-partners/>                                       | 17 partners incl. Nigeria NASRDA |
 | 12 | <https://www.spaceappschallenge.org/awards/>                                                          | 10 Global Award definitions |
 | 13 | <https://www.spaceappschallenge.org/blog/explore-the-next-frontier-at-the-2026-nasa-space-apps-challenge> | Theme "The Next Frontier", 2025 statistics, event counts |
-| 14 | <https://science.nasa.gov/universe/nasa-welcomes-all-ages-experience-levels-for-space-apps-challenge> | NASA.gov confirmation of the Nov 14–15 dates and "500+ local events" |
+| 14 | <https://science.nasa.gov/universe/nasa-welcomes-all-ages-experience-levels-for-space-apps-challenge> | NASA.gov confirmation of the Nov 14 to 15 dates and "500+ local events" |
 | 15 | <https://github.com/nasa/spaceapps>                                                                    | Official Space Apps Connect forum |
 | 16 | <https://www.opensource.org/docs/osd> · <https://www.opensource.org/licenses/Apache-2.0>             | OSI definition and the Apache-2.0 fallback licence |
 
 ---
 
 **Verification date for this entire document: 2026-11-13.** Re-verify anything
-you rely on for a deadline — the rules page was last updated 7 August 2026
+you rely on for a deadline: the rules page was last updated 7 August 2026
 and the submission guide on 12 November 2026.

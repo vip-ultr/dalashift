@@ -1,7 +1,7 @@
 /**
  * Canonical constants shared across the DalaShift monorepo.
  *
- * Phase 1: these are the vocabulary the whole system agrees on — units,
+ * Phase 1: these are the vocabulary the whole system agrees on: units,
  * variable identifiers, spatial resolutions and quality flags. Anything that
  * appears in more than one package belongs here.
  *
@@ -92,7 +92,7 @@ export type QualityFlag = (typeof QUALITY_FLAGS)[number];
  * The resolution ladder.
  *
  * These are the *real* spatial resolutions of the sources we integrate, in
- * metres. They exist so that no code — and no screen — ever implies more
+ * metres. They exist so that no code, and no screen, ever implies more
  * precision than the source has.
  *
  * See docs/api/data-sources.md for the source of every number.

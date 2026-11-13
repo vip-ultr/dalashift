@@ -1,4 +1,4 @@
-# Documentation — `docs/design/`
+# Documentation: `docs/design/`
 
 Visual direction and interface standards.
 
@@ -10,7 +10,7 @@ Visual direction and interface standards.
 
 ## Status
 
-**Phase 1 — the direction is proposed; the brand identity is not finalised.**
+**Phase 1: the direction is proposed; the brand identity is not finalised.**
 
 The token set in `apps/web/src/app/globals.css` is deliberately neutral so
 that no brand colour is asserted before the team confirms the direction. A
@@ -22,7 +22,7 @@ final visual identity is a design-phase deliverable.
 
 **The interface must never overstate what it knows.**
 
-This is not an aesthetic principle — it is a functional requirement that
+This is not an aesthetic principle; it is a functional requirement that
 determines the layout:
 
 - Every data card carries a **provenance line**: the source, the resolution in
@@ -37,8 +37,8 @@ determines the layout:
 
 ## Reading order
 
-1. [`design-system.md`](./design-system.md) — the direction and the rules.
-2. [`../product/user-flows.md`](../product/user-flows.md) — what the screens
+1. [`design-system.md`](./design-system.md): the direction and the rules.
+2. [`../product/user-flows.md`](../product/user-flows.md): what the screens
    actually do.
-3. [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) § 3 — the frontend
+3. [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) § 3: the frontend
    architecture those rules sit inside.

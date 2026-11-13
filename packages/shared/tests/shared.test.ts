@@ -50,7 +50,7 @@ describe('provenancedValueSchema', () => {
     expect(provenancedValueSchema.safeParse(withoutResolution).success).toBe(false);
   });
 
-  it('rejects a coverage fraction outside 0–1', () => {
+  it('rejects a coverage fraction outside 0 to 1', () => {
     expect(provenancedValueSchema.safeParse({ ...valid, coverageFraction: 1.5 }).success).toBe(
       false,
     );

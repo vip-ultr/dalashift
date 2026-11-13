@@ -1,4 +1,4 @@
-# Google Earth Engine — Assessment and Recommendation
+# Google Earth Engine: Assessment and Recommendation
 
 **Verification date: 2026-11-13.** Companion to
 [`data-sources.md`](./data-sources.md).
@@ -14,14 +14,14 @@ A cloud platform for server-side geospatial analysis over NASA, USGS, ESA,
 JAXA and community datasets, with JavaScript and Python APIs and an `ee`-backed
 REST service.
 
-**Why we care:** it is the only route to **10–30 m farm-scale pixels for
+**Why we care:** it is the only route to **10 to 30 m farm-scale pixels for
 free**. Without it, our best farm-scale source is Landsat at 30 m, which is
-compromised by cloud in the Kano wet season (one usable scene every 3–6 weeks).
-With it, Sentinel-2 at 10 m with a 5-day revisit is available.
+compromised by cloud in the Kano wet season (one usable scene every 3 to 6
+weeks). With it, Sentinel-2 at 10 m with a 5-day revisit is available.
 
 ---
 
-## 2. The rules changed in 2026 — and the timing matters
+## 2. The rules changed in 2026, and the timing matters
 
 Since **2026-04-27**, all noncommercial Earth Engine projects have a recurring
 monthly quota of **EECU-hours** (Earth Engine Compute Units), applied at the
@@ -35,14 +35,14 @@ monthly quota of **EECU-hours** (Earth Engine Compute Units), applied at the
 
 Source: <https://developers.google.com/earth-engine/guides/noncommercial_tiers>
 
-**There is still a free tier for hackers** — but only if the project passes the
+**There is still a free tier for hackers**, but only if the project passes the
 noncommercial questionnaire:
 
 > *"If you complete the verification questionnaire and your project is
 > determined to be commercial, you won't be eligible to use Earth Engine
 > without paying."*
 
-### Verification — the biggest hackathon risk
+### Verification: the biggest hackathon risk
 
 > *"Because Earth Engine grants unpaid access to a large amount of compute
 > resources, Google requires **verification of each project** that is
@@ -126,7 +126,7 @@ throughput.
 | ------ | ---------- |
 | Community Tier's 150 EECU-hours/month | **Generous for a demo.** A few hundred small farm-scale reductions cost seconds each. |
 | Python API + `geemap` in Colab | **Fastest path**; no infrastructure to manage. |
-| Registration + noncommercial verification | **Hard gate.** Budget 1–2 hours at the start, and have a fallback. |
+| Registration + noncommercial verification | **Hard gate.** Budget 1 to 2 hours at the start, and have a fallback. |
 | Community Tier concurrency | **Only 2 concurrent batch tasks.** Do not plan on batch exports. |
 | Service-account auth on Vercel | Needs care: the Cloud Project must have EE enabled **and** the service account must hold the EE role. |
 | Running GEE from the browser | **Never** for anything secret. Use the server-side API in route handlers. |
@@ -148,7 +148,7 @@ throughput.
 | `COPERNICUS/S2_SR_HARMONIZED`   | Sentinel-2 L2A        | 10/20/60 m, 5 days           | No (Copernicus) |
 
 **The NASA Space Apps requirement is satisfied by the NASA rows.** Sentinel-2
-is an *enhancement*, never the only source — and it carries Copernicus terms
+is an *enhancement*, never the only source, and it carries Copernicus terms
 rather than NASA terms.
 
 ---
@@ -156,7 +156,7 @@ rather than NASA terms.
 ## 7. Example: farm-scale NDVI via GEE
 
 ```python
-# Sentinel-2 NDVI, 10 m — the best free farm-scale vegetation index for Nigeria
+# Sentinel-2 NDVI, 10 m: the best free farm-scale vegetation index for Nigeria
 def ndvi_for_farm(geometry, start, end):
     collection = (
         ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -179,12 +179,12 @@ def ndvi_for_farm(geometry, start, end):
 ```
 
 **[Proposed]** The equivalent in the Next.js server would call the Earth
-Engine REST API (`computePixels` / `getDownloadURL`) — **or**, more practically
+Engine REST API (`computePixels` / `getDownloadURL`), **or**, more practically
 for a Vercel serverless deployment, run a small Python sidecar. **[Open]** Which
 of these the team should build is an implementation decision for Phase 2.
 
 **[Proposed]** Whatever is chosen, the **resulting statistics** (median, p10,
-p90, valid-pixel fraction) are what we store — not the imagery. This keeps
+p90, valid-pixel fraction) are what we store, not the imagery. This keeps
 the raster out of the database and out of Git, per ADR-0005.
 
 ---
@@ -215,7 +215,7 @@ MVP depend on it.**
 | **Register at hour 0** | Verification is the gate. Do it before it becomes urgent.        |
 | **Tier: Contributor, or commercial Limited** | Removes the risk of the questionnaire classifying the project as commercial mid-hackathon. A billing account is required but EE usage is not charged. |
 | **Do not build the MVP on it** | If registration or verification fails, the demo still works using POWER + SoilGrids + Open-Meteo. |
-| **Use it for farm-scale vegetation** | Sentinel-2 NDVI at 10 m is the single most valuable addition to the product's honesty story — it is the one source that genuinely resolves a farm. |
+| **Use it for farm-scale vegetation** | Sentinel-2 NDVI at 10 m is the single most valuable addition to the product's honesty story: it is the one source that genuinely resolves a farm. |
 | **Store statistics, not imagery** | Honours ADR-0005 and keeps rasters out of Postgres and Git. |
 | **Batch per farm, not per pixel** | 2 concurrent batch tasks on Community Tier. One composite per farm. |
 
@@ -224,7 +224,7 @@ MVP depend on it.**
 | Wanted                              | Fallback                                                    |
 | ----------------------------------- | ----------------------------------------------------------- |
 | Farm-scale NDVI (10 m)              | Landsat 30 m via GEE-less paths, or MODIS 250 m via AppEEARS/CMR |
-| Soil moisture                       | POWER `GWETROOT` / `RZMC` (root zone, 1 m) — no auth, coarser |
+| Soil moisture                       | POWER `GWETROOT` / `RZMC` (root zone, 1 m): no auth, coarser |
 | Precipitation                       | POWER `PRECTOTCORR` + `IMERG_PRECTOT`; CHIRPS via ERDDAP     |
 | Elevation                           | POWER `site-elevation` / grid elevation; SRTM via AppEEARS    |
 
@@ -243,8 +243,8 @@ better; it does not make it possible.
 - [ ] Create a service account with the Earth Engine role.
 - [ ] Store `GEE_PROJECT_ID`, `GEE_SERVICE_ACCOUNT_EMAIL`, `GEE_PRIVATE_KEY`
       in the Vercel environment.
-- [ ] Run one trivial query — e.g. `ee.Image("COPERNICUS/S2_SR_HARMONIZED").first()` —
-      and time it. The first call can take 10–30 s while the Python API and
+- [ ] Run one trivial query, e.g. `ee.Image("COPERNICUS/S2_SR_HARMONIZED").first()`,
+      and time it. The first call can take 10 to 30 s while the Python API and
       auth handshake warm up.
 - [ ] Confirm the dataset IDs listed in § 6 resolve.
 - [ ] **Record the result here and in the commit message:** ☐ works ☐ blocked ☐ pending

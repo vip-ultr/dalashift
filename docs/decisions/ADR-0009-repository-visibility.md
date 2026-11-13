@@ -1,8 +1,8 @@
-# ADR-0009 — Repository Visibility
+# ADR-0009: Repository Visibility
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
-| Status   | **Proposed — awaiting team decision. BLOCKING for publication.** |
+| Status   | **Proposed (awaiting team decision). BLOCKING for publication.** |
 | Date     | 2026-11-13                                                       |
 | Deciders | Team                                                             |
 | Related  | `ADR-0001`, `SECURITY.md`, `docs/hackathon/README.md`             |
@@ -15,7 +15,7 @@ The repository holds the project's source code, architecture, research and
 documentation. The NASA Space Apps challenge requires:
 
 > *"All posted Solutions will be available for others to download or use."*
-> — <https://www.spaceappschallenge.org/legal/>
+> Source: <https://www.spaceappschallenge.org/legal/>
 
 and requires an OSI-approved licence or freely available content
 (see [`ADR-0001`](./ADR-0001-open-source-license.md)).
@@ -35,7 +35,7 @@ knowingly.
 
 ## Options considered
 
-### Option A — Public
+### Option A: Public
 
 - **Advantages:**
   - **Required for the NASA submission.** The judge needs to reach the code.
@@ -56,7 +56,7 @@ knowingly.
     `SECURITY.md`.
 - **Risks:** Low, provided the licence question in ADR-0001 is resolved first.
 
-### Option B — Private
+### Option B: Private
 
 - **Advantages:**
   - The team retains full control over who sees the work and for how long.
@@ -64,20 +64,20 @@ knowingly.
   - Lets the team keep the research internal.
 - **Disadvantages:**
   - **Blocks the NASA submission.** The "Link to Final Project" field
-    accepts *"a code repository"* — but a private GitHub repository is not
+    accepts *"a code repository"*, but a private GitHub repository is not
     publicly accessible, and the submission is judged by people who are not
     collaborators. The team would have to make it public at submission time
     anyway, or publish a separate public copy.
-  - The documentation and research — the parts with the most value to others —
+  - The documentation and research (the parts with the most value to others)
     stay hidden.
   - It contradicts the brief's stated intent.
 - **Risks:** A decision that must be reversed under deadline pressure.
 
-### Option C — Public, with the licence unresolved
+### Option C: Public, with the licence unresolved
 
 - **Advantages:** The repository is visible immediately.
 - **Disadvantages:** **The `LICENSE` placeholder means the content is
-  "all rights reserved by default"** — the team owns it, but nobody else may
+  "all rights reserved by default"**: the team owns it, but nobody else may
   reuse it. That technically conflicts with the NASA requirement that
   original content be *"freely available without restriction or licensed as
   open source"*.
@@ -91,18 +91,18 @@ knowingly.
 
 **Create the repository as PUBLIC**, with the following conditions:
 
-1. **ADR-0001 is resolved first** — the repository must contain a real,
+1. **ADR-0001 is resolved first**: the repository must contain a real,
    complete OSI licence text before it is published. The current placeholder
    is a clear "no licence selected" notice, which is honest but not
    compliant.
-2. **A security review passes** — `SECURITY.md` § "Known gaps" is reviewed
+2. **A security review passes**: `SECURITY.md` § "Known gaps" is reviewed
    and nothing leaks.
 3. **No real farmer data, no secrets, no large binaries** are committed. The
    `.gitignore` covers the technical part; the review covers the rest.
 
 **[Proposed] If the team decides against public visibility**, create the
 repository as **private** and resolve it before the submission deadline
-(15 November 2026, 23:59 local) — either by making it public or by
+(15 November 2026, 23:59 local): either by making it public or by
 publishing a separate public repository containing the submission
 artefacts (the demo link, the slides, the documentation, and a licence).
 
@@ -128,7 +128,7 @@ than deferring a decision that will be forced anyway.**
 | Content                         | Sensitive?                                   |
 | ------------------------------- | -------------------------------------------- |
 | Source code                     | Not sensitive. It is meant to be open source. |
-| Architecture and research docs  | Not sensitive — this is the most valuable part, and it is written to be read by other teams. |
+| Architecture and research docs  | Not sensitive: this is the most valuable part, and it is written to be read by other teams. |
 | Data source findings            | Not sensitive. All public information.        |
 | Secrets, keys, farmer data      | **Must not be there.** Verified by the review. |
 
@@ -139,12 +139,12 @@ which is the professional thing to do for a public repository.
 
 **Third, the brief is explicit.** *"The repository is intended to be publicly
 accessible."* That is a statement of intent from the team. The purpose of this
-ADR is not to overturn it — it is to make sure the decision is recorded
+ADR is not to overturn it; it is to make sure the decision is recorded
 explicitly rather than assumed, and to confirm the preconditions.
 
 **The commercial concern is real but secondary.** If the team later intends
 to build a commercial product from this, an Apache-2.0 or MIT licence still
-permits that — open source does not prevent commercial use, it requires
+permits that: open source does not prevent commercial use, it requires
 attribution. **The decision that protects the commercial option is the
 licence choice (ADR-0001), not the visibility choice.**
 
@@ -169,7 +169,7 @@ licence choice (ADR-0001), not the visibility choice.**
 
 ### Follow-up work
 
-- [ ] **Team decision — before the repository is created.**
+- [ ] **Team decision: before the repository is created.**
 - [ ] Resolve [`ADR-0001`](./ADR-0001-open-source-license.md) and write the
       real licence text.
 - [ ] Run the secret scan and review the initial commit's contents.
@@ -178,7 +178,7 @@ licence choice (ADR-0001), not the visibility choice.**
 - [ ] Configure branch protection on `main`: 1 approving review, CI passing,
       no unresolved conversations.
       **[Verified 2026-11-13]** This is currently **not possible on a private
-      repository without GitHub Pro** — the API returns *"Upgrade to GitHub Pro
+      repository without GitHub Pro**: the API returns *"Upgrade to GitHub Pro
       or make this repository public to enable this feature."* Making the
       repository public enables it immediately; otherwise the team needs a Pro
       plan. Until then, the protection is a **team convention** enforced by

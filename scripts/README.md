@@ -1,4 +1,4 @@
-# DalaShift — Scripts
+# DalaShift: Scripts
 
 Operational and analysis scripts that run **outside** the Next.js application
 process: data ingestion, geospatial processing and validation.

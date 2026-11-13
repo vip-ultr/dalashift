@@ -1,4 +1,4 @@
-# DalaShift — Data Directory
+# DalaShift: Data Directory
 
 Local staging area for geospatial and reference data.
 
@@ -9,7 +9,7 @@ Local staging area for geospatial and reference data.
 | Directory    | Contents                                                                | In Git? |
 | ------------ | ----------------------------------------------------------------------- | ------- |
 | `samples/`   | Small, curated, redistributable sample files used by tests and demos   | Yes, selectively |
-| `processed/` | Generated outputs (zonal statistics, derived tiles, CSV extracts)       | No — gitignored |
+| `processed/` | Generated outputs (zonal statistics, derived tiles, CSV extracts)       | No, gitignored |
 
 ## Rules
 

@@ -1,8 +1,8 @@
-# ADR-0007 — Map Tile Provider Strategy
+# ADR-0007: Map Tile Provider Strategy
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
-| Status   | **Proposed — awaiting team decision**                            |
+| Status   | **Proposed (awaiting team decision)**                            |
 | Date     | 2026-11-13                                                       |
 | Deciders | Team                                                             |
 | Related  | `docs/api/map-tile-providers.md`, `ARCHITECTURE.md` § 3.4        |
@@ -13,8 +13,8 @@
 
 DalaShift needs a basemap for two jobs:
 
-1. **Farm selection** — the farmer finds and draws their land.
-2. **Context** — the farmer sees their field against imagery, and (crucially)
+1. **Farm selection:** the farmer finds and draws their land.
+2. **Context:** the farmer sees their field against imagery, and (crucially)
    sees the **grid cell** of any coarse environmental value drawn over it.
 
 The brief is explicit that OpenStreetMap's public tile servers should not be
@@ -27,22 +27,22 @@ rate limit at exactly the wrong moment.
 **[Confirmed]** MapLibre GL JS is the chosen mapping library.
 
 **[Open]** The specific provider is a team decision, and it must be settled
-before the demo — a blank grey map during judging is an avoidable loss.
+before the demo. A blank grey map during judging is an avoidable loss.
 
 ---
 
 ## Options considered
 
-### Option A — OpenStreetMap public tile servers (`tile.openstreetmap.org`)
+### Option A: OpenStreetMap public tile servers (`tile.openstreetmap.org`)
 
 - **Advantages:** Zero setup. No key. No cost.
 - **Disadvantages:** **The policy explicitly prohibits the use we would be
-  making** — a public application serving an unbounded number of users is
+  making**: a public application serving an unbounded number of users is
   "heavy use". Also no SLA, and an unpredictable block during the demo.
 - **Risks:** Policy breach; rate limiting at the worst moment.
 - **Verdict:** Development only. **Not for the demo.**
 
-### Option B — OpenFreeMap
+### Option B: OpenFreeMap
 
 - **Advantages:** Free vector tiles, **no API key, no rate limit**, no
   signup. Multiple styles. Openly licensed.
@@ -51,7 +51,7 @@ before the demo — a blank grey map during judging is an avoidable loss.
 - **Risks:** Instance availability. Low.
 - **Verdict:** **Recommended MVP default.**
 
-### Option C — Protomaps, self-hosted
+### Option C: Protomaps, self-hosted
 
 - **Advantages:** Fully under our control. Static PMTiles on a CDN have no
   per-request quota. Openly licensed. Vector tiles at any zoom.
@@ -60,7 +60,7 @@ before the demo — a blank grey map during judging is an avoidable loss.
 - **Risks:** Time. Moderate.
 - **Verdict:** **Recommended fallback**, and the right long-term answer.
 
-### Option D — A keyed provider (MapTiler, Stadia, CARTO)
+### Option D: A keyed provider (MapTiler, Stadia, CARTO)
 
 - **Advantages:** High-quality, well-documented styles. Satellite imagery
   available. Reliable SLAs on paid tiers.
@@ -71,7 +71,7 @@ before the demo — a blank grey map during judging is an avoidable loss.
 - **Verdict:** **Good quality, but the key and quota are unnecessary friction
   for a 48-hour build.**
 
-### Option E — Esri World Imagery as the satellite layer
+### Option E: Esri World Imagery as the satellite layer
 
 - **Advantages:** The best-known satellite imagery, no key needed for the
   standard endpoint, correct attribution available. Very legible for a farm
@@ -82,12 +82,12 @@ before the demo — a blank grey map during judging is an avoidable loss.
 - **Verdict:** **Recommended as the satellite layer**, subject to a terms
   check.
 
-### Option F — NASA GIBS as a NASA-imagery layer
+### Option F: NASA GIBS as a NASA-imagery layer
 
 - **Advantages:** It is **NASA's own** imagery tile service, free and
   unauthenticated. Directly strengthens the NASA-data requirement and the
   challenge's Relevance criterion.
-- **Disadvantages:** MODIS resolution is coarse (~250 m–1 km) compared with
+- **Disadvantages:** MODIS resolution is coarse (~250 m to 1 km) compared with
   Esri. It is a research-and-education product, not a consumer basemap.
 - **Risks:** Availability. Low.
 - **Verdict:** **Recommended as an additional layer**, not as the base map.
@@ -105,8 +105,8 @@ before the demo — a blank grey map during judging is an avoidable loss.
 | **Base**         | OpenFreeMap           | No         | Self-hosted Protomaps        |
 | **Satellite**    | Esri World Imagery    | No         | Sentinel-2 Cloudless (EOX)   |
 | **NASA imagery**| NASA GIBS             | No         | Hide the layer               |
-| **Farm polygon** | DalaShift (rendered)  | —          | Always available             |
-| **Grid cell**    | DalaShift (rendered)  | —          | Always available             |
+| **Farm polygon** | DalaShift (rendered)  | n/a        | Always available             |
+| **Grid cell**    | DalaShift (rendered)  | n/a        | Always available             |
 
 ### The architectural rules
 
@@ -114,7 +114,7 @@ before the demo — a blank grey map during judging is an avoidable loss.
    `NEXT_PUBLIC_MAP_STYLE_URL`. Switching providers is a configuration
    change, not a code change.
 2. **Tiles are fetched directly from the provider by the browser.** They are
-   never proxied through our server — that would burn Vercel bandwidth and
+   never proxied through our server: that would burn Vercel bandwidth and
    create a self-inflicted rate limit.
 3. **Attribution is rendered from a single source of truth**, so a provider
    change cannot leave a stale or missing credit. This is a licence
@@ -127,14 +127,14 @@ before the demo — a blank grey map during judging is an avoidable loss.
 6. **Geocoding is optional and off the critical path.** Pan-and-draw must work
    with no geocoder at all.
 
-### The grid-cell overlay — the signature decision
+### The grid-cell overlay: the signature decision
 
 **[Proposed]** When a coarse environmental value is displayed (SMAP 9 km,
 POWER 55 km, IMERG 11 km), the map draws the **source grid cell boundary**
 over the farm, with a caption naming its size.
 
 *This is the single most effective honesty device in the product.* The visual
-proportion — a 9 km square around a 1.4 ha field — communicates the resolution
+proportion (a 9 km square around a 1.4 ha field) communicates the resolution
 limit better than any sentence. It is a design decision with a technical
 consequence, and it should be treated as a core feature, not a decoration.
 
@@ -153,7 +153,7 @@ The decision criteria for a 48-hour hackathon are, in order:
    must be verified on the venue's connection.
 4. **The attribution is correct.** A licence obligation.
 
-OpenFreeMap wins on 1 and 2 — no key, no quota, no account — which is why it
+OpenFreeMap wins on 1 and 2 (no key, no quota, no account), which is why it
 is the recommended default. Protomaps self-hosted is the same benefit with
 more control, at the cost of a build step, and is the fallback if the public
 instance is slow from Kano.
@@ -186,7 +186,7 @@ fetch and render it. That is a schema and API requirement.
   failure modes to handle.
 - OpenFreeMap has no SLA.
 - The grid-cell overlay requires the `grid_cells` table to be populated
-  before the map can draw it — an ordering dependency in Phase 2.
+  before the map can draw it, an ordering dependency in Phase 2.
 - Esri's terms warrant a check before any commercial use.
 
 ### Follow-up work
@@ -196,7 +196,7 @@ fetch and render it. That is a schema and API requirement.
 - [ ] Implement the attribution registry and the `MapAttribution` component.
 - [ ] Populate `grid_cells` and implement the cell overlay.
 - [ ] Check Esri's and OpenFreeMap's terms for the intended use.
-- [ ] Build the Protomaps fallback **if time permits** — it is the safety net.
+- [ ] Build the Protomaps fallback **if time permits**: it is the safety net.
 - [ ] Confirm the NASA GIBS WMTS endpoint and layer list.
 
 ### Revisit when

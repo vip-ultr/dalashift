@@ -1,4 +1,4 @@
-# Prior Art — Agricultural Intelligence Platforms
+# Prior Art: Agricultural Intelligence Platforms
 
 **Verification date: 2026-11-13.**
 
@@ -29,8 +29,8 @@ Three reasons:
 ```mermaid
 flowchart TB
     subgraph GOV["Global agencies and programmes"]
-        G1["FEWS NET — famine early warning"]
-        G2["FAO GIEWS — crop production outlook"]
+        G1["FEWS NET: famine early warning"]
+        G2["FAO GIEWS: crop production outlook"]
         G3["Copernicus / ESA services"]
     end
     subgraph TOOLS["Analyst and developer tools"]
@@ -71,14 +71,14 @@ is exactly where DalaShift sits.
 | **Climate FieldView**          | Satellite and weather layers for agricultural monitoring, with a field boundary drawing tool | **The closest functional analogue to our map.** Worth studying closely: their field-drawing UX and the way they overlay data layers on a drawn field. **This is the best reference for our farm-map interaction.** |
 
 **[Proposed]** Climate FieldView is the single most useful piece of prior art
-for us — a farmer-facing tool with field polygons and Earth observation
+for us: a farmer-facing tool with field polygons and Earth observation
 overlays. We should understand what it does well and what it does not.
 
 ### 2.3 Farmer-facing applications
 
 | Category                | What they do                                                   | The gap                                       |
 | ----------------------- | --------------------------------------------------------------- | --------------------------------------------- |
-| **General farm management** | Field records, planting logs, inventory, sometimes yield tracking | Good at *recording* what the farmer did. Rarely bring in Earth observation data. **They are a complement, not a competitor** — and the fact that we don't do farm management is a legitimate scope boundary. |
+| **General farm management** | Field records, planting logs, inventory, sometimes yield tracking | Good at *recording* what the farmer did. Rarely bring in Earth observation data. **They are a complement, not a competitor**, and the fact that we don't do farm management is a legitimate scope boundary. |
 | **Advisory / extension platforms** | Region-specific crop advisories, often from a national research body | Typically **broadcast** advice rather than farm-specific analysis. The advisory is not conditioned on *this* field's data. |
 | **Satellite-imagery farm apps** | Subscription apps showing satellite images of your field, sometimes with NDVI | **This is the direct competitor.** The known weakness: they show imagery and a colour index, then stop. They rarely say what it means for the farmer's crop, and they rarely handle the coarse-resolution sources honestly. |
 
@@ -89,7 +89,7 @@ explicit:**
 | ---------------------------------- | ----------------------------------------------------------------- |
 | Show you a satellite image         | Tell you what it means for your crop, on your land               |
 | Give you a colour NDVI scale       | Tell you the value, its confidence, and how far it reaches        |
-| Ask you to identify your crop      | Ask you, then use your answer — never guess                     |
+| Ask you to identify your crop      | Ask you, then use your answer. Never guess                    |
 | Make a confident recommendation    | Say when it does not know, and what would help it know           |
 | Ignore the difference between a 30 m pixel and a 9 km pixel | Make it the centre of the interface              |
 
@@ -97,9 +97,9 @@ explicit:**
 
 | Area                        | Relevance                                                           |
 | --------------------------- | ------------------------------------------------------------------- |
-| **Field trial networks** (ICRISAT, IITA, ICRISAT, AfricaRice, national institutes) | The most authoritative source of **local agronomic requirements** — planting windows, varieties, response to rainfall and soil conditions, in exactly the conditions we care about. **The most valuable research direction after the hackathon.** |
+| **Field trial networks** (ICRISAT, IITA, ICRISAT, AfricaRice, national institutes) | The most authoritative source of **local agronomic requirements**: planting windows, varieties, response to rainfall and soil conditions, in exactly the conditions we care about. **The most valuable research direction after the hackathon.** |
 | **Crop monitoring and yield studies** | Methods for combining Earth observation with crop calendars to estimate anomalies. A methodological reference. |
-| **Phenotyping networks** | How to derive growth-stage information from time-series vegetation indices — directly relevant to interpreting NDVI for a specific crop stage. |
+| **Phenotyping networks** | How to derive growth-stage information from time-series vegetation indices, directly relevant to interpreting NDVI for a specific crop stage. |
 
 **[Proposed] These are where the agronomic credibility has to come from.** The
 crop catalog must be built from real local trial data, not from a general
@@ -133,7 +133,7 @@ flowchart TB
 > **DalaShift is the layer between the satellite and the seed packet.** It
 > takes the farmer's own field and their own crops, combines NASA Earth
 > observation data with local agronomic knowledge, and tells them what it
-> means — while being explicit about how much it actually knows.
+> means, while being explicit about how much it actually knows.
 
 ---
 
@@ -143,7 +143,7 @@ flowchart TB
 | ------------------------------------------- | ----------------------------------------------------------------------- |
 | A well-funded incumbent ships a similar feature | The field trust and local validation are the moat, not the technology. Also: 10 m vegetation data is free. |
 | Judges have seen a similar hackathon project | The honesty framing, the Field Shift rotation comparison and the local validation are the differentiators. A judge has probably seen "satellite NDVI for farmers"; they have probably **not** seen one that refuses to overstate it. |
-| The product is judged as "just a map with data on it" | The **rotation strategy comparison with cited evidence** is the answer — it is a decision-support tool, not a map. |
+| The product is judged as "just a map with data on it" | The **rotation strategy comparison with cited evidence** is the answer: it is a decision-support tool, not a map. |
 | Our agronomic thresholds are wrong for the region | Cite them, state the source, show the limitation, and validate in Tofa. **Never state a threshold without a citation.** |
 
 ---
@@ -153,13 +153,13 @@ flowchart TB
 | # | Task                                                                  | Why                                              |
 | - | --------------------------------------------------------------------- | ------------------------------------------------ |
 | 1 | Study Climate FieldView's field-drawing UX and data overlay            | The closest analogue to our map                  |
-| 2 | Check FEWS NET's crop calendars for the Sahel — access and licence     | Could be our best regional calendar source      |
+| 2 | Check FEWS NET's crop calendars for the Sahel: access and licence     | Could be our best regional calendar source      |
 | 3 | Look for a farmer-facing satellite app in the Nigerian market        | Know the real competitor                         |
 | 4 | Review ICRISAT / IITA / national institute trial data for Kano State  | The source of credible local agronomic requirements |
 | 5 | Review how USDA's Vegetation Productivity Model frames anomalies    | A good reference for our anomaly presentation    |
 
 **[Proposed]** Items 1 and 2 are worth doing before the hackathon if there is
-time. Items 3–5 are post-hackathon.
+time. Items 3 to 5 are post-hackathon.
 
 ---
 
@@ -167,10 +167,10 @@ time. Items 3–5 are post-hackathon.
 
 | URL | Used for |
 | --- | -------- |
-| <http://fews.net/> | FEWS NET — **[To verify]** access and licensing |
+| <http://fews.net/> | FEWS NET: **[To verify]** access and licensing |
 | <https://www.fao.org/giews/> | FAO GIEWS |
 | <https://earthdata.nasa.gov/> | NASA Earthdata and AppEEARS |
-| <https://climatefieldview.org/> | Climate FieldView — **[To verify]** current features |
+| <https://climatefieldview.org/> | Climate FieldView: **[To verify]** current features |
 | <https://nass.usda.gov/> | USDA NASS and Crop Explorer |
 | <https://icrisat.org/> · <https://www.iita.org/> | West African agricultural research |
 

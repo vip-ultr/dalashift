@@ -12,11 +12,11 @@ here.
 | **SRID**         | **4326 (WGS 84)** for all stored geometry. No other SRID is stored.            |
 | **Storage order**| PostGIS 4326 is **(latitude, longitude)**.                                       |
 | **Transport order** | GeoJSON and the MapLibre/Turf ecosystem use **(longitude, latitude)**.        |
-| **Conversion point** | **Only at the system boundary** — the integration layer and the map feature. |
+| **Conversion point** | **Only at the system boundary**: the integration layer and the map feature. |
 
 > ⚠️ **This is the classic bug source in geospatial applications.** Swapping
 > the axes turns Kano (8.5°E, 12.0°N) into a point in Saudi Arabia. It will
-> not throw an error — it will just be wrong, and the farm will appear in the
+> not throw an error: it will just be wrong, and the farm will appear in the
 > wrong country.
 
 **Mitigations:**
@@ -26,7 +26,7 @@ here.
    become `POINT(12.0 8.5)` in PostGIS.
 3. A **plausibility check on write**: a farm whose longitude is outside
    [-180, 180] or whose latitude is outside [-90, 90] is rejected; and a
-   "Nigeria" test — a farm in Kano must land within the Kano bounding box.
+   "Nigeria" test: a farm in Kano must land within the Kano bounding box.
 
 ---
 
@@ -39,7 +39,7 @@ here.
 | `farm_plots`       | `boundary`  | `Polygon` or `MultiPolygon`            | Optional                          |
 | `grid_cells`       | `geometry`  | `Polygon`                              | The footprint of a coarse cell    |
 | `soil_properties`  | `geometry`  | `Polygon`                              | 250 m SoilGrids cell              |
-| `environmental_observations` | — | None — referenced via `cell_id` | The value carries `spatial_resolution_m` |
+| `environmental_observations` | n/a | None: referenced via `cell_id` | The value carries `spatial_resolution_m` |
 
 **[Proposed]** Why observations reference a cell rather than storing a point:
 the whole point is that the value describes an *area*, not a location. Storing
@@ -49,7 +49,7 @@ the area is what lets the UI draw it.
 
 ## 3. The critical functions
 
-### 3.1 Area — the one that is silently wrong if you get it wrong
+### 3.1 Area: the one that is silently wrong if you get it wrong
 
 ```sql
 -- ✅ CORRECT: spherical area on the real earth, returned in m²
@@ -62,7 +62,7 @@ SELECT ST_Area(boundary) FROM farms WHERE id = $1;
 ```
 
 `ST_Area` on a raw 4326 geometry returns square degrees. That number is not a
-number of hectares and is not even proportional to one in a useful way — the
+number of hectares and is not even proportional to one in a useful way: the
 error varies with latitude. **Always cast to `geography`.**
 
 The generated column makes this impossible to get wrong from the client:
@@ -83,7 +83,7 @@ centroid geometry GENERATED ALWAYS AS (ST_Centroid(boundary)) STORED
 
 `ST_Centroid` on a polygon returns a point guaranteed to be inside the
 polygon. `ST_PointOnSurface` is the alternative; for a concave farm shape the
-two differ. Use `ST_Centroid` — a farm boundary drawn by a farmer is unlikely
+two differ. Use `ST_Centroid`: a farm boundary drawn by a farmer is unlikely
 to be dramatically concave.
 
 ### 3.3 Plot area within a farm
@@ -98,7 +98,7 @@ JOIN farms f ON f.id = fp.farm_id
 WHERE fp.farm_id = $1;
 ```
 
-**The intersection, not the plot's own area**, is what matters — a plot may
+**The intersection, not the plot's own area**, is what matters: a plot may
 extend beyond the farm boundary as drawn.
 
 ### 3.4 Containment and intersection
@@ -114,7 +114,7 @@ SELECT f.id FROM farms f
 WHERE ST_Contains(f.boundary, ST_SetSRID(ST_MakePoint($lon, $lat), 4326));
 ```
 
-Note the explicit `ST_SetSRID(..., 4326)` — a point built without an SRID
+Note the explicit `ST_SetSRID(..., 4326)`: a point built without an SRID
 raises *"geometry has no SRID"* when compared to an SRID-bearing column.
 
 ### 3.5 Nearest farm to a point
@@ -126,7 +126,7 @@ ORDER BY centroid <-> ST_SetSRID(ST_MakePoint($lon,$lat),4326)
 LIMIT 1;
 ```
 
-The `<->` operator uses the GIST index — a KNN search, which is orders of
+The `<->` operator uses the GIST index: a KNN search, which is orders of
 magnitude faster than `ORDER BY ST_Distance(...)`.
 
 ### 3.6 Grid cell lookup for a point
@@ -206,7 +206,7 @@ WHERE c.source_id = $2
 ```
 
 Store the observation with `cell_id` set and `aggregation_method = 'grid_cell'`.
-**The value is the cell's value — every farm in that cell gets the same number,
+**The value is the cell's value: every farm in that cell gets the same number,
 and the UI must say so.**
 
 ### 5.2 Point-sample products (SoilGrids, SMAP)
@@ -247,7 +247,7 @@ reduceRegion(
 is under cloud, the UI says so and the confidence drops. A zonal mean over
 60 % of a field is a different claim from a zonal mean over 100 %.
 
-### 5.4 Raster products far coarser than the farm (SMAP, IMERG at 9–11 km)
+### 5.4 Raster products far coarser than the farm (SMAP, IMERG at 9 to 11 km)
 
 ```sql
 -- The 9 km SMAP cell containing the farm
@@ -292,7 +292,7 @@ ST_Simplify(boundary, $tolerance_metres / 111320.0)
 ```
 
 **`ST_Simplify` takes tolerance in the units of the SRID**, which for 4326 is
-*degrees* — so the tolerance must be divided by ~111,320 (metres per degree) to
+*degrees*: so the tolerance must be divided by ~111,320 (metres per degree) to
 express it in metres. At the equator, 1° of longitude ≈ 111,320 m; the figure
 varies with latitude, which is acceptable for a simplification tolerance.
 
@@ -330,7 +330,7 @@ Run this against every geometry before it is stored:
 | Zonal statistics on a synthetic raster-like grid        | Coverage fraction is computed correctly                             |
 
 **Use a real, published polygon as the fixture.** A synthetic square is easy
-to reason about but hides orientation errors — a square is symmetric under
+to reason about but hides orientation errors: a square is symmetric under
 rotation. Use an irregular polygon whose area is known.
 
 ---

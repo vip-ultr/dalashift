@@ -48,8 +48,8 @@ body:
       label: Severity
       options:
         - Blocks the hackathon demo
-        - Major — core flow broken
-        - Minor — cosmetic or secondary flow
+        - Major: core flow broken
+        - Minor: cosmetic or secondary flow
     validations:
       required: true
 

@@ -2,7 +2,7 @@
   "name": "dalashift",
   "version": "0.1.0",
   "private": true,
-  "description": "DalaShift — agricultural intelligence platform (NASA Space Apps). Working name, pending team confirmation.",
+  "description": "DalaShift: agricultural intelligence platform (NASA Space Apps). Working name, pending team confirmation.",
   "license": "SEE-LICENSE-FILE",
   "engines": {
     "node": ">=20.9.0",
@@ -21,6 +21,7 @@
     "test": "pnpm -r test",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck",
     "validate:links": "node scripts/validation/check-markdown-links.mjs",
+    "validate:style": "node scripts/validation/check-writing-style.mjs",
     "validate:notices": "node scripts/validation/generate-third-party-notices.mjs",
     "clean": "pnpm -r exec rm -rf .next node_modules && rm -rf node_modules"
   },

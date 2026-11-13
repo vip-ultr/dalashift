@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 /**
- * DalaShift — Next.js configuration.
+ * DalaShift: Next.js configuration.
  *
  * Phase 1 note: the application is intentionally minimal. No product routes are
  * implemented yet. This configuration exists so the workspace installs, type
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
     ],
   },
   // Security headers. Keep the CSP in apps/web/src/middleware.ts or
-  // next.config.ts headers() once routes exist — do not relax without review.
+  // next.config.ts headers() once routes exist. Do not relax without review.
   async headers() {
     return [
       {

@@ -6,8 +6,8 @@
 
 </div>
 
-> **Status: Phase 1 — research, product definition, architecture and repository
-> foundation.** The product is not yet implemented. This repository contains the
+> **Status: Phase 1 (research, product definition, architecture and repository
+> foundation).** The product is not yet implemented. This repository contains the
 > research, the architecture, the database design and the working agreements
 > that the build will follow.
 >
@@ -16,15 +16,15 @@
 
 ### About this repository and the challenge timeline
 
-This repository was created on **13 November 2026** — the day before the 2026
-NASA Space Apps Challenge began — and was committed before the event started.
+This repository was created on **13 November 2026** (the day before the 2026
+NASA Space Apps Challenge began) and was committed before the event started.
 
 What exists here is **preparation, not a solution**:
 
 | In this repository (before the event)                                     | Not in this repository |
 | ---------------------------------------------------------------------------- | --------------------- |
 | Research into NASA and other open data sources, with citations and verification dates | Authentication, the farmer dashboard, functional maps |
-| Product definition — requirements, personas, user flows                     | Live NASA API integration |
+| Product definition: requirements, personas, user flows                      | Live NASA API integration |
 | Technical architecture, database design, RLS design                         | The crop recommendation engine |
 | A working repository skeleton, tooling and CI                               | Database migrations, reports, product pages |
 
@@ -33,7 +33,7 @@ this out loud. **No part of the working application existed before the
 event.** The application itself is built during the challenge.
 
 Where an agronomic value or a recommendation appears anywhere in this
-repository, it comes from a cited source or from the documented rules engine —
+repository, it comes from a cited source or from the documented rules engine,
 never from an AI model generating agronomic facts.
 
 > The full rules, including NASA's position on work before the event, are
@@ -54,7 +54,7 @@ challenge.**
 > with local soil information, crop characteristics, and farmer priorities to
 > help farmers explore rotation strategies that could strengthen soil health
 > and adapt their farms to changing conditions."*
-> — [official 2026 challenge statement](https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/)
+> Source: [official 2026 challenge statement](https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/)
 
 The working name comes from this challenge.
 
@@ -62,7 +62,7 @@ The working name comes from this challenge.
 
 | Date                                    | Event                                            |
 | --------------------------------------- | ------------------------------------------------ |
-| **Sat 14 Nov 2026, 09:00**              | Kano Local Event starts — EHealth Africa, Badawa, Kano. Project submission opens. |
+| **Sat 14 Nov 2026, 09:00**              | Kano Local Event starts: EHealth Africa, Badawa, Kano. Project submission opens.  |
 | **Sun 15 Nov 2026, 23:59 local**        | **Project submission closes.**                    |
 | 3 Dec 2026                              | Global Nominees announced                         |
 | 17 Dec 2026                             | Global Finalists and Honorable Mentions announced |
@@ -74,11 +74,11 @@ dataset research are in **[`docs/hackathon/README.md`](./docs/hackathon/README.m
 
 | Requirement | Status |
 | ----------- | ------ |
-| Use **at least one NASA data or resource** for Global Award eligibility | Designed in — POWER, IMERG, MODIS, Landsat, SMAP |
-| Compare **at least three rotation strategies including the existing one**, each with evidence, benefits, information gaps and local-review risks | Specified as `PRD.md` FR-8 — **not yet built** |
-| Use **"farmer priorities"** as an input | Specified as `PRD.md` FR-2.13 — **not yet built** |
+| Use **at least one NASA data or resource** for Global Award eligibility | Designed in: POWER, IMERG, MODIS, Landsat, SMAP  |
+| Compare **at least three rotation strategies including the existing one**, each with evidence, benefits, information gaps and local-review risks | Specified as `PRD.md` FR-8: **not yet built**  |
+| Use **"farmer priorities"** as an input | Specified as `PRD.md` FR-2.13: **not yet built** |
 | Cite **every** resource, including open-source code | [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) + the data-source attribution register |
-| An **OSI-approved open-source licence** | **OPEN — blocking.** See [`ADR-0001`](./docs/decisions/ADR-0001-open-source-license.md) |
+| An **OSI-approved open-source licence** | **OPEN: blocking.** See [`ADR-0001`](./docs/decisions/ADR-0001-open-source-license.md)  |
 | **Disclose AI/SI tool use** in the submission | Drafted in `THIRD_PARTY_NOTICES.md` § 6 |
 | Demo: **≤30 s video or ≤7 slides**, public link, English | Not started |
 
@@ -90,8 +90,8 @@ Farmers lack **reliable, understandable, farm-specific** information for
 decisions that determine their income: soil moisture, rainfall, temperature,
 vegetation health, crop suitability, planting timing, and risk.
 
-That information largely exists — in NASA satellite observations, soil maps and
-agronomic research. But:
+That information largely exists (in NASA satellite observations, soil maps and
+agronomic research). But:
 
 - The datasets are far coarser than a farm. A 9 km soil-moisture pixel covers
   over 80 km², potentially hundreds of separate farms.
@@ -103,7 +103,7 @@ agronomic research. But:
 
 A farmer registers, **draws the boundary of their own land**, says what they
 grow or plan to grow, and gets environmental analysis and crop guidance for
-*that specific field* — along with an honest statement of how precise each
+*that specific field*, along with an honest statement of how precise each
 figure is.
 
 The platform's differentiator is **specificity and honesty**, not imagery. It
@@ -133,8 +133,8 @@ flowchart LR
 ## Field validation
 
 **Tofa Local Government Area, Kano State, Nigeria** is our initial validation
-location — the place where the team intends to sit with farmers and learn what
-they actually need.
+location (the place where the team intends to sit with farmers and learn what
+they actually need).
 
 Tofa is the **validation site, not the coverage map**. The architecture is
 geographically extensible, and the platform allows searching and selecting
@@ -154,7 +154,7 @@ farm locations anywhere in supported coverage. But:
 | UI          | Tailwind CSS · shadcn/ui · Lucide · Recharts         |
 | Maps        | MapLibre GL JS                                      |
 | Backend     | Next.js server-side (Route Handlers, Server Actions)  |
-| Database    | Supabase — PostgreSQL + PostGIS · Auth · Storage · RLS |
+| Database    | Supabase: PostgreSQL + PostGIS · Auth · Storage · RLS  |
 | Hosting     | Vercel                                               |
 | Tooling     | Node 22 · pnpm workspaces · ESLint · Prettier · Vitest |
 
@@ -166,12 +166,12 @@ farm locations anywhere in supported coverage. But:
 flowchart TB
     Root["dalashift/"]
     Root --> Docs["AGENTS.md · CONTRIBUTING.md · PRD.md<br/>ARCHITECTURE.md · ARCHITECTURE_ESSENTIALS.md<br/>README.md · SECURITY.md"]
-    Root --> Apps["apps/web — Next.js application"]
+    Root --> Apps["apps/web: Next.js application"]
     Root --> Pkgs["packages/shared · packages/config"]
     Root --> Scripts["scripts/"]
     Root --> Data["data/"]
-    Root --> Docs2["docs/ — research, api, database,<br/>product, design, hackathon, decisions"]
-    Root --> Github[".github/ — CI, templates"]
+    Root --> Docs2["docs/: research, api, database,<br/>product, design, hackathon, decisions"]
+    Root --> Github[".github/: CI, templates"]
 ```
 
 ---
@@ -197,7 +197,7 @@ convention: **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
 | Document                                                     | What it covers                                    |
 | ------------------------------------------------------------ | ------------------------------------------------- |
 | [`AGENTS.md`](./AGENTS.md)                                   | **Read first.** Rules for AI agents and contributors |
-| [`ARCHITECTURE_ESSENTIALS.md`](./ARCHITECTURE_ESSENTIALS.md) | Condensed technical reference — the daily read   |
+| [`ARCHITECTURE_ESSENTIALS.md`](./ARCHITECTURE_ESSENTIALS.md) | Condensed technical reference: the daily read    |
 | [`PRD.md`](./PRD.md)                                         | Product requirements, personas, scope, open questions |
 | [`ARCHITECTURE.md`](./ARCHITECTURE.md)                       | Full technical architecture with diagrams        |
 
@@ -214,7 +214,7 @@ convention: **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
 | `docs/decisions/`     | Architecture decision records (ADRs)                                       |
 | `THIRD_PARTY_NOTICES.md` | **Required by the NASA rules.** Every dependency and data source with its licence. |
 
-**Repository:** <https://github.com/vip-ultr/dalashift> — currently **private**
+**Repository:** <https://github.com/vip-ultr/dalashift>, currently **private**
 pending the team's visibility decision
 ([`ADR-0009`](./docs/decisions/ADR-0009-repository-visibility.md)). The NASA
 submission requires a publicly reachable link, so this must be resolved before
@@ -239,7 +239,7 @@ renders in-product and this repository records in
 **DalaShift is not affiliated with, endorsed by, or partnered with NASA.** It
 uses publicly available NASA data. Recommendations are produced by DalaShift's
 own agricultural methodology, which requires agricultural knowledge and local
-validation — NASA provides Earth observation data, not crop advice.
+validation; NASA provides Earth observation data, not crop advice.
 
 ---
 
@@ -270,7 +270,7 @@ Report vulnerabilities privately per [`SECURITY.md`](./SECURITY.md).
 
 ## License
 
-**Not yet selected — team decision pending.** See
+**Not yet selected. Team decision pending.** See
 [`LICENSE`](./LICENSE) and
 [`ADR-0001`](./docs/decisions/ADR-0001-open-source-license.md). Until a license
 is chosen, the repository is unlicensed for redistribution.
@@ -283,6 +283,6 @@ is chosen, the repository is unlicensed for redistribution.
   the Earth observation data that makes farm-level environmental analysis
   possible.
 - **ISRIC World Soil Information** for SoilGrids.
-- The **open-source geospatial community** — MapLibre, Turf, PostGIS, GDAL and
-  the many people who maintain them.
+- The **open-source geospatial community** (MapLibre, Turf, PostGIS, GDAL and
+  the many people who maintain them).
 - The farmers of Tofa LGA, whose questions this project is built to answer.

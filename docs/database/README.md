@@ -1,4 +1,4 @@
-# Documentation — `docs/database/`
+# Documentation: `docs/database/`
 
 Database design and data-access rules.
 
@@ -6,7 +6,7 @@ Database design and data-access rules.
 | --------------------------------------------------- | ------------------------------------------------------------------ |
 | [`data-model.md`](./data-model.md)                    | **The canonical schema.** Every table, column, constraint and index. |
 | [`postgis-design.md`](./postgis-design.md)            | Geometry types, SRID, the spatial functions, indexing, aggregation.  |
-| [`rls-policies.md`](./rls-policies.md)                | Row Level Security — the authorisation boundary.                    |
+| [`rls-policies.md`](./rls-policies.md)                | Row Level Security: the authorisation boundary.                    |
 
 ---
 
@@ -30,7 +30,7 @@ Database design and data-access rules.
 **Phase 1 contains no migrations.** The schema is specified here and
 implemented in Phase 2 under `supabase/migrations/`.
 
-Migrations and their RLS policies land **together** — never a table without
+Migrations and their RLS policies land **together**. Never a table without
 its policies.
 
 ---
@@ -58,6 +58,6 @@ change and reads the same in the schema.
 
 ## Reading order
 
-1. [`data-model.md`](./data-model.md) — what exists and why.
-2. [`postgis-design.md`](./postgis-design.md) — how the spatial parts work.
-3. [`rls-policies.md`](./rls-policies.md) — who can see what.
+1. [`data-model.md`](./data-model.md): what exists and why.
+2. [`postgis-design.md`](./postgis-design.md): how the spatial parts work.
+3. [`rls-policies.md`](./rls-policies.md): who can see what.

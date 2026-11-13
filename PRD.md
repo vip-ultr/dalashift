@@ -1,11 +1,11 @@
-# Product Requirements Document — DalaShift
+# Product Requirements Document: DalaShift
 
 | Field             | Value                                                      |
 | ----------------- | ---------------------------------------------------------- |
-| Document status   | Draft for team review — Phase 1                             |
+| Document status   | Draft for team review: Phase 1                             |
 | Version           | 0.1.0                                                      |
 | Last updated      | 2026-11-13                                                 |
-| Working name      | **DalaShift** — provisional, not a final brand              |
+| Working name      | **DalaShift**: provisional, not a final brand              |
 | Related documents | `ARCHITECTURE.md`, `ARCHITECTURE_ESSENTIALS.md`, `docs/`   |
 
 ---
@@ -31,7 +31,7 @@ DalaShift is a web platform that gives a farmer, **for their own land**, an
 understanding of the growing conditions and practical guidance on what to
 plant and how to manage it.
 
-The raw environmental information already exists — NASA satellite observations
+The raw environmental information already exists: NASA satellite observations
 of soil moisture, rainfall, temperature and vegetation; soil property maps;
 agronomic research on crop requirements. What does not exist, for a
 smallholder farmer in northern Nigeria, is that information turned into an
@@ -40,7 +40,7 @@ answer about *their* field, in language they act on.
 DalaShift does that conversion. A farmer registers their farm, draws its
 boundary on a map, states what they grow or plan to grow, and receives
 environmental analysis and crop guidance tied to that polygon and that crop
-situation — plus the explicit caveats that go with any figure derived from
+situation, plus the explicit caveats that go with any figure derived from
 satellite data at coarse resolution.
 
 **The differentiator is specificity and honesty**, not imagery. Most
@@ -54,36 +54,36 @@ agricultural data tools stop at "here is a map". DalaShift's job is to answer
 ### 2.1 The farmer's problem
 
 A smallholder farmer in Kano State makes decisions that materially affect their
-household income — what to plant, when to plant, whether to irrigate, whether
-to change crops — with very little information beyond local observation,
+household income (what to plant, when to plant, whether to irrigate, whether
+to change crops) with very little information beyond local observation,
 memory, and advice from other farmers.
 
 **[Confirmed]** The information that exists covers several specific gaps:
 
-- **Soil moisture and soil conditions** — no access to the NASA SMAP or
+- **Soil moisture and soil conditions**: no access to the NASA SMAP or
   equivalent soil-moisture record, and no way to interpret it for their field.
-- **Rainfall and precipitation patterns** — no access to accumulated rainfall,
+- **Rainfall and precipitation patterns**: no access to accumulated rainfall,
   onset timing, or anomalies.
-- **Temperature and environmental conditions** — no access to the climate
+- **Temperature and environmental conditions**: no access to the climate
   record for their location.
-- **Vegetation health** — cannot see whether their field is developing
+- **Vegetation health**: cannot see whether their field is developing
   differently from their neighbour's.
-- **Crop suitability** — if they have land but no decision, no way to know what
+- **Crop suitability**: if they have land but no decision, no way to know what
   would do well there.
-- **Planting periods and seasonal patterns** — planting dates are often
+- **Planting periods and seasonal patterns**: planting dates are often
   transmitted socially rather than derived from the local rainfall record.
-- **Risk** — no early warning of drought, flood, heat stress or pest pressure.
+- **Risk**: no early warning of drought, flood, heat stress or pest pressure.
 
 ### 2.2 The information-access problem
 
 **[Confirmed]** These are not primarily *data availability* problems. The data
 exists. The problems are:
 
-1. **Scale mismatch.** The farmer's field is 0.5–20 hectares. The datasets are
-   250 m to 50 km. A soil-moisture pixel covers roughly a 9 km × 9 km square —
-   over 80 km², potentially containing hundreds of farms. Delivering that value
-   to a farmer as "your soil moisture" is a misrepresentation, whether or not
-   the underlying number is correct.
+1. **Scale mismatch.** The farmer's field is 0.5 to 20 hectares. The datasets
+   are 250 m to 50 km. A soil-moisture pixel covers roughly a 9 km × 9 km
+   square, over 80 km², potentially containing hundreds of farms. Delivering
+   that value to a farmer as "your soil moisture" is a misrepresentation,
+   whether or not the underlying number is correct.
 2. **Fragmentation.** Rainfall, temperature, soil and vegetation data live in
    different services with different formats, resolutions, latencies and
    authentication.
@@ -140,7 +140,7 @@ access to advanced agricultural information systems.
 managers, agricultural organisations. **[Open]** Whether any of these are
 served in the MVP, or whether they are a later phase, is unresolved. The MVP
 is designed so that these roles can be added without reworking the data model
-— the role already exists in the access-control model — but no secondary-user
+(the role already exists in the access-control model), but no secondary-user
 workflow is designed yet.
 
 ### 4.3 Explicit non-users for the MVP
@@ -154,10 +154,10 @@ compromise the smallholder-first goal.
 
 ## 5. User personas
 
-### 5.1 Mariam — the established smallholder farmer
+### 5.1 Mariam: the established smallholder farmer
 
 **[Proposed persona, informed by typical northern Nigerian smallholder
-practice. Must be validated with real farmers in Tofa LGA during Phase 2 —
+practice. Must be validated with real farmers in Tofa LGA during Phase 2:
 treat every attribute as a hypothesis until then.**
 
 - **Location:** Tofa LGA, Kano State. Farm roughly 1.5 ha.
@@ -165,8 +165,8 @@ treat every attribute as a hypothesis until then.**
 - **Season:** relies on the rains. Planting timing is social, not calibrated.
 - **Resources:** a smartphone with intermittent data. Does not read English
   fluently. Will not use a desktop.
-- **Knowledge:** deep practical knowledge of her own land — where water
-  collects, which soils crack, which pest arrives when. Does not use
+- **Knowledge:** deep practical knowledge of her own land (where water
+  collects, which soils crack, which pest arrives when). Does not use
   satellite data and does not need to.
 - **Need:** early warning of a dry spell during establishment; an idea of
   whether this year's rains started early or late; confirmation that her
@@ -176,7 +176,7 @@ treat every attribute as a hypothesis until then.**
 - **Success looks like:** she opens the app, sees one clear statement about
   her millet field, and changes one thing about how she farms it.
 
-### 5.2 Usman — the prospective farmer
+### 5.2 Usman: the prospective farmer
 
 - **Location:** Tofa LGA. Owns or has access to 3 ha of land, currently
   fallow or under-uncertain use.
@@ -188,7 +188,7 @@ treat every attribute as a hypothesis until then.**
 - **Success looks like:** he gets a ranked, explained shortlist with the
   reasoning and the caveats, not a single answer presented as truth.
 
-### 5.3 Fatima — the extension worker **[Proposed, post-MVP]**
+### 5.3 Fatima: the extension worker **[Proposed, post-MVP]**
 
 - **Location:** covers several villages.
 - **Need:** aggregate environmental context across many farms for targeted
@@ -208,15 +208,15 @@ treat every attribute as a hypothesis until then.**
 | O4 | Usable on a mid-range Android phone on a slow connection | Core flows complete at 3G-equivalent latency; map and insights fit a 360 px viewport |
 | O5 | Field validation is grounded in real farmer contact    | Structured interviews with farmers in Tofa LGA; findings documented |
 
-**[Proposed]** O1–O4 are engineering-quality objectives. O5 is the
-validation objective. No quantitative engagement targets are set — see
+**[Proposed]** O1 to O4 are engineering-quality objectives. O5 is the
+validation objective. No quantitative engagement targets are set; see
 § 17 for why, and what would be needed to set them.
 
 ---
 
 ## 7. Functional requirements
 
-### FR-1 — Farmer registration and profile
+### FR-1: Farmer registration and profile
 
 | ID       | Requirement                                                                                    | Status     |
 | -------- | --------------------------------------------------------------------------------------------- | ---------- |
@@ -229,7 +229,7 @@ validation objective. No quantitative engagement targets are set — see
 | FR-1.7   | Authentication is via Supabase Auth.                                                            | [Confirmed] |
 
 **[Proposed] Scope note.** "Preferred language" is collected in Phase 2, but
-**no translation of the interface is committed for the MVP** — the platform's
+**no translation of the interface is committed for the MVP**; the platform's
 working language is English. Collecting a language preference with no effect
 on the experience is a privacy cost with no user benefit. Either the MVP
 ships a Hausa interface, or the field is deferred to Phase 3. See
@@ -238,7 +238,7 @@ ships a Hausa interface, or the field is deferred to Phase 3. See
 **[Confirmed]** Account credentials are handled by Supabase Auth. DalaShift
 stores no passwords.
 
-### FR-2 — Farm registration and geographical selection
+### FR-2: Farm registration and geographical selection
 
 | ID       | Requirement                                                                                              | Status     |
 | -------- | --------------------------------------------------------------------------------------------------------- | ---------- |
@@ -253,8 +253,8 @@ stores no passwords.
 | FR-2.9   | The farmer can search for a location using the interactive map.                                          | [Confirmed] |
 | FR-2.10  | The farmer can draw the farm boundary and review the calculated area before saving.                        | [Confirmed] |
 | FR-2.11  | Required and optional fields are visually distinguished, and the platform states which information it is missing. | [Proposed] |
-| FR-2.12  | A farm supports multiple plots within it, each with its own crop and cultivation information.              | [Confirmed — "investigate"], see [§ 9.3](#93-plot-support) |
-| FR-2.13  | A farmer can state their **priorities** for the farm — what they want the rotation or plan to achieve (soil health, water conservation, income, food security). | [Confirmed by the NASA Space Apps "Field Shift" challenge brief, which requires *"farmer priorities"*] |
+| FR-2.12  | A farm supports multiple plots within it, each with its own crop and cultivation information.              | [Confirmed (investigate)], see [§ 9.3](#93-plot-support) |
+| FR-2.13  | A farmer can state their **priorities** for the farm, what they want the rotation or plan to achieve (soil health, water conservation, income, food security). | [Confirmed by the NASA Space Apps "Field Shift" challenge brief, which requires *"farmer priorities"*] |
 
 **[Confirmed]** The farm's actual coordinates and polygon boundary are the
 **primary reference** for all environmental analysis. Selecting an LGA does
@@ -267,7 +267,7 @@ abandoned), at least one crop or an explicit "no crop selected" state.
 *Optional:* irrigation method, soil notes, photographs, documents, farming
 method, preferred language, experience.
 
-**[Proposed] Field-by-field justification** — required because the brief
+**[Proposed] Field-by-field justification**: required because the brief
 requires only collecting information with a clear purpose:
 
 | Field                     | Collected | Purpose                                                    |
@@ -275,18 +275,18 @@ requires only collecting information with a clear purpose:
 | Full name                 | Yes       | Personalises reports; identifies the farm owner            |
 | Contact (phone/email)     | Yes       | Account recovery; report delivery; field follow-up        |
 | Password                  | Yes       | Account security (held by Supabase Auth)                   |
-| Preferred language        | **No** (MVP) | No interface translation in the MVP — see OQ-1         |
+| Preferred language        | **No** (MVP) | No interface translation in the MVP; see OQ-1          |
 | Farming experience        | Optional  | Allows the platform to calibrate explanation depth         |
 | Farm name                 | Yes       | Distinguishes multiple farms; used in reports              |
 | Location / coordinates    | Yes       | Links the farm to environmental data                       |
 | Boundary polygon          | Yes       | Required for spatial aggregation; see FR-2.13              |
-| Area (hectares)           | Yes (derived) | Computed from the polygon, not typed — see FR-2.14      |
+| Area (hectares)           | Yes (derived) | Computed from the polygon, not typed; see FR-2.14      |
 | Farming method            | Optional  | Interacts with suitability rules (rainfed vs irrigated)    |
 | Irrigation method         | Optional  | Determines whether rainfall sufficiency is the binding constraint |
 | Soil information          | Optional  | Allows farmer-observed soil to override the coarse model   |
 | Photographs / documents   | Optional  | Visual record; future evidence for crop identification     |
 
-### FR-3 — Crop information
+### FR-3: Crop information
 
 | ID       | Requirement                                                                            | Status     |
 | -------- | --------------------------------------------------------------------------------------- | ---------- |
@@ -296,17 +296,17 @@ requires only collecting information with a clear purpose:
 | FR-3.4   | A farmer may record planting dates or expected planting periods.                       | [Confirmed] |
 | FR-3.5   | A farmer may record harvest periods where known.                                        | [Confirmed] |
 | FR-3.6   | A farmer may record the farming season.                                                | [Confirmed] |
-| FR-3.7   | A farmer may record the intended use — commercial production or household consumption. | [Confirmed] |
+| FR-3.7   | A farmer may record the intended use, commercial production or household consumption.  | [Confirmed] |
 | FR-3.8   | A farm may contain multiple crops.                                                       | [Confirmed] |
-| FR-3.9   | A farm may contain multiple plots, each with its own crop information.                  | [Confirmed — "investigate"] |
+| FR-3.9   | A farm may contain multiple plots, each with its own crop information.                  | [Confirmed (investigate)] |
 
-### FR-4 — Environmental analysis
+### FR-4: Environmental analysis
 
 | ID       | Requirement                                                                                        | Status     |
 | -------- | ---------------------------------------------------------------------------------------------------- | ---------- |
 | FR-4.1   | The platform retrieves environmental observations for the farm's polygon or centroid from NASA sources. | [Confirmed] |
 | FR-4.2   | Environmental analysis covers soil moisture, rainfall/precipitation, temperature, and vegetation condition. | [Confirmed] |
-| FR-4.3   | The analysis is specific to the farm's coordinates — not to the administrative area the farm lies in. | [Confirmed] |
+| FR-4.3   | The analysis is specific to the farm's coordinates, not to the administrative area the farm lies in. | [Confirmed] |
 | FR-4.4   | Every environmental value presented to the user states its source, spatial resolution and observation date. | [Proposed] |
 | FR-4.5   | Values that are modelled or interpolated are labelled as such, distinct from direct observation.    | [Confirmed] |
 | FR-4.6   | Where a source's resolution is much coarser than the farm, the interface says so explicitly.        | [Proposed] |
@@ -319,13 +319,13 @@ this?" a first-class piece of information, not a footnote in a methodology
 page. A farmer looking at a 9 km soil-moisture pixel must understand that it
 describes their neighbourhood, not their plot.
 
-### FR-5 — Recommendations
+### FR-5: Recommendations
 
 | ID       | Requirement                                                                                          | Status     |
 | -------- | -------------------------------------------------------------------------------------------------------- | ---------- |
-| FR-5.1   | Recommendations are based on **farmer-provided information** — what is grown, intended, and how it is managed. | [Confirmed] |
+| FR-5.1   | Recommendations are based on **farmer-provided information**, what is grown, intended, and how it is managed. | [Confirmed] |
 | FR-5.2   | Recommendations are based on **farm-specific environmental information**.                                | [Confirmed] |
-| FR-5.3   | Recommendations are based on **agricultural knowledge** — crop requirements, planting calendars, research. | [Confirmed] |
+| FR-5.3   | Recommendations are based on **agricultural knowledge**, crop requirements, planting calendars, research. | [Confirmed] |
 | FR-5.4   | The three categories are **combined**, not drawn from a single dataset.                                  | [Confirmed] |
 | FR-5.5   | If a farmer grows maize, maize-related insights are prioritised.                                        | [Confirmed] |
 | FR-5.6   | If a farmer intends to plant rice, relevant environmental conditions are assessed against rice requirements. | [Confirmed] |
@@ -347,7 +347,7 @@ paths**, not a toggle:
 | Temporal frame | Current season | Next season |
 | Primary uncertainty | Management quality | Whether the crop will succeed at all |
 
-### FR-6 — Reports
+### FR-6: Reports
 
 | ID       | Requirement                                                                  | Status     |
 | -------- | ---------------------------------------------------------------------------- | ---------- |
@@ -361,7 +361,7 @@ paths**, not a toggle:
 a farmer or extension worker printing it and handing it to someone else.
 A report that only exists inside an authenticated session has limited value.
 
-### FR-7 — Monitoring
+### FR-7: Monitoring
 
 | ID       | Requirement                                                                    | Status     |
 | -------- | ------------------------------------------------------------------------------ | ---------- |
@@ -442,11 +442,11 @@ product fails its primary user.
 **[Confirmed]** These are not identical. See the comparison table in FR-5.
 
 **[Proposed]** Product structure: a farmer reaches a decision point during
-onboarding — *"Do you already farm this land?"* — and the dashboard is
+onboarding (*"Do you already farm this land?"*) and the dashboard is
 organised differently from then on. An existing farmer lands on "your farms and
 their current condition"; a prospective farmer lands on "choose a field, see
 what suits it". **[Open]** Whether this is a hard fork in the onboarding flow or
-a self-selected toggle on the dashboard — see OQ-2.
+a self-selected toggle on the dashboard; see OQ-2.
 
 ### 9.2 Crop lifecycle modelling
 
@@ -460,16 +460,16 @@ without a join table and lets a single record move from `planned` → `current`
 recommendation weighting: a commercial grower is more exposed to yield
 variability and therefore benefits more from risk framing; a household grower
 may have a different risk tolerance entirely (food security). **[Open]** How
-strongly this should affect the output — see OQ-3.
+strongly this should affect the output; see OQ-3.
 
 ### 9.3 Plot support
 
-**[Confirmed as "investigate"]** — whether to support multiple plots within one
+**[Confirmed as "investigate"]**: whether to support multiple plots within one
 farm.
 
 **[Proposed]** Yes, at the data-model level, from day one. The cost is one extra
 entity (`farm_plots`) and a nullable `plot_id` on the crop record. The
-alternative — adding plots later — requires backfilling crop records and
+alternative (adding plots later) requires backfilling crop records and
 recomputing every historical analysis, which is materially more work during a
 hackathon than carrying an extra nullable column now.
 
@@ -488,9 +488,9 @@ design constraint on the dashboard, not a detail.
 
 **[Proposed]** Where crops span plots with different conditions, the platform
 should present the farm-level value as a range across plots, not a single
-average — an average over 20 km of farms is less meaningful than the spread.
+average. An average over 20 km of farms is less meaningful than the spread.
 
-### FR-8 — Crop rotation strategy comparison
+### FR-8: Crop rotation strategy comparison
 
 > **Added after reading the official NASA Space Apps 2026 "Field Shift:
 > Adapting Farms with NASA Data" challenge statement** (verified 2026-11-13,
@@ -507,12 +507,12 @@ average — an average over 20 km of farms is less meaningful than the spread.
 
 | ID       | Requirement                                                                                                    | Status     |
 | -------- | ---------------------------------------------------------------------------------------------------------------- | ---------- |
-| FR-8.1   | The platform identifies the farmer's **existing rotation** from their crop history — current, previous and planned crops on the farm. | [Confirmed] |
+| FR-8.1   | The platform identifies the farmer's **existing rotation** from their crop history, current, previous and planned crops on the farm. | [Confirmed] |
 | FR-8.2   | The platform generates **at least three alternative rotation strategies** in addition to the existing one.            | [Confirmed] |
-| FR-8.3   | Each strategy states **why it was suggested** — the evidence from the farm's environment, the crop requirements and the farmer's stated priorities. | [Confirmed] |
-| FR-8.4   | Each strategy states **what benefits it may offer** — e.g. improved soil organic carbon, better water use, spread rainfall risk, a different harvest window. | [Confirmed] |
-| FR-8.5   | Each strategy states **where information gaps exist** — the explicit limitations of the evidence behind it.          | [Confirmed] |
-| FR-8.6   | Each strategy states **any risks that would need local review** by farmers or agricultural experts.                | [Confirmed] |
+| FR-8.3   | Each strategy states **why it was suggested**, the evidence from the farm's environment, the crop requirements and the farmer's stated priorities. | [Confirmed] |
+| FR-8.4   | Each strategy states **what benefits it may offer**, e.g. improved soil organic carbon, better water use, spread rainfall risk, a different harvest window. | [Confirmed] |
+| FR-8.5   | Each strategy states **where information gaps exist**, the explicit limitations of the evidence behind it.          | [Confirmed] |
+| FR-8.6   | Each strategy states **any risks that would need local review** (by farmers or agricultural experts).                | [Confirmed] |
 | FR-8.7   | The existing rotation is presented **on equal terms** with the alternatives, not as a baseline to beat.           | [Proposed] |
 | FR-8.8   | Strategies are ranked, but the ranking is accompanied by the farmer's stated priorities, and the farmer can change what they optimise for. | [Proposed] |
 | FR-8.9   | A rotation strategy is expressible as an ordered sequence of crops across seasons, optionally over multiple plots. | [Proposed] |
@@ -521,13 +521,13 @@ average — an average over 20 km of farms is less meaningful than the spread.
 crop assessments plus rotation-specific rules. The rules engine already scores
 a crop against a farm's conditions; a rotation strategy adds:
 
-1. **Sequence rules** — e.g. a legume following a cereal may contribute to soil
+1. **Sequence rules**: e.g. a legume following a cereal may contribute to soil
    nitrogen; a cereal after a cereal may draw down soil nitrogen.
-2. **Seasonal fit** — every crop in the sequence must fit the local growing
+2. **Seasonal fit**: every crop in the sequence must fit the local growing
    calendar.
-3. **Portfolio effects** — e.g. staggering planting dates spreads the risk of
+3. **Portfolio effects**: e.g. staggering planting dates spreads the risk of
    a single dry spell hitting every crop at once.
-4. **Priority weighting** — the farmer's stated goals (FR-2.13) shift the
+4. **Priority weighting**: the farmer's stated goals (FR-2.13) shift the
    weights between dimensions.
 
 This is an **extension of the recommendation engine**, not a new subsystem.
@@ -541,7 +541,7 @@ season. Mitigations, in order of importance:
 - Every rotation claim cites the crop requirements it used, and those
   requirements are individually sourced.
 - The **existing rotation** is always shown first, and the interface never
-  implies the alternatives are better — only *different*.
+  implies the alternatives are better, only *different*.
 - Every strategy carries the mandatory "requires local review by an
   agricultural expert" statement. This is required by the challenge brief and
   is also the honest thing to say.
@@ -551,7 +551,7 @@ season. Mitigations, in order of importance:
 
 ## 10. User journeys
 
-### 10.1 Journey A — Mariam, an established farmer
+### 10.1 Journey A: Mariam, an established farmer
 
 1. **Arrives** at the landing page; creates an account with name and phone.
 2. **Onboards.** Is asked what she farms (millet, maize, cowpea), whether she
@@ -570,27 +570,27 @@ season. Mitigations, in order of importance:
    its recommendations, with source attribution, which she takes to the
    extension worker.
 
-### 10.2 Journey B — Usman, a prospective farmer
+### 10.2 Journey B: Usman, a prospective farmer
 
 1. **Arrives** at the landing page; creates an account.
 2. **Onboards.** States he has land but has not decided what to plant.
 3. **Adds a farm.** Draws the boundary of his 3 ha of fallow land.
 4. **Receives a suitability assessment.** A ranked shortlist of crops that suit
-   his land, each with: the reasoning, the confidence, and the caveats — for
+   his land, each with: the reasoning, the confidence, and the caveats, for
    example "soil moisture is a regional estimate at 9 km resolution, so this
    ranking may shift once you tell us how you irrigate."
 5. **Refines.** He adds that the land is rainfed, and the assessment updates.
 6. **Decides** to plant groundnut and registers it as a planned crop.
 7. **Returns next season** to monitor it.
 
-### 10.3 Journey C — the farmer with insufficient data
+### 10.3 Journey C: the farmer with insufficient data
 
 1. **Marius** adds a farm boundary in a region where the vegetation product has
    a long gap in coverage.
 2. **The platform says:** "Satellite vegetation data for this area is missing
    between March and June 2026. Rainfall and temperature are available."
 3. It presents what it has, marks the gap, and adjusts the confidence of the
-   recommendation accordingly — rather than showing a flat line that implies
+   recommendation accordingly, rather than showing a flat line that implies
    no change.
 
 **This journey is a first-class requirement, not an edge case.** It is the
@@ -620,12 +620,12 @@ journey that proves the product is honest.
 | 12 | Farm reports                                                              | Printable/shareable                         |
 | 13 | Map: search, draw boundary, area preview                                  | MapLibre                                    |
 | 14 | Responsive, accessible interface                                          | Mobile-first                                |
-| **15** | **Crop rotation strategy comparison** — existing rotation plus ≥ 3 alternatives, each with evidence, benefits, information gaps and risks | **Required by the "Field Shift" challenge brief** |
+| **15** | **Crop rotation strategy comparison**: existing rotation plus ≥ 3 alternatives, each with evidence, benefits, information gaps and risks | **Required by the "Field Shift" challenge brief** |
 | **16** | **Farmer priorities** captured and used to weight the recommendations    | **Required by the challenge brief**          |
 
 ### 11.2 Explicitly out of scope for the MVP
 
-**[Proposed]** — items that could plausibly be mistaken for in-scope:
+**[Proposed]**: items that could plausibly be mistaken for in-scope:
 
 | Excluded                                    | Why                                                                   |
 | ------------------------------------------- | --------------------------------------------------------------------- |
@@ -633,7 +633,7 @@ journey that proves the product is honest.
 | Yield prediction                            | Not supportable at field scale with these data sources.               |
 | Automated crop detection from imagery       | Requires labelled training data for Sahelian cropping systems; a research project, not a hackathon feature. |
 | Marketplace, payments, insurance            | A different product.                                                   |
-| Offline / SMS delivery                      | High value for the target user, but a separate channel requiring a provider account and budget. **[Open]** — see OQ-4. |
+| Offline / SMS delivery                      | High value for the target user, but a separate channel requiring a provider account and budget. **[Open]**: see OQ-4. |
 | Multi-user farm teams and roles             | [Proposed] defer; the role model supports adding them.                 |
 | Native mobile applications                  | Responsive web is sufficient for the MVP.                              |
 | Automated hardware / IoT sensor ingestion  | No hardware in scope.                                                  |
@@ -649,7 +649,7 @@ hackathon with no labelled training data.
 
 ## 12. Future possibilities
 
-**[Proposed]** — not committed, listed so the architecture does not exclude
+**[Proposed]**: not committed, listed so the architecture does not exclude
 them:
 
 - SMS and USSD delivery of recommendations for low-connectivity farmers.
@@ -666,7 +666,7 @@ them:
 
 ---
 
-## 13. Data sources — product requirements
+## 13. Data sources: product requirements
 
 **[Confirmed]** The platform uses NASA Earth observation data and other
 environmental and agricultural datasets.
@@ -691,7 +691,7 @@ team decision recorded as an ADR. See OQ-5.
 
 - Not a NASA-branded product, and no NASA endorsement is claimed or implied.
 - Not a replacement for the agronomist or extension officer.
-- Not a global agricultural platform on day one — Tofa LGA is the validation
+- Not a global agricultural platform on day one: Tofa LGA is the validation
   site, not the coverage map.
 - Not a precision-agriculture tool for industrial farming.
 - Not a data provider; the platform consumes open data.
@@ -747,7 +747,7 @@ not set. With a 48-hour build, a validation cohort of a handful of farmers and
 no deployment runway, any number would be fabricated. Setting them would
 contradict NFR-H3 and the honesty principle. If the team wants them, the
 prerequisites are: a defined cohort size, a measurement method, and a
-follow-up window — see OQ-6.
+follow-up window; see OQ-6.
 
 ---
 
@@ -787,7 +787,7 @@ follow-up window — see OQ-6.
 
 ### Assumptions
 
-**[Proposed]** — these are working assumptions, not confirmed facts:
+**[Proposed]**: these are working assumptions, not confirmed facts:
 
 | ID       | Assumption                                                                 | If it is wrong                              |
 | -------- | --------------------------------------------------------------------------- | ------------------------------------------- |
@@ -825,10 +825,10 @@ deliverables and are listed in `docs/decisions/` as open ADRs.
 | ------------------- | ------------------------------------------------------------------------------------------- |
 | **Farm**            | A polygon of land with one owner in this platform, with a name and metadata.                |
 | **Plot**            | A sub-division of a farm that carries its own crop information.                             |
-| **LGA**             | Local Government Area — a Nigerian administrative district.                                 |
+| **LGA**             | Local Government Area: a Nigerian administrative district.                                  |
 | **Crop**            | A plant species/cultivar group a farmer grows or intends to grow.                           |
 | **Observation**     | A value read from an external dataset for a location and time, with provenance.              |
-| **Analysis**        | A computation over a farm's observations — e.g. "is rainfall sufficient for millet this season". |
+| **Analysis**        | A computation over a farm's observations, e.g. "is rainfall sufficient for millet this season". |
 | **Recommendation**  | A conclusion with reasoning, confidence and stated limitations.                              |
 | **Ruleset**         | A versioned set of agronomic rules that turns inputs into recommendations.                   |
 | **Provenance**      | Source, licence, spatial resolution, temporal resolution, observation date, retrieval date. |
