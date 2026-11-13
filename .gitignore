@@ -69,6 +69,26 @@ data/samples/*
 !data/samples/README.md
 
 # ─────────────────────────────────────────────────────────────
+# Field interview recordings
+#
+# Raw farmer voices must never be committed. Consent to be interviewed is
+# not consent to publish an identifiable recording, and the repository is
+# intended to be public for the NASA Space Apps submission.
+#
+# Transcripts and structured case studies are committed. The audio stays
+# local. See docs/research/field-interviews/README.md.
+# ─────────────────────────────────────────────────────────────
+*.m4a
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+*.opus
+*.wma
+docs/temp-audio/
+
+# ─────────────────────────────────────────────────────────────
 # Generated reports / user uploads (Supabase Storage holds the real ones)
 # ─────────────────────────────────────────────────────────────
 reports/
