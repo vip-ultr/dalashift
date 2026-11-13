@@ -1,6 +1,26 @@
 version: 2
 
 updates:
+  # npm dependencies.
+  #
+  # Major version bumps are not taken automatically. Each one below is
+  # deliberate and the reason is recorded in
+  # docs/decisions/ADR-0010-dependency-and-ci-runtime-policy.md.
+  #
+  #   eslint       next@16 ships eslint-config-next, whose bundled plugins
+  #                (eslint-plugin-react, eslint-plugin-jsx-a11y,
+  #                eslint-plugin-import) all declare support for eslint ^9
+  #                only. Running eslint 10 would mean an unsupported
+  #                plugin combination in a toolchain the team uses daily.
+  #   typescript   TypeScript 6 applies stricter defaults than 5.9. The team
+  #                works with AI coding agents, which write idiomatic
+  #                TypeScript 5. Stricter rules would fight the tools rather
+  #                than help them.
+  #   @types/node  Node 26 types describe APIs that do not exist in the
+  #                Node 22 runtime pinned in .nvmrc. Types must match the
+  #                runtime, or code type-checks and then fails at runtime.
+  #
+  # Minor and patch updates are still proposed automatically.
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -8,7 +28,17 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: 'chore(deps)'
+    ignore:
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
 
+  # GitHub Actions. These are taken promptly: GitHub removed the Node 20
+  # runtime from hosted runners on 16 September 2026, so an action still
+  # targeting Node 20 will stop working outright.
   - package-ecosystem: github-actions
     directory: /
     schedule:

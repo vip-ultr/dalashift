@@ -23,7 +23,8 @@ jobs:
     steps:
       # The Node 20 runtime these actions targeted was removed from
       # GitHub-hosted runners on 16 September 2026. Every action below is on
-      # a Node 24 release. See docs/decisions/ADR-0010-github-actions-node24.md.
+      # a Node 24 release. See
+      # docs/decisions/ADR-0010-dependency-and-ci-runtime-policy.md.
       - name: Checkout
         uses: actions/checkout@v7
 
