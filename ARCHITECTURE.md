@@ -1283,6 +1283,7 @@ decision index below is a summary; **the ADR is the source of truth.**
 | [ADR-0007](docs/decisions/ADR-0007-map-tile-provider.md) | Map tile provider strategy | **Open** |
 | [ADR-0008](docs/decisions/ADR-0008-google-earth-engine-dependency.md) | Google Earth Engine as an optional dependency | **Open** |
 | [ADR-0009](docs/decisions/ADR-0009-repository-visibility.md) | Repository visibility | **Open** |
+| [ADR-0010](docs/decisions/ADR-0010-dependency-and-ci-runtime-policy.md) | Dependency update policy and CI action runtime | Accepted |
 
 ---
 
