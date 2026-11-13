@@ -21,16 +21,19 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      # The Node 20 runtime these actions targeted was removed from
+      # GitHub-hosted runners on 16 September 2026. Every action below is on
+      # a Node 24 release. See docs/decisions/ADR-0010-github-actions-node24.md.
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 9.6.0
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -63,14 +66,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          # Full history, so gitleaks can scan commits rather than only the
+          # working tree.
           fetch-depth: 0
 
       - name: Scan tracked files for committed secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # A public repo's leak history is available via the API; a private one
-          # is not, so gitleaks falls back to scanning the working tree only.
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+          # PR commenting needs a token that can write to pull requests. The
+          # workflow deliberately runs with read-only permissions, so the
+          # comment step would fail with "Resource not accessible by
+          # integration" and fail the whole job. The scan itself still runs
+          # and still fails the job when it finds something.
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
