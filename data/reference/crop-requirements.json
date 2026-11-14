@@ -1,0 +1,215 @@
+{
+  "catalogVersion": "research-2026-11-14",
+  "scope": "Rain-fed crop candidates reported in Doka, Tofa LGA, Kano State, Nigeria",
+  "status": "research_only_not_engine_ready",
+  "sourceDateChecked": "2026-11-14",
+  "interpretation": "Only source-backed identity and indicative FAO crop-water-need ranges are populated. Water needs are not rainfall requirements or recommendation thresholds. Null means unknown or not verified for Tofa.",
+  "crops": [
+    {
+      "code": "sorghum",
+      "name": "Sorghum",
+      "scientificName": "Sorghum bicolor (L.) Moench",
+      "aliases": ["guinea corn"],
+      "identityEvidence": "NIGERIA-ROT-01",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 450,
+          "max": 650,
+          "evidenceId": "FAO-WATER-03",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      }
+    },
+    {
+      "code": "pearl_millet",
+      "name": "Pearl millet",
+      "scientificName": "Cenchrus americanus (syn. Pennisetum glaucum)",
+      "aliases": ["millet"],
+      "identityEvidence": "ICRISAT-ROT-01",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 450,
+          "max": 650,
+          "evidenceId": "FAO-WATER-03",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      },
+      "unresolvedAliases": ["late millet"]
+    },
+    {
+      "code": "maize",
+      "name": "Maize",
+      "scientificName": "Zea mays L.",
+      "aliases": ["corn"],
+      "identityEvidence": "NIGERIA-ROT-01",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 500,
+          "max": 800,
+          "evidenceId": "FAO-WATER-01",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      }
+    },
+    {
+      "code": "cowpea",
+      "name": "Cowpea",
+      "scientificName": "Vigna unguiculata (L.) Walp.",
+      "aliases": [],
+      "identityEvidence": "NIGERIA-ROT-01",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": null,
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      },
+      "unresolvedAliases": ["beans", "white cowpeas"]
+    },
+    {
+      "code": "soybean",
+      "name": "Soybean",
+      "scientificName": "Glycine max (L.) Merr.",
+      "aliases": ["soybeans"],
+      "identityEvidence": "NIGERIA-ROT-01",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 450,
+          "max": 700,
+          "evidenceId": "FAO-WATER-04",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      }
+    },
+    {
+      "code": "groundnut",
+      "name": "Groundnut",
+      "scientificName": "Arachis hypogaea L.",
+      "aliases": ["peanut"],
+      "identityEvidence": "FAO-WATER-02",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 500,
+          "max": 700,
+          "evidenceId": "FAO-WATER-02",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      }
+    },
+    {
+      "code": "tomato",
+      "name": "Tomato",
+      "scientificName": "Solanum lycopersicum L.",
+      "aliases": ["tomatoes"],
+      "identityEvidence": "FAO-WATER-06",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 400,
+          "max": 800,
+          "evidenceId": "FAO-WATER-06",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      }
+    },
+    {
+      "code": "pepper",
+      "name": "Pepper",
+      "scientificName": "Capsicum spp.",
+      "aliases": ["peppers"],
+      "identityEvidence": "FAO-WATER-05",
+      "parameters": {
+        "rainfallRequirementMm": null,
+        "indicativeCropWaterNeedMmPerSeason": {
+          "min": 600,
+          "max": 900,
+          "evidenceId": "FAO-WATER-05",
+          "useAsHardConstraint": false
+        },
+        "temperatureC": null,
+        "soilPh": null,
+        "soilTexture": null,
+        "droughtSensitivity": null,
+        "maturityDays": null,
+        "plantingWindow": null,
+        "rooting": null,
+        "nutrientRequirement": null,
+        "nitrogenFixation": null,
+        "residueAndFodder": null
+      },
+      "unresolvedIdentity": ["species and hot/sweet type"]
+    }
+  ]
+}

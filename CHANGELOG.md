@@ -16,6 +16,9 @@ the build.
 
 ### Added
 
+- Agronomy research artifacts for the crop catalog and rotation comparison:
+  claim-level evidence register, source-backed reference data with unknowns
+  left unset, rotation evidence and CDA review questions.
 - Server-only NASA POWER daily point adapter for precipitation, air
   temperature and root-zone wetness, with response validation, fill-value
   handling, bounded retries and per-value provenance.
