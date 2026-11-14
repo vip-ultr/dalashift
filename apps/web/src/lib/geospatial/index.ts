@@ -146,6 +146,7 @@ function getGridStepDegrees(sourceKey: string): {
       // Verified live in docs/api/data-sources.md § 1: 0.5 deg lat x 0.625 deg lon.
       return { latStep: 0.5, lonStep: 0.625 };
     case 'gpm_imerg_v07':
+    case 'open_meteo':
       return { latStep: 0.1, lonStep: 0.1 };
     case 'smap_l3_enhanced':
     case 'smap_spl3smp_e':
@@ -158,6 +159,9 @@ function getGridStepDegrees(sourceKey: string): {
     case 'modis_mod13q1_v061':
     case 'modis_mod13q1':
       return { latStep: 0.0025, lonStep: 0.0025 };
+    case 'landsat_c2_l2':
+    case 'srtm_gl1':
+      return { latStep: 0.0003, lonStep: 0.0003 };
     case 'modis_mod11a2_v061':
       return { latStep: 0.01, lonStep: 0.01 };
     default:

@@ -27,6 +27,14 @@ the build.
 
 ### Added
 
+- Server-only Open-Meteo integration (`lib/integrations/open-meteo/index.ts`) for
+  7-to-16 day weather, evapotranspiration and volumetric soil moisture
+  forecasts (`0-1 cm` and `9-27 cm`), plus the NASA AppEEARS point-extraction
+  client (`lib/integrations/appeears/index.ts`) for `MOD13Q1.061` (250 m NDVI),
+  `MOD11A2.061` (1 km LST), `SPL3SMP_E.006` (9 km SMAP soil moisture),
+  `SRTMGL1_NC.003` (30 m DEM) and `L09.002` (30 m Landsat 9 surface
+  reflectance), registered in `public.data_sources` via
+  `20261114155000_open_meteo_and_appeears_sources.sql`.
 - Extended `scripts/data/precompute-validation-region.mjs` to fetch NASA POWER
   daily and climatology observations plus NASA CMR granule metadata (`SPL3SMP_E`
   v006 SMAP and `MOD13Q1` v061 MODIS NDVI) for Tofa LGA (`12.05 N, 8.27 E`) and

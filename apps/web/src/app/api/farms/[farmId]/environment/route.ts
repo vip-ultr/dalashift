@@ -8,6 +8,7 @@ import {
   describeSpatialScaleMismatch,
   getGeometryRepresentativePoint,
 } from '../../../../../lib/geospatial';
+import { APPEEARS_PRODUCTS, isAppEearsConfigured } from '../../../../../lib/integrations/appeears';
 import { persistObservationsForParcel } from '../../../../../lib/integrations/cache';
 import {
   fetchClimatologyCached,
@@ -15,6 +16,10 @@ import {
   NASA_POWER_DAILY_SOURCE,
   NASA_POWER_VARIABLES,
 } from '../../../../../lib/integrations/nasa-power';
+import {
+  fetchOpenMeteoForecastCached,
+  OPEN_METEO_SOURCE,
+} from '../../../../../lib/integrations/open-meteo';
 import { fetchSoilGridsCached, SOILGRIDS_SOURCE } from '../../../../../lib/integrations/soilgrids';
 import { createClient } from '../../../../../lib/supabase/server';
 
@@ -174,7 +179,9 @@ export async function POST(request: Request, { params }: RouteContext) {
     ]);
 
     let soilObservations: Awaited<ReturnType<typeof fetchSoilGridsCached>> = [];
+    let openMeteoObservations: Awaited<ReturnType<typeof fetchOpenMeteoForecastCached>> = [];
     const warnings: string[] = [];
+
     try {
       soilObservations = await fetchSoilGridsCached({
         geometry: { type: 'Point', coordinates: [longitude, latitude] },
@@ -182,6 +189,16 @@ export async function POST(request: Request, { params }: RouteContext) {
     } catch {
       warnings.push(
         'ISRIC SoilGrids REST service was unavailable or timed out; soil properties are marked missing rather than fabricated.',
+      );
+    }
+
+    try {
+      openMeteoObservations = await fetchOpenMeteoForecastCached({
+        geometry: { type: 'Point', coordinates: [longitude, latitude] },
+      });
+    } catch {
+      warnings.push(
+        'Open-Meteo weather and soil moisture forecast service was unavailable; forecast observations were skipped.',
       );
     }
 
@@ -202,10 +219,20 @@ export async function POST(request: Request, { params }: RouteContext) {
             observations: soilObservations,
           })
         : Promise.resolve(),
+      openMeteoObservations.length > 0
+        ? persistObservationsForParcel({
+            parcelId: targetParcel.id as string,
+            sourceKey: OPEN_METEO_SOURCE.id,
+            longitude,
+            latitude,
+            observations: openMeteoObservations,
+          })
+        : Promise.resolve(),
     ]);
 
     const powerCell = buildGridCellFootprint(NASA_POWER_DAILY_SOURCE.id, longitude, latitude);
     const soilCell = buildGridCellFootprint(SOILGRIDS_SOURCE.id, longitude, latitude);
+    const openMeteoCell = buildGridCellFootprint(OPEN_METEO_SOURCE.id, longitude, latitude);
     const scaleLimitations = [
       describeSpatialScaleMismatch({
         sourceName: 'NASA POWER',
@@ -217,6 +244,11 @@ export async function POST(request: Request, { params }: RouteContext) {
         spatialResolutionM: SOILGRIDS_SOURCE.spatialResolutionM,
         parcelAreaHa: Number(targetParcel.area_ha ?? 1),
       }),
+      describeSpatialScaleMismatch({
+        sourceName: 'Open-Meteo Forecast',
+        spatialResolutionM: OPEN_METEO_SOURCE.spatialResolutionM,
+        parcelAreaHa: Number(targetParcel.area_ha ?? 1),
+      }),
     ].filter((item) => item !== null);
 
     return NextResponse.json({
@@ -225,10 +257,16 @@ export async function POST(request: Request, { params }: RouteContext) {
       gridCells: {
         nasaPower: powerCell,
         soilGrids: soilCell,
+        openMeteo: openMeteoCell,
       },
       dailyObservations,
       climatologyObservations,
       soilObservations,
+      openMeteoObservations,
+      appEears: {
+        configured: isAppEearsConfigured(),
+        products: APPEEARS_PRODUCTS,
+      },
       limitations: scaleLimitations,
       warnings,
     });

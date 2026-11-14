@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /**
- * Pre-compute and cache NASA POWER daily + climatology observations and NASA
- * CMR granule metadata (SMAP SPL3SMP_E v006 and MODIS MOD13Q1 v061) for the
- * Tofa LGA field validation region (Kano State, Nigeria; 12.05 N, 8.27 E).
+ * Pre-compute and cache NASA POWER daily + climatology observations, Open-Meteo
+ * high-resolution weather and soil moisture forecasts, NASA CMR granule metadata,
+ * and NASA AppEEARS product layer catalogs for the Tofa LGA field validation
+ * region (Kano State, Nigeria; 12.05 N, 8.27 E).
  *
  * By default this script runs in dry-run mode and reports the target grid cell
- * and parameters. Pass `--apply` to fetch from the NASA APIs, write the
- * provenanced JSON bundle to `data/processed/tofa-validation-power.json`
- * (gitignored), and seed `public.grid_cells`, `public.external_cache`, and
+ * and parameters. Pass `--apply` to fetch from the APIs, write the provenanced
+ * JSON bundle to `data/processed/tofa-validation-power.json` (gitignored), and
+ * seed `public.grid_cells`, `public.external_cache`, and
  * `public.environmental_observations` on the configured Supabase database.
  *
  * Usage:
@@ -50,9 +51,9 @@ const PARAMETERS = [
 
 const CANONICAL_POWER_MAP = [
   { variable: 'precipitation_mm', parameter: 'PRECTOTCORR', unit: 'mm' },
-  { variable: 'temperature_2m_mean_c', parameter: 'T2M', unit: 'degC' },
-  { variable: 'temperature_2m_max_c', parameter: 'T2M_MAX', unit: 'degC' },
-  { variable: 'temperature_2m_min_c', parameter: 'T2M_MIN', unit: 'degC' },
+  { variable: 'temperature_mean_degC', parameter: 'T2M', unit: 'degC' },
+  { variable: 'temperature_max_degC', parameter: 'T2M_MAX', unit: 'degC' },
+  { variable: 'temperature_min_degC', parameter: 'T2M_MIN', unit: 'degC' },
   { variable: 'soil_wetness_root_zone', parameter: 'GWETROOT', unit: '1' },
 ];
 
@@ -182,6 +183,142 @@ function normaliseClimatologyPayload(payload, retrievedAt) {
   return output;
 }
 
+function normaliseOpenMeteoPayload(payload, retrievedAt) {
+  const output = [];
+  const returnedCenter = [payload.longitude, payload.latitude];
+
+  const daily = payload.daily;
+  if (daily && Array.isArray(daily.time)) {
+    const dailyMappings = [
+      {
+        variable: 'precipitation_mm',
+        unit: 'mm',
+        series: daily.precipitation_sum,
+        providerParameter: 'precipitation_sum',
+      },
+      {
+        variable: 'temperature_mean_degC',
+        unit: 'degC',
+        series: daily.temperature_2m_mean,
+        providerParameter: 'temperature_2m_mean',
+      },
+      {
+        variable: 'temperature_max_degC',
+        unit: 'degC',
+        series: daily.temperature_2m_max,
+        providerParameter: 'temperature_2m_max',
+      },
+      {
+        variable: 'temperature_min_degC',
+        unit: 'degC',
+        series: daily.temperature_2m_min,
+        providerParameter: 'temperature_2m_min',
+      },
+      {
+        variable: 'evapotranspiration_mm_day',
+        unit: 'mm',
+        series: daily.et0_fao_evapotranspiration,
+        providerParameter: 'et0_fao_evapotranspiration',
+      },
+    ];
+
+    for (const mapping of dailyMappings) {
+      if (!Array.isArray(mapping.series)) continue;
+      daily.time.forEach((dateStr, index) => {
+        const value = mapping.series[index];
+        if (value === null || value === undefined || !Number.isFinite(value)) return;
+        output.push({
+          variable: mapping.variable,
+          value,
+          unit: mapping.unit,
+          sourceId: 'open_meteo',
+          spatialResolutionM: 9000,
+          temporalResolution: 'daily',
+          observedAt: `${dateStr}T00:00:00.000Z`,
+          retrievedAt,
+          isModelled: true,
+          aggregationMethod: 'grid_cell',
+          qualityFlag: 'good',
+          rawMetadata: {
+            providerParameter: mapping.providerParameter,
+            returnedGridCellCenter: returnedCenter,
+            elevationM: payload.elevation ?? null,
+            isForecast: true,
+          },
+        });
+      });
+    }
+  }
+
+  const hourly = payload.hourly;
+  if (hourly && Array.isArray(hourly.time)) {
+    const surfaceByDate = new Map();
+    const rootByDate = new Map();
+
+    hourly.time.forEach((isoTime, index) => {
+      const dateStr = isoTime.slice(0, 10);
+      const surfaceVal = hourly.soil_moisture_0_to_1cm?.[index];
+      if (surfaceVal !== null && surfaceVal !== undefined && Number.isFinite(surfaceVal)) {
+        const list = surfaceByDate.get(dateStr) ?? [];
+        list.push(surfaceVal);
+        surfaceByDate.set(dateStr, list);
+      }
+      const rootVal = hourly.soil_moisture_9_to_27cm?.[index];
+      if (rootVal !== null && rootVal !== undefined && Number.isFinite(rootVal)) {
+        const list = rootByDate.get(dateStr) ?? [];
+        list.push(rootVal);
+        rootByDate.set(dateStr, list);
+      }
+    });
+
+    for (const [dateStr, values] of surfaceByDate.entries()) {
+      const meanVal = Number((values.reduce((sum, v) => sum + v, 0) / values.length).toFixed(4));
+      output.push({
+        variable: 'soil_moisture_surface_m3_m3',
+        value: meanVal,
+        unit: 'm3_m3',
+        sourceId: 'open_meteo',
+        spatialResolutionM: 9000,
+        temporalResolution: 'daily',
+        observedAt: `${dateStr}T00:00:00.000Z`,
+        retrievedAt,
+        isModelled: true,
+        aggregationMethod: 'grid_cell',
+        qualityFlag: 'good',
+        rawMetadata: {
+          providerParameter: 'soil_moisture_0_to_1cm',
+          depthLabel: '0-1cm',
+          returnedGridCellCenter: returnedCenter,
+        },
+      });
+    }
+
+    for (const [dateStr, values] of rootByDate.entries()) {
+      const meanVal = Number((values.reduce((sum, v) => sum + v, 0) / values.length).toFixed(4));
+      output.push({
+        variable: 'soil_moisture_root_zone_m3_m3',
+        value: meanVal,
+        unit: 'm3_m3',
+        sourceId: 'open_meteo',
+        spatialResolutionM: 9000,
+        temporalResolution: 'daily',
+        observedAt: `${dateStr}T00:00:00.000Z`,
+        retrievedAt,
+        isModelled: true,
+        aggregationMethod: 'grid_cell',
+        qualityFlag: 'good',
+        rawMetadata: {
+          providerParameter: 'soil_moisture_9_to_27cm',
+          depthLabel: '9-27cm',
+          returnedGridCellCenter: returnedCenter,
+        },
+      });
+    }
+  }
+
+  return output;
+}
+
 function loadSupabaseEnv() {
   const envPath = path.join(repoRoot, 'apps', 'web', '.env.local');
   if (!existsSync(envPath)) return null;
@@ -218,8 +355,10 @@ async function seedLiveSupabase({
   end,
   dailyNormalized,
   climatologyNormalized,
+  openMeteoNormalized,
   smapGranules,
   modisGranules,
+  appEearsCatalog,
 }) {
   const headers = {
     apikey: supabaseEnv.serviceKey,
@@ -234,6 +373,11 @@ async function seedLiveSupabase({
       cell_key: 'nasa_power:12.0000:8.1250',
       geometry:
         'SRID=4326;POLYGON((7.8125 11.75, 8.4375 11.75, 8.4375 12.25, 7.8125 12.25, 7.8125 11.75))',
+    },
+    {
+      source_key: 'open_meteo',
+      cell_key: 'open_meteo:12.1000:8.3000',
+      geometry: 'SRID=4326;POLYGON((8.25 12.05, 8.35 12.05, 8.35 12.15, 8.25 12.15, 8.25 12.05))',
     },
     {
       source_key: 'smap_l3_enhanced',
@@ -268,35 +412,44 @@ async function seedLiveSupabase({
   }
   const insertedCells = await cellRes.json();
   const powerCell = insertedCells.find((c) => c.source_key === 'nasa_power');
+  const openMeteoCell = insertedCells.find((c) => c.source_key === 'open_meteo');
 
   const threeVarSet = new Set([
     'precipitation_mm',
     'soil_wetness_root_zone',
-    'temperature_2m_mean_c',
+    'temperature_mean_degC',
   ]);
-  const climDefaultSet = new Set(['precipitation_mm', 'temperature_2m_mean_c']);
+  const climDefaultSet = new Set(['precipitation_mm', 'temperature_mean_degC']);
+  const runDateHour = retrievedAt.slice(0, 13);
 
   const cacheEntries = [
     {
       source_key: 'nasa_power',
-      cache_key: `nasa_power:12.0000:8.1250:daily:${start}:${end}:precipitation_mm,soil_wetness_root_zone,temperature_2m_max_c,temperature_2m_mean_c,temperature_2m_min_c`,
+      cache_key: `nasa_power:12.0000:8.1250:daily:${start}:${end}:precipitation_mm,soil_wetness_root_zone,temperature_max_degC,temperature_mean_degC,temperature_min_degC`,
       normalized_payload: dailyNormalized,
       fetched_at: retrievedAt,
       expires_at: null,
     },
     {
       source_key: 'nasa_power',
-      cache_key: `nasa_power:12.0000:8.1250:daily:${start}:${end}:precipitation_mm,soil_wetness_root_zone,temperature_2m_mean_c`,
+      cache_key: `nasa_power:12.0000:8.1250:daily:${start}:${end}:precipitation_mm,soil_wetness_root_zone,temperature_mean_degC`,
       normalized_payload: dailyNormalized.filter((item) => threeVarSet.has(item.variable)),
       fetched_at: retrievedAt,
       expires_at: null,
     },
     {
       source_key: 'nasa_power',
-      cache_key: 'nasa_power:12.0000:8.1250:climatology:precipitation_mm,temperature_2m_mean_c',
+      cache_key: 'nasa_power:12.0000:8.1250:climatology:precipitation_mm,temperature_mean_degC',
       normalized_payload: climatologyNormalized.filter((item) => climDefaultSet.has(item.variable)),
       fetched_at: retrievedAt,
       expires_at: null,
+    },
+    {
+      source_key: 'open_meteo',
+      cache_key: `open_meteo:12.1000:8.3000:forecast:7d:${runDateHour}`,
+      normalized_payload: openMeteoNormalized,
+      fetched_at: retrievedAt,
+      expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
     },
     {
       source_key: 'smap_l3_enhanced',
@@ -309,6 +462,13 @@ async function seedLiveSupabase({
       source_key: 'modis_mod13q1_v061',
       cache_key: 'modis_mod13q1_v061:12.0500:8.2700:cmr_granules:v061',
       normalized_payload: modisGranules,
+      fetched_at: retrievedAt,
+      expires_at: null,
+    },
+    {
+      source_key: 'modis_mod13q1_v061',
+      cache_key: 'modis_mod13q1_v061:12.0500:8.2700:appeears_layers:v061',
+      normalized_payload: appEearsCatalog,
       fetched_at: retrievedAt,
       expires_at: null,
     },
@@ -328,25 +488,52 @@ async function seedLiveSupabase({
     );
   }
 
+  const allObs = [];
   if (powerCell?.id) {
-    const allObs = [...dailyNormalized, ...climatologyNormalized].map((obs) => ({
-      parcel_id: null,
-      grid_cell_id: powerCell.id,
-      source_key: obs.sourceId,
-      variable: obs.variable,
-      value: obs.value,
-      unit: obs.unit,
-      spatial_resolution_m: obs.spatialResolutionM,
-      temporal_resolution: obs.temporalResolution,
-      observed_at: obs.observedAt,
-      retrieved_at: obs.retrievedAt,
-      is_modelled: obs.isModelled,
-      aggregation_method: obs.aggregationMethod,
-      quality_flag: obs.qualityFlag,
-      coverage_fraction: null,
-      raw_metadata: obs.rawMetadata,
-    }));
+    for (const obs of [...dailyNormalized, ...climatologyNormalized]) {
+      allObs.push({
+        parcel_id: null,
+        grid_cell_id: powerCell.id,
+        source_key: obs.sourceId,
+        variable: obs.variable,
+        value: obs.value,
+        unit: obs.unit,
+        spatial_resolution_m: obs.spatialResolutionM,
+        temporal_resolution: obs.temporalResolution,
+        observed_at: obs.observedAt,
+        retrieved_at: obs.retrievedAt,
+        is_modelled: obs.isModelled,
+        aggregation_method: obs.aggregationMethod,
+        quality_flag: obs.qualityFlag,
+        coverage_fraction: null,
+        raw_metadata: obs.rawMetadata,
+      });
+    }
+  }
 
+  if (openMeteoCell?.id) {
+    for (const obs of openMeteoNormalized) {
+      allObs.push({
+        parcel_id: null,
+        grid_cell_id: openMeteoCell.id,
+        source_key: obs.sourceId,
+        variable: obs.variable,
+        value: obs.value,
+        unit: obs.unit,
+        spatial_resolution_m: obs.spatialResolutionM,
+        temporal_resolution: obs.temporalResolution,
+        observed_at: obs.observedAt,
+        retrieved_at: obs.retrievedAt,
+        is_modelled: obs.isModelled,
+        aggregation_method: obs.aggregationMethod,
+        quality_flag: obs.qualityFlag,
+        coverage_fraction: null,
+        raw_metadata: obs.rawMetadata,
+      });
+    }
+  }
+
+  if (allObs.length > 0) {
     const obsRes = await fetch(
       `${supabaseEnv.url}/rest/v1/environmental_observations?on_conflict=grid_cell_id,parcel_id,source_key,variable,observed_at,aggregation_method`,
       {
@@ -393,6 +580,13 @@ async function main() {
     `&latitude=${TOFA_COORDINATES.latitude}` +
     `&format=JSON`;
 
+  const openMeteoUrl =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${TOFA_COORDINATES.latitude}&longitude=${TOFA_COORDINATES.longitude}` +
+    `&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,temperature_2m_mean,et0_fao_evapotranspiration` +
+    `&hourly=soil_moisture_0_to_1cm,soil_moisture_3_to_9cm,soil_moisture_9_to_27cm` +
+    `&timezone=UTC&forecast_days=7`;
+
   const bbox = TOFA_COORDINATES.boundingBox.join(',');
   const smapCmrUrl =
     `https://cmr.earthdata.nasa.gov/search/granules.json` +
@@ -400,6 +594,7 @@ async function main() {
   const modisCmrUrl =
     `https://cmr.earthdata.nasa.gov/search/granules.json` +
     `?short_name=MOD13Q1&version=061&bounding_box=${bbox}&page_size=5&sort_key=-start_date`;
+  const appEearsModisUrl = `https://appeears.earthdatacloud.nasa.gov/api/product/MOD13Q1.061`;
 
   console.log(`Target validation region: ${TOFA_COORDINATES.name}`);
   console.log(
@@ -408,10 +603,11 @@ async function main() {
   console.log(`Window: ${start} to ${end}`);
   console.log(`Daily endpoint: ${dailyUrl}`);
   console.log(`Climatology endpoint: ${climatologyUrl}`);
+  console.log(`Open-Meteo endpoint: ${openMeteoUrl}`);
 
   if (!apply) {
     console.log(
-      'Dry-run complete. Re-run with --apply to fetch from NASA POWER and NASA CMR, write data/processed/tofa-validation-power.json, and seed Supabase.',
+      'Dry-run complete. Re-run with --apply to fetch from NASA POWER, Open-Meteo, NASA CMR, and NASA AppEEARS, write data/processed/tofa-validation-power.json, and seed Supabase.',
     );
     return;
   }
@@ -419,11 +615,14 @@ async function main() {
   const retrievedAt = new Date().toISOString();
   const dailyPayload = await fetchJsonWithRetry(dailyUrl);
   const climatologyPayload = await fetchJsonWithRetry(climatologyUrl);
+  const openMeteoPayload = await fetchJsonWithRetry(openMeteoUrl);
   const smapPayload = await fetchJsonWithRetry(smapCmrUrl);
   const modisPayload = await fetchJsonWithRetry(modisCmrUrl);
+  const appEearsCatalog = await fetchJsonWithRetry(appEearsModisUrl);
 
   const dailyNormalized = normaliseDailyPayload(dailyPayload, retrievedAt);
   const climatologyNormalized = normaliseClimatologyPayload(climatologyPayload, retrievedAt);
+  const openMeteoNormalized = normaliseOpenMeteoPayload(openMeteoPayload, retrievedAt);
   const smapGranules = (smapPayload?.feed?.entry ?? []).map((entry) => ({
     id: entry.id,
     title: entry.title ?? null,
@@ -455,10 +654,13 @@ async function main() {
         window: { start, end },
         dailyObservationsCount: dailyNormalized.length,
         climatologyObservationsCount: climatologyNormalized.length,
+        openMeteoObservationsCount: openMeteoNormalized.length,
         smapGranules,
         modisGranules,
+        appEearsModisLayers: Object.keys(appEearsCatalog ?? {}),
         daily: dailyPayload,
         climatology: climatologyPayload,
+        openMeteo: openMeteoPayload,
       },
       null,
       2,
@@ -477,8 +679,10 @@ async function main() {
       end,
       dailyNormalized,
       climatologyNormalized,
+      openMeteoNormalized,
       smapGranules,
       modisGranules,
+      appEearsCatalog,
     });
   } else {
     console.log('Skipping Supabase seed (no apps/web/.env.local credentials found).');
