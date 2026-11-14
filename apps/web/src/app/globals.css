@@ -1,100 +1,191 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
-
 /*
  * DalaShift: global stylesheet.
  *
- * Phase 1: this file establishes the Tailwind v4 entrypoint and a minimal
- * neutral token set so the project compiles. The full design system
- * (brand palette, type scale, component tokens) is a design-phase deliverable
- * and is tracked in docs/design/design-system.md.
+ * THE SINGLE SOURCE OF TRUTH for colour. Every token below is a CSS variable
+ * so the whole palette can be changed in one place. No component may hardcode
+ * a hex value: use the Tailwind token, for example `bg-surface text-ink`.
  *
- * Deliberately neutral: no brand colour is asserted before the team confirms
- * the visual direction.
+ * The four brand colours come from the supplied brand files. Everything else
+ * is derived from them as tints and shades. No new hues are introduced.
  */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  /* Brand */
+  --color-forest: var(--ds-forest);
+  --color-terracotta: var(--ds-terracotta);
+  --color-offwhite: var(--ds-offwhite);
+  --color-sky: var(--ds-sky);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Surfaces, derived from the off-white */
+  --color-surface: var(--ds-surface);
+  --color-surface-raised: var(--ds-surface-raised);
+  --color-surface-sunken: var(--ds-surface-sunken);
+
+  /* Ink, derived from the forest green so text is never a neutral grey */
+  --color-ink: var(--ds-ink);
+  --color-ink-muted: var(--ds-ink-muted);
+  --color-ink-faint: var(--ds-ink-faint);
+
+  /* Lines */
+  --color-border: var(--ds-border);
+  --color-border-strong: var(--ds-border-strong);
+
+  /* Forest shades */
+  --color-forest-700: var(--ds-forest-700);
+  --color-forest-100: var(--ds-forest-100);
+  --color-forest-200: var(--ds-forest-200);
+
+  /* Terracotta shades */
+  --color-terracotta-600: var(--ds-terracotta-600);
+  --color-terracotta-100: var(--ds-terracotta-100);
+
+  /* Sky shades */
+  --color-sky-700: var(--ds-sky-700);
+  --color-sky-100: var(--ds-sky-100);
+
+  /* Status, each derived from a brand colour */
+  --color-success: var(--ds-forest);
+  --color-success-subtle: var(--ds-forest-100);
+  --color-warning: var(--ds-terracotta);
+  --color-warning-subtle: var(--ds-terracotta-100);
+  --color-danger: var(--ds-danger);
+  --color-danger-subtle: var(--ds-danger-subtle);
+  --color-info: var(--ds-sky-700);
+  --color-info-subtle: var(--ds-sky-100);
+
+  /* Type */
+  --font-sans: var(--ds-font-sans);
+  --font-display: var(--ds-font-display);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 :root {
-  --radius: 0.625rem;
+  /* ── The four supplied brand colours ─────────────────────────────── */
+  --ds-forest: #0a4232;
+  --ds-terracotta: #ab6a43;
+  --ds-offwhite: #f6f3eb;
+  --ds-sky: #76a1c2;
 
-  --background: oklch(0.99 0.002 250);
-  --foreground: oklch(0.21 0.01 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.01 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.01 250);
-  --primary: oklch(0.48 0.09 250);
-  --primary-foreground: oklch(0.99 0.002 250);
-  --secondary: oklch(0.96 0.004 250);
-  --secondary-foreground: oklch(0.28 0.01 250);
-  --muted: oklch(0.96 0.004 250);
-  --muted-foreground: oklch(0.52 0.015 250);
-  --accent: oklch(0.96 0.004 250);
-  --accent-foreground: oklch(0.28 0.01 250);
-  --destructive: oklch(0.58 0.2 25);
-  --destructive-foreground: oklch(0.99 0.002 250);
-  --border: oklch(0.92 0.005 250);
-  --input: oklch(0.92 0.005 250);
-  --ring: oklch(0.48 0.09 250);
+  /* ── Surfaces, derived from the off-white ───────────────────────── */
+  --ds-surface: #f6f3eb;
+  --ds-surface-raised: #fffdf8;
+  --ds-surface-sunken: #ede9de;
+
+  /* ── Ink, derived from the forest green ─────────────────────────── */
+  --ds-ink: #10201a;
+  --ds-ink-muted: #4a5b53;
+  --ds-ink-faint: #7a8a82;
+
+  /* ── Lines, derived from the off-white ───────────────────────────── */
+  --ds-border: #dfdacc;
+  --ds-border-strong: #c4bca9;
+
+  /* ── Forest shades ───────────────────────────────────────────────── */
+  --ds-forest-700: #0e5440;
+  --ds-forest-100: #e4ede8;
+  --ds-forest-200: #c3d6cc;
+
+  /* ── Terracotta shades ───────────────────────────────────────────── */
+  --ds-terracotta-600: #8e5636;
+  --ds-terracotta-100: #f4e7dd;
+
+  /* ── Sky shades ──────────────────────────────────────────────────── */
+  --ds-sky-700: #466d8c;
+  --ds-sky-100: #e4edf4;
+
+  /* ── Danger, derived from a darkened terracotta ──────────────────── */
+  --ds-danger: #7a3a1f;
+  --ds-danger-subtle: #f7e3d9;
+
+  /* ── Type ────────────────────────────────────────────────────────── */
+  --ds-font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --ds-font-display: var(--font-poppins), var(--ds-font-sans);
 }
 
 .dark {
-  --background: oklch(0.19 0.01 250);
-  --foreground: oklch(0.96 0.004 250);
-  --card: oklch(0.23 0.01 250);
-  --card-foreground: oklch(0.96 0.004 250);
-  --popover: oklch(0.23 0.01 250);
-  --popover-foreground: oklch(0.96 0.004 250);
-  --primary: oklch(0.7 0.1 250);
-  --primary-foreground: oklch(0.19 0.01 250);
-  --secondary: oklch(0.28 0.01 250);
-  --secondary-foreground: oklch(0.96 0.004 250);
-  --muted: oklch(0.28 0.01 250);
-  --muted-foreground: oklch(0.7 0.015 250);
-  --accent: oklch(0.3 0.012 250);
-  --accent-foreground: oklch(0.96 0.004 250);
-  --destructive: oklch(0.65 0.19 25);
-  --destructive-foreground: oklch(0.19 0.01 250);
-  --border: oklch(0.3 0.012 250);
-  --input: oklch(0.3 0.012 250);
-  --ring: oklch(0.7 0.1 250);
+  --ds-surface: #0b1a14;
+  --ds-surface-raised: #10241c;
+  --ds-surface-sunken: #081310;
+
+  --ds-ink: #f2f5f1;
+  --ds-ink-muted: #a8b6ae;
+  --ds-ink-faint: #74857c;
+
+  --ds-border: #1d3529;
+  --ds-border-strong: #2b4a3a;
+
+  --ds-forest-700: #2f7f63;
+  --ds-forest-100: #143026;
+  --ds-forest-200: #1c4234;
+
+  --ds-terracotta-600: #c07d52;
+  --ds-terracotta-100: #2c1c12;
+
+  --ds-sky-700: #93b8d4;
+  --ds-sky-100: #16242e;
+
+  --ds-danger: #d4795a;
+  --ds-danger-subtle: #2c1710;
 }
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: var(--ds-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--ds-surface);
+    color: var(--ds-ink);
+    font-family: var(--ds-font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--ds-font-display);
+    letter-spacing: -0.01em;
+  }
+
+  /* Every number in the product is tabular so columns of measurements
+     do not jitter and so they can be compared by eye. */
+  .tabular,
+  [data-figure] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Focus is always visible, and always the same. */
+  :focus-visible {
+    outline: 2px solid var(--ds-sky);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--ds-forest-100);
+  }
+}
+
+@layer utilities {
+  /* The data colour rule. Anything that came from NASA or from rainfall
+     carries the sky accent. */
+  .data-accent {
+    color: var(--ds-sky-700);
+  }
+
+  /* The farmer colour rule. Anything that came from the farmer carries the
+     terracotta accent. */
+  .farmer-accent {
+    color: var(--ds-terracotta-600);
   }
 }
