@@ -16,11 +16,22 @@ the build.
 
 ### Fixed
 
+- Added non-partial unique indexes on `public.environmental_observations`
+  (`20261114154000_observations_upsert_indexes.sql`) so PostgREST upserts work
+  for both parcel-scoped and grid-cell-scoped observations, and configured IPv4
+  DNS resolution in Next.js server instrumentation (`apps/web/src/instrumentation.ts`)
+  and data scripts to avoid Happy Eyeballs connection timeouts on high-RTT
+  networks.
 - Qualified PostGIS geometry types and functions in the parcel migration so
   its empty search path works when the migration is applied.
 
 ### Added
 
+- Extended `scripts/data/precompute-validation-region.mjs` to fetch NASA POWER
+  daily and climatology observations plus NASA CMR granule metadata (`SPL3SMP_E`
+  v006 SMAP and `MOD13Q1` v061 MODIS NDVI) for Tofa LGA (`12.05 N, 8.27 E`) and
+  seed `public.grid_cells`, `public.external_cache` and
+  `public.environmental_observations` on the live Supabase database.
 - Private Supabase Storage bucket migration (`farm-reports` and
   `farm-attachments`) with per-farmer and per-farm prefix RLS policies on
   `storage.objects`, server-only storage helpers (`lib/supabase/storage.ts`,

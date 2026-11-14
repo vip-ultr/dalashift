@@ -142,16 +142,21 @@ function getGridStepDegrees(sourceKey: string): {
 } {
   switch (sourceKey) {
     case 'nasa_power':
+    case 'nasa_power_daily':
       // Verified live in docs/api/data-sources.md § 1: 0.5 deg lat x 0.625 deg lon.
       return { latStep: 0.5, lonStep: 0.625 };
     case 'gpm_imerg_v07':
       return { latStep: 0.1, lonStep: 0.1 };
     case 'smap_l3_enhanced':
+    case 'smap_spl3smp_e':
       return { latStep: 0.09, lonStep: 0.09 };
     case 'chirps_v3':
+    case 'chirps_v2':
       return { latStep: 0.05, lonStep: 0.05 };
     case 'soilgrids':
+    case 'soilgrids_250m_v2':
     case 'modis_mod13q1_v061':
+    case 'modis_mod13q1':
       return { latStep: 0.0025, lonStep: 0.0025 };
     case 'modis_mod11a2_v061':
       return { latStep: 0.01, lonStep: 0.01 };

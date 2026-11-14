@@ -145,6 +145,6 @@ export async function persistObservationsForParcel(input: {
   await serviceClient.from('environmental_observations').upsert(rows, {
     onConflict: input.parcelId
       ? 'parcel_id,source_key,variable,observed_at,aggregation_method'
-      : 'grid_cell_id,source_key,variable,observed_at,aggregation_method',
+      : 'grid_cell_id,parcel_id,source_key,variable,observed_at,aggregation_method',
   });
 }
