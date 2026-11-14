@@ -33,6 +33,10 @@ with profiles, farms, parcels, crop and rotation catalogs, farmer records, case
 studies, and the parcel GeoJSON write/read path. Environmental ingestion and
 the recommendation engine are still separate backend work.
 
+Two interview-backed rotation rules are seeded with `source_type =
+farmer_report`. The crop catalog has no agronomic values seeded yet because
+every such value needs a source citation and local applicability statement.
+
 Migrations and their RLS policies land **together**. Never a table without
 its policies.
 

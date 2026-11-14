@@ -25,6 +25,8 @@ the build.
   session and database RLS.
 - Initial Supabase migrations for profiles, farms, parcels, crop and rotation
   catalogs, farmer records, case studies, and parcel geometry read/write.
+- Two sourced farmer-reported rotation rules, kept distinct from published
+  agronomic guidance.
 - Request-scoped Supabase browser and server clients using the public key and
   the signed-in user's RLS context.
 - `packages/shared`: the qualitative comparison engine vocabulary. Evidence
