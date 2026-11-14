@@ -46,7 +46,7 @@ export interface ProvenancedValue {
   /** Canonical variable id, e.g. "precipitation_mm". */
   readonly variable: EnvironmentVariable | string;
   /** The value in the canonical unit. */
-  readonly value: number;
+  readonly value: number | null;
   /** Canonical unit. */
   readonly unit: Unit | string;
   /** Foreign key to the `data_sources` registry row. */

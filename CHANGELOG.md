@@ -27,6 +27,10 @@ the build.
   catalogs, farmer records, case studies, and parcel geometry read/write.
 - Two sourced farmer-reported rotation rules, kept distinct from published
   agronomic guidance.
+- Environmental source registry, grid-cell geometry, provenance-complete
+  observations, and a durable normalized-response cache schema with RLS.
+- Shared observation contracts support an explicit missing value with a
+  matching `missing` quality flag.
 - Request-scoped Supabase browser and server clients using the public key and
   the signed-in user's RLS context.
 - `packages/shared`: the qualitative comparison engine vocabulary. Evidence

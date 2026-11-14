@@ -209,23 +209,15 @@ The runtime registry of every external source. Mirrors
 
 | Column           | Type        | Notes                                                              |
 | ---------------- | ----------- | ------------------------------------------------------------------ |
-| `id`             | `uuid` PK   |                                                                     |
-| `source_key`     | `text` UNIQUE | Matches the integration module id, e.g. `nasa-power`              |
-| `name`           | `text`      | "NASA POWER"                                                       |
-| `provider`       | `text`      | "NASA Langley Research Center"                                     |
-| `product`        | `text`      | "POWER Daily/Climatology API"                                      |
-| `license`        | `text`      | e.g. "NASA open data (courtesy citation requested)"                 |
-| `attribution`    | `text`      | The exact credit string to render. **Mandatory.**                   |
-| `citation`       | `text`      | Full academic citation with DOI.                                    |
-| `access_method`  | `text`      | `no_auth` \| `earthdata` \| `gee` \| `api_key` \| `static_file`    |
-| `documentation_url` | `text`   |                                                                     |
-| `variables`      | `text[]`    | Canonical variable ids this source produces                         |
-| `spatial_resolution_m` | `numeric` | The **real** resolution.                                           |
-| `temporal_resolution` | `text`   |                                                                     |
-| `latency_note`   | `text`      | e.g. "L3 ≤ 50 h"                                                   |
-| `is_modelled`    | `boolean`   | Whether this source produces modelled values by default.             |
-| `is_active`      | `boolean`   | `default true`. A source can be retired without deleting its history. |
-| `verified_on`    | `date`      | When the details were last verified against official documentation. |
+| `source_key`     | `text` PK   | Matches the integration module id, e.g. `nasa_power`                |
+| `name`           | `text`      | Human-readable source name                                           |
+| `source_url`     | `text`      | Official product or API documentation                                |
+| `licence`        | `text`      | Source licence or terms                                              |
+| `attribution`    | `text`      | The exact credit string to render. **Mandatory.**                     |
+| `spatial_resolution_m` | `integer` | The **real** resolution.                                           |
+| `temporal_resolution` | `text`   | E.g. `daily` or `static`                                              |
+| `is_modelled`    | `boolean`   | Whether the source produces modelled values.                         |
+| `created_at`     | `timestamptz` |                                                                  |
 
 ---
 
@@ -237,12 +229,10 @@ Avoids repeating a cell geometry on every observation row.
 | Column             | Type        | Notes                                                     |
 | ------------------ | ----------- | --------------------------------------------------------- |
 | `id`               | `uuid` PK   |                                                            |
-| `source_id`        | `uuid` FK   | → `data_sources(id)`                                       |
+| `source_key`       | `text` FK   | → `data_sources(source_key)`                               |
 | `cell_key`         | `text`      | e.g. `power:8.125:12.5`, `smap:h18v07`                     |
 | `geometry`         | `geometry`  | `Polygon`, SRID 4326: the cell footprint                   |
-| `resolution_m`     | `numeric`   |                                                            |
-| `resolution_label` | `text`      | e.g. "0.5° × 0.625°"                                      |
-| `metadata`         | `jsonb`     | Cell-specific identifiers                                  |
+| `created_at`       | `timestamptz` |                                                          |
 
 **Unique constraint:** `(source_id, cell_key)`.
 
@@ -259,34 +249,30 @@ The core provenance-bearing table.
 | Column                | Type           | Notes                                                                 |
 | --------------------- | -------------- | --------------------------------------------------------------------- |
 | `id`                  | `uuid` PK      |                                                                       |
-| `source_id`           | `uuid` FK      | → `data_sources(id)`                                                  |
-| `farm_id`             | `uuid` FK      | → `farms(id)` `on delete cascade`. Nullable when the observation is a pre-computed regional value. |
-| `analysis_id`         | `uuid` FK      | → `analyses(id)`. Nullable.                                           |
-| `cell_id`             | `uuid` FK      | → `grid_cells(id)`. The cell the value was sampled from. Nullable for point samples. |
+| `source_key`          | `text` FK      | → `data_sources(source_key)`                                         |
+| `parcel_id`           | `uuid` FK      | → `parcels(id)` `on delete cascade`. Nullable for a shared grid value. |
+| `grid_cell_id`        | `uuid` FK      | → `grid_cells(id)`. The cell the value was sampled from.              |
 | `variable`            | `text`         | Canonical variable id, e.g. `precipitation_mm`                        |
-| `value`               | `numeric`      | The value, in the canonical unit                                       |
+| `value`               | `double precision` | The value in canonical units, null only when quality is `missing` |
 | `unit`                | `text`         | Canonical unit                                                         |
-| `spatial_resolution_m` | `numeric`     | **The real resolution of the observation**                            |
-| `temporal_resolution` | `text`         |                                                                    |
+| `spatial_resolution_m` | `integer`     | **The real resolution of the observation**                            |
+| `temporal_resolution` | `text`         |                                                                        |
 | `aggregation_method`  | `text`         | `grid_cell` \| `point_sample` \| `zonal` \| `interpolated_point`        |
 | `observed_at`         | `timestamptz`  | When the source observed it                                            |
 | `retrieved_at`        | `timestamptz`  | When we fetched it                                                     |
 | `is_modelled`         | `boolean`      | `not null`                                                            |
 | `quality_flag`        | `text`         | `good` \| `suspect` \| `missing` \| `partial`                          |
-| `coverage_fraction`   | `numeric(4,3)` | 0 to 1. Fraction of the target geometry with valid data.              |
-| `raw_metadata`        | `jsonb`        | Source identifiers kept for the audit trail                            |
+| `coverage_fraction`   | `double precision` | 0 to 1. Fraction of the target geometry with valid data.          |
+| `raw_metadata`        | `jsonb`        | Trimmed source identifiers kept for the audit trail                    |
 | `created_at`          | `timestamptz`  |                                                                       |
 
-**Indexes:**
-- `btree (source_id, variable, observed_at DESC)`: time-series reads
-- `btree (farm_id, variable, observed_at DESC)`: the farm's own series
-- `GIST (cell_id)`: not needed on a uuid; the GIST index belongs on
-  `grid_cells.geometry`
-- `btree (analysis_id)`
+**Indexes:** source and variable time-series, parcel time-series, grid-cell
+time-series, and partial unique indexes to prevent duplicate parcel or shared
+grid observations.
 
-**Unique constraint:** `(source_id, farm_id, variable, observed_at,
-aggregation_method)`; prevents duplicate observations for the same thing.
-On conflict, update the value and `retrieved_at` only if the quality improved.
+The migration enforces that each observation points to a parcel or grid cell.
+Rows are read-only to authenticated clients. Missing source values remain
+`null` with a `missing` quality flag; they are never represented as zero.
 
 ---
 
@@ -425,14 +411,15 @@ stale binary. The stored file is a convenience, not the source of truth.
 | Column        | Type          | Notes                                                       |
 | ------------- | ------------- | ----------------------------------------------------------- |
 | `id`          | `uuid` PK     |                                                              |
-| `source_id`   | `uuid` FK     | → `data_sources(id)`                                         |
+| `source_key`  | `text` FK     | → `data_sources(source_key)`                                 |
 | `cache_key`   | `text`        | Deterministic key: see below                                  |
-| `payload`     | `jsonb`       | The normalised result                                         |
+| `normalized_payload` | `jsonb` | The normalized result with provenance                         |
 | `fetched_at`  | `timestamptz` |                                                              |
 | `expires_at`  | `timestamptz` |                                                              |
-| `hit_count`   | `integer`     | Default 0. Useful for understanding cache effectiveness.     |
 
-**Unique constraint:** `(source_id, cache_key)`.
+**Unique constraint:** `(source_key, cache_key)`. RLS is enabled with no
+authenticated policies, so only trusted ingestion and administrative
+operations can read or write the cache.
 
 **Cache key format:**
 

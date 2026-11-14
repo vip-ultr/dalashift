@@ -61,23 +61,28 @@ export const geometrySchema = z.union([
  * what guarantees the product never stores a number without knowing where it
  * came from.
  */
-export const provenancedValueSchema = z.object({
-  variable: z.string().min(1),
-  value: z.number().finite(),
-  unit: z.string().min(1),
-  sourceId: z.string().min(1),
-  spatialResolutionM: z.number().positive(),
-  temporalResolution: z.enum(TEMPORAL_RESOLUTIONS),
-  observedAt: isoUtc,
-  retrievedAt: isoUtc,
-  isModelled: z.boolean(),
-  aggregationMethod: z
-    .enum(['grid_cell', 'point_sample', 'zonal', 'interpolated_point'])
-    .optional(),
-  qualityFlag: z.enum(QUALITY_FLAGS).optional(),
-  coverageFraction: z.number().min(0).max(1).optional(),
-  rawMetadata: z.record(z.string(), z.unknown()).optional(),
-});
+export const provenancedValueSchema = z
+  .object({
+    variable: z.string().min(1),
+    value: z.number().finite().nullable(),
+    unit: z.string().min(1),
+    sourceId: z.string().min(1),
+    spatialResolutionM: z.number().positive(),
+    temporalResolution: z.enum(TEMPORAL_RESOLUTIONS),
+    observedAt: isoUtc,
+    retrievedAt: isoUtc,
+    isModelled: z.boolean(),
+    aggregationMethod: z
+      .enum(['grid_cell', 'point_sample', 'zonal', 'interpolated_point'])
+      .optional(),
+    qualityFlag: z.enum(QUALITY_FLAGS).optional(),
+    coverageFraction: z.number().min(0).max(1).optional(),
+    rawMetadata: z.record(z.string(), z.unknown()).optional(),
+  })
+  .refine((value) => (value.value === null) === (value.qualityFlag === 'missing'), {
+    message: 'A missing value must use the missing quality flag, and vice versa',
+    path: ['value'],
+  });
 
 export type ValidatedProvenancedValue = z.infer<typeof provenancedValueSchema>;
 

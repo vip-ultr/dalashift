@@ -1,6 +1,7 @@
 # Row Level Security Policies
 
-**Status: Phase 1. Specification only. No policies exist yet.**
+**Status: initial policies exist** in `supabase/migrations/`. This document
+describes the intended policy model; the migrations are authoritative.
 
 Companion to [`data-model.md`](./data-model.md).
 
@@ -172,12 +173,13 @@ farmer-scoped. But some are pre-computed regional values shared by many farms.
 ```sql
 ALTER TABLE environmental_observations ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY observations_read_own ON environmental_observations
+CREATE POLICY observations_read_shared_or_own ON environmental_observations
   FOR SELECT USING (
-    farm_id IS NULL                                  -- shared regional reference
+    parcel_id IS NULL                                -- shared grid reference
     OR EXISTS (
-      SELECT 1 FROM farms f
-      WHERE f.id = environmental_observations.farm_id AND f.farmer_id = auth.uid()
+      SELECT 1 FROM parcels p
+      JOIN farms f ON f.id = p.farm_id
+      WHERE p.id = environmental_observations.parcel_id AND f.farmer_id = auth.uid()
     )
   );
 ```
@@ -281,6 +283,10 @@ cells a farm needs through the farm's observations.
 | Used only for: background refresh jobs, seeding, admin operations   | A closed set of operations                                    |
 | Read from a server-only module                                      | `import "server-only"` makes a client import a build error    |
 | Rotate if it ever leaks                                             | It is the most dangerous secret in the project                |
+
+`external_cache` has RLS enabled and no authenticated policies. Environmental
+observations also have no authenticated write policy. Cache refresh and
+observation ingestion therefore remain trusted server-side operations.
 
 **A service-role client is created in exactly one place**, in
 `lib/supabase/admin.ts`, so there is a single audit point.

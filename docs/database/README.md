@@ -30,8 +30,9 @@ Database design and data-access rules.
 **Build status: initial migrations are present** in `supabase/migrations/`.
 The migrations are the executable source of truth. The implementation starts
 with profiles, farms, parcels, crop and rotation catalogs, farmer records, case
-studies, and the parcel GeoJSON write/read path. Environmental ingestion and
-the recommendation engine are still separate backend work.
+studies, the parcel GeoJSON write/read path, source attribution, environmental
+observations and the durable cache schema. Provider ingestion and the
+recommendation engine are still separate backend work.
 
 Two interview-backed rotation rules are seeded with `source_type =
 farmer_report`. The crop catalog has no agronomic values seeded yet because
