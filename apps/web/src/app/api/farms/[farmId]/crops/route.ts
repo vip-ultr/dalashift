@@ -79,6 +79,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       status: parsed.data.status,
       planting_date: parsed.data.plantingDate,
       expected_harvest_date: parsed.data.expectedHarvestDate,
+      harvest_date: parsed.data.harvestDate,
       season: parsed.data.season,
       intended_use: parsed.data.intendedUse,
       area_ha: parsed.data.areaHa,

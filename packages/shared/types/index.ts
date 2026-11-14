@@ -162,6 +162,7 @@ export interface FarmCrop {
   readonly status: CropStatus;
   readonly plantingDate: string | null;
   readonly expectedHarvestDate: string | null;
+  readonly harvestDate: string | null;
   readonly season: Season;
   readonly intendedUse: IntendedUse;
   readonly areaHa: number | null;

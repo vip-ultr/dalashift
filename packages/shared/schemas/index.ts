@@ -134,6 +134,7 @@ export const farmCropInputSchema = z.object({
   status: z.enum(['current', 'previous', 'planned']),
   plantingDate: calendarDate.nullable().default(null),
   expectedHarvestDate: calendarDate.nullable().default(null),
+  harvestDate: calendarDate.nullable().default(null),
   season: z.enum(SEASONS).default('unknown'),
   intendedUse: z.enum(['commercial', 'household', 'both', 'unknown']).default('unknown'),
   areaHa: z.number().positive().max(10_000).nullable().default(null),

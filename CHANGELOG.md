@@ -35,6 +35,8 @@ the build.
   cited per-dimension requirements without scores or invented thresholds.
 - Farmer crop history and priorities APIs with session authentication, request
   validation, RLS-backed access and same-farm parcel reference enforcement.
+- Crop records support update and delete operations, including the farmer's
+  actual harvest date.
 - Request-scoped Supabase browser and server clients using the public key and
   the signed-in user's RLS context.
 - `packages/shared`: the qualitative comparison engine vocabulary. Evidence
