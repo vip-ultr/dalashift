@@ -1287,29 +1287,37 @@ decision index below is a summary; **the ADR is the source of truth.**
 
 ---
 
-## 19. Phase 2 implementation sequence
+## 19. Implementation sequence
 
-**[Proposed]**: a build order that front-loads the risky parts.
+The build plan, with owners and file ownership, is in
+[`docs/build/TEAM-PLAN.md`](./docs/build/TEAM-PLAN.md). The backend sequence
+is in [`docs/build/BACKEND.md`](./docs/build/BACKEND.md) § 8. Every screen is
+specified in [`docs/build/PAGES.md`](./docs/build/PAGES.md).
 
-| Step | Deliverable                                              | Depends on |
-| ---- | -------------------------------------------------------- | ---------- |
-| 1    | Supabase project, PostGIS enabled, migrations, RLS        | None       |
-| 2    | Auth: sign-up, sign-in, session, dashboard shell          | 1          |
-| 3    | `lib/integrations` for POWER + SoilGrids, with cache      | 1          |
-| 4    | Farm CRUD + polygon drawing + area computation            | 1, 2       |
-| 5    | Crop records + plots                                       | 1, 2       |
-| 6    | Environmental service + dashboard panels with provenance   | 3, 4       |
-| 7    | Crop catalog + rules engine + recommendation UI           | 5, 6       |
-| 8    | Suitability assessment for prospective farmers             | 7          |
-| 9    | Reports                                                    | 7          |
-| 10   | Time series / monitoring                                   | 6          |
-| 11   | Polish, accessibility pass, demo data seeding              | all        |
+**[Proposed]** The order below is chosen so that the **core comparison ships
+first**. If time runs out, what survives is a working rotation comparison
+built on real farmers' real practices, rather than a half-built suitability
+engine.
 
-Steps 3 and 4 are the risky ones and should be done **first**, because they
-carry the authentication and the geospatial uncertainty. A polished UI built
-on top of a broken integration is worthless.
+| Step | Work | Owner | Depends on |
+| ---- | ---- | ----- | ---------- |
+| 1 | Supabase project, PostGIS enabled, migrations applied, RLS on every table | Ammar | Keys |
+| 2 | Shared types, schemas and constants in `packages/shared` | Ammar | 1 |
+| 3 | Crop catalog seed with aliases, and rotation rules including the farmer-stated ones | Ammar | 2 |
+| 4 | `nasa-power` integration, cache layer, `soilgrids` integration | Ammar | 2 |
+| 5 | Router, layouts, shared UI primitives, the brand mark and favicon | Ammar | 2 |
+| 6 | Farm list, add a farm with GPS and drawing, farm and parcel detail | Hamza | 5, 1 |
+| 7 | Case study list and detail | Hamza | 6 |
+| 8 | The comparison engine, qualitative, deterministic | Ammar | 3, 4 |
+| 9 | **The rotation comparison screen** | Khaleel | 8 |
+| 10 | Environmental panel with provenance, and the charts | Khaleel | 4 |
+| 11 | Seasonal risk outlook | Khaleel | 4 |
+| 12 | Crops and rotation history screens | Khaleel | 1 |
+| 13 | Reports | Khaleel | 8 |
+| 14 | Pre-compute the validation region | Ammar | 4 |
+| 15 | The suitability path for prospective farmers | Ammar | 8 |
 
----
+**Step 15 is the cut line.** Everything before it is the product.
 
 ## 20. Related documentation
 

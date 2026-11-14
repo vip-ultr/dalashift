@@ -201,6 +201,18 @@ convention: **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
 | [`PRD.md`](./PRD.md)                                         | Product requirements, personas, scope, open questions |
 | [`ARCHITECTURE.md`](./ARCHITECTURE.md)                       | Full technical architecture with diagrams        |
 
+### Build plan
+
+**The build is live.** These four documents are the handoff.
+
+| Document | Purpose |
+| -------- | ------- |
+| [`docs/build/TEAM-PLAN.md`](./docs/build/TEAM-PLAN.md) | Who owns what, the branch and push workflow, the definition of done |
+| [`docs/build/PAGES.md`](./docs/build/PAGES.md) | **Every page, what is on it, and who builds it** |
+| [`docs/build/BRAND.md`](./docs/build/BRAND.md) | Palette, type, components, the logo and favicon specification |
+| [`docs/build/BACKEND.md`](./docs/build/BACKEND.md) | Schema, integrations, the engine contract, the keys we need |
+| [`docs/build/AGENT-PROMPTS.md`](./docs/build/AGENT-PROMPTS.md) | A ready-to-paste prompt for each person's agent |
+
 ### Detailed documentation
 
 | Directory             | Contents                                                                   |

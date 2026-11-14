@@ -25,25 +25,59 @@ recommend, but the decisions are the team's.
 
 ---
 
+## Decisions recorded
+
+**All fifteen decisions were taken on 2026-11-14.** Three of them went against
+the agent's recommendation, and all three add scope rather than removing it:
+the prospective-farmer path is built, both user types are served, and the
+comparison is fully qualitative.
+
+The architectural decisions are recorded in
+[`ADR-0011`](./ADR-0011-product-direction-after-field-interviews.md).
+
+| ID | Decision taken |
+| -- | -------------- |
+| [D-01](#d-01) | **Apache-2.0.** Decision taken 2026-11-14. |
+| [D-02](#d-02) | **Public.** Decision taken 2026-11-14. |
+| [D-03](#d-03) | **Keep and build it.** The prospective path is in scope. Decision taken 2026-11-14. |
+| [D-04](#d-04) | **Both.** The farmer and the adviser are both users. Decision taken 2026-11-14. |
+| [D-05](#d-05) | **Qualitative only.** No composite score, no weights, no confidence percentage. Decision taken 2026-11-14. |
+| [D-06](#d-06) | **Both, GPS as the default.** Decision taken 2026-11-14. |
+| [D-07](#d-07) | **A seasonal risk outlook.** Never presented as a forecast. Decision taken 2026-11-14. |
+| [D-08](#d-08) | **English operator chrome, Hausa field layer.** Decision taken 2026-11-14. |
+| [D-09](#d-09) | **The parcel is the unit of analysis.** Decision taken 2026-11-14. |
+| [D-10](#d-10) | **A trigger, with the farmer's own rule as an input.** Decision taken 2026-11-14. |
+| [D-11](#d-11) | **Farmer-stated rules as a labelled source.** Decision taken 2026-11-14. |
+| [D-12](#d-12) | **Names may be published.** Coordinates and contact details never are. Decision taken 2026-11-14. |
+| [D-13](#d-13) | **Hybrid.** Pre-compute for the case studies, on demand for new areas. Decision taken 2026-11-14. |
+| [D-14](#d-14) | **Alias table with an explicit unresolved list.** Decision taken 2026-11-14. |
+| [D-15](#d-15) | **Both equally.** Neither user type is privileged as primary. Decision taken 2026-11-14. |
+
+**Corrections.** All eight confirmed and applied.
+**Consented GPS coordinates.** Still to be collected for Interviews 01 and 02,
+see V-01 in Part E.
+
+---
+
 ## Summary
 
 | ID | Decision | Urgency | Recommendation | Status |
 | -- | -------- | ------- | -------------- | ------ |
-| [D-01](#d-01) | Open-source licence | **BLOCKING** | Apache-2.0 | Open |
-| [D-02](#d-02) | Repository visibility | **BLOCKING** | Public | Open |
-| [D-03](#d-03) | Is the prospective-farmer path in scope? | High | Drop it | Open |
-| [D-04](#d-04) | Who is the primary user: the farmer, or the adviser? | High | Adviser-facing, farmer as data subject | Open |
-| [D-05](#d-05) | Scoring: numeric or qualitative? | High | Hybrid, no composite score | Open |
-| [D-06](#d-06) | GPS point, drawn polygon, or both? | High | Both, GPS as default | Open |
-| [D-07](#d-07) | Are rainfall forecasts in scope? | High | Include a 30-day outlook | Open |
-| [D-08](#d-08) | Is a Hausa interface in scope? | High | Interface stays English, field layer Hausa | Open |
-| [D-09](#d-09) | Farm as one polygon or a set of parcels? | High | Multiple geometries per farm | Open |
-| [D-10](#d-10) | Is the planting recommendation a date or a trigger? | High | Trigger, per farmer | Open |
-| [D-11](#d-11) | Are farmer-stated rotation rules first-class engine inputs? | Medium | Yes | Open |
-| [D-12](#d-12) | Consent scope and what may be published | **BLOCKING** for publication | Confirm per farmer | Open |
-| [D-13](#d-13) | Pre-compute environmental data, or fetch on demand? | Medium | Pre-compute the validation area | Open |
-| [D-14](#d-14) | Local crop name aliases in the catalog | Medium | Yes, mandatory | Open |
-| [D-15](#d-15) | Is the extension officer the primary operator? | Medium | Yes, design for it | Open |
+| [D-01](#d-01) | Open-source licence | **BLOCKING** | Apache-2.0 | Closed |
+| [D-02](#d-02) | Repository visibility | **BLOCKING** | Public | Closed |
+| [D-03](#d-03) | Is the prospective-farmer path in scope? | High | Drop it | Closed |
+| [D-04](#d-04) | Who is the primary user: the farmer, or the adviser? | High | Adviser-facing, farmer as data subject | Closed |
+| [D-05](#d-05) | Scoring: numeric or qualitative? | High | Hybrid, no composite score | Closed |
+| [D-06](#d-06) | GPS point, drawn polygon, or both? | High | Both, GPS as default | Closed |
+| [D-07](#d-07) | Are rainfall forecasts in scope? | High | Include a 30-day outlook | Closed |
+| [D-08](#d-08) | Is a Hausa interface in scope? | High | Interface stays English, field layer Hausa | Closed |
+| [D-09](#d-09) | Farm as one polygon or a set of parcels? | High | Multiple geometries per farm | Closed |
+| [D-10](#d-10) | Is the planting recommendation a date or a trigger? | High | Trigger, per farmer | Closed |
+| [D-11](#d-11) | Are farmer-stated rotation rules first-class engine inputs? | Medium | Yes | Closed |
+| [D-12](#d-12) | Consent scope and what may be published | **BLOCKING** for publication | Confirm per farmer | Closed |
+| [D-13](#d-13) | Pre-compute environmental data, or fetch on demand? | Medium | Pre-compute the validation area | Closed |
+| [D-14](#d-14) | Local crop name aliases in the catalog | Medium | Yes, mandatory | Closed |
+| [D-15](#d-15) | Is the extension officer the primary operator? | Medium | Yes, design for it | Closed |
 
 **Corrections already identified and needing only confirmation** (no decision
 required): the rotation strategy count is three in total including the existing
