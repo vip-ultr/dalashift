@@ -186,6 +186,15 @@ engine maps their words to a crop record. Where two names may be the same crop
 or two varieties, the catalog holds an **explicit unresolved list** rather
 than a guess. See V-03 in the open decisions register.
 
+**Clarification after the initial interview review.** Soybean is a distinct
+crop identity, Glycine max. White cowpea is recorded under cowpea, Vigna
+unguiculata, with “white” preserved as a farmer-reported descriptor until CDA
+confirms whether it denotes seed colour, a market class or a variety. “Beans”
+remains an unresolved local name and must not be mapped automatically to
+cowpea, soybean or common bean. Catalog records distinguish scientific
+identity, farmer-reported wording with provenance, variety/cultivar, seed or
+market class, and verified aliases. Interview wording remains unchanged.
+
 ### 9. A seasonal risk outlook replaces a forecast
 
 The tool presents a **seasonal outlook** derived from the climate record and

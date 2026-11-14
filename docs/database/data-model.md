@@ -141,21 +141,31 @@ crop records and recomputing every historical analysis. Carrying a nullable
 Seeded from the versioned catalog in the repository. **Every agronomic value
 must cite a source.**
 
-| Column                   | Type        | Notes                                                      |
-| ------------------------ | ----------- | ---------------------------------------------------------- |
-| `id`                     | `uuid` PK   |                                                             |
-| `code`                   | `text` UNIQUE| e.g. `millet`, `maize`, `rice`, `cowpea`, `groundnut`     |
-| `name`                   | `text`      | Display name                                                |
-| `category`               | `text`      | `cereal` \| `legume` \| `vegetable` \| `root` \| `tuber` \| `cash_crop` |
-| `growing_period_days`    | `integer`   | Typical days from sowing to harvest                        |
-| `agronomic_requirements` | `jsonb`     | Temperature range, rainfall range, soil pH/texture/drainage, water demand, planting window, GDD requirement |
-| `rotation_traits`        | `jsonb`     | Nitrogen contribution, residue load, disease break effects, pollinators |
-| `source_citations`       | `jsonb`     | **Array of { claim, value, source_url, accessed_on }. Mandatory.** |
-| `ruleset_version`        | `text`      | Catalog version this row belongs to                         |
-| `created_at`             | `timestamptz` |                                                           |
+| Column | Type | Notes |
+| --- | --- | --- |
+| id | uuid PK | |
+| code | text UNIQUE | Stable canonical crop code, for example cowpea or soybean. |
+| name | text | Display name for the scientific crop record. |
+| scientific_name | text nullable | Scientific identity. Null only while identity is unresolved. |
+| farmer_reported_names | jsonb array | Farmer wording with source reference and evidence status. Never silently promoted to an alias. |
+| variety_or_cultivar | text nullable | Named variety/cultivar only when known and evidenced. |
+| seed_or_market_classes | jsonb array | Seed colour or market class with status and provenance. |
+| verified_aliases | text[] | Verified synonyms only. |
+| category | text | cereal, legume, vegetable, root, tuber, or cash_crop. |
+| growing_period_days | jsonb | A cited range where verified. Unknown values remain unset. |
+| agronomic_requirements | jsonb | Cited environmental and soil requirements. Unsupported values remain unset. |
+| rotation_traits | jsonb | Cited nitrogen, residue and pest/disease evidence. |
+| source_citations | jsonb | Mandatory claim-level citations for populated agronomic values. |
+| catalog_version | text | Catalog version this row belongs to. |
+| created_at | timestamptz | |
 
-**Constraint:** `CHECK (jsonb_array_length(source_citations) > 0)`. A crop
-without a citation cannot be inserted.
+The unresolved_crop_names catalog stores local terms that cannot yet be mapped
+to a scientific crop identity. It keeps the reported spelling, interview
+sources, clarification target and resolution state. For example, beans is not
+mapped to cowpea, soybean or common bean until Tofa farmers and the CDA
+extension officer clarify its meaning. White cowpeas stays attached to cowpea
+identity as reported wording; the seed-colour, market-class or variety
+interpretation remains unverified.
 
 ---
 

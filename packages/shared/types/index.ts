@@ -204,14 +204,33 @@ export interface CropRequirement {
   readonly citation: string;
 }
 
+/** A farmer's crop wording, preserved with its source and evidence status. */
+export interface FarmerReportedCropName {
+  readonly name: string;
+  readonly sourceReference: string | null;
+  readonly evidenceStatus: 'reported' | 'unverified_legacy_alias';
+}
+
+/** A source-backed or farmer-reported seed colour or market class. */
+export interface CropSeedOrMarketClass {
+  readonly label: string;
+  readonly attributeType: 'seed_colour' | 'market_class' | 'unknown';
+  readonly evidenceStatus: 'farmer_reported_unverified' | 'source_verified';
+  readonly sourceReference: string | null;
+}
+
 /**
  * The agronomic requirements of one crop.
  */
 export interface CropRequirements {
   readonly code: string;
   readonly name: string;
-  /** Names the farmers in the interviews actually use. Decision D-14. */
-  readonly aliases: readonly string[];
+  readonly scientificName: string | null;
+  readonly farmerReportedNames: readonly FarmerReportedCropName[];
+  readonly varietyOrCultivar: string | null;
+  readonly seedOrMarketClasses: readonly CropSeedOrMarketClass[];
+  /** Synonyms confirmed by a source, kept separate from farmer wording. */
+  readonly verifiedAliases: readonly string[];
   readonly category: CropCategory;
   readonly applicableRegions: readonly string[];
   /** Days from sowing to harvest. A range, because varieties differ. */

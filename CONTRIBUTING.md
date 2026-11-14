@@ -86,8 +86,7 @@ Minimum set for local development:
 | Variable                        | Why                                              |
 | ------------------------------- | ------------------------------------------------ |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Database, auth and storage                       |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser client (safe: RLS is the real boundary)   |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Server-side admin operations: **server only**    |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Paste the Supabase publishable key here. It is public by design; RLS remains the access boundary. |
 | `NEXT_PUBLIC_MAP_STYLE_URL`     | MapLibre basemap style                           |
 
 Additional variables are needed for external data sources. See
@@ -100,13 +99,19 @@ pnpm check   # format:check + lint + typecheck
 pnpm dev     # http://localhost:3000
 ```
 
-### Supabase project setup (Phase 2)
+### Supabase project setup
 
-The Phase 1 repository intentionally contains **no migrations**. When Phase 2
-opens, the first task is to write the schema described in
-`docs/database/data-model.md` into `supabase/migrations/`, enable PostGIS, and
-apply the RLS policies. Do not create ad-hoc tables in the Supabase dashboard.
-Schema changes go through migrations in the repository.
+The project schema and RLS policies are versioned in supabase/migrations/.
+Do not create ad-hoc tables in the Supabase dashboard. Authenticate the
+repository CLI, link the hosted project, then review and apply migrations:
+
+    pnpm exec supabase login
+    pnpm exec supabase link --project-ref <project-ref>
+    pnpm exec supabase db push --remote
+
+The link command prompts for the database password. Keep the password and
+Supabase personal access token out of .env.local, Git and chat. Review the
+pending migration list before confirming the push.
 
 ---
 

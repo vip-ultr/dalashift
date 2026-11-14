@@ -26,7 +26,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
   const { data, error } = await supabase
     .from('farm_crops')
     .select(
-      'id, farm_id, parcel_id, crop_id, status, planting_date, expected_harvest_date, harvest_date, season, intended_use, area_ha, notes, created_at, crop:crops(id, code, name, aliases, category)',
+      'id, farm_id, parcel_id, crop_id, status, planting_date, expected_harvest_date, harvest_date, season, intended_use, area_ha, notes, created_at, crop:crops(id, code, name, scientific_name, farmer_reported_names, variety_or_cultivar, seed_or_market_classes, verified_aliases, category)',
     )
     .eq('farm_id', farmId)
     .order('created_at', { ascending: false });

@@ -22,6 +22,17 @@
       ],
       "clarificationRequestedFrom": ["Tofa farmers", "CDA extension officer"],
       "instruction": "Do not map automatically to cowpea, soybean, or common bean. Preserve the original interview wording."
+    },
+    {
+      "reportedName": "late millet",
+      "status": "unresolved_local_name",
+      "cropIdentity": null,
+      "sourceEvidence": [
+        "docs/research/field-interviews/interview-02/transcript.md",
+        "docs/research/field-interviews/interview-02/case-study.md"
+      ],
+      "clarificationRequestedFrom": ["Tofa farmers", "CDA extension officer"],
+      "instruction": "Preserve the name as reported. Do not map it to pearl millet or a variety without clarification."
     }
   ],
   "crops": [
@@ -32,11 +43,16 @@
       "farmerReportedNames": [
         {
           "name": "guinea corn",
-          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "evidenceStatus": "reported"
+        },
+        {
+          "name": "sorghum",
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
@@ -57,7 +73,8 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "pearl_millet",
@@ -66,16 +83,11 @@
       "farmerReportedNames": [
         {
           "name": "millet",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/case-study.md"
-        },
-        {
-          "name": "late millet",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/case-study.md",
-          "identityStatus": "unresolved"
+          "sourceReference": "docs/research/field-interviews/interview-02/case-study.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "ICRISAT-ROT-01",
       "parameters": {
@@ -96,15 +108,21 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "maize",
       "name": "Maize",
       "scientificName": "Zea mays L.",
-      "farmerReportedNames": [],
+      "farmerReportedNames": [
+        {
+          "name": "maize",
+          "sourceReference": "docs/research/field-interviews/interview-02/transcript.md",
+          "evidenceStatus": "reported"
+        }
+      ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
@@ -125,7 +143,8 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "cowpea",
@@ -134,23 +153,21 @@
       "farmerReportedNames": [
         {
           "name": "cowpea",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-02/transcript.md",
+          "evidenceStatus": "reported"
         },
         {
           "name": "white cowpeas",
-          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "evidenceStatus": "reported"
+        },
+        {
+          "name": "white cowpeas",
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [
-        {
-          "description": "white-seeded / white cowpea",
-          "attributeType": "seed_colour_or_market_class",
-          "status": "farmer_reported_unverified",
-          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md",
-          "note": "Record under cowpea identity per provisional catalog decision. Do not treat as a verified variety or formal market class without CDA confirmation."
-        }
-      ],
       "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
@@ -166,7 +183,16 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": [
+        {
+          "label": "white-seeded / white cowpea",
+          "attributeType": "unknown",
+          "evidenceStatus": "farmer_reported_unverified",
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "note": "Record under cowpea identity per provisional catalog decision. Do not treat as a verified variety or formal market class without CDA confirmation."
+        }
+      ]
     },
     {
       "code": "soybean",
@@ -175,11 +201,11 @@
       "farmerReportedNames": [
         {
           "name": "soybeans",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-02/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
@@ -200,7 +226,8 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "groundnut",
@@ -209,11 +236,11 @@
       "farmerReportedNames": [
         {
           "name": "groundnuts",
-          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-03/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-02",
       "parameters": {
@@ -234,7 +261,8 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "tomato",
@@ -243,11 +271,11 @@
       "farmerReportedNames": [
         {
           "name": "tomatoes",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-02/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-06",
       "parameters": {
@@ -268,7 +296,8 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      }
+      },
+      "seedOrMarketClasses": []
     },
     {
       "code": "pepper",
@@ -277,11 +306,11 @@
       "farmerReportedNames": [
         {
           "name": "peppers",
-          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+          "sourceReference": "docs/research/field-interviews/interview-02/transcript.md",
+          "evidenceStatus": "reported"
         }
       ],
       "varietyOrCultivar": null,
-      "reportedSeedOrMarketClass": [],
       "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-05",
       "parameters": {
@@ -303,7 +332,8 @@
         "nitrogenFixation": null,
         "residueAndFodder": null
       },
-      "unresolvedIdentity": ["species and hot/sweet type"]
+      "unresolvedIdentity": ["species and hot/sweet type"],
+      "seedOrMarketClasses": []
     }
   ]
 }

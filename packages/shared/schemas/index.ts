@@ -230,6 +230,19 @@ export const cropRequirementSchema = z.object({
 
 export type ValidatedCropRequirement = z.infer<typeof cropRequirementSchema>;
 
+export const farmerReportedCropNameSchema = z.object({
+  name: z.string().min(1),
+  sourceReference: z.string().nullable(),
+  evidenceStatus: z.enum(['reported', 'unverified_legacy_alias']),
+});
+
+export const cropSeedOrMarketClassSchema = z.object({
+  label: z.string().min(1),
+  attributeType: z.enum(['seed_colour', 'market_class', 'unknown']),
+  evidenceStatus: z.enum(['farmer_reported_unverified', 'source_verified']),
+  sourceReference: z.string().nullable(),
+});
+
 /**
  * A crop record in the catalog.
  *
@@ -239,7 +252,11 @@ export type ValidatedCropRequirement = z.infer<typeof cropRequirementSchema>;
 export const cropRequirementsSchema = z.object({
   code: z.string().min(1),
   name: z.string().min(1),
-  aliases: z.array(z.string().min(1)).default([]),
+  scientificName: z.string().min(1).nullable(),
+  farmerReportedNames: z.array(farmerReportedCropNameSchema).default([]),
+  varietyOrCultivar: z.string().nullable(),
+  seedOrMarketClasses: z.array(cropSeedOrMarketClassSchema).default([]),
+  verifiedAliases: z.array(z.string().min(1)).default([]),
   category: z.enum(CROP_CATEGORIES),
   applicableRegions: z.array(z.string().min(1)).min(1),
   growingPeriodDays: z.object({

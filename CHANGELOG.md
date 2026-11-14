@@ -23,6 +23,8 @@ the build.
   names, cultivar, seed/market class and verified aliases. Soybean remains
   distinct; “beans” stays unresolved, and “white cowpeas” is retained as a
   reported cowpea descriptor pending Tofa farmer and CDA clarification.
+- Supabase CLI project setup and crop identity migration, including a
+  provenance-aware farmer-name catalog and unresolved local crop names.
 - Server-only NASA POWER daily point adapter for precipitation, air
   temperature and root-zone wetness, with response validation, fill-value
   handling, bounded retries and per-value provenance.
