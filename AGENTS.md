@@ -242,6 +242,12 @@ Use these instead:
 4. **This is enforced mechanically.** `pnpm validate:style` fails the build if
    an em dash appears anywhere in a tracked text file, and it runs in CI. If
    it fails, fix the punctuation rather than skipping the check.
+5. **Verbatim source records are exempt.** The interview transcripts in
+   `docs/research/field-interviews/*/transcript.md` are the team's translated
+   documents, kept unaltered so they remain a faithful record. Their
+   punctuation is the translator's. The same applies to quoted material from
+   external sources. Everything else, including every document we write, is
+   covered by the rule without exception.
 
 **[Proposed]** The same rule applies to the product's own user-facing copy.
 Screen copy is read by farmers with limited formal education and by extension

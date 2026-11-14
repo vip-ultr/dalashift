@@ -53,6 +53,20 @@ const TEXT_EXTENSIONS = new Set([
 
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.git', '.next', 'dist', 'build', 'coverage']);
 
+/**
+ * Verbatim source records are exempt.
+ *
+ * The interview transcripts are the team's translated documents, kept
+ * unaltered so they remain a faithful record of what was said. Their
+ * punctuation is the translator's, not ours, and altering it would change the
+ * record. The same principle applies to quoted material elsewhere.
+ */
+const VERBATIM_RECORD_PATTERNS = [/^docs\/research\/field-interviews\/[^/]+\/transcript\.md$/];
+
+function isVerbatimRecord(relativePath) {
+  return VERBATIM_RECORD_PATTERNS.some((pattern) => pattern.test(relativePath));
+}
+
 function collectFiles() {
   const files = [];
 
@@ -88,6 +102,10 @@ for (const file of collectFiles()) {
   const content = fs.readFileSync(file, 'utf8');
   const lines = content.split('\n');
   const relative = path.relative(repoRoot, file);
+
+  if (isVerbatimRecord(relative)) {
+    continue;
+  }
 
   lines.forEach((line, lineIndex) => {
     let searchFrom = 0;
