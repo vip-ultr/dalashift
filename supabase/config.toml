@@ -120,11 +120,15 @@ enabled = true
 file_size_limit = "50MiB"
 
 # Uncomment to configure local storage buckets
-# [storage.buckets.images]
-# public = false
-# file_size_limit = "50MiB"
-# allowed_mime_types = ["image/png", "image/jpeg"]
-# objects_path = "./images"
+[storage.buckets.farm-reports]
+public = false
+file_size_limit = "10MiB"
+allowed_mime_types = ["application/json", "application/pdf", "text/html", "text/markdown"]
+
+[storage.buckets.farm-attachments]
+public = false
+file_size_limit = "10MiB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp", "application/pdf"]
 
 # Allow connections via S3 compatible clients
 [storage.s3_protocol]

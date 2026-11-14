@@ -21,6 +21,11 @@ the build.
 
 ### Added
 
+- Private Supabase Storage bucket migration (`farm-reports` and
+  `farm-attachments`) with per-farmer and per-farm prefix RLS policies on
+  `storage.objects`, server-only storage helpers (`lib/supabase/storage.ts`,
+  `lib/supabase/admin.ts`) for uploading report artifacts and generating
+  short-lived signed URLs, and the `/api/profile` endpoint.
 - Backend API endpoints for single-farm and single-parcel CRUD
   (`/api/farms/{farmId}`, `/api/farms/{farmId}/parcels/{parcelId}`), crop
   catalog search (`/api/catalog/crops`), published Doka case studies

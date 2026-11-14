@@ -195,16 +195,15 @@ export async function POST(request: Request, { params }: RouteContext) {
     supabase
       .from('crops')
       .select(
-        'id, code, name, scientific_name, category, growing_period_days, temperature_c, rainfall_mm, water_demand, soil, rotation_traits, fertiliser, source_citations',
+        'id, code, name, scientific_name, category, growing_period_days, agronomic_requirements, rotation_traits, fertiliser, source_citations',
       )
-      .eq('is_unresolved', false)
       .order('name', { ascending: true }),
     supabase
       .from('rotation_rules')
       .select(
-        'rule_key, statement, source_type, attributed_to, source_url, accessed_on, applies_to, follows, mechanism',
+        'id, statement, source_type, attributed_to, source_url, accessed_on, applies_to, follows, mechanism',
       )
-      .order('rule_key', { ascending: true }),
+      .order('id', { ascending: true }),
     supabase
       .from('farm_crops')
       .select('id, parcel_id, crop_id, status, season, area_ha, crops(code)')
@@ -231,7 +230,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       (RULE_SOURCE_TYPES as readonly string[]).includes(String(row.source_type ?? '')),
     )
     .map((row) => ({
-      id: String(row.rule_key),
+      id: String(row.id),
       statement: String(row.statement),
       sourceType: row.source_type as RotationRule['sourceType'],
       attributedTo: (row.attributed_to as string | null) ?? null,

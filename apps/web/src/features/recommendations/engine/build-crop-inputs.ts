@@ -68,22 +68,37 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
     typeof row.growing_period_days === 'object' && row.growing_period_days !== null
       ? (row.growing_period_days as Record<string, unknown>)
       : {};
+  const agro =
+    typeof row.agronomic_requirements === 'object' && row.agronomic_requirements !== null
+      ? (row.agronomic_requirements as Record<string, unknown>)
+      : {};
   const rain =
-    typeof row.rainfall_mm === 'object' && row.rainfall_mm !== null
-      ? (row.rainfall_mm as Record<string, unknown>)
-      : {};
+    typeof agro.rainfallRequirementMm === 'object' && agro.rainfallRequirementMm !== null
+      ? (agro.rainfallRequirementMm as Record<string, unknown>)
+      : typeof row.rainfall_mm === 'object' && row.rainfall_mm !== null
+        ? (row.rainfall_mm as Record<string, unknown>)
+        : null;
   const water =
-    typeof row.water_demand === 'object' && row.water_demand !== null
-      ? (row.water_demand as Record<string, unknown>)
-      : {};
+    typeof agro.indicativeCropWaterNeedMmPerSeason === 'object' &&
+    agro.indicativeCropWaterNeedMmPerSeason !== null
+      ? (agro.indicativeCropWaterNeedMmPerSeason as Record<string, unknown>)
+      : typeof row.water_demand === 'object' && row.water_demand !== null
+        ? (row.water_demand as Record<string, unknown>)
+        : null;
   const temp =
-    typeof row.temperature_c === 'object' && row.temperature_c !== null
-      ? (row.temperature_c as Record<string, unknown>)
-      : {};
+    typeof agro.temperatureC === 'object' && agro.temperatureC !== null
+      ? (agro.temperatureC as Record<string, unknown>)
+      : typeof row.temperature_c === 'object' && row.temperature_c !== null
+        ? (row.temperature_c as Record<string, unknown>)
+        : null;
   const soil =
     typeof row.soil === 'object' && row.soil !== null ? (row.soil as Record<string, unknown>) : {};
   const soilPh =
-    typeof soil.ph === 'object' && soil.ph !== null ? (soil.ph as Record<string, unknown>) : {};
+    typeof agro.soilPh === 'object' && agro.soilPh !== null
+      ? (agro.soilPh as Record<string, unknown>)
+      : typeof soil.ph === 'object' && soil.ph !== null
+        ? (soil.ph as Record<string, unknown>)
+        : null;
   const rot =
     typeof row.rotation_traits === 'object' && row.rotation_traits !== null
       ? (row.rotation_traits as Record<string, unknown>)
@@ -117,24 +132,32 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
       max: numOrNull(gp.max),
     },
     agronomicRequirements: {
-      rainfallRequirementMm: {
-        min: numOrNull(rain.minMm),
-        max: numOrNull(rain.maxMm),
-      },
-      indicativeCropWaterNeedMmPerSeason: {
-        min: numOrNull(water.indicativeSeasonMinMm),
-        max: numOrNull(water.indicativeSeasonMaxMm),
-        ...(typeof water.evidenceId === 'string' ? { evidenceId: water.evidenceId } : {}),
-        useAsHardConstraint: water.useAsHardConstraint === true,
-      },
-      temperatureC: {
-        min: numOrNull(temp.optimalMin),
-        max: numOrNull(temp.optimalMax),
-      },
-      soilPh: {
-        min: numOrNull(soilPh.min),
-        max: numOrNull(soilPh.max),
-      },
+      rainfallRequirementMm: rain
+        ? {
+            min: numOrNull(rain.min ?? rain.minMm),
+            max: numOrNull(rain.max ?? rain.maxMm),
+          }
+        : null,
+      indicativeCropWaterNeedMmPerSeason: water
+        ? {
+            min: numOrNull(water.min ?? water.indicativeSeasonMinMm),
+            max: numOrNull(water.max ?? water.indicativeSeasonMaxMm),
+            ...(typeof water.evidenceId === 'string' ? { evidenceId: water.evidenceId } : {}),
+            useAsHardConstraint: water.useAsHardConstraint === true,
+          }
+        : null,
+      temperatureC: temp
+        ? {
+            min: numOrNull(temp.min ?? temp.optimalMin),
+            max: numOrNull(temp.max ?? temp.optimalMax),
+          }
+        : null,
+      soilPh: soilPh
+        ? {
+            min: numOrNull(soilPh.min),
+            max: numOrNull(soilPh.max),
+          }
+        : null,
     },
     rotationTraits: {
       nitrogenContribution:

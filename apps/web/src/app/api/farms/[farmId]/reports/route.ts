@@ -43,6 +43,10 @@ import {
   type ReportKind,
 } from '../../../../../features/reports/build-farm-report';
 import { createClient } from '../../../../../lib/supabase/server';
+import {
+  createReportSignedUrl,
+  uploadFarmReportArtifact,
+} from '../../../../../lib/supabase/storage';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string }>;
@@ -103,7 +107,20 @@ export async function GET(_request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Unable to load farm reports.' }, { status: 500 });
   }
 
-  return NextResponse.json({ reports: reports ?? [] });
+  const enrichedReports = await Promise.all(
+    (reports ?? []).map(async (item) => {
+      const signedUrl = await createReportSignedUrl({
+        supabase,
+        storagePath: (item.storage_path as string | null) ?? null,
+      });
+      return {
+        ...item,
+        signed_url: signedUrl,
+      };
+    }),
+  );
+
+  return NextResponse.json({ reports: enrichedReports });
 }
 
 /**
@@ -156,16 +173,15 @@ export async function POST(request: Request, { params }: RouteContext) {
     supabase
       .from('crops')
       .select(
-        'id, code, name, scientific_name, category, growing_period_days, temperature_c, rainfall_mm, water_demand, soil, rotation_traits, fertiliser, source_citations',
+        'id, code, name, scientific_name, category, growing_period_days, agronomic_requirements, rotation_traits, fertiliser, source_citations',
       )
-      .eq('is_unresolved', false)
       .order('name', { ascending: true }),
     supabase
       .from('rotation_rules')
       .select(
-        'rule_key, statement, source_type, attributed_to, source_url, accessed_on, applies_to, follows, mechanism',
+        'id, statement, source_type, attributed_to, source_url, accessed_on, applies_to, follows, mechanism',
       )
-      .order('rule_key', { ascending: true }),
+      .order('id', { ascending: true }),
     supabase
       .from('farm_crops')
       .select(
@@ -287,7 +303,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       (RULE_SOURCE_TYPES as readonly string[]).includes(String(row.source_type ?? '')),
     )
     .map((row) => ({
-      id: String(row.rule_key),
+      id: String(row.id),
       statement: String(row.statement),
       sourceType: row.source_type as RotationRule['sourceType'],
       attributedTo: (row.attributed_to as string | null) ?? null,
@@ -449,5 +465,30 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Unable to save generated report.' }, { status: 500 });
   }
 
-  return NextResponse.json({ report: insertedReport }, { status: 201 });
+  const { storagePath, signedUrl } = await uploadFarmReportArtifact({
+    supabase,
+    farmerId: authData.user.id,
+    farmId,
+    reportId: String(insertedReport.id),
+    payload,
+  });
+
+  if (storagePath) {
+    await supabase
+      .from('reports')
+      .update({ storage_path: storagePath })
+      .eq('id', String(insertedReport.id));
+  }
+
+  return NextResponse.json(
+    {
+      report: {
+        ...insertedReport,
+        storage_path: storagePath ?? insertedReport.storage_path,
+        signed_url: signedUrl,
+      },
+      signedUrl,
+    },
+    { status: 201 },
+  );
 }
