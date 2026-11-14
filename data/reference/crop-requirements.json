@@ -3,13 +3,41 @@
   "scope": "Rain-fed crop candidates reported in Doka, Tofa LGA, Kano State, Nigeria",
   "status": "research_only_not_engine_ready",
   "sourceDateChecked": "2026-11-14",
-  "interpretation": "Only source-backed identity and indicative FAO crop-water-need ranges are populated. Water needs are not rainfall requirements or recommendation thresholds. Null means unknown or not verified for Tofa.",
+  "catalogIdentityFields": {
+    "scientificCropIdentity": "scientificName",
+    "farmerReportedLocalOrCommonNames": "farmerReportedNames, each with its source",
+    "varietyOrCultivar": "varietyOrCultivar, null when unknown",
+    "seedColourOrMarketClass": "reportedSeedOrMarketClass, with evidence status",
+    "verifiedAliases": "verifiedAliases, kept separate from farmer-reported names"
+  },
+  "interpretation": "Only source-backed identity and indicative FAO crop-water-need ranges are populated. Water needs are not rainfall requirements or recommendation thresholds. Null means unknown or not verified for Tofa. Farmer wording is retained as reported evidence and is not automatically promoted to a verified alias.",
+  "unresolvedLocalNames": [
+    {
+      "reportedName": "beans",
+      "status": "unresolved_local_name",
+      "cropIdentity": null,
+      "sourceEvidence": [
+        "docs/research/field-interviews/interview-02/transcript.md",
+        "docs/research/field-interviews/interview-03/transcript.md"
+      ],
+      "clarificationRequestedFrom": ["Tofa farmers", "CDA extension officer"],
+      "instruction": "Do not map automatically to cowpea, soybean, or common bean. Preserve the original interview wording."
+    }
+  ],
   "crops": [
     {
       "code": "sorghum",
       "name": "Sorghum",
       "scientificName": "Sorghum bicolor (L.) Moench",
-      "aliases": ["guinea corn"],
+      "farmerReportedNames": [
+        {
+          "name": "guinea corn",
+          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -35,7 +63,20 @@
       "code": "pearl_millet",
       "name": "Pearl millet",
       "scientificName": "Cenchrus americanus (syn. Pennisetum glaucum)",
-      "aliases": ["millet"],
+      "farmerReportedNames": [
+        {
+          "name": "millet",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/case-study.md"
+        },
+        {
+          "name": "late millet",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/case-study.md",
+          "identityStatus": "unresolved"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "ICRISAT-ROT-01",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -55,14 +96,16 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      },
-      "unresolvedAliases": ["late millet"]
+      }
     },
     {
       "code": "maize",
       "name": "Maize",
       "scientificName": "Zea mays L.",
-      "aliases": ["corn"],
+      "farmerReportedNames": [],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -88,7 +131,27 @@
       "code": "cowpea",
       "name": "Cowpea",
       "scientificName": "Vigna unguiculata (L.) Walp.",
-      "aliases": [],
+      "farmerReportedNames": [
+        {
+          "name": "cowpea",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+        },
+        {
+          "name": "white cowpeas",
+          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [
+        {
+          "description": "white-seeded / white cowpea",
+          "attributeType": "seed_colour_or_market_class",
+          "status": "farmer_reported_unverified",
+          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md",
+          "note": "Record under cowpea identity per provisional catalog decision. Do not treat as a verified variety or formal market class without CDA confirmation."
+        }
+      ],
+      "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -103,14 +166,21 @@
         "nutrientRequirement": null,
         "nitrogenFixation": null,
         "residueAndFodder": null
-      },
-      "unresolvedAliases": ["beans", "white cowpeas"]
+      }
     },
     {
       "code": "soybean",
       "name": "Soybean",
       "scientificName": "Glycine max (L.) Merr.",
-      "aliases": ["soybeans"],
+      "farmerReportedNames": [
+        {
+          "name": "soybeans",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "NIGERIA-ROT-01",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -136,7 +206,15 @@
       "code": "groundnut",
       "name": "Groundnut",
       "scientificName": "Arachis hypogaea L.",
-      "aliases": ["peanut"],
+      "farmerReportedNames": [
+        {
+          "name": "groundnuts",
+          "sourceEvidence": "docs/research/field-interviews/interview-03/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-02",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -162,7 +240,15 @@
       "code": "tomato",
       "name": "Tomato",
       "scientificName": "Solanum lycopersicum L.",
-      "aliases": ["tomatoes"],
+      "farmerReportedNames": [
+        {
+          "name": "tomatoes",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-06",
       "parameters": {
         "rainfallRequirementMm": null,
@@ -188,7 +274,15 @@
       "code": "pepper",
       "name": "Pepper",
       "scientificName": "Capsicum spp.",
-      "aliases": ["peppers"],
+      "farmerReportedNames": [
+        {
+          "name": "peppers",
+          "sourceEvidence": "docs/research/field-interviews/interview-02/transcript.md"
+        }
+      ],
+      "varietyOrCultivar": null,
+      "reportedSeedOrMarketClass": [],
+      "verifiedAliases": [],
       "identityEvidence": "FAO-WATER-05",
       "parameters": {
         "rainfallRequirementMm": null,

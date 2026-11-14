@@ -19,6 +19,10 @@ the build.
 - Agronomy research artifacts for the crop catalog and rotation comparison:
   claim-level evidence register, source-backed reference data with unknowns
   left unset, rotation evidence and CDA review questions.
+- Crop catalog identity fields distinguish scientific identity, farmer-reported
+  names, cultivar, seed/market class and verified aliases. Soybean remains
+  distinct; “beans” stays unresolved, and “white cowpeas” is retained as a
+  reported cowpea descriptor pending Tofa farmer and CDA clarification.
 - Server-only NASA POWER daily point adapter for precipitation, air
   temperature and root-zone wetness, with response validation, fill-value
   handling, bounded retries and per-value provenance.

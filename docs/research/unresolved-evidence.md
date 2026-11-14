@@ -18,7 +18,8 @@ The following values remain intentionally unset in the crop reference JSON. “U
 | All | Residue/fodder implications | Are residues retained, grazed, removed, burned or incorporated locally? Quantify biomass only where source and method are available. |
 | Sorghum, pearl millet, maize, cowpea, soybean, groundnut | Planting window | Need current local extension guidance and season/variety-specific feasibility. Regional survey windows are contextual only. |
 | Pearl millet | “Late millet” identity | Is this a distinct species, named variety, maturity class or local category? Ask farmers and CDA before alias mapping. |
-| Cowpea | “Beans” and “white cowpeas” | Confirm species and whether “beans” can refer to other crops in local usage. |
+| Cowpea | “White cowpeas” seed descriptor | Confirm with Tofa farmers and CDA whether “white” describes seed colour, a market class or a named variety. Keep the name under cowpea identity as reported, but do not promote the descriptor to a formal class without confirmation. |
+| Local crop name | “Beans” | Clarify with Tofa farmers and the CDA extension officer which crop the speaker means. Do not automatically map it to cowpea, soybean or common bean. Keep each interview's exact wording. If clarification is unavailable, preserve the unresolved name. |
 | Pepper | Species and intended production type | Confirm Capsicum species/type, rain-fed versus irrigated management, and whether the crop belongs in this catalog comparison. |
 | Tomato and pepper | Rain-fed suitability | Determine local variety, transplanting/irrigation practice, season and disease constraints. Interview mention alone does not establish rain-fed suitability. |
 
@@ -36,6 +37,8 @@ The following values remain intentionally unset in the crop reference JSON. “U
 ## Exact agronomist/CDA review requested
 
 - Confirm crop identities and aliases, particularly “late millet,” “beans,” and pepper.
+- Confirm that soybean is a separate crop identity, Glycine max, and resolve whether each use of “beans” means soybean, cowpea, common bean or another crop without retroactively changing the interview transcript.
+- Confirm whether “white cowpeas” refers to seed colour, a market class or a named variety. The current catalog places the farmer-reported name under cowpea, Vigna unguiculata, while leaving its formal attribute type unverified.
 - Provide locally used variety names and maturity classes for the candidate crops.
 - Review whether any FAO crop-water range is appropriate as a non-binding context field for Tofa, and specify how to explain it to farmers.
 - Review transfer limits of Samaru and Sadoré rotation studies before any engine rule is written.

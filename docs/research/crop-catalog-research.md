@@ -12,14 +12,18 @@ Samaru is in the Northern Guinea Savanna (NGS), while Tofa is in Kano's Sudan Sa
 
 | Candidate | Scientific name | Names heard or used | Status |
 | --- | --- | --- | --- |
-| Sorghum | Sorghum bicolor (L.) Moench | sorghum, guinea corn | Identity supported by research; aliases are interview vocabulary. |
-| Pearl millet | Cenchrus americanus (syn. Pennisetum glaucum) | pearl millet, millet | “Late millet” needs local identification and must not yet be treated as a variety. |
-| Maize | Zea mays L. | maize, corn | Research source specifies maize. |
-| Cowpea | Vigna unguiculata (L.) Walp. | cowpea, beans, white cowpeas | “Beans” is ambiguous and should not be a global alias until confirmed. |
-| Soybean | Glycine max (L.) Merr. | soybean, soybeans | Keep separate from cowpea and generic “beans.” |
-| Groundnut | Arachis hypogaea L. | groundnut, peanut | Common-name correspondence supported by FAO reference. |
-| Tomato | Solanum lycopersicum L. | tomato, tomatoes | Interview crop name; no Tofa-specific requirements established. |
-| Pepper | Capsicum spp. | pepper, peppers | Species and hot/sweet type remain unresolved. |
+| Scientific crop identity | Farmer-reported local/common name | Variety or cultivar | Seed colour/market class | Verified aliases |
+| --- | --- | --- | --- | --- |
+| Sorghum, Sorghum bicolor (L.) Moench | “guinea corn” (interview 03 also says “sorghum”) | Unknown | Unknown | None established in this research record |
+| Pearl millet, Cenchrus americanus (syn. Pennisetum glaucum) | “millet” | Unknown | “late millet” is reported, identity unresolved | None established in this research record |
+| Maize, Zea mays L. | Unknown from reviewed case evidence | Unknown | Unknown | None established in this research record |
+| Cowpea, Vigna unguiculata (L.) Walp. | “cowpea”; “white cowpeas” | Unknown | “white-seeded” is retained as an unverified farmer-reported descriptor, not a formal variety or market class | None established in this research record |
+| Soybean, Glycine max (L.) Merr. | “soybeans” | Unknown | Unknown | None established in this research record |
+| Groundnut, Arachis hypogaea L. | “groundnuts” | Unknown | Unknown | None established in this research record |
+| Tomato, Solanum lycopersicum L. | “tomatoes” | Unknown | Unknown | None established in this research record |
+| Pepper, Capsicum spp. | “peppers” | Unknown | Hot/sweet type and species unresolved | None established in this research record |
+
+Soybean is a distinct crop record. White cowpea is recorded under cowpea identity; “white” is preserved only as the reported seed descriptor until confirmed. “Beans” remains an unresolved local name and is not mapped to cowpea, soybean or common bean. The interview transcripts and case studies retain their original wording. Ask the Tofa farmers and CDA extension officer to clarify which crop “beans” denotes and whether “white cowpea” refers to a seed-colour class, market class or named variety. If clarification is unavailable, preserve the ambiguity.
 
 ## Evidence that may inform catalog research
 
