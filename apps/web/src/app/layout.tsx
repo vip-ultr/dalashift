@@ -1,8 +1,8 @@
-import type { Metadata, Viewport } from "next";
-import { Inter, Poppins } from "next/font/google";
-import type { ReactNode } from "react";
+import type { Metadata, Viewport } from 'next';
+import { Inter, Poppins } from 'next/font/google';
+import type { ReactNode } from 'react';
 
-import "./globals.css";
+import './globals.css';
 
 /**
  * Fonts.
@@ -12,64 +12,63 @@ import "./globals.css";
  * the system stack rather than breaking the build.
  */
 const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-  weight: ["400", "500", "600"],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['400', '500', '600'],
 });
 
 const poppins = Poppins({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-poppins",
-  weight: ["600", "700"],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+  weight: ['600', '700'],
 });
 
-const DESCRIPTION =
-  "Climate-informed crop rotation decisions for rain-fed farmers.";
+const DESCRIPTION = 'Climate-informed crop rotation decisions for rain-fed farmers.';
 
 export const metadata: Metadata = {
   title: {
-    default: "DalaShift",
-    template: "%s | DalaShift",
+    default: 'DalaShift',
+    template: '%s | DalaShift',
   },
   description: DESCRIPTION,
-  applicationName: "DalaShift",
+  applicationName: 'DalaShift',
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon-32x32.png", sizes: "32x32" },
-      { url: "/favicon-16x16.png", sizes: "16x16" },
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', sizes: '16x16' },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-    manifest: "/site.webmanifest",
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
+  manifest: '/site.webmanifest',
   openGraph: {
-    title: "DalaShift",
+    title: 'DalaShift',
     description: DESCRIPTION,
-    type: "website",
-    siteName: "DalaShift",
+    type: 'website',
+    siteName: 'DalaShift',
     images: [
       {
-        url: "/og-image.png",
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: "DalaShift, climate-informed crop rotation decisions for rain-fed farmers.",
+        alt: 'DalaShift, climate-informed crop rotation decisions for rain-fed farmers.',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "DalaShift",
+    card: 'summary_large_image',
+    title: 'DalaShift',
     description: DESCRIPTION,
-    images: ["/og-image.png"],
+    images: ['/og-image.png'],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a4232",
-  width: "device-width",
+  themeColor: '#0a4232',
+  width: 'device-width',
   initialScale: 1,
 };
 

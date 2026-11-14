@@ -91,7 +91,7 @@ docs/temp-audio/
 # ─────────────────────────────────────────────────────────────
 # Generated reports / user uploads (Supabase Storage holds the real ones)
 # ─────────────────────────────────────────────────────────────
-reports/
+/reports/
 uploads/
 tmp/
 .cache/

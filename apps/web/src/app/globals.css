@@ -101,8 +101,9 @@
   --ds-danger-subtle: #f7e3d9;
 
   /* ── Type ────────────────────────────────────────────────────────── */
-  --ds-font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --ds-font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   --ds-font-display: var(--font-poppins), var(--ds-font-sans);
 }
 

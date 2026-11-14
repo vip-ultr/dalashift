@@ -29,6 +29,29 @@ export async function fetchPowerDaily(input: {
   url.searchParams.set('format', 'JSON');
   url.searchParams.set('time-standard', 'LST');
 
+  return executePowerRequest(url);
+}
+
+/**
+ * Fetch multi-year monthly and annual climatology from the documented
+ * NASA POWER climatology point endpoint.
+ */
+export async function fetchPowerClimatology(input: {
+  readonly latitude: number;
+  readonly longitude: number;
+  readonly parameters: readonly string[];
+}) {
+  const url = new URL('https://power.larc.nasa.gov/api/temporal/climatology/point');
+  url.searchParams.set('parameters', input.parameters.join(','));
+  url.searchParams.set('community', 'AG');
+  url.searchParams.set('latitude', String(input.latitude));
+  url.searchParams.set('longitude', String(input.longitude));
+  url.searchParams.set('format', 'JSON');
+
+  return executePowerRequest(url);
+}
+
+async function executePowerRequest(url: URL) {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);

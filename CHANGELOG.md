@@ -14,8 +14,39 @@ the build.
 
 ## [Unreleased]
 
+### Fixed
+
+- Qualified PostGIS geometry types and functions in the parcel migration so
+  its empty search path works when the migration is applied.
+
 ### Added
 
+- Backend API endpoints for single-farm and single-parcel CRUD
+  (`/api/farms/{farmId}`, `/api/farms/{farmId}/parcels/{parcelId}`), crop
+  catalog search (`/api/catalog/crops`), published Doka case studies
+  (`/api/case-studies`, `/api/case-studies/{slug}`), parcel environmental
+  observations (`/api/farms/{farmId}/environment`), qualitative rotation and
+  suitability comparison (`/api/farms/{farmId}/compare`) and printable farm
+  reports (`/api/farms/{farmId}/reports`).
+- Printable farm report builder (`buildFarmReportPayload`) with mandatory NASA
+  POWER, ISRIC SoilGrids and Earth observation attributions and redacted parcel
+  coordinates by default (ADR-0011 D-12), plus the Tofa LGA validation-region
+  pre-computation script (`scripts/data/precompute-validation-region.mjs`).
+- Catalog-to-engine crop input builder, three-strategy rotation builder
+  (existing practice plus literature and farmer-report alternatives),
+  prospective farmer suitability engine with explicit ties, planting trigger
+  condition engine, and seasonal risk outlook engine.
+- Migrations for `recommendation_rulesets`, `analyses`, qualitative
+  `recommendations`, `rotation_strategies`, `rotation_legs` and `reports` with
+  Row Level Security, plus seeding for the verified research crop catalog,
+  literature rotation evidence, additional NASA/open data sources and the three
+  published Doka (Tofa LGA) case studies.
+- Server-only service-role Supabase client helper, deterministic grid-cell
+  geospatial utilities, and a request-coalescing read-through cache and
+  observation persistence layer.
+- NASA POWER climatology point adapter, ISRIC SoilGrids 2.0 adapter with
+  `d_factor` unit conversion and null-void handling, and NASA Earthdata CMR
+  granule metadata search.
 - Agronomy research artifacts for the crop catalog and rotation comparison:
   claim-level evidence register, source-backed reference data with unknowns
   left unset, rotation evidence and CDA review questions.

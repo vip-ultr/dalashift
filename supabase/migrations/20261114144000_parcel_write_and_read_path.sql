@@ -71,8 +71,8 @@ security invoker
 set search_path = ''
 as $$
 declare
-  source_geometry geometry;
-  stored_geometry geometry;
+  source_geometry extensions.geometry;
+  stored_geometry extensions.geometry;
   radius_m numeric;
   approximate boolean := false;
   created public.parcels;
@@ -80,17 +80,17 @@ begin
   source_geometry := public.geojson_to_geometry(p_geometry_geojson);
 
   if p_geometry_method = 'gps_point' then
-    if st_geometrytype(source_geometry) <> 'ST_Point' then
+    if extensions.st_geometrytype(source_geometry) <> 'ST_Point' then
       raise exception 'A GPS parcel must carry a point geometry';
     end if;
     -- The circle radius is the location uncertainty when the farmer gave one,
     -- and a fixed default otherwise. It is never hidden: the parcel is marked
     -- as an approximate area.
     radius_m := coalesce(p_location_uncertainty_m, 25);
-    stored_geometry := st_buffer(source_geometry::geography, radius_m);
+    stored_geometry := extensions.st_buffer(source_geometry::extensions.geography, radius_m);
     approximate := true;
   else
-    if st_geometrytype(source_geometry) = 'ST_Point' then
+    if extensions.st_geometrytype(source_geometry) = 'ST_Point' then
       raise exception 'A drawn parcel must not carry a point geometry';
     end if;
     stored_geometry := source_geometry;
@@ -108,7 +108,7 @@ begin
   values (
     p_farm_id,
     p_name,
-    st_setSRID(stored_geometry, 4326),
+    extensions.st_setSRID(stored_geometry, 4326),
     p_geometry_method,
     p_location_uncertainty_m,
     approximate,
@@ -136,8 +136,8 @@ set search_path = ''
 as $$
 declare
   existing public.parcels;
-  source_geometry geometry;
-  stored_geometry geometry;
+  source_geometry extensions.geometry;
+  stored_geometry extensions.geometry;
   radius_m numeric;
   approximate boolean := false;
   method text;
@@ -153,21 +153,21 @@ begin
   source_geometry := public.geojson_to_geometry(p_geometry_geojson);
 
   if method = 'gps_point' then
-    if st_geometrytype(source_geometry) <> 'ST_Point' then
+    if extensions.st_geometrytype(source_geometry) <> 'ST_Point' then
       raise exception 'A GPS parcel must carry a point geometry';
     end if;
     radius_m := coalesce(p_location_uncertainty_m, existing.location_uncertainty_m, 25);
-    stored_geometry := st_buffer(source_geometry::geography, radius_m);
+    stored_geometry := extensions.st_buffer(source_geometry::extensions.geography, radius_m);
     approximate := true;
   else
-    if st_geometrytype(source_geometry) = 'ST_Point' then
+    if extensions.st_geometrytype(source_geometry) = 'ST_Point' then
       raise exception 'A drawn parcel must not carry a point geometry';
     end if;
     stored_geometry := source_geometry;
   end if;
 
   update public.parcels
-  set geometry = st_setSRID(stored_geometry, 4326),
+  set geometry = extensions.st_setSRID(stored_geometry, 4326),
       geometry_method = method,
       location_uncertainty_m = coalesce(
         p_location_uncertainty_m,

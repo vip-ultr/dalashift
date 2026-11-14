@@ -337,20 +337,19 @@ diffed and audited.
 | `id`              | `uuid` PK    |                                                              |
 | `analysis_id`     | `uuid` FK    | → `analyses(id)` `on delete cascade`                          |
 | `farm_id`         | `uuid` FK    | → `farms(id)` `on delete cascade`                             |
-| `crop_id`         | `uuid` FK    | → `crops(id)`. Nullable for a farm-level assessment.          |
+| `parcel_id`       | `uuid` FK    | → `parcels(id)` `on delete set null`. Nullable.               |
+| `crop_id`         | `uuid` FK    | → `crops(id)`                                                |
 | `verdict`         | `text`       | `suitable` \| `conditional` \| `not_suitable` \| `insufficient_information` |
-| `score`           | `numeric(4,3)` | 0 to 1. **Null when the verdict is `insufficient_information`.** |
-| `subscores`       | `jsonb`      | Per-dimension scores, 0 to 1                                 |
+| `dimensions`      | `jsonb`      | Array of `DimensionAssessment` records (measured value against cited threshold). No numeric score. |
 | `rationale`       | `text`       | Human-readable reasoning citing the inputs                    |
-| `limitations`     | `text[]`     | **Explicit statement of what is unknown**                     |
-| `confidence`      | `numeric(4,3)` | 0 to 1. Computed separately from the score.                  |
-| `ruleset_version` | `text`       | FK-ish to `recommendation_rulesets.version`                  |
+| `limitations`     | `jsonb`      | **Explicit array of `Limitation` records**                    |
+| `evidence_strength` | `text`     | `strong` \| `moderate` \| `weak`                              |
+| `evidence_strength_reason` | `text` | Explicit reason accompanying the qualitative strength      |
+| `ruleset_version` | `text`       | FK to `recommendation_rulesets(version)`                      |
 | `requires_local_review` | `boolean` | Default `true` for rotation advice.                          |
 | `created_at`      | `timestamptz` |                                                              |
 
-**Indexes:** `btree (farm_id, crop_id, created_at DESC)`.
-
-**Constraint:** `CHECK (score IS NULL OR verdict <> 'insufficient_information')`.
+**Indexes:** `btree (farm_id, crop_id, created_at DESC)`, `btree (analysis_id)`.
 
 ---
 
@@ -364,6 +363,7 @@ strategy is the comparison unit.
 | `id`                  | `uuid` PK    |                                                               |
 | `analysis_id`         | `uuid` FK    | → `analyses(id)` `on delete cascade`                          |
 | `farm_id`             | `uuid` FK    | → `farms(id)` `on delete cascade`                             |
+| `parcel_id`           | `uuid` FK    | → `parcels(id)` `on delete set null`. Nullable.               |
 | `kind`                | `text`       | `existing` \| `alternative`                                    |
 | `label`               | `text`       | e.g. "Current rotation (millet → cowpea)"                     |
 | `rationale`           | `text`       | **Why it was suggested** (challenge requirement)               |
@@ -371,9 +371,11 @@ strategy is the comparison unit.
 | `benefits`            | `text[]`     | **What benefits it may offer** (challenge requirement)         |
 | `information_gaps`    | `text[]`     | **Where information gaps exist** (challenge requirement)       |
 | `local_review_risks`  | `text[]`     | **Risks needing local review** (challenge requirement)        |
-| `score`               | `numeric(4,3)` | Weighted total                                                |
-| `confidence`          | `numeric(4,3)` |                                                              |
-| `ruleset_version`     | `text`       |                                                               |
+| `rank`                | `text`       | `first` \| `tied` \| `lower` (ordinal, no composite score)     |
+| `ranking_basis`       | `text`       | Stated ordering basis                                         |
+| `evidence_strength`   | `text`       | `strong` \| `moderate` \| `weak`                              |
+| `evidence_strength_reason` | `text`  | Explicit reason for the evidence strength                     |
+| `ruleset_version`     | `text`       | FK to `recommendation_rulesets(version)`                      |
 | `created_at`          | `timestamptz` |                                                             |
 
 **The four text arrays map one-to-one onto the challenge brief's wording.**
@@ -390,11 +392,11 @@ The ordered composition of a rotation strategy.
 | `id`                  | `uuid` PK |                                                                 |
 | `strategy_id`         | `uuid` FK | → `rotation_strategies(id)` `on delete cascade`                 |
 | `sequence`            | `integer` | 0-based order within the strategy                               |
-| `season`              | `text`    | `rainy` \| `dry` \| `harmattan` \| `year_round`                  |
+| `season`              | `text`    | `rainy` \| `dry` \| `harmattan` \| `year_round` \| `unknown`     |
 | `crop_id`             | `uuid` FK | → `crops(id)`                                                    |
-| `plot_id`             | `uuid` FK | → `farm_plots(id)`. Nullable.                                    |
-| `area_ha`             | `numeric(10,3)` |                                                                |
-| `crop_assessment`     | `jsonb`   | The per-crop verdict, score and limitations within this strategy |
+| `parcel_id`           | `uuid` FK | → `parcels(id)` `on delete set null`. Nullable.                  |
+| `area_ha`             | `numeric(12,3)` |                                                              |
+| `crop_assessment`     | `jsonb`   | The per-crop qualitative verdict, dimensions and limitations    |
 | `notes`               | `text`    |                                                                 |
 
 **Unique constraint:** `(strategy_id, sequence)`.
@@ -407,10 +409,12 @@ The ordered composition of a rotation strategy.
 | --------------- | ------------- | -------------------------------------------------------- |
 | `id`            | `uuid` PK     |                                                           |
 | `farm_id`       | `uuid` FK     | → `farms(id)` `on delete cascade`                          |
+| `parcel_id`     | `uuid` FK     | → `parcels(id)` `on delete set null`. Nullable.            |
 | `kind`          | `text`        | `farm_summary` \| `seasonal` \| `rotation_plan`             |
 | `period_start`  | `date`        |                                                           |
 | `period_end`    | `date`        |                                                           |
 | `params`        | `jsonb`       | What the report was generated from                         |
+| `payload`       | `jsonb`       | Structured report snapshot with provenance and attributions |
 | `storage_path`  | `text`        | Path in Supabase Storage. Null if rendered inline only.    |
 | `generated_at`  | `timestamptz` |                                                           |
 
