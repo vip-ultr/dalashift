@@ -291,6 +291,13 @@ and the UI can render attribution generically.
 
 ## 11. Implementation sequence for Phase 2
 
+**Progress note (2026-11-14):** the server-only NASA POWER daily point adapter
+is implemented for precipitation, mean/max/min air temperature and
+root-zone wetness. It validates the provider response, removes declared fill
+values, records the returned time standard and source metadata, and bounds
+request retries. Durable caching and persistence are not implemented yet, so
+this adapter must not be wired to an unthrottled user-facing request path.
+
 | Step | Work                                                              | Risk |
 | ---- | ----------------------------------------------------------------- | ---- |
 | 1    | `lib/integrations/nasa-power`: daily, monthly, climatology, point only | Low |

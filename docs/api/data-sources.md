@@ -189,6 +189,16 @@ POWER's own guidance, which is a caching mandate:
 
 ### Licence and attribution
 
+**Backend implementation note, checked against the official NASA POWER daily
+API documentation on 2026-11-14:** the adapter uses the daily point endpoint,
+requests JSON, and explicitly sets the documented `LST` time standard. It
+keeps the provider time standard in each value's raw metadata. The provider
+documents daily point requests and a maximum of 20 parameters per request.
+The implementation currently maps daily precipitation, mean/max/min air
+temperature and root-zone wetness. Missing and `-999` values are omitted,
+never converted to zero. See the [NASA POWER Daily API
+documentation](https://power.larc.nasa.gov/docs/services/api/temporal/daily/).
+
 Not a formal CC licence. POWER's Referencing Guide asks for a **service
 reference** *and* a **data reference**:
 

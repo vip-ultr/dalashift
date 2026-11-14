@@ -16,6 +16,9 @@ the build.
 
 ### Added
 
+- Server-only NASA POWER daily point adapter for precipitation, air
+  temperature and root-zone wetness, with response validation, fill-value
+  handling, bounded retries and per-value provenance.
 - Authenticated farm list and create endpoints at `/api/farms`.
 - Authenticated parcel list and create endpoints at `/api/farms/{farmId}/parcels`.
   Parcel writes use the PostGIS RPC, and farm ownership comes from the verified
