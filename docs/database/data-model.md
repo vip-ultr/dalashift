@@ -165,7 +165,7 @@ without a citation cannot be inserted.
 | ------------------------ | ----------- | ----------------------------------------------------------- |
 | `id`                     | `uuid` PK   |                                                              |
 | `farm_id`                | `uuid` FK   | → `farms(id)` `on delete cascade`                            |
-| `plot_id`                | `uuid` FK   | → `farm_plots(id)` `on delete set null`. Nullable.           |
+| `parcel_id`             | `uuid` FK   | → `parcels(id)` `on delete set null`. Nullable.               |
 | `crop_id`                | `uuid` FK   | → `crops(id)`                                                |
 | `status`                 | `text`      | `current` \| `previous` \| `planned`. **Check constraint.**   |
 | `planting_date`          | `date`      | Nullable: often unknown                                      |
@@ -178,6 +178,9 @@ without a citation cannot be inserted.
 | `created_at`             | `timestamptz` |                                                            |
 
 **Indexes:** `btree (farm_id, status)`, `btree (crop_id)`.
+
+The database checks that a non-null parcel belongs to the same farm as the
+crop record. RLS alone on the farm would not enforce that relationship.
 
 **Why `status` and not three tables:** a crop record moves `planned` →
 `current` → `previous` over time. One table with a status keeps the history
