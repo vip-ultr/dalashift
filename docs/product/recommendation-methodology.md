@@ -42,6 +42,13 @@ Farmer priorities affect which dimensions are surfaced first and can inform the 
 
 When available evidence and stated goals cannot separate two candidates, the engine reports a tie and says what additional evidence could help. It does not use an arbitrary numeric margin.
 
+For rotation comparison, the engine first considers the least suitable crop
+assessment in each strategy, then compares dimension statuses in the order
+derived from the farmer's supported goals. A pass may separate two strategies.
+Fail and not assessed are both limitations and do not create a favorable
+ordering. Goals without relevant evidence are named as limitations and do not
+affect the rank.
+
 ## 6. Suitability assessment
 
 A farmer who has not chosen a crop receives a suitability assessment, not an assumed crop recommendation. Candidate crops come from the cited catalog and are filtered by applicable region. Every candidate is assessed with the same dimension rules. The output is an ordinal shortlist with its ordering basis. If the catalog has no locally applicable, cited requirement, the engine reports insufficient information instead of filling the gap.

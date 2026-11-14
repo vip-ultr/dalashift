@@ -37,6 +37,8 @@ the build.
   validation, RLS-backed access and same-farm parcel reference enforcement.
 - Crop records support update and delete operations, including the farmer's
   actual harvest date.
+- Rotation comparison orders supplied strategies by crop verdict and the
+  dimension statuses tied to supported farmer goals, with explicit ties.
 - Request-scoped Supabase browser and server clients using the public key and
   the signed-in user's RLS context.
 - `packages/shared`: the qualitative comparison engine vocabulary. Evidence
