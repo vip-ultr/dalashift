@@ -31,6 +31,8 @@ the build.
   observations, and a durable normalized-response cache schema with RLS.
 - Shared observation contracts support an explicit missing value with a
   matching `missing` quality flag.
+- Qualitative crop assessment engine that compares supplied observations to
+  cited per-dimension requirements without scores or invented thresholds.
 - Request-scoped Supabase browser and server clients using the public key and
   the signed-in user's RLS context.
 - `packages/shared`: the qualitative comparison engine vocabulary. Evidence
