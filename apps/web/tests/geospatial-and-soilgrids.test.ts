@@ -138,3 +138,39 @@ describe('normaliseSoilGridsResponse', () => {
     expect(clay?.coverageFraction).toBe(0);
   });
 });
+
+describe('Open-Meteo and AppEEARS helpers', () => {
+  it('normalises Open-Meteo daily and hourly soil moisture payloads with provenance', async () => {
+    const { normaliseOpenMeteoResponse } = await import('../src/lib/integrations/open-meteo/index');
+    const { formatAppEearsDate } = await import('../src/lib/integrations/appeears/index');
+
+    expect(formatAppEearsDate('2025-05-14')).toBe('05-14-2025');
+
+    const observations = normaliseOpenMeteoResponse({
+      latitude: 12.05,
+      longitude: 8.27,
+      elevation: 500,
+      daily: {
+        time: ['2026-11-14'],
+        precipitation_sum: [4.2],
+        temperature_2m_mean: [27.5],
+        temperature_2m_max: [33.1],
+        temperature_2m_min: [21.4],
+        et0_fao_evapotranspiration: [5.1],
+      },
+      hourly: {
+        time: ['2026-11-14T00:00', '2026-11-14T01:00'],
+        soil_moisture_0_to_1cm: [0.18, 0.2],
+        soil_moisture_9_to_27cm: [0.24, 0.26],
+      },
+    });
+
+    expect(observations.some((o) => o.variable === 'elevation_m' && o.value === 500)).toBe(true);
+    expect(observations.some((o) => o.variable === 'precipitation_mm' && o.value === 4.2)).toBe(
+      true,
+    );
+    expect(
+      observations.some((o) => o.variable === 'soil_moisture_root_zone_m3_m3' && o.value === 0.25),
+    ).toBe(true);
+  });
+});
