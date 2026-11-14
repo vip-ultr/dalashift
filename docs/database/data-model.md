@@ -1,7 +1,9 @@
 # Database Design
 
-**Status: Phase 1 (specification only). No migrations exist yet.**
-The schema is implemented in Phase 2 under `supabase/migrations/`.
+**Status: initial Phase 2 migrations exist.** The current implemented schema
+is in `supabase/migrations/`. This document records the intended data model;
+where it differs from a migration, the migration is authoritative until this
+document is updated.
 
 Related: [`postgis-design.md`](./postgis-design.md) ·
 [`rls-policies.md`](./rls-policies.md) · [`../api/data-sources.md`](../api/data-sources.md)
@@ -32,9 +34,9 @@ Supabase dashboard is not used to create tables.
 erDiagram
     AUTH_USERS ||--|| PROFILES : "extends"
     PROFILES ||--o{ FARMS : "owns"
-    FARMS ||--o{ FARM_PLOTS : "divided into"
+    FARMS ||--o{ PARCELS : "divided into"
     FARMS ||--o{ FARM_CROPS : "grows"
-    FARM_PLOTS ||--o{ FARM_CROPS : "assigned"
+    PARCELS ||--o{ FARM_CROPS : "assigned"
     CROPS ||--o{ FARM_CROPS : "referenced by"
     FARMS ||--o{ FARM_PRIORITIES : "states"
     DATA_SOURCES ||--o{ ENV_OBSERVATIONS : "provides"
@@ -77,14 +79,17 @@ Extends `auth.users`. Created by a trigger on user insert.
 
 ### 3.2 `farms`
 
+A farm is the farmer's holding. It has no boundary of its own. Its area is
+the sum of parcel areas, and its centroid is maintained from parcel geometry.
+Both values are computed in PostGIS.
+
 | Column              | Type          | Notes                                                                  |
 | ------------------- | ------------- | ---------------------------------------------------------------------- |
 | `id`                | `uuid` PK     | `default gen_random_uuid()`                                           |
 | `farmer_id`         | `uuid` FK     | → `profiles(id)` `on delete cascade`. **The RLS anchor.**             |
 | `name`              | `text`        | Required.                                                             |
-| `centroid`          | `geometry`    | `Point`, SRID 4326. `generated always as (st_centroid(boundary)) stored`. |
-| `boundary`          | `geometry`    | `Polygon`/`MultiPolygon`, SRID 4326. Not null.                        |
-| `area_ha`           | `numeric(10,3)` | `generated always as (st_area(boundary::geography)/10000) stored`. **Computed by the database.** |
+| `centroid`          | `geometry`    | `Point`, SRID 4326. Maintained from parcel geometries.                 |
+| `area_ha`           | `numeric(12,3)` | Sum of parcel area, maintained by a database trigger.                |
 | `elevation_m`       | `numeric(7,2)` | Optional; from SRTM or the POWER grid cell.                            |
 | `farming_method`    | `text`        | `rainfed` \| `irrigated` \| `mixed` \| `unknown`. Default `unknown`.   |
 | `irrigation_method` | `text`        | See `packages/shared/constants`. Default `unknown`.                    |
@@ -98,28 +103,30 @@ Extends `auth.users`. Created by a trigger on user insert.
 - `CHECK (ST_IsValid(boundary))` (or normalise with `ST_MakeValid` on write)
 - `CHECK (area_ha > 0 AND area_ha < 100000)`
 
-**Indexes:**
-- `GIST (boundary)`, `GIST (centroid)`
-- `btree (farmer_id)`
+**Indexes:** `GIST (centroid)` and `btree (farmer_id)`.
 
-**Note on the generated columns.** `area_ha` and `centroid` are
-`generated always as ... stored`, so they **cannot** be written by the client.
-A malicious or buggy client cannot set an arbitrary farm size. The Turf area
-computed in the browser is a preview only; this column is the truth.
+The parcel trigger maintains the aggregate area and centroid. Clients cannot
+write either value directly.
 
 ---
 
-### 3.3 `farm_plots`
+### 3.3 `parcels`
 
-A sub-division of a farm with its own crop assignment.
+A parcel is the unit of environmental analysis and crop comparison. It always
+has geometry in SRID 4326. Drawn polygons are stored as polygons. A GPS point
+is promoted through the `create_parcel` PostGIS function to a small circle and
+marked as approximate, so its computed area is not presented as a surveyed
+measurement.
 
 | Column       | Type            | Notes                                              |
 | ------------ | --------------- | -------------------------------------------------- |
 | `id`         | `uuid` PK       |                                                     |
 | `farm_id`    | `uuid` FK       | → `farms(id)` `on delete cascade`                    |
 | `name`       | `text`          | e.g. "Plot 1"                                       |
-| `boundary`   | `geometry`      | Polygon, SRID 4326. Null if the plot is not mapped.  |
-| `area_ha`    | `numeric(10,3)` | Generated from the boundary when present.            |
+| `geometry`   | `geometry`      | Polygon or MultiPolygon, SRID 4326, required.        |
+| `geometry_method` | `text`      | `gps_point` or `drawn_polygon`.                      |
+| `area_ha`    | `numeric(12,3)` | Generated from geometry using `ST_Area(geography)`. |
+| `location_uncertainty_m` | `numeric` | Optional uncertainty of the GPS fix, in metres. |
 | `notes`      | `text`          |                                                     |
 | `created_at` | `timestamptz`   |                                                     |
 

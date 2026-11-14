@@ -1,0 +1,84 @@
+# Changelog
+
+All notable changes to DalaShift are recorded here.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
+the project uses [semantic versioning](https://semver.org/spec/v2.0.0.html)
+for the published packages.
+
+**During the NASA Space Apps build (14 to 15 November 2026)** the changelog is
+updated with every push to `main`, because the repository is the evidence of
+the build.
+
+---
+
+## [Unreleased]
+
+### Added
+
+- Authenticated farm list and create endpoints at `/api/farms`.
+- Authenticated parcel list and create endpoints at `/api/farms/{farmId}/parcels`.
+  Parcel writes use the PostGIS RPC, and farm ownership comes from the verified
+  session and database RLS.
+- Initial Supabase migrations for profiles, farms, parcels, crop and rotation
+  catalogs, farmer records, case studies, and parcel geometry read/write.
+- Request-scoped Supabase browser and server clients using the public key and
+  the signed-in user's RLS context.
+- `packages/shared`: the qualitative comparison engine vocabulary. Evidence
+  strengths, assessment statuses, assessment dimensions, rule source types,
+  planting triggers, farmer goals, limitation kinds and evidence kinds.
+- `packages/shared`: the domain types for the qualitative engine. A
+  `DimensionAssessment` carries a measured value, a cited threshold, a status
+  and a plain-language explanation. A `CropAssessment` carries dimension
+  assessments, limitations, an evidence strength and its reason. A
+  `RotationStrategy` carries the rationale, the evidence, the benefits, the
+  information gaps and the local review risks.
+- `packages/shared`: the parcel model. A `Farm` is a holding and a `Parcel` is
+  the unit of analysis, with a `geometryMethod` recording whether the geometry
+  came from a GPS point or a drawn polygon.
+- `packages/shared`: Zod schemas for every new boundary. Parcels, farmer
+  priorities, dimension assessments, limitations, evidence items, crop
+  requirements and rotation rules.
+
+### Changed
+
+- `packages/shared/types`: `Recommendation` no longer carries `score`,
+  `subscores` or a numeric `confidence`. Per ADR-0011 decision D-05 there is
+  no composite score, no weighting system and no confidence percentage.
+- `packages/shared/constants`: added the qualitative engine vocabulary. The
+  existing constants are unchanged.
+
+### Notes
+
+- The engine compares a measured value against a cited threshold. It does not
+  produce a suitability index, and nothing in the interface may imply one.
+- Farmer reports and published agronomy are kept apart by a required
+  `sourceType` on every rule and every requirement.
+
+---
+
+## [0.1.0] - 2026-11-13
+
+### Added
+
+- The Phase 1 foundation: research, product definition, architecture, the
+  database design, the repository skeleton, tooling and CI.
+- The NASA Space Apps participation reference, with every rule verified
+  against official sources on 2026-11-13.
+- ADR-0001 to ADR-0010, covering the licence, the monorepo, the data
+  platform, the rules engine, the geospatial strategy, data retention, the map
+  tile provider, Google Earth Engine, repository visibility and the dependency
+  policy.
+- The shared package skeleton: constants, types, Zod schemas and their tests.
+
+### Changed
+
+- The writing convention: no em dash anywhere in a tracked text file, checked
+  mechanically by `pnpm validate:style`.
+- The CI workflow moved to Node 24 actions and the secret scan stopped
+  commenting on pull requests.
+
+---
+
+[Unreleased]: https://github.com/vip-ultr/dalashift/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/vip-ultr/dalashift/releases/tag/v0.1.0

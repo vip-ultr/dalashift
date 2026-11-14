@@ -1,9 +1,15 @@
 /**
  * Canonical constants shared across the DalaShift monorepo.
  *
- * Phase 1: these are the vocabulary the whole system agrees on: units,
- * variable identifiers, spatial resolutions and quality flags. Anything that
- * appears in more than one package belongs here.
+ * These are the vocabulary the whole system agrees on: units, variable
+ * identifiers, spatial resolutions, quality flags, and the qualitative
+ * vocabulary of the comparison engine.
+ *
+ * The engine vocabulary changed with ADR-0011 (decision D-05): there is no
+ * composite score, no weighting system, no confidence percentage and no
+ * verdict threshold. What remains is a status per dimension, an ordinal
+ * ranking with a stated basis, and a qualitative evidence strength with a
+ * reason attached.
  *
  * @packageDocumentation
  */
@@ -113,7 +119,7 @@ export const SPATIAL_RESOLUTION_METRES = {
   /** NASA SMAP L3 enhanced. */
   smapSoilMoisture: 9000,
   /** NASA GPM IMERG v07. */
-  gpmImerg: 11132,
+  gpmImerg: 11_132,
   /** CHIRPS v3 daily. */
   chirps: 5500,
   /** NASA POWER meteorological grid: 0.5° latitude. */
@@ -183,6 +189,11 @@ export const SEASONS = ['rainy', 'dry', 'harmattan', 'year_round', 'unknown'] as
 
 export type FarmingMethod = (typeof FARMING_METHODS)[number];
 export type IrrigationMethod = (typeof IRRIGATION_METHODS)[number];
+
+/** How a parcel's geometry was captured. */
+export const GEOMETRY_METHODS = ['gps_point', 'drawn_polygon'] as const;
+
+export type GeometryMethod = (typeof GEOMETRY_METHODS)[number];
 export type CropStatus = (typeof CROP_STATUSES)[number];
 export type IntendedUse = (typeof INTENDED_USES)[number];
 export type Season = (typeof SEASONS)[number];
@@ -199,3 +210,229 @@ export const PROVENANCE_NOTES: Record<string, string> = {
   modelled: 'Produced by a model rather than measured directly.',
   interpolated: 'Interpolated from measurements at nearby points.',
 };
+
+/* -------------------------------------------------------------------------- */
+/* The comparison engine vocabulary (ADR-0011, decision D-05)                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The status of one measured value against one cited threshold.
+ *
+ * This replaces the old per-dimension score. A dimension is either inside the
+ * range the agronomic literature gives for the crop, outside it, uncertain
+ * because the evidence is coarse, or not assessed because the input was
+ * missing.
+ */
+export const ASSESSMENT_STATUSES = ['pass', 'fail', 'uncertain', 'not_assessed'] as const;
+
+export type AssessmentStatus = (typeof ASSESSMENT_STATUSES)[number];
+
+/**
+ * How strong the evidence behind a conclusion is.
+ *
+ * A qualitative replacement for the old confidence percentage. It always
+ * carries a reason, because "weak" on its own is not an explanation.
+ */
+export const EVIDENCE_STRENGTHS = ['strong', 'moderate', 'weak'] as const;
+
+export type EvidenceStrength = (typeof EVIDENCE_STRENGTHS)[number];
+
+/**
+ * The dimensions the engine assesses for each crop.
+ *
+ * There are no weights. Each dimension is reported on its own terms, and the
+ * ordering of strategies states which dimensions drove it.
+ */
+export const ASSESSMENT_DIMENSIONS = [
+  'climate_rainfall',
+  'climate_temperature',
+  'water_availability',
+  'soil_match',
+  'season_length',
+  'vegetation_condition',
+  'rotation_fit',
+  'management_requirement',
+] as const;
+
+export type AssessmentDimension = (typeof ASSESSMENT_DIMENSIONS)[number];
+
+/**
+ * Human-readable labels for each dimension, for the interface.
+ */
+export const ASSESSMENT_DIMENSION_LABELS: Record<AssessmentDimension, string> = {
+  climate_rainfall: 'Rainfall',
+  climate_temperature: 'Temperature',
+  water_availability: 'Water available',
+  soil_match: 'Soil conditions',
+  season_length: 'Time in the season',
+  vegetation_condition: 'Condition of the plants',
+  rotation_fit: 'Fit with the rotation',
+  management_requirement: 'Inputs and work needed',
+};
+
+/**
+ * Where a rule came from.
+ *
+ * Decision D-11: a farmer's own stated rule is a first-class engine input,
+ * and it is labelled so that the interface can say where it came from. A
+ * farmer report is not presented as agronomic evidence.
+ */
+export const RULE_SOURCE_TYPES = ['literature', 'farmer_report'] as const;
+
+export type RuleSourceType = (typeof RULE_SOURCE_TYPES)[number];
+
+/**
+ * The three planting trigger strategies, taken from the three farmers in
+ * Doka village (decision D-10).
+ *
+ * The engine never recommends a date. It recommends a condition, and the
+ * farmer's own rule selects which strategy is put first.
+ */
+export const PLANTING_TRIGGERS = [
+  'wait_for_confirmed_moisture',
+  'plant_on_first_rains',
+  'prepare_and_plant_quickly',
+] as const;
+
+export type PlantingTrigger = (typeof PLANTING_TRIGGERS)[number];
+
+/**
+ * The plain-language description and risk profile of each trigger.
+ *
+ * The risk profile is stated, not hidden. Each farmer in the dataset chose a
+ * different one, and each is coherent.
+ */
+export const PLANTING_TRIGGER_PROFILES: Record<
+  PlantingTrigger,
+  { readonly condition: string; readonly riskProfile: string }
+> = {
+  wait_for_confirmed_moisture: {
+    condition:
+      'The soil holds enough moisture across several days before you sow, so the seed germinates rather than drying out.',
+    riskProfile:
+      'Lowest risk of the seed failing, but it uses up part of the season. If the rains stop early there is less time left to mature.',
+  },
+  plant_on_first_rains: {
+    condition: 'You sow as soon as the first sustained rains fall, without waiting for more.',
+    riskProfile:
+      'Gives the crop the longest possible season, but if a dry spell follows early rains the seed can fail before it establishes.',
+  },
+  prepare_and_plant_quickly: {
+    condition:
+      'You wait until the soil has good moisture from the early rains, then prepare the land and sow straight away.',
+    riskProfile:
+      'A balance between the two: the seed has some moisture to start with, and the season is not wasted waiting.',
+  },
+};
+
+/**
+ * The crop categories the rotation engine reasons about.
+ */
+export const CROP_CATEGORIES = [
+  'cereal',
+  'legume',
+  'vegetable',
+  'root',
+  'tuber',
+  'cash_crop',
+] as const;
+
+export type CropCategory = (typeof CROP_CATEGORIES)[number];
+
+/**
+ * How a crop affects the soil nitrogen in the rotation.
+ */
+export const NITROGEN_EFFECTS = ['fixes', 'consumes', 'neutral'] as const;
+
+export type NitrogenEffect = (typeof NITROGEN_EFFECTS)[number];
+
+/**
+ * The farmer's stated objectives for a farm.
+ *
+ * These are inputs to the comparison, not display preferences. Each one
+ * changes which dimensions are surfaced first and how the alternatives are
+ * ordered.
+ */
+export const FARMER_GOALS = [
+  'improve_soil_fertility',
+  'conserve_water',
+  'increase_income',
+  'food_security',
+  'maturity_reliability',
+  'less_work',
+  'reduce_risk',
+] as const;
+
+export type FarmerGoal = (typeof FARMER_GOALS)[number];
+
+/**
+ * The plain-language label for each goal, shown where the farmer set it.
+ */
+export const FARMER_GOAL_LABELS: Record<FarmerGoal, string> = {
+  improve_soil_fertility: 'Improve soil fertility',
+  conserve_water: 'Conserve water',
+  increase_income: 'Increase income',
+  food_security: 'Food security',
+  maturity_reliability: 'Reliable harvest before the season ends',
+  less_work: 'Less work',
+  reduce_risk: 'Reduce risk',
+};
+
+/**
+ * The kind of evidence that supports a claim in the interface.
+ *
+ * The distinction is the same one the interview documentation makes, and the
+ * platform must not blur it.
+ */
+export const EVIDENCE_KINDS = [
+  'environmental_observation',
+  'documented_agronomic_evidence',
+  'farmer_report',
+] as const;
+
+export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
+
+/**
+ * The plain-language description of each evidence kind.
+ */
+export const EVIDENCE_KIND_LABELS: Record<EvidenceKind, string> = {
+  environmental_observation: 'Satellite or station observation',
+  documented_agronomic_evidence: 'Published agronomic reference',
+  farmer_report: 'Reported by the farmer',
+};
+
+/**
+ * The kinds of gap that make an assessment weaker.
+ *
+ * Each one names a specific missing or coarse input, so a limitation is
+ * always actionable rather than a generic apology.
+ */
+export const LIMITATION_KINDS = [
+  'coarse_resolution',
+  'missing_data',
+  'stale_data',
+  'modelled_value',
+  'partial_coverage',
+  'unknown_farmer_input',
+  'unverified_requirement',
+  'needs_local_review',
+] as const;
+
+export type LimitationKind = (typeof LIMITATION_KINDS)[number];
+
+/**
+ * The kind of comparison being run.
+ */
+export const COMPARISON_KINDS = ['rotation', 'suitability'] as const;
+
+export type ComparisonKind = (typeof COMPARISON_KINDS)[number];
+
+/**
+ * The status of a strategy within an ordinal ranking.
+ *
+ * `tied` exists because the evidence sometimes cannot separate two
+ * strategies, and saying so is the honest answer.
+ */
+export const RANK_POSITIONS = ['first', 'tied', 'lower'] as const;
+
+export type RankPosition = (typeof RANK_POSITIONS)[number];

@@ -27,8 +27,11 @@ Database design and data-access rules.
 
 ## Status
 
-**Phase 1 contains no migrations.** The schema is specified here and
-implemented in Phase 2 under `supabase/migrations/`.
+**Build status: initial migrations are present** in `supabase/migrations/`.
+The migrations are the executable source of truth. The implementation starts
+with profiles, farms, parcels, crop and rotation catalogs, farmer records, case
+studies, and the parcel GeoJSON write/read path. Environmental ingestion and
+the recommendation engine are still separate backend work.
 
 Migrations and their RLS policies land **together**. Never a table without
 its policies.
