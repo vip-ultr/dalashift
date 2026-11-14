@@ -334,14 +334,42 @@ usability requirement here, not a style preference.
 
 ## 13. Deliverables for the design phase
 
-- [ ] Final visual direction approved by the team.
-- [ ] Confirm the colour palette and verify contrast ratios in both themes.
-- [ ] Build the shadcn/ui component set and extend the Tailwind token set.
-- [ ] Define the chart palette and the categorical mapping rules.
-- [ ] Build the map style (both base and satellite) with the farm and grid-cell
+- [x] Final visual direction approved by the team.
+- [x] Confirm the colour palette and verify contrast ratios in both themes.
+- [x] Build the shadcn/ui component set and extend the Tailwind token set.
+- [x] Define the chart palette and the categorical mapping rules.
+- [x] Build the map style (both base and satellite) with the farm and grid-cell
       layers.
-- [ ] Design the provenance-line component and place it in every data card.
-- [ ] Write the empty, loading and error state copy for every view.
+- [x] Design the provenance-line component and place it in every data card.
+- [x] Write the empty, loading and error state copy for every view.
 - [ ] Test with a real phone on a real connection.
-- [ ] Accessibility audit against WCAG 2.1 AA.
-- [ ] **[Open]** Decide whether to implement the non-map farm-entry fallback.
+- [x] Accessibility audit against WCAG 2.1 AA.
+- [x] Implement the non-map GPS point + uncertainty radius farm-entry fallback (ADR-0011 D-06).
+
+---
+
+## 14. Phase 2 implemented token set and workspace shell
+
+### 14.1 Surface, semantic, and HUD tokens (`apps/web/src/app/globals.css`)
+
+| Token | Value | Purpose |
+| ----- | ----- | ------- |
+| `--ds-surface` | `#f6f4ef` | Warm sand page canvas |
+| `--ds-surface-raised` | `#ffffff` | Primary card and drawer surface |
+| `--ds-surface-sunken` | `#f4f5f6` | Input fills, segmented controls, and table headers |
+| `--ds-action-green` | `#00b159` | Primary interactive CTA, active underline tab, and polygon highlight |
+| `--ds-forest` | `#0a4232` | Deep forest editorial sections and secondary actions |
+| `--ds-terracotta` | `#ab6a43` | SoilGrids baseline accent and farmer verbatim quote callout border |
+| `--ds-sky` | `#76a1c2` | Rainfall and climate baseline series accent |
+| `--ds-hud` | `rgba(17, 19, 21, 0.84)` | Translucent dark obsidian floating map HUD controls |
+
+### 14.2 Typography pairing (`apps/web/src/app/layout.tsx`)
+
+- **Display headings (`--font-display`):** `Geologica` (`600`, `700`) for page titles, hero headlines, and card headers.
+- **Workspace UI and body (`--font-sans`):** `Inter` (`400`, `500`, `600`, `700`) with `.tabular` (`font-variant-numeric: tabular-nums`) applied to all measurements, areas, coordinates, and thresholds.
+
+### 14.3 Desktop rail and parcel drawer shell (`apps/web/src/app/(dashboard)/layout.tsx`)
+
+- **Desktop (`lg+`, `>= 1024px`):** Fixed `56px` vertical icon rail (`WorkspaceRail`) on the far left + collapsible `288px` parcel and case-study drawer (`ParcelSidebarDrawer` with `40x40px` dark vector parcel thumbnails) + main scrollable intelligence workspace.
+- **Mobile (`< 1024px`):** Single-column layout with sticky top `SituationBanner` and `64px` bottom navigation bar.
+

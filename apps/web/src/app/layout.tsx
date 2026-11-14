@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Poppins } from 'next/font/google';
+import { Geologica, Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import './globals.css';
@@ -7,22 +7,22 @@ import './globals.css';
 /**
  * Fonts.
  *
- * Poppins for headings and the wordmark, Inter for body and UI. Both have
- * system-ui fallbacks in the CSS variables, so a failed font fetch degrades to
- * the system stack rather than breaking the build.
+ * Geologica for display headings and the wordmark, Inter for body, tables, and
+ * dense workspace UI. Both have system-ui fallbacks in the CSS variables, so a
+ * failed font fetch degrades to the system stack rather than breaking the build.
  */
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
 });
 
-const poppins = Poppins({
+const geologica = Geologica({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-poppins',
-  weight: ['600', '700'],
+  variable: '--font-geologica',
+  weight: ['400', '500', '600', '700'],
 });
 
 const DESCRIPTION = 'Climate-informed crop rotation decisions for rain-fed farmers.';
@@ -74,7 +74,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${inter.variable} ${geologica.variable}`}>
       <body>{children}</body>
     </html>
   );

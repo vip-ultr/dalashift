@@ -1,136 +1,169 @@
+@import 'tailwindcss';
+
 /*
  * DalaShift: global stylesheet.
  *
- * THE SINGLE SOURCE OF TRUTH for colour. Every token below is a CSS variable
- * so the whole palette can be changed in one place. No component may hardcode
- * a hex value: use the Tailwind token, for example `bg-surface text-ink`.
- *
- * The four brand colours come from the supplied brand files. Everything else
- * is derived from them as tints and shades. No new hues are introduced.
+ * THE SINGLE SOURCE OF TRUTH for colour, surface elevation, and typography.
+ * Every token below is a CSS variable so the palette can be maintained in one
+ * place. Components use semantic tokens (e.g. `bg-surface`, `bg-surface-raised`,
+ * `bg-surface-sunken`, `bg-accent`, `text-ink`) rather than ad-hoc hex values.
  */
 
 @theme inline {
-  /* Brand */
+  /* Brand and semantic accents */
+  --color-accent: var(--ds-action-green);
+  --color-accent-hover: var(--ds-action-green-hover);
+  --color-accent-subtle: var(--ds-action-green-subtle);
   --color-forest: var(--ds-forest);
   --color-terracotta: var(--ds-terracotta);
   --color-offwhite: var(--ds-offwhite);
   --color-sky: var(--ds-sky);
+  --color-obsidian: var(--ds-obsidian);
 
-  /* Surfaces, derived from the off-white */
+  /* Surfaces */
   --color-surface: var(--ds-surface);
   --color-surface-raised: var(--ds-surface-raised);
   --color-surface-sunken: var(--ds-surface-sunken);
+  --color-surface-stone: var(--ds-surface-stone);
+  --color-surface-auth: var(--ds-surface-auth);
 
-  /* Ink, derived from the forest green so text is never a neutral grey */
+  /* Ink */
   --color-ink: var(--ds-ink);
   --color-ink-muted: var(--ds-ink-muted);
+  --color-ink-earth: var(--ds-ink-earth);
   --color-ink-faint: var(--ds-ink-faint);
+  --color-muted-foreground: var(--ds-ink-muted);
 
   /* Lines */
   --color-border: var(--ds-border);
   --color-border-strong: var(--ds-border-strong);
+  --color-border-subtle: var(--ds-border-subtle);
 
   /* Forest shades */
   --color-forest-700: var(--ds-forest-700);
   --color-forest-100: var(--ds-forest-100);
   --color-forest-200: var(--ds-forest-200);
 
-  /* Terracotta shades */
+  /* Terracotta shades (Farmer ground truth) */
   --color-terracotta-600: var(--ds-terracotta-600);
   --color-terracotta-100: var(--ds-terracotta-100);
 
-  /* Sky shades */
+  /* Sky shades (Satellite & environmental observations) */
   --color-sky-700: var(--ds-sky-700);
   --color-sky-100: var(--ds-sky-100);
 
-  /* Status, each derived from a brand colour */
-  --color-success: var(--ds-forest);
-  --color-success-subtle: var(--ds-forest-100);
-  --color-warning: var(--ds-terracotta);
-  --color-warning-subtle: var(--ds-terracotta-100);
+  /* Status tokens */
+  --color-success: var(--ds-action-green);
+  --color-success-subtle: var(--ds-action-green-subtle);
+  --color-warning: var(--ds-warning);
+  --color-warning-subtle: var(--ds-warning-subtle);
   --color-danger: var(--ds-danger);
   --color-danger-subtle: var(--ds-danger-subtle);
   --color-info: var(--ds-sky-700);
   --color-info-subtle: var(--ds-sky-100);
 
-  /* Type */
+  /* Typography */
   --font-sans: var(--ds-font-sans);
   --font-display: var(--ds-font-display);
 
+  /* Radii */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
 }
 
 :root {
-  /* ── The four supplied brand colours ─────────────────────────────── */
+  /* Primary action & brand colours */
+  --ds-action-green: #00b159;
+  --ds-action-green-hover: #00994d;
+  --ds-action-green-subtle: #e6f7ee;
   --ds-forest: #0a4232;
   --ds-terracotta: #ab6a43;
-  --ds-offwhite: #f6f3eb;
+  --ds-offwhite: #f6f4ef;
   --ds-sky: #76a1c2;
+  --ds-obsidian: rgba(31, 32, 34, 0.92);
 
-  /* ── Surfaces, derived from the off-white ───────────────────────── */
-  --ds-surface: #f6f3eb;
-  --ds-surface-raised: #fffdf8;
-  --ds-surface-sunken: #ede9de;
+  /* Two-tier surface hierarchy (Sand marketing + Crisp White/Neutral workspace) */
+  --ds-surface: #f6f4ef;
+  --ds-surface-raised: #ffffff;
+  --ds-surface-sunken: #f4f5f6;
+  --ds-surface-stone: #ede8e2;
+  --ds-surface-auth: #fafafb;
 
-  /* ── Ink, derived from the forest green ─────────────────────────── */
-  --ds-ink: #10201a;
-  --ds-ink-muted: #4a5b53;
-  --ds-ink-faint: #7a8a82;
+  /* Ink */
+  --ds-ink: #151515;
+  --ds-ink-muted: #5c6066;
+  --ds-ink-earth: #6d6351;
+  --ds-ink-faint: #8e959e;
 
-  /* ── Lines, derived from the off-white ───────────────────────────── */
-  --ds-border: #dfdacc;
-  --ds-border-strong: #c4bca9;
+  /* Dividers and strokes */
+  --ds-border: #e5e7eb;
+  --ds-border-strong: #d1d5db;
+  --ds-border-subtle: rgba(109, 99, 81, 0.18);
 
-  /* ── Forest shades ───────────────────────────────────────────────── */
+  /* Forest shades */
   --ds-forest-700: #0e5440;
   --ds-forest-100: #e4ede8;
   --ds-forest-200: #c3d6cc;
 
-  /* ── Terracotta shades ───────────────────────────────────────────── */
+  /* Terracotta shades (Farmer-supplied ground truth) */
   --ds-terracotta-600: #8e5636;
-  --ds-terracotta-100: #f4e7dd;
+  --ds-terracotta-100: #fdf6e5;
 
-  /* ── Sky shades ──────────────────────────────────────────────────── */
-  --ds-sky-700: #466d8c;
+  /* Sky shades (Satellite observations) */
+  --ds-sky-700: #3d6382;
   --ds-sky-100: #e4edf4;
 
-  /* ── Danger, derived from a darkened terracotta ──────────────────── */
-  --ds-danger: #7a3a1f;
-  --ds-danger-subtle: #f7e3d9;
+  /* Warning & Danger */
+  --ds-warning: #b9770e;
+  --ds-warning-subtle: #fdf6e5;
+  --ds-danger: #c0392b;
+  --ds-danger-subtle: #fceeec;
 
-  /* ── Type ────────────────────────────────────────────────────────── */
+  /* Layout metrics */
+  --ds-rail-width: 56px;
+  --ds-drawer-width: 288px;
+
+  /* Type stacks */
   --ds-font-sans:
     var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --ds-font-display: var(--font-poppins), var(--ds-font-sans);
+  --ds-font-display: var(--font-geologica), var(--ds-font-sans);
 }
 
 .dark {
-  --ds-surface: #0b1a14;
-  --ds-surface-raised: #10241c;
-  --ds-surface-sunken: #081310;
+  --ds-surface: #0b1410;
+  --ds-surface-raised: #121f19;
+  --ds-surface-sunken: #182921;
+  --ds-surface-stone: #15241d;
+  --ds-surface-auth: #0e1914;
 
-  --ds-ink: #f2f5f1;
-  --ds-ink-muted: #a8b6ae;
-  --ds-ink-faint: #74857c;
+  --ds-ink: #f3f5f4;
+  --ds-ink-muted: #a3b1aa;
+  --ds-ink-earth: #b8b0a0;
+  --ds-ink-faint: #6f7f77;
 
-  --ds-border: #1d3529;
-  --ds-border-strong: #2b4a3a;
+  --ds-border: #22362c;
+  --ds-border-strong: #2f4a3d;
+  --ds-border-subtle: rgba(255, 255, 255, 0.12);
 
   --ds-forest-700: #2f7f63;
   --ds-forest-100: #143026;
   --ds-forest-200: #1c4234;
 
-  --ds-terracotta-600: #c07d52;
-  --ds-terracotta-100: #2c1c12;
+  --ds-terracotta-600: #d48b5c;
+  --ds-terracotta-100: #2b1d12;
 
   --ds-sky-700: #93b8d4;
   --ds-sky-100: #16242e;
 
-  --ds-danger: #d4795a;
-  --ds-danger-subtle: #2c1710;
+  --ds-warning: #e09f3e;
+  --ds-warning-subtle: #2c200e;
+  --ds-danger: #e56b55;
+  --ds-danger-subtle: #2c1512;
 }
 
 @layer base {
@@ -140,12 +173,15 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: var(--ds-surface);
     color: var(--ds-ink);
     font-family: var(--ds-font-sans);
+    font-size: 16px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -155,7 +191,7 @@
   h3,
   h4 {
     font-family: var(--ds-font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
   }
 
   /* Every number in the product is tabular so columns of measurements
@@ -165,28 +201,34 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Focus is always visible, and always the same. */
+  /* Focus is always visible and consistent. */
   :focus-visible {
-    outline: 2px solid var(--ds-sky);
+    outline: 2px solid var(--ds-action-green);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   ::selection {
-    background: var(--ds-forest-100);
+    background: var(--ds-action-green-subtle);
+    color: var(--ds-ink);
   }
 }
 
 @layer utilities {
-  /* The data colour rule. Anything that came from NASA or from rainfall
-     carries the sky accent. */
+  /* Anything derived from NASA or environmental datasets carries the sky accent. */
   .data-accent {
     color: var(--ds-sky-700);
   }
 
-  /* The farmer colour rule. Anything that came from the farmer carries the
-     terracotta accent. */
+  /* Anything reported by or attributed to the farmer carries the terracotta accent. */
   .farmer-accent {
     color: var(--ds-terracotta-600);
+  }
+
+  /* Matte obsidian floating HUD pill over map canvases. */
+  .map-hud-pill {
+    background-color: var(--ds-obsidian);
+    backdrop-filter: blur(12px);
+    color: #ffffff;
   }
 }

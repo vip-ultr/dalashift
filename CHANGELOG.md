@@ -14,6 +14,20 @@ the build.
 
 ## [Unreleased]
 
+### Remaining Frontend Handoff Items (Continue Here on Next Device)
+
+1. **Finish TypeScript Prop Alignment (`pnpm typecheck` in `apps/web`):**
+   - Run `cd apps/web && npx tsc --noEmit` to see the remaining prop-name mismatches between the Phase B components (`SituationBanner`, `RotationStrategyCard`, `SuitabilityShortlistCard`, `HonestyTimeSeriesChart`, `HonestyMapCanvas`, `UnderlineTabs`, `ProvenanceLine`) and the newly created Phase C callers (`parcel-workspace-view.tsx`, `printable-field-sheet.tsx`, `cases/page.tsx`, `farms/page.tsx`, `farms/new/page.tsx`, `page.tsx`, and `case-study-data.ts`).
+   - Specifically:
+     - In `apps/web/src/features/cases/case-study-data.ts` and `parcel-workspace-view.tsx` / `printable-field-sheet.tsx` / `cases/page.tsx` / `page.tsx`, align `ComparisonResult` (`comparison.strategies` vs. `comparison.options`, `strategy.label` vs. `optionName`, `strategy.rank` vs. `rankPosition`, `priorities.plantingTrigger` vs. `plantingTriggerRule`, `obs.sourceId` vs. `obs.provenance`) with `packages/shared/types/index.ts`.
+     - In `apps/web/src/app/(dashboard)/farms/new/page.tsx`, import `area` from `@turf/turf` instead of `@turf/area`.
+     - In `apps/web/src/components/dashboard/situation-banner.tsx`, import `EvidenceStrength` from `@dalashift/shared/constants`.
+2. **Run Full Workspace Verification (`pnpm check` & `pnpm validate:style`):**
+   - Ensure `pnpm typecheck`, `pnpm lint`, and `pnpm validate:style` all exit `0`.
+   - Remember: **Never use an em dash (U+2014)** anywhere in code, comments, or documentation (`pnpm validate:style` is passing with zero em dashes).
+3. **End-to-End Smoke Test (`pnpm dev`):**
+   - Start the dev server and verify navigation across `/`, `/cases`, `/cases/bello-yusuf-maitama`, `/farms`, `/farms/new`, `/reports`, `/methodology`, `/profile`, `/login`, and `/register`.
+
 ### Fixed
 
 - Added non-partial unique indexes on `public.environmental_observations`
@@ -27,6 +41,31 @@ the build.
 
 ### Added
 
+- Frontend design system, OneSoil-inspired workspace shell, and full page suite
+  in `apps/web/src`:
+  - `Geologica` + `Inter` typography pairing (`app/layout.tsx`) and warm sand
+    (`#f6f4ef`), action green (`#00b159`), deep forest (`#0a4232`), terracotta
+    (`#ab6a43`), and dark obsidian HUD (`rgba(17, 19, 21, 0.84)`) design tokens
+    (`app/globals.css`, `docs/design/design-system.md`).
+  - Core UI primitives (`components/ui/button.tsx`, `input.tsx`, `label.tsx`,
+    `textarea.tsx`, `badge.tsx`, `segmented-control.tsx`, `underline-tabs.tsx`,
+    `skeleton.tsx`) and resolution honesty / Hausa crop formatters
+    (`lib/utilities/format.ts`, `lib/utilities/cn.ts`).
+  - Shared domain, map, and chart components: `ProvenanceLine`,
+    `DataStateBoundary`, `SituationBanner`, `PlantingTriggerCard`,
+    `DimensionThresholdRow`, `RotationStrategyCard`, `SuitabilityShortlistCard`,
+    `SeasonalOutlookPanel`, `ParcelVectorThumbnail`, `HonestyMapCanvas`,
+    `HonestyTimeSeriesChart`, `ParcelWorkspaceView`, and `PrintableFieldSheet`.
+  - Desktop `56px` vertical icon rail (`WorkspaceRail`), `288px` collapsible
+    parcel and case study drawer (`ParcelSidebarDrawer`), and public header
+    (`PublicNavbar`).
+  - Application pages for `/` (landing page with Doka village case studies and
+    resolution honesty comparison), `/login` and `/register` (`AuthCard`),
+    `/cases` and `/cases/[slug]` (public Tofa LGA case studies), `/farms`,
+    `/farms/new` (3-step onboarding wizard with Hausa crop aliases, `"beans"`
+    ambiguity guardrail, and GPS point / polygon support), `/farms/[farmId]`,
+    `/reports` and `/farms/[farmId]/reports` (printable A4 field sheets with
+    redacted coordinates), `/methodology`, and `/profile`.
 - Server-only Open-Meteo integration (`lib/integrations/open-meteo/index.ts`) for
   7-to-16 day weather, evapotranspiration and volumetric soil moisture
   forecasts (`0-1 cm` and `9-27 cm`), plus the NASA AppEEARS point-extraction
