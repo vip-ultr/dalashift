@@ -19,10 +19,10 @@ the build.
 - Adopted the **Apache License 2.0**. The `LICENSE` file now carries the
   complete, unmodified official text, and the SPDX identifier `Apache-2.0` is
   set in the root `package.json` and in every workspace package.
-  [`ADR-0001`](../docs/decisions/ADR-0001-open-source-license.md) is
+  [`ADR-0001`](./docs/decisions/ADR-0001-open-source-license.md) is
   Accepted.
 - Recorded the repository visibility decision. The repository is **public**,
-  as the NASA submission requires. [`ADR-0009`](../docs/decisions/ADR-0009-repository-visibility.md)
+  as the NASA submission requires. [`ADR-0009`](./docs/decisions/ADR-0009-repository-visibility.md)
   is Accepted.
 - Restored the three CI gates that were failing on `main`:
   - **Link check.** The five handoff documents under `docs/build/` were
