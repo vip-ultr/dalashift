@@ -7,6 +7,7 @@ import { useState } from 'react';
 import {
   BookOpen,
   FileText,
+  LayoutDashboard,
   LayoutGrid,
   Menu,
   PlusCircle,
@@ -19,6 +20,12 @@ import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
 
 const PRIMARY_NAV_ITEMS = [
+  {
+    href: '/dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    matchPrefix: '/dashboard',
+  },
   {
     href: '/farms',
     label: 'Fields & Map',
