@@ -2,6 +2,7 @@
   "name": "@dalashift/config-eslint",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "Shared ESLint flat configuration for the DalaShift monorepo.",
   "type": "module",
   "main": "./index.js",

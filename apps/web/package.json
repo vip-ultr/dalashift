@@ -2,6 +2,7 @@
   "name": "@dalashift/web",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "DalaShift web application: Next.js App Router frontend and server-side API.",
   "scripts": {
     "dev": "node scripts/with-root-env.mjs dev",

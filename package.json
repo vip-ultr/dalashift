@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "DalaShift: agricultural intelligence platform (NASA Space Apps). Working name, pending team confirmation.",
-  "license": "SEE-LICENSE-FILE",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=20.9.0",
     "pnpm": ">=9.0.0"

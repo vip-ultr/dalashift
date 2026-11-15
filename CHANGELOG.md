@@ -14,6 +14,36 @@ the build.
 
 ## [Unreleased]
 
+### Repository compliance
+
+- Adopted the **Apache License 2.0**. The `LICENSE` file now carries the
+  complete, unmodified official text, and the SPDX identifier `Apache-2.0` is
+  set in the root `package.json` and in every workspace package.
+  [`ADR-0001`](../docs/decisions/ADR-0001-open-source-license.md) is
+  Accepted.
+- Recorded the repository visibility decision. The repository is **public**,
+  as the NASA submission requires. [`ADR-0009`](../docs/decisions/ADR-0009-repository-visibility.md)
+  is Accepted.
+- Restored the three CI gates that were failing on `main`:
+  - **Link check.** The five handoff documents under `docs/build/` were
+    referenced from `README.md` and `ARCHITECTURE.md` but had never been
+    committed. The cause was a `build/` rule in `.gitignore` that silently
+    excluded the whole directory. The rule is now negated for `docs/build/`
+    and the documents are tracked.
+  - **Writing style.** The verbatim-record exemption in the style checker
+    matched a POSIX path pattern against `path.relative()`, which returns
+    backslashes on Windows. The path is now normalised before matching, so
+    the exemption applies on every platform.
+  - **Formatting.** Added a `.gitattributes` that pins line endings to LF on
+    every platform, and set `core.autocrlf=false` for this repository. A
+    Windows checkout with the default `core.autocrlf=true` was rewriting
+    every tracked text file to CRLF, which made `pnpm format:check` fail
+    locally while passing in CI.
+- Rewrote the `README.md` to describe the shipped product rather than the
+  planned one: the live status, the requirement-by-requirement position
+  against the NASA challenge brief, the actual engine contract, the three
+  Tofa field case studies, and the corrected licence and visibility records.
+
 ### Authentication
 
 - Replaced Supabase Auth signup and sign-in with first-party account endpoints.

@@ -2,8 +2,8 @@
 
 | Field    | Value                                                            |
 | -------- | ---------------------------------------------------------------- |
-| Status   | **Proposed: awaiting team decision. NOW BLOCKING.**             |
-| Date     | 2026-11-13 (updated 2026-11-13 with the NASA Space Apps rule)   |
+| Status   | **Accepted**                                                     |
+| Date     | 2026-11-13 (updated 2026-11-14 with the team decision)          |
 | Deciders | All three team members (unanimous required)                     |
 | Related  | `LICENSE`, `README.md` § License, `SECURITY.md`, `PRD.md` OQ-7, `docs/hackathon/README.md` § 4.1 |
 
@@ -130,35 +130,52 @@ obligations on DalaShift's own code. The same is true of Google Earth Engine
 
 ## Decision
 
-**Not yet decided by the team, but now blocking, with a hard deadline.**
+**Accepted on 14 November 2026, unanimously: DalaShift is licensed under
+Apache License 2.0.**
 
-**Recommendation to the team: Apache-2.0.**
+The `LICENSE` file now contains the complete, unmodified official text of the
+Apache License, Version 2.0, with the copyright line completed as
+"Copyright 2026 DalaShift contributors". The SPDX identifier `Apache-2.0` is
+set in the `license` field of the root `package.json` and in every workspace
+package.
 
-Rationale for the recommendation:
+Rationale, as recorded in the recommendation above:
 
 - It is **OSI approved**, so it satisfies the NASA requirement unambiguously.
-- It is **NASA's own default**, so if the team cannot agree in time, our
-  licence and NASA's fallback agree and nothing is lost.
+- It is **NASA's own default**, so our licence and NASA's fallback agree.
 - It includes an **explicit patent grant**, which MIT lacks: a genuine
   benefit for a team that may later incorporate third-party code.
 - It is compatible with every dependency in our tree.
 
-**MIT is an equally acceptable alternative** and has the advantage of brevity.
-The choice between MIT and Apache-2.0 is a judgement about how much the team
-values the patent grant versus how much it values the shortest possible
-licence text. Both are defensible.
+**MIT was the equally acceptable alternative** and remains a defensible choice
+for a future revision. The difference is the patent grant and the longer
+licence text. Apache-2.0 was chosen because it is the licence NASA would
+apply anyway, so there is no divergence between what the team ships and what
+the organiser distributes.
 
-Until the team decides:
+### What was executed
 
-- The `LICENSE` file contains a clear "no licence selected" notice rather than
-  a licence text, so no accidental licence is implied.
-- `README.md` states the repository is unlicensed for redistribution.
-- The `license` field in `package.json` is `"SEE-LICENSE-FILE"`.
+| Item                                                        | Status |
+| ----------------------------------------------------------- | ------ |
+| `LICENSE` replaced with the official Apache-2.0 text          | Done   |
+| `package.json` `license` field set to `Apache-2.0`           | Done   |
+| Workspace packages carry the SPDX identifier                  | Done   |
+| `README.md` § License updated                                | Done   |
+| `THIRD_PARTY_NOTICES.md` lists every dependency and data source | Done   |
 
-**Interim working assumption for the hackathon:** the code is treated as
-**all rights reserved** by default; no one may redistribute it until the team
-decides. This is the legally conservative default and does not restrict the
-team's own use.
+**Data licensing remains separate from code licensing.** This licence grants
+rights in the code only. SoilGrids (CC BY 4.0), Open-Meteo (CC BY 4.0) and
+the NASA products carry their own terms, and the attribution obligations
+recorded in [`docs/api/data-sources.md`](../api/data-sources.md) are
+discharged by the in-product attribution panel and the generated reports,
+not by this file.
+
+### Revisit when
+
+The team wants a shorter licence, or a future commercial release of the
+platform needs a different distribution model. A change is a new ADR that
+supersedes this one; the file is never edited in place to a different
+licence.
 
 ## Reasoning
 

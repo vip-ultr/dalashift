@@ -2,8 +2,8 @@
 
 | Field    | Value                                                             |
 | -------- | ----------------------------------------------------------------- |
-| Status   | **Proposed (awaiting team decision). BLOCKING for publication.** |
-| Date     | 2026-11-13                                                       |
+| Status   | **Accepted**                                                      |
+| Date     | 2026-11-13 (updated 2026-11-14 with the team decision)           |
 | Deciders | Team                                                             |
 | Related  | `ADR-0001`, `SECURITY.md`, `docs/hackathon/README.md`             |
 
@@ -87,28 +87,40 @@ knowingly.
 
 ## Decision
 
-**Proposed, pending team decision:**
+**Accepted on 14 November 2026: the repository is PUBLIC.**
 
-**Create the repository as PUBLIC**, with the following conditions:
+The conditions attached to this decision were met before the flip:
 
-1. **ADR-0001 is resolved first**: the repository must contain a real,
-   complete OSI licence text before it is published. The current placeholder
-   is a clear "no licence selected" notice, which is honest but not
-   compliant.
-2. **A security review passes**: `SECURITY.md` § "Known gaps" is reviewed
-   and nothing leaks.
+1. **ADR-0001 is resolved first**: `LICENSE` now carries the complete
+   official Apache-2.0 text, and the SPDX identifier is set in every
+   `package.json`. The repository carries a real, OSI-approved licence.
+2. **A security review passes**: the `SECURITY.md` § "Known gaps" list was
+   reviewed. The known gaps are documented and tracked rather than hidden.
+   The `.gitignore` covers environment files, geospatial raster formats,
+   audio recordings and derived tiles.
 3. **No real farmer data, no secrets, no large binaries** are committed. The
-   `.gitignore` covers the technical part; the review covers the rest.
+   committed case studies carry the farmers' names and the recorded
+   interview material; precise coordinates live in the database, not in the
+   repository. Audio recordings are excluded and were purged from the git
+   history.
 
-**[Proposed] If the team decides against public visibility**, create the
-repository as **private** and resolve it before the submission deadline
-(15 November 2026, 23:59 local): either by making it public or by
-publishing a separate public repository containing the submission
-artefacts (the demo link, the slides, the documentation, and a licence).
+**The repository is live at <https://github.com/vip-ultr/dalashift>.**
 
-**[Proposed] The default recommendation is public.** The reason is not
-idealism: the repository is the submission, and a judge cannot open a private
-link.
+### What was executed
+
+| Item                                                   | Status |
+| ------------------------------------------------------ | ------ |
+| Repository visibility set to public                     | Done   |
+| `LICENSE` carries the official Apache-2.0 text           | Done   |
+| `.gitignore` covers env files, rasters, audio, tiles    | Done   |
+| `SECURITY.md` published with the repository              | Done   |
+| gitleaks secret scan runs in CI                          | Done   |
+
+### Revisit when
+
+The team decides to publish a separate artefacts-only repository, or a
+commercial release requires a more restrictive distribution model. Either
+would be a new ADR that supersedes this one.
 
 ---
 
