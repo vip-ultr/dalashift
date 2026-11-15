@@ -99,8 +99,8 @@ export function ParcelVectorThumbnail({
     <div
       style={{ width: size, height: size }}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#2b2d30] transition-transform',
-        active && 'ring-2 ring-[#00b159] ring-offset-1',
+        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#334155] bg-[#0f172a] shadow-2xs transition-transform',
+        active && 'ring-2 ring-[#00b159] border-[#00b159]',
         className,
       )}
       aria-hidden="true"

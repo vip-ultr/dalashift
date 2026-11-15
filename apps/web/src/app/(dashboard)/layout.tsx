@@ -12,9 +12,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-[#fafafa] text-[#111827]">
       <WorkspaceRail />
       <ParcelSidebarDrawer />
-      <div className="flex min-w-0 flex-1 flex-col pt-14 lg:pt-0">
-        {children}
-      </div>
+      <div className="flex min-w-0 flex-1 flex-col pt-14 lg:pt-0">{children}</div>
     </div>
   );
 }

@@ -8,11 +8,10 @@ import {
   BookOpen,
   FileText,
   LayoutDashboard,
-  LayoutGrid,
   Menu,
   PlusCircle,
+  Tractor,
   UserCircle2,
-  Users,
   X,
 } from 'lucide-react';
 
@@ -28,8 +27,8 @@ const PRIMARY_NAV_ITEMS = [
   },
   {
     href: '/farms',
-    label: 'Fields & Map',
-    icon: LayoutGrid,
+    label: 'Farms',
+    icon: Tractor,
     matchPrefix: '/farms',
     exactExclude: '/farms/new',
   },

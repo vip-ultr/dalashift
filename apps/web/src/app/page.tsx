@@ -1,13 +1,4 @@
-import {
-  ArrowRight,
-  CheckCircle2,
-  Compass,
-  Database,
-  Droplets,
-  Layers,
-  ShieldCheck,
-  Sprout,
-} from 'lucide-react';
+import { ArrowRight, Compass, Database, Droplets, Layers, ShieldCheck, Sprout } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type * as React from 'react';
@@ -15,7 +6,6 @@ import type * as React from 'react';
 import { PublicNavbar } from '../components/layout/public-navbar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { formatCropWithHausa } from '../lib/utilities/format';
 
 export default function LandingPage(): React.JSX.Element {
   return (
@@ -114,36 +104,28 @@ export default function LandingPage(): React.JSX.Element {
                 <div className="grid grid-cols-2 divide-x divide-y divide-[#e5e7eb] border-b border-[#e5e7eb] bg-white text-xs">
                   <div className="p-4">
                     <span className="text-[#6b7280]">Rainfall (14-day)</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">
-                      44.5 mm
-                    </div>
+                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">44.5 mm</div>
                     <span className="text-[11px] font-medium text-[#0a4232]">
                       CHIRPS 5.5 km satellite
                     </span>
                   </div>
                   <div className="p-4">
                     <span className="text-[#6b7280]">Root-zone Soil Wetness</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">
-                      0.21 m³/m³
-                    </div>
+                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.21 m³/m³</div>
                     <span className="text-[11px] font-medium text-[#0a4232]">
                       NASA SMAP 9 km grid
                     </span>
                   </div>
                   <div className="p-4">
                     <span className="text-[#6b7280]">Topsoil pH</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">
-                      6.1 pH
-                    </div>
+                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">6.1 pH</div>
                     <span className="text-[11px] font-medium text-[#c26e4a]">
                       SoilGrids 250 m cell
                     </span>
                   </div>
                   <div className="p-4">
                     <span className="text-[#6b7280]">Canopy Greenness</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">
-                      0.48 NDVI
-                    </div>
+                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.48 NDVI</div>
                     <span className="text-[11px] font-medium text-[#0a4232]">
                       MODIS 250 m composite
                     </span>
@@ -158,7 +140,8 @@ export default function LandingPage(): React.JSX.Element {
                       <Badge variant="pass">Conditions Met</Badge>
                     </div>
                     <p className="mt-1 text-xs text-[#111827]">
-                      Soil moisture reached 0.18 m³/m³ threshold across 3 rain events. Workable for sowing.
+                      Soil moisture reached 0.18 m³/m³ threshold across 3 rain events. Workable for
+                      sowing.
                     </p>
                   </div>
 

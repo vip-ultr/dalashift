@@ -42,9 +42,7 @@ export function PublicNavbar() {
                 key={item.href}
                 href={item.href}
                 className={`text-sm font-medium transition-colors ${
-                  active
-                    ? 'text-[#0a4232]'
-                    : 'text-[#4b5563] hover:text-[#111827]'
+                  active ? 'text-[#0a4232]' : 'text-[#4b5563] hover:text-[#111827]'
                 }`}
               >
                 {item.label}

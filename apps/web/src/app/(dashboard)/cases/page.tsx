@@ -1,11 +1,4 @@
-import {
-  ArrowRight,
-  CalendarClock,
-  FileText,
-  GitCompareArrows,
-  Quote,
-  ShieldCheck,
-} from 'lucide-react';
+import { ArrowRight, CalendarClock, FileText, GitCompareArrows } from 'lucide-react';
 import Link from 'next/link';
 import type * as React from 'react';
 
@@ -55,24 +48,24 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
               >
                 <div className="space-y-4">
                   {/* Top Identity Row */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3.5 min-w-0">
                       <ParcelVectorThumbnail
                         geometry={cs.parcels[0]!.geometry}
-                        size={44}
+                        size={48}
                         active={index === 0}
                       />
-                      <div>
+                      <div className="min-w-0 flex flex-col justify-center">
                         <div className="text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
-                          Case Study 0{index + 1} · {cs.village}
+                          Interview 0{index + 1} · {cs.village}
                         </div>
-                        <h2 className="font-display text-lg font-bold text-[#111315]">
+                        <h2 className="font-display text-base font-bold text-[#111315] truncate leading-snug">
                           {cs.farmerName}
                         </h2>
                       </div>
                     </div>
-                    <Badge variant={cs.consentedToGps ? 'Measured' : 'Modelled'}>
-                      {cs.consentedToGps ? 'GPS Consent' : 'Representative'}
+                    <Badge variant={cs.consentedToGps ? 'pass' : 'default'} className="shrink-0">
+                      {cs.consentedToGps ? 'GPS Verified' : 'Representative'}
                     </Badge>
                   </div>
 

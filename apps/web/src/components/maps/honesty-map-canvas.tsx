@@ -1,29 +1,14 @@
 'use client';
 
-import {
-  SPATIAL_RESOLUTION_METRES,
-  type SpatialResolutionKey,
-} from '@dalashift/shared/constants';
+import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
-import { area as turfArea, polygon as turfPolygon } from '@turf/turf';
-import {
-  Compass,
-  Crosshair,
-  Layers,
-  Maximize2,
-  Minus,
-  PenTool,
-  Plus,
-  RotateCcw,
-  Trash2,
-} from 'lucide-react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Layers } from 'lucide-react';
+import type { Map as MapLibreMap } from 'maplibre-gl';
+import React, { useEffect, useRef, useState } from 'react';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { cn } from '../../lib/utilities/cn';
-import {
-  formatMetricValue,
-  formatResolutionShortBadge,
-} from '../../lib/utilities/format';
+import { formatResolutionShortBadge } from '../../lib/utilities/format';
 
 export interface HonestyMapCanvasProps {
   readonly parcels: readonly Parcel[];
@@ -32,10 +17,7 @@ export interface HonestyMapCanvasProps {
   readonly onSelectParcel?: (parcelId: string) => void;
   readonly initialResolutionKey?: SpatialResolutionKey;
   readonly interactiveDraw?: boolean;
-  readonly onGeometryChange?: (
-    geometry: GeoJSONGeometry,
-    previewAreaHa: number,
-  ) => void;
+  readonly onGeometryChange?: (geometry: GeoJSONGeometry, previewAreaHa: number) => void;
   readonly heightClass?: string;
   readonly className?: string;
 }
@@ -90,8 +72,6 @@ export function HonestyMapCanvas({
   selectedParcelId,
   onSelectParcel,
   initialResolutionKey = 'smapSoilMoisture',
-  interactiveDraw = false,
-  onGeometryChange,
   heightClass = 'h-[500px]',
   className,
 }: HonestyMapCanvasProps) {
@@ -99,70 +79,37 @@ export function HonestyMapCanvas({
   const [selectedGridKey, setSelectedGridKey] =
     useState<SpatialResolutionKey>(initialResolutionKey);
   const [showGridOverlay, setShowGridOverlay] = useState(true);
-  const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'street'>(
-    'satellite',
-  );
+  const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'street'>('satellite');
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [drawMode, setDrawMode] = useState<'view' | 'polygon' | 'gps_point'>(
-    interactiveDraw ? 'polygon' : 'view',
-  );
-  const [drawnVertices, setDrawnVertices] = useState<
-    readonly [number, number][]
-  >([
-    [8.2702, 12.0504],
-    [8.272, 12.0506],
-    [8.2718, 12.049],
-    [8.2701, 12.0489],
-  ]);
 
   const effectiveParcelId = activeParcelId ?? selectedParcelId;
-  const activeParcel =
-    parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
+  const activeParcel = parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
 
   const activeGridOption =
-    GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ??
-    GRID_OVERLAY_OPTIONS[0]!;
-
-  // Live Turf area preview
-  const drawnPreviewHa = useMemo(() => {
-    if (drawnVertices.length < 3) return 0;
-    try {
-      const closedRing: [number, number][] = [
-        ...drawnVertices.map((pt): [number, number] => [pt[0], pt[1]]),
-        [drawnVertices[0]![0], drawnVertices[0]![1]],
-      ];
-      const poly = turfPolygon([closedRing]);
-      const sqMetres = turfArea(poly);
-      return Number((sqMetres / 10_000).toFixed(2));
-    } catch {
-      return 1.4;
-    }
-  }, [drawnVertices]);
+    GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ?? GRID_OVERLAY_OPTIONS[0]!;
 
   // Client-side MapLibre initialization
   useEffect(() => {
-    let mapInstance: any = null;
+    let mapInstance: MapLibreMap | null = null;
+    let isDisposed = false;
 
     async function initMap() {
       if (!mapContainerRef.current) return;
       try {
-        const maplibreModule: any = await import('maplibre-gl');
-        const maplibregl = maplibreModule.default || maplibreModule;
+        const { Map } = await import('maplibre-gl');
+        if (isDisposed || !mapContainerRef.current) return;
 
         // ESRI World Imagery or OpenStreetMap
         const satelliteTiles =
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-        const streetTiles =
-          'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const streetTiles = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-        const mapStyle: any = {
-          version: 8,
+        const mapStyle = {
+          version: 8 as const,
           sources: {
             'raster-tiles': {
-              type: 'raster',
-              tiles: [
-                basemapStyle === 'satellite' ? satelliteTiles : streetTiles,
-              ],
+              type: 'raster' as const,
+              tiles: [basemapStyle === 'satellite' ? satelliteTiles : streetTiles],
               tileSize: 256,
               attribution:
                 basemapStyle === 'satellite'
@@ -173,7 +120,7 @@ export function HonestyMapCanvas({
           layers: [
             {
               id: 'simple-tiles',
-              type: 'raster',
+              type: 'raster' as const,
               source: 'raster-tiles',
               minzoom: 0,
               maxzoom: 19,
@@ -181,70 +128,132 @@ export function HonestyMapCanvas({
           ],
         };
 
+        // All coordinates across parcels to compute center and bounding box
+        const allCoords: [number, number][] = [];
+        for (const p of parcels) {
+          if (p.geometry.type === 'Polygon') {
+            for (const ring of p.geometry.coordinates) {
+              for (const pt of ring) {
+                if (typeof pt[0] === 'number' && typeof pt[1] === 'number') {
+                  allCoords.push([pt[0], pt[1]]);
+                }
+              }
+            }
+          } else if (p.geometry.type === 'Point') {
+            const pt = p.geometry.coordinates;
+            if (typeof pt[0] === 'number' && typeof pt[1] === 'number') {
+              allCoords.push([pt[0], pt[1]]);
+            }
+          }
+        }
+
         const centerLng =
-          activeParcel?.geometry.type === 'Point'
-            ? activeParcel.geometry.coordinates[0]
-            : activeParcel?.geometry.type === 'Polygon'
-              ? activeParcel.geometry.coordinates[0]?.[0]?.[0] ?? 8.271
-              : 8.271;
-
+          allCoords.length > 0
+            ? allCoords.reduce((sum, pt) => sum + pt[0], 0) / allCoords.length
+            : 8.271;
         const centerLat =
-          activeParcel?.geometry.type === 'Point'
-            ? activeParcel.geometry.coordinates[1]
-            : activeParcel?.geometry.type === 'Polygon'
-              ? activeParcel.geometry.coordinates[0]?.[0]?.[1] ?? 12.05
-              : 12.05;
+          allCoords.length > 0
+            ? allCoords.reduce((sum, pt) => sum + pt[1], 0) / allCoords.length
+            : 12.05;
 
-        mapInstance = new maplibregl.Map({
+        const map = new Map({
           container: mapContainerRef.current,
           style: mapStyle,
           center: [centerLng, centerLat],
           zoom: 15.5,
           attributionControl: false,
         });
+        mapInstance = map;
 
-        mapInstance.on('load', () => {
+        // ResizeObserver to ensure map canvas adjusts when container appears
+        const resizeObserver = new ResizeObserver(() => {
+          map.resize();
+        });
+        if (mapContainerRef.current) {
+          resizeObserver.observe(mapContainerRef.current);
+        }
+
+        map.on('load', () => {
+          if (isDisposed) return;
           setMapLoaded(true);
+          map.resize();
 
-          // Add parcels GeoJSON layer
-          const features = parcels
-            .filter((p) => p.geometry.type === 'Polygon')
-            .map((p) => ({
-              type: 'Feature',
+          // Auto-fit bounding box of parcels with padding
+          if (allCoords.length > 1) {
+            const minLng = Math.min(...allCoords.map((c) => c[0]));
+            const minLat = Math.min(...allCoords.map((c) => c[1]));
+            const maxLng = Math.max(...allCoords.map((c) => c[0]));
+            const maxLat = Math.max(...allCoords.map((c) => c[1]));
+            map.fitBounds(
+              [
+                [minLng, minLat],
+                [maxLng, maxLat],
+              ],
+              { padding: 50, maxZoom: 16.5 },
+            );
+          }
+
+          // Convert all parcels (Polygons and Points) to Features
+          const features = parcels.map((p) => {
+            if (p.geometry.type === 'Point') {
+              const [lng, lat] = p.geometry.coordinates;
+              const delta = 0.0006;
+              return {
+                type: 'Feature' as const,
+                properties: { id: p.id, name: p.name },
+                geometry: {
+                  type: 'Polygon' as const,
+                  coordinates: [
+                    [
+                      [lng - delta, lat - delta],
+                      [lng + delta, lat - delta],
+                      [lng + delta, lat + delta],
+                      [lng - delta, lat + delta],
+                      [lng - delta, lat - delta],
+                    ],
+                  ],
+                },
+              };
+            }
+            return {
+              type: 'Feature' as const,
               properties: { id: p.id, name: p.name },
               geometry: p.geometry,
-            }));
+            };
+          });
 
-          mapInstance.addSource('parcels-source', {
+          map.addSource('parcels-source', {
             type: 'geojson',
             data: {
               type: 'FeatureCollection',
-              features,
+              features: features as unknown as GeoJSON.Feature[],
             },
           });
 
-          mapInstance.addLayer({
+          map.addLayer({
             id: 'parcels-fill',
             type: 'fill',
             source: 'parcels-source',
             paint: {
-              'fill-color': '#0a4232',
-              'fill-opacity': 0.25,
+              'fill-color': '#00b159',
+              'fill-opacity': 0.3,
             },
           });
 
-          mapInstance.addLayer({
+          map.addLayer({
             id: 'parcels-stroke',
             type: 'line',
             source: 'parcels-source',
             paint: {
-              'line-color': '#0a4232',
-              'line-width': 2.5,
+              'line-color': '#facc15',
+              'line-width': 3,
             },
           });
 
-          mapInstance.on('click', 'parcels-fill', (e: any) => {
-            const clickedId = e.features?.[0]?.properties?.id;
+          map.on('click', 'parcels-fill', (e: unknown) => {
+            const feature = (e as { features?: Array<{ properties?: { id?: string } }> })
+              ?.features?.[0];
+            const clickedId = feature?.properties?.id;
             if (clickedId && onSelectParcel) {
               onSelectParcel(clickedId);
             }
@@ -255,14 +264,15 @@ export function HonestyMapCanvas({
       }
     }
 
-    initMap();
+    void initMap();
 
     return () => {
+      isDisposed = true;
       if (mapInstance) {
         mapInstance.remove();
       }
     };
-  }, [basemapStyle, activeParcel, parcels, onSelectParcel]);
+  }, [basemapStyle, parcels, onSelectParcel]);
 
   return (
     <div
@@ -275,11 +285,18 @@ export function HonestyMapCanvas({
       {/* MapLibre WebGL DOM Container */}
       <div ref={mapContainerRef} className="absolute inset-0 size-full" />
 
+      {/* Loading state indicator */}
+      {!mapLoaded ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#111827]/70 backdrop-blur-xs">
+          <div className="flex items-center gap-2 text-xs font-medium text-white/80">
+            <span className="size-2 animate-ping rounded-full bg-[#00b159]" />
+            <span>Loading satellite land imagery...</span>
+          </div>
+        </div>
+      ) : null}
+
       {/* Fallback Vector Overlay / Click-to-draw Layer */}
-      <svg
-        viewBox="0 0 800 500"
-        className="pointer-events-none absolute inset-0 size-full"
-      >
+      <svg viewBox="0 0 800 500" className="pointer-events-none absolute inset-0 size-full">
         {/* Active Satellite Resolution Honesty Footprint */}
         {showGridOverlay ? (
           <g className="transition-all duration-300">
@@ -294,14 +311,7 @@ export function HonestyMapCanvas({
               strokeWidth="2.5"
               strokeDasharray="6 4"
             />
-            <rect
-              x="270"
-              y="120"
-              width="260"
-              height="22"
-              rx="4"
-              fill="rgba(17, 24, 39, 0.85)"
-            />
+            <rect x="270" y="120" width="260" height="22" rx="4" fill="rgba(17, 24, 39, 0.85)" />
             <text
               x="280"
               y="135"
@@ -320,22 +330,15 @@ export function HonestyMapCanvas({
       <div className="relative z-10 m-4 flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#111827]/85 p-1.5 text-xs text-white shadow-lg backdrop-blur-md">
           <Layers className="ml-1.5 size-4 text-[#c26e4a]" />
-          <span className="text-[11px] font-medium text-white/70">
-            Satellite Layer:
-          </span>
+          <span className="text-[11px] font-medium text-white/70">Satellite Layer:</span>
           <select
             value={selectedGridKey}
-            onChange={(e) =>
-              setSelectedGridKey(e.target.value as SpatialResolutionKey)
-            }
+            aria-label="Satellite data layer resolution overlay"
+            onChange={(e) => setSelectedGridKey(e.target.value as SpatialResolutionKey)}
             className="rounded-lg bg-white/10 px-2 py-1 text-xs font-semibold text-white outline-none cursor-pointer"
           >
             {GRID_OVERLAY_OPTIONS.map((opt) => (
-              <option
-                key={opt.key}
-                value={opt.key}
-                className="bg-[#111827] text-white"
-              >
+              <option key={opt.key} value={opt.key} className="bg-[#111827] text-white">
                 {opt.label}
               </option>
             ))}
@@ -359,13 +362,15 @@ export function HonestyMapCanvas({
       <div className="relative z-10 m-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827]/85 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
           <span className="font-semibold text-white">
-            {activeParcel ? activeParcel.name : 'Doka Village Field'}
+            {activeParcel ? activeParcel.name : 'Field Parcel'}
           </span>
           <span className="text-white/40">·</span>
           <span className="tabular text-white/80">
             {activeParcel?.areaHa
               ? `${activeParcel.areaHa.toFixed(2)} ha`
-              : `${drawnPreviewHa} ha (Preview)`}
+              : activeParcel?.geometry.type === 'Point'
+                ? 'GPS Point'
+                : 'Mapped Parcel'}
           </span>
         </div>
 

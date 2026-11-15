@@ -6,7 +6,6 @@ import {
   GitCompareArrows,
   Layers,
   Printer,
-  Quote,
   ShieldCheck,
   Sprout,
 } from 'lucide-react';
@@ -183,9 +182,7 @@ export function ParcelWorkspaceView({
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="h-5 w-5 text-[#4ade80]" aria-hidden="true" />
                 <div>
-                  <h2 className="text-sm font-semibold">
-                    Detailed Diagnostic Inspection
-                  </h2>
+                  <h2 className="text-sm font-semibold">Detailed Diagnostic Inspection</h2>
                   <p className="text-xs text-white/80">
                     Showing deterministic ruleset audit rows and resolution footprints. No composite
                     weights or black-box scores are used.
@@ -240,6 +237,30 @@ export function ParcelWorkspaceView({
         {/* TAB 1: Planting Trigger & Seasonal Risk Outlook */}
         {activeTab === 'trigger' ? (
           <div className="space-y-6">
+            {/* Interactive Working Land Map */}
+            <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
+              <div className="mb-3.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="font-display text-base font-bold text-[#111315]">
+                    Interactive Field Land Map · {activeParcel.name}
+                  </h3>
+                  <p className="text-xs text-[#4b5563]">
+                    Satellite view with GPS boundary, ESRI World Imagery, and observation
+                    footprints.
+                  </p>
+                </div>
+                <Button variant="secondary" size="sm" onClick={() => setActiveTab('environment')}>
+                  <span>Full Satellite Series</span>
+                </Button>
+              </div>
+              <HonestyMapCanvas
+                parcels={profile.parcels}
+                selectedParcelId={activeParcel.id}
+                onSelectParcel={setSelectedParcelId}
+                heightClass="h-[380px]"
+              />
+            </div>
+
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               <div className="lg:col-span-6">
                 <PlantingTriggerCard assessment={profile.plantingTrigger} />
@@ -328,9 +349,9 @@ export function ParcelWorkspaceView({
                     Prospective Crop Suitability Shortlist
                   </h2>
                   <p className="text-xs text-[#4b5563]">
-                    Evaluates candidate crops against seasonal rainfall, temperature,
-                    SoilGrids 250 m soil pH, and farmer management priorities. Grouped by ordinal
-                    rank (First Choice, Tied / Viable with Trade-offs, Lower Fit).
+                    Evaluates candidate crops against seasonal rainfall, temperature, SoilGrids 250
+                    m soil pH, and farmer management priorities. Grouped by ordinal rank (First
+                    Choice, Tied / Viable with Trade-offs, Lower Fit).
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

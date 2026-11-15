@@ -158,9 +158,7 @@ export async function getAuthenticatedClient() {
   }
 
   const secret = getJwtSecret();
-  const accessToken = secret
-    ? createDatabaseAccessToken(parsedAccount.data.id, secret)
-    : null;
+  const accessToken = secret ? createDatabaseAccessToken(parsedAccount.data.id, secret) : null;
   return {
     user: {
       id: parsedAccount.data.id,

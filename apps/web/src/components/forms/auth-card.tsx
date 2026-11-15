@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -183,11 +182,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
               disabled={submitting}
             >
               <span>
-                {submitting
-                  ? 'Please wait...'
-                  : mode === 'login'
-                    ? 'Sign in'
-                    : 'Create account'}
+                {submitting ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'}
               </span>
             </Button>
           </form>

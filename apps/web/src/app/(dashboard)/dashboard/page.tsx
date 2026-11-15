@@ -37,9 +37,7 @@ const profileResponseSchema = z.object({
 });
 
 export default function DashboardOverviewPage(): React.JSX.Element {
-  const [farms, setFarms] = React.useState<
-    z.infer<typeof farmListResponseSchema>['farms']
-  >([]);
+  const [farms, setFarms] = React.useState<z.infer<typeof farmListResponseSchema>['farms']>([]);
   const [userName, setUserName] = React.useState<string>('Farmer');
   const [loading, setLoading] = React.useState(true);
 
@@ -90,9 +88,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <Badge variant="Strong">2026 Wet Season</Badge>
-              <span className="text-xs font-medium text-[#6b7280]">
-                Active Farm Workspace
-              </span>
+              <span className="text-xs font-medium text-[#6b7280]">Active Farm Workspace</span>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
               Welcome back, {userName}
@@ -175,9 +171,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               </div>
             </div>
-            <div className="mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              Protected
-            </div>
+            <div className="mt-2 text-2xl font-bold tracking-tight text-[#111315]">Protected</div>
             <p className="mt-1 text-[11px] text-[#6b7280]">
               Row-Level Security active on your farm records
             </p>
@@ -249,7 +243,8 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                 No farms registered yet
               </h3>
               <p className="mt-1 text-xs text-[#6b7280]">
-                Add your farm boundary or GPS point to start receiving environmental analysis and crop guidance.
+                Add your farm boundary or GPS point to start receiving environmental analysis and
+                crop guidance.
               </p>
               <div className="mt-4 flex justify-center">
                 <Link href="/farms/new">

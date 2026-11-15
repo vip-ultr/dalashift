@@ -9,7 +9,7 @@ import { HonestyMapCanvas } from '../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { CASE_STUDY_PROFILES } from '../../../features/cases/case-study-data';
-import { formatCropWithHausa, PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
+import { PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
 import { z } from 'zod';
 
 const farmListResponseSchema = z.object({

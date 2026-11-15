@@ -28,7 +28,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   const [collapsed, setCollapsed] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [_loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     let active = true;
@@ -54,9 +54,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
     };
   }, []);
 
-  const filteredFarms = farms.filter((f) =>
-    f.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const filteredFarms = farms.filter((f) => f.name.toLowerCase().includes(query.toLowerCase()));
 
   const totalArea = React.useMemo(() => {
     return farms.reduce((sum, f) => sum + (f.area_ha ?? 0), 0);
