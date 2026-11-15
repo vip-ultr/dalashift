@@ -66,20 +66,28 @@ cd dalashift
 corepack enable
 pnpm install
 
-# 3. Create your local environment file
-cp .env.example apps/web/.env.local
-# then edit apps/web/.env.local and fill in real values.
+# 3. Create your repository-root web environment file
+cp .env.example .env.local
+# then edit .env.local and fill in the required web runtime values.
 ```
 
-> `.env.local` lives in `apps/web/` because Next.js only reads environment
-> variables from the application directory. It is gitignored. **Never commit
-> real values.**
+The web launcher loads the repository-root `.env.local` before starting Next.js.
+It is optional in CI and on Vercel, where injected environment variables take
+precedence. The root file is gitignored. **Never commit real values.**
+
+If your local settings are still in `apps/web/.env.local`, copy only the web
+runtime entries into the root `.env.local`, then remove the old app-level file
+after verifying the new setup. When a variable exists in both locations, the
+root value wins because it is loaded first. Do not copy CLI credentials such as
+`SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_PASSWORD`: the web launcher removes
+those names before starting Next.js. Keep Supabase CLI authentication in the
+CLI's user-level login, and enter database passwords only when the CLI prompts.
 
 ### Environment variables
 
-`.env.example` is the authoritative list of every variable the platform
-expects, grouped by provider, with a comment explaining each one. Read it
-before requesting access to any service.
+`.env.example` is the authoritative list of web runtime variables, grouped by
+provider, with a comment explaining each one. CLI-only credentials are
+intentionally excluded. Read it before requesting access to any service.
 
 Minimum set for local development:
 
@@ -109,9 +117,10 @@ repository CLI, link the hosted project, then review and apply migrations:
     pnpm exec supabase link --project-ref <project-ref>
     pnpm exec supabase db push --remote
 
-The link command prompts for the database password. Keep the password and
-Supabase personal access token out of .env.local, Git and chat. Review the
-pending migration list before confirming the push.
+The link command prompts for the database password. Authenticate the Supabase
+CLI with `supabase login`; keep its personal access token and database password
+out of the web runtime `.env.local`, Git and chat. Review the pending migration
+list before confirming the push.
 
 ---
 

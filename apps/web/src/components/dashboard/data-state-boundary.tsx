@@ -47,10 +47,7 @@ export function DataStateBoundary({
         role="status"
         aria-live="polite"
         aria-label="Loading field analysis"
-        className={cn(
-          'space-y-4 rounded-xl border border-border bg-surface-raised p-5',
-          className,
-        )}
+        className={cn('space-y-4 rounded-xl border border-border bg-surface-raised p-5', className)}
       >
         <div className="flex items-center justify-between gap-4">
           <Skeleton className="h-5 w-48" />
@@ -100,12 +97,7 @@ export function DataStateBoundary({
         <h3 className="text-base font-semibold text-ink">{copy.title}</h3>
         <p className="mt-1.5 max-w-md text-sm text-ink-muted">{copy.body}</p>
         {onPrimaryAction ? (
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={onPrimaryAction}
-            className="mt-4"
-          >
+          <Button variant="primary" size="sm" onClick={onPrimaryAction} className="mt-4">
             {copy.action}
           </Button>
         ) : null}
@@ -117,10 +109,7 @@ export function DataStateBoundary({
     return (
       <div
         role="alert"
-        className={cn(
-          'rounded-xl border border-[#c0392b]/30 bg-[#fceeec] p-5 text-ink',
-          className,
-        )}
+        className={cn('rounded-xl border border-[#c0392b]/30 bg-[#fceeec] p-5 text-ink', className)}
       >
         <div className="flex items-start gap-3">
           <AlertTriangle className="mt-0.5 size-5 shrink-0 text-[#c0392b]" />
@@ -133,12 +122,7 @@ export function DataStateBoundary({
                 `${sourceName} could not be reached right now. Your farm, parcel geometry, and crop records are saved safely. Try again in a few minutes.`}
             </p>
             {onRetry ? (
-              <Button
-                variant="secondary"
-                size="xs"
-                onClick={onRetry}
-                className="mt-3"
-              >
+              <Button variant="secondary" size="xs" onClick={onRetry} className="mt-3">
                 <RefreshCw className="size-3.5" />
                 Try again
               </Button>
@@ -155,7 +139,8 @@ export function DataStateBoundary({
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-xs text-[#8e5636]">
           <span className="inline-flex items-center gap-1.5">
             <Clock className="size-3.5 shrink-0" />
-            Cached observation from {formatObservationDate(lastObservedAt)}. Refresh when connected to check for newer satellite passes.
+            Cached observation from {formatObservationDate(lastObservedAt)}. Refresh when connected
+            to check for newer satellite passes.
           </span>
           {onRetry ? (
             <button

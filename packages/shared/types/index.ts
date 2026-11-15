@@ -36,6 +36,32 @@ import type {
   Unit,
 } from '../constants';
 
+export type {
+  AggregationMethod,
+  AssessmentDimension,
+  AssessmentStatus,
+  ComparisonKind,
+  CropCategory,
+  CropStatus,
+  EnvironmentVariable,
+  EvidenceKind,
+  EvidenceStrength,
+  FarmingMethod,
+  FarmerGoal,
+  GeometryMethod,
+  IntendedUse,
+  IrrigationMethod,
+  LimitationKind,
+  NitrogenEffect,
+  PlantingTrigger,
+  QualityFlag,
+  RankPosition,
+  RuleSourceType,
+  Season,
+  TemporalResolution,
+  Unit,
+};
+
 /**
  * A single environmental value with complete provenance.
  *

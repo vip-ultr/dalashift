@@ -57,7 +57,10 @@ export function SuitabilityShortlistCard({
                 Multiple candidate crops are tied on the available regional data
               </h3>
               <p className="mt-1 text-xs leading-relaxed text-ink">
-                The rainfall and temperature records for this parcel come from regional grid cells (5.5 km to 55 km), so they cannot separate these top crops on climate alone. Specify whether you have access to supplementary irrigation or select your primary household/market priority to sharpen the comparison.
+                The rainfall and temperature records for this parcel come from regional grid cells
+                (5.5 km to 55 km), so they cannot separate these top crops on climate alone. Specify
+                whether you have access to supplementary irrigation or select your primary
+                household/market priority to sharpen the comparison.
               </p>
             </div>
           </div>
@@ -85,9 +88,7 @@ export function SuitabilityShortlistCard({
               key={`${cropCode}-${idx}`}
               className={cn(
                 'flex flex-col justify-between rounded-2xl border bg-surface-raised p-5 transition-all',
-                isSelected
-                  ? 'border-2 border-[#00b159] ring-2 ring-[#00b159]/15'
-                  : 'border-border',
+                isSelected ? 'border-2 border-[#00b159] ring-2 ring-[#00b159]/15' : 'border-border',
               )}
             >
               <div>
@@ -115,9 +116,7 @@ export function SuitabilityShortlistCard({
                   ) : null}
                 </div>
 
-                <p className="mt-2 text-xs leading-relaxed text-ink-muted">
-                  {strategy.rationale}
-                </p>
+                <p className="mt-2 text-xs leading-relaxed text-ink-muted">{strategy.rationale}</p>
 
                 {leg?.assessment.dimensions.length ? (
                   <div className="mt-3 space-y-2">

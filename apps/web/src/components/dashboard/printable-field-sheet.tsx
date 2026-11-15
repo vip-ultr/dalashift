@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  ArrowLeft,
-  CheckCircle2,
-  FileText,
-  Lock,
-  Printer,
-  ShieldCheck,
-  Sprout,
-} from 'lucide-react';
+import { ArrowLeft, Lock, Printer, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -72,9 +64,7 @@ export function PrintableFieldSheet({
 
             {allProfiles && onSelectProfile ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-[#6b7280]">
-                  Holding:
-                </span>
+                <span className="text-xs font-semibold text-[#6b7280]">Holding:</span>
                 <select
                   value={profile.slug}
                   onChange={(e) => onSelectProfile(e.target.value)}
@@ -101,11 +91,7 @@ export function PrintableFieldSheet({
                 { value: 'en', label: 'English Only' },
               ]}
             />
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => window.print()}
-            >
+            <Button variant="primary" size="md" onClick={() => window.print()}>
               <Printer className="h-4 w-4" aria-hidden="true" />
               <span>Print / Save A4 PDF</span>
             </Button>
@@ -119,16 +105,12 @@ export function PrintableFieldSheet({
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-[#0a4232] uppercase">
                 <Sprout className="h-4 w-4 text-[#00b159]" aria-hidden="true" />
-                <span>
-                  DalaShift Field Advisory Sheet · Extension &amp; Farmer Copy
-                </span>
+                <span>DalaShift Field Advisory Sheet · Extension &amp; Farmer Copy</span>
               </div>
               <h1 className="font-display text-2xl font-bold text-[#111315]">
                 {profile.farmerName} · {profile.village}, {profile.lga}
               </h1>
-              <p className="text-xs text-[#4b5563]">
-                {profile.holdingSummary}
-              </p>
+              <p className="text-xs text-[#4b5563]">{profile.holdingSummary}</p>
             </div>
 
             <div className="space-y-1 text-left text-xs text-[#4b5563] sm:text-right">
@@ -140,9 +122,7 @@ export function PrintableFieldSheet({
               </div>
               <div className="inline-flex items-center gap-1 rounded bg-[#f4f5f6] px-2 py-0.5 text-[11px] font-medium text-[#111315]">
                 <Lock className="h-3 w-3 text-[#00b159]" aria-hidden="true" />
-                <span>
-                  Exact GPS coordinates redacted for farmer privacy (ADR-0011 D-12)
-                </span>
+                <span>Exact GPS coordinates redacted for farmer privacy (ADR-0011 D-12)</span>
               </div>
             </div>
           </header>
@@ -163,16 +143,10 @@ export function PrintableFieldSheet({
                   >
                     <div className="flex items-center gap-3">
                       {fullParcel ? (
-                        <ParcelVectorThumbnail
-                          geometry={fullParcel.geometry}
-                          size={36}
-                          active
-                        />
+                        <ParcelVectorThumbnail geometry={fullParcel.geometry} size={36} active />
                       ) : null}
                       <div>
-                        <div className="text-xs font-bold text-[#111315]">
-                          {parcel.name}
-                        </div>
+                        <div className="text-xs font-bold text-[#111315]">{parcel.name}</div>
                         <div className="tabular text-[11px] text-[#4b5563]">
                           {parcel.areaHa > 0
                             ? `${parcel.areaHa.toFixed(2)} ha (${parcel.geometryMethod})`
@@ -189,13 +163,9 @@ export function PrintableFieldSheet({
             </div>
 
             <div className="rounded-[8px] bg-[#f4f5f6] p-3 text-xs">
-              <span className="font-semibold text-[#111315]">
-                Stated Crops on Holding:{' '}
-              </span>
+              <span className="font-semibold text-[#111315]">Stated Crops on Holding: </span>
               <span className="text-[#374151]">
-                {profile.cropCodes
-                  .map((code) => formatCropWithHausa(code, showHausa))
-                  .join(' · ')}
+                {profile.cropCodes.map((code) => formatCropWithHausa(code, showHausa)).join(' · ')}
               </span>
             </div>
           </section>
@@ -209,29 +179,29 @@ export function PrintableFieldSheet({
                 </h2>
                 <Badge
                   variant={
-                    profile.plantingTrigger.verdict === 'conditions_met'
+                    profile.plantingTrigger.recommendedTrigger ===
+                    profile.plantingTrigger.farmerRule
                       ? 'Strong'
                       : 'Moderate'
                   }
                 >
-                  {profile.plantingTrigger.verdict === 'conditions_met'
-                    ? 'Conditions Met'
-                    : 'Watch / Borderline'}
+                  {profile.plantingTrigger.recommendedTrigger === profile.plantingTrigger.farmerRule
+                    ? 'Conditions Favourable'
+                    : 'Watch Conditions'}
                 </Badge>
               </div>
               <p className="mt-2 text-xs font-semibold text-[#111315]">
                 Stated Rule:{' '}
-                {
-                  PLANTING_TRIGGER_TITLES[
-                    profile.plantingTrigger.farmerTriggerRule
-                  ]
-                }
+                {profile.plantingTrigger.farmerRule
+                  ? (PLANTING_TRIGGER_TITLES[profile.plantingTrigger.farmerRule]?.en ??
+                    profile.plantingTrigger.farmerRule)
+                  : 'Wait for confirmed moisture'}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-[#374151]">
-                {profile.plantingTrigger.guidance}
+                {profile.plantingTrigger.condition}
               </p>
               <p className="mt-2 text-[11px] text-[#6b7280]">
-                {profile.plantingTrigger.resolutionWarning}
+                {profile.plantingTrigger.riskProfile}
               </p>
             </div>
 
@@ -240,19 +210,18 @@ export function PrintableFieldSheet({
                 <h2 className="font-display text-xs font-bold tracking-wider text-[#111315] uppercase">
                   2B. Seasonal Rainfall Risk Indicator (D-07)
                 </h2>
-                <Badge variant="Neutral">
-                  Not an Operational Weather Forecast
-                </Badge>
+                <Badge variant="Neutral">Not an Operational Weather Forecast</Badge>
               </div>
               <p className="tabular mt-2 text-xs font-semibold text-[#111315]">
-                Season-to-date: {profile.seasonalOutlook.rainfallToDate.value} mm
-                vs. {profile.seasonalOutlook.historicalBaselineMm.value} mm
-                10-year baseline (
-                {profile.seasonalOutlook.anomalyPercent >= 0 ? '+' : ''}
-                {profile.seasonalOutlook.anomalyPercent.toFixed(1)}%)
+                Season-to-date: {profile.seasonalOutlook.rainfallToDate.valueMm} mm vs.{' '}
+                {profile.seasonalOutlook.rainfallToDate.normalMm} mm normal baseline
+                {profile.seasonalOutlook.rainfallToDate.normalMm > 0
+                  ? ` (${(((profile.seasonalOutlook.rainfallToDate.valueMm - profile.seasonalOutlook.rainfallToDate.normalMm) / profile.seasonalOutlook.rainfallToDate.normalMm) * 100).toFixed(1)}%)`
+                  : ''}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-[#374151]">
-                {profile.seasonalOutlook.summary}
+                {profile.seasonalOutlook.riskStatements.join('. ') ||
+                  profile.seasonalOutlook.framingNote}
               </p>
             </div>
           </section>
@@ -267,9 +236,7 @@ export function PrintableFieldSheet({
               <table className="w-full border-collapse border border-[#d1d5db] text-left text-xs">
                 <thead>
                   <tr className="bg-[#f4f5f6] text-[11px] font-bold text-[#111315] uppercase">
-                    <th className="border border-[#d1d5db] px-3 py-2">
-                      Strategy Option
-                    </th>
+                    <th className="border border-[#d1d5db] px-3 py-2">Strategy Option</th>
                     <th className="border border-[#d1d5db] px-3 py-2">
                       Ordinal Rank &amp; Evidence
                     </th>
@@ -279,41 +246,38 @@ export function PrintableFieldSheet({
                   </tr>
                 </thead>
                 <tbody>
-                  {profile.rotationComparison.options.map((opt, idx) => (
-                    <tr key={opt.optionId} className="align-top">
+                  {profile.rotationComparison.strategies.map((opt, idx) => (
+                    <tr key={`${opt.label}-${idx}`} className="align-top">
                       <td className="border border-[#d1d5db] px-3 py-2.5 font-semibold text-[#111315]">
                         <div>
-                          Strategy {idx + 1}:{' '}
-                          {idx === 0 ? 'Current Practice' : 'Alternative'}
+                          Strategy {idx + 1}: {idx === 0 ? 'Current Practice' : 'Alternative'}
                         </div>
-                        <div className="mt-0.5 font-normal text-[#374151]">
-                          {opt.optionName}
-                        </div>
+                        <div className="mt-0.5 font-normal text-[#374151]">{opt.label}</div>
                       </td>
                       <td className="border border-[#d1d5db] px-3 py-2.5">
                         <div className="font-bold text-[#0b4f2f] uppercase">
-                          {opt.rankPosition === 'first'
+                          {opt.rank === 'first'
                             ? 'First Choice'
-                            : opt.rankPosition === 'tied'
+                            : opt.rank === 'tied'
                               ? 'Tied / Viable'
                               : 'Lower Fit'}
                         </div>
                         <div className="mt-0.5 text-[11px] text-[#4b5563]">
-                          Evidence: {opt.evidenceStrength} ({opt.evidenceReason})
+                          Evidence: {opt.evidenceStrength} ({opt.evidenceStrengthReason})
                         </div>
                       </td>
                       <td className="border border-[#d1d5db] px-3 py-2.5 text-[#374151]">
-                        <ul className="space-y-1">
-                          {opt.dimensions
-                            .filter((d) => d.status !== 'not_assessed')
-                            .map((dim) => (
-                              <li key={dim.dimension}>
-                                <strong>[{dim.status.toUpperCase()}]</strong>{' '}
-                                {dim.explanation}
-                                {dim.citation ? ` (${dim.citation})` : ''}
-                              </li>
-                            ))}
-                        </ul>
+                        <p className="mb-1 text-xs">{opt.rationale}</p>
+                        {opt.benefits.length > 0 && (
+                          <div className="text-[11px] text-[#0a4232]">
+                            <strong>Benefits:</strong> {opt.benefits.join('; ')}
+                          </div>
+                        )}
+                        {opt.localReviewRisks.length > 0 && (
+                          <div className="mt-0.5 text-[11px] text-[#b9770e]">
+                            <strong>Review notes:</strong> {opt.localReviewRisks.join('; ')}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -336,9 +300,7 @@ export function PrintableFieldSheet({
                   <div className="font-semibold text-[#111315]">
                     {attr.name} ({formatResolutionHonesty(attr.spatialResolutionM)})
                   </div>
-                  <div className="text-[10px] text-[#6b7280]">
-                    {attr.attribution}
-                  </div>
+                  <div className="text-[10px] text-[#6b7280]">{attr.attribution}</div>
                 </div>
               ))}
             </div>

@@ -105,12 +105,7 @@ export function ParcelVectorThumbnail({
       )}
       aria-hidden="true"
     >
-      <svg
-        viewBox="0 0 40 40"
-        className="size-full"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg viewBox="0 0 40 40" className="size-full" fill="none" xmlns="http://www.w3.org/2000/svg">
         {renderShape()}
       </svg>
     </div>

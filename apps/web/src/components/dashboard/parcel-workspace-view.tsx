@@ -1,13 +1,10 @@
 'use client';
 
 import {
-  BookOpen,
   CalendarClock,
   Compass,
-  FileText,
   GitCompareArrows,
   Layers,
-  MapPin,
   Printer,
   Quote,
   ShieldCheck,
@@ -18,7 +15,6 @@ import * as React from 'react';
 
 import type { CaseStudyFullProfile } from '../../features/cases/case-study-data';
 import {
-  formatCropWithHausa,
   formatMetric,
   formatObservationDate,
   formatResolutionHonesty,
@@ -59,23 +55,18 @@ export function ParcelWorkspaceView({
   const [viewMode, setViewMode] = React.useState<'farmer' | 'adviser'>('farmer');
 
   const activeParcel =
-    profile.parcels.find((parcel) => parcel.id === selectedParcelId) ??
-    profile.parcels[0];
+    profile.parcels.find((parcel) => parcel.id === selectedParcelId) ?? profile.parcels[0];
 
   const showHausaSort = languageMode === 'ha';
 
   const soilPhObs = profile.observations.find((obs) => obs.variable === 'soil_ph');
-  const soilOcObs = profile.observations.find(
-    (obs) => obs.variable === 'soil_organic_carbon',
-  );
+  const soilOcObs = profile.observations.find((obs) => obs.variable === 'soil_organic_carbon');
   const sandObs = profile.observations.find((obs) => obs.variable === 'sand_fraction');
   const clayObs = profile.observations.find((obs) => obs.variable === 'clay_fraction');
 
   if (!activeParcel) {
     return (
-      <div className="p-6 text-sm text-[#6b7280]">
-        No parcels registered for this farm holding.
-      </div>
+      <div className="p-6 text-sm text-[#6b7280]">No parcels registered for this farm holding.</div>
     );
   }
 
@@ -95,17 +86,13 @@ export function ParcelWorkspaceView({
                 {profile.village} · {profile.lga}, {profile.state}
               </span>
               {!profile.consentedToGps ? (
-                <Badge variant="Modelled">
-                  Representative Coordinates (ADR-0011 D-12)
-                </Badge>
+                <Badge variant="Modelled">Representative Coordinates (ADR-0011 D-12)</Badge>
               ) : null}
             </div>
             <h1 className="font-display text-xl font-bold tracking-tight text-[#111315] sm:text-2xl">
               {profile.farmerName}
             </h1>
-            <p className="text-xs text-[#4b5563] sm:text-sm">
-              {profile.holdingSummary}
-            </p>
+            <p className="text-xs text-[#4b5563] sm:text-sm">{profile.holdingSummary}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
@@ -157,11 +144,7 @@ export function ParcelWorkspaceView({
                       : 'border-[#e5e7eb] bg-[#fafafb] text-[#374151] hover:border-[#d1d5db] hover:bg-white'
                   }`}
                 >
-                  <ParcelVectorThumbnail
-                    geometry={parcel.geometry}
-                    size={24}
-                    active={isSelected}
-                  />
+                  <ParcelVectorThumbnail geometry={parcel.geometry} size={24} active={isSelected} />
                   <div>
                     <div className="text-xs font-semibold">{parcel.name}</div>
                     <div className="tabular text-[11px] text-[#6b7280]">
@@ -179,13 +162,16 @@ export function ParcelWorkspaceView({
 
       {/* Sticky Situation Banner */}
       <SituationBanner
-        farm={profile.farm}
-        parcel={activeParcel}
-        crops={profile.crops}
-        priorities={profile.priorities}
-        evidenceStrength={profile.rotationComparison.options[0]?.evidenceStrength ?? 'moderate'}
+        headline={`${activeParcel.name}: ${profile.plantingTrigger.condition}`}
+        subheadline={`Crop rotation strategy: ${profile.rotationComparison.strategies[0]?.label ?? 'Baseline'}`}
+        evidenceStrength={profile.rotationComparison.strategies[0]?.evidenceStrength ?? 'moderate'}
+        evidenceStrengthReason={
+          profile.rotationComparison.strategies[0]?.evidenceStrengthReason ??
+          'Field interview baseline verified'
+        }
+        limitations={profile.rotationComparison.limitations}
         rulesetVersion={profile.rotationComparison.rulesetVersion}
-        showHausa={showHausaSort}
+        showAdviserMeta={viewMode === 'adviser'}
       />
 
       {/* Main Content Container */}
@@ -238,7 +224,7 @@ export function ParcelWorkspaceView({
                   Ruleset: {profile.rotationComparison.rulesetVersion}
                 </span>
                 <span className="rounded-md bg-white/10 px-2.5 py-1 font-mono">
-                  Triggers: {profile.priorities.plantingTriggerRule ?? 'wait_for_confirmed_moisture'}
+                  Triggers: {profile.priorities.plantingTrigger ?? 'wait_for_confirmed_moisture'}
                 </span>
               </div>
             </div>
@@ -266,7 +252,7 @@ export function ParcelWorkspaceView({
               {
                 value: 'suitability',
                 label: '3. Crop Suitability Shortlist',
-                badge: profile.suitabilityComparison.options.length,
+                badge: profile.suitabilityComparison.strategies.length,
                 icon: <Sprout className="h-4 w-4" aria-hidden="true" />,
               },
               {
@@ -297,23 +283,15 @@ export function ParcelWorkspaceView({
                   Ready to compare crop sequences for {activeParcel.name}?
                 </h3>
                 <p className="text-xs text-[#4b5563]">
-                  Review the farmer&apos;s current practice alongside 2 evidence-supported
-                  rotation alternatives grounded in Northern Nigeria field trials.
+                  Review the farmer&apos;s current practice alongside 2 evidence-supported rotation
+                  alternatives grounded in Northern Nigeria field trials.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2.5">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setActiveTab('rotation')}
-                >
+                <Button variant="primary" size="md" onClick={() => setActiveTab('rotation')}>
                   <span>Compare 3 Rotation Strategies</span>
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="md"
-                  onClick={() => setActiveTab('environment')}
-                >
+                <Button variant="secondary" size="md" onClick={() => setActiveTab('environment')}>
                   <span>Inspect Map & Pixel Footprints</span>
                 </Button>
               </div>
@@ -336,19 +314,17 @@ export function ParcelWorkspaceView({
                     computed.
                   </p>
                 </div>
-                <Badge variant="Neutral">
-                  Ruleset {profile.rotationComparison.rulesetVersion}
-                </Badge>
+                <Badge variant="Neutral">Ruleset {profile.rotationComparison.rulesetVersion}</Badge>
               </div>
 
-              {profile.rotationComparison.sharedLimitations.length > 0 ? (
+              {profile.rotationComparison.limitations.length > 0 ? (
                 <div className="mt-4 rounded-[8px] border border-[#f5e0a3] bg-[#fdf6e2] p-3">
                   <div className="text-xs font-semibold text-[#8a5300]">
                     Shared Environmental & Spatial Limitations Across All 3 Strategies:
                   </div>
                   <ul className="mt-1 space-y-1 text-xs text-[#6b7280]">
-                    {profile.rotationComparison.sharedLimitations.map((lim) => (
-                      <li key={lim}>• {lim}</li>
+                    {profile.rotationComparison.limitations.map((lim, idx) => (
+                      <li key={`${lim.kind}-${idx}`}>• {lim.statement}</li>
                     ))}
                   </ul>
                 </div>
@@ -356,12 +332,13 @@ export function ParcelWorkspaceView({
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {profile.rotationComparison.options.map((option, idx) => (
+              {profile.rotationComparison.strategies.map((strategy, idx) => (
                 <RotationStrategyCard
-                  key={option.optionId}
-                  option={option}
-                  strategyIndex={idx}
-                  showHausa={showHausaSort}
+                  key={`${strategy.label}-${idx}`}
+                  strategy={strategy}
+                  index={idx}
+                  fieldLang={showHausaSort ? 'ha' : 'en'}
+                  showAdviserDetails={viewMode === 'adviser'}
                 />
               ))}
             </div>
@@ -390,15 +367,10 @@ export function ParcelWorkspaceView({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {profile.suitabilityComparison.options.map((option) => (
-                <SuitabilityShortlistCard
-                  key={option.optionId}
-                  option={option}
-                  showHausa={showHausaSort}
-                />
-              ))}
-            </div>
+            <SuitabilityShortlistCard
+              comparison={profile.suitabilityComparison}
+              fieldLang={showHausaSort ? 'ha' : 'en'}
+            />
           </div>
         ) : null}
 
@@ -423,9 +395,9 @@ export function ParcelWorkspaceView({
                     </h3>
                   </div>
                   <p className="mt-0.5 text-xs text-[#4b5563]">
-                    0 to 30 cm topsoil estimate for {activeParcel.name}. Because SoilGrids is a
-                    250 m machine-learning prediction (~6.25 ha per cell), confirm pH and fertility
-                    with a physical soil test before purchasing bulk lime or chemical fertiliser.
+                    0 to 30 cm topsoil estimate for {activeParcel.name}. Because SoilGrids is a 250
+                    m machine-learning prediction (~6.25 ha per cell), confirm pH and fertility with
+                    a physical soil test before purchasing bulk lime or chemical fertiliser.
                   </p>
                 </div>
                 <Badge variant="Modelled">Modelled 250 m Grid</Badge>
@@ -433,9 +405,7 @@ export function ParcelWorkspaceView({
 
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="rounded-[8px] bg-[#f4f5f6] p-3">
-                  <div className="text-[11px] font-medium text-[#6b7280]">
-                    Topsoil pH (H2O)
-                  </div>
+                  <div className="text-[11px] font-medium text-[#6b7280]">Topsoil pH (H2O)</div>
                   <div className="tabular mt-1 text-lg font-bold text-[#111315]">
                     {soilPhObs ? formatMetric(soilPhObs.value, '', 1) : '6.1'}
                   </div>
@@ -445,9 +415,7 @@ export function ParcelWorkspaceView({
                 </div>
 
                 <div className="rounded-[8px] bg-[#f4f5f6] p-3">
-                  <div className="text-[11px] font-medium text-[#6b7280]">
-                    Organic Carbon
-                  </div>
+                  <div className="text-[11px] font-medium text-[#6b7280]">Organic Carbon</div>
                   <div className="tabular mt-1 text-lg font-bold text-[#111315]">
                     {soilOcObs ? formatMetric(soilOcObs.value, 'g/kg', 1) : '6.8 g/kg'}
                   </div>
@@ -457,9 +425,7 @@ export function ParcelWorkspaceView({
                 </div>
 
                 <div className="rounded-[8px] bg-[#f4f5f6] p-3">
-                  <div className="text-[11px] font-medium text-[#6b7280]">
-                    Sand Fraction
-                  </div>
+                  <div className="text-[11px] font-medium text-[#6b7280]">Sand Fraction</div>
                   <div className="tabular mt-1 text-lg font-bold text-[#111315]">
                     {sandObs ? formatMetric(sandObs.value, '%', 0) : '68 %'}
                   </div>
@@ -469,9 +435,7 @@ export function ParcelWorkspaceView({
                 </div>
 
                 <div className="rounded-[8px] bg-[#f4f5f6] p-3">
-                  <div className="text-[11px] font-medium text-[#6b7280]">
-                    Clay Fraction
-                  </div>
+                  <div className="text-[11px] font-medium text-[#6b7280]">Clay Fraction</div>
                   <div className="tabular mt-1 text-lg font-bold text-[#111315]">
                     {clayObs ? formatMetric(clayObs.value, '%', 0) : '14 %'}
                   </div>
@@ -483,7 +447,13 @@ export function ParcelWorkspaceView({
 
               {soilPhObs ? (
                 <div className="mt-3">
-                  <ProvenanceLine provenance={soilPhObs.provenance} />
+                  <ProvenanceLine
+                    sourceId={soilPhObs.sourceId}
+                    spatialResolutionM={soilPhObs.spatialResolutionM}
+                    observedAt={soilPhObs.observedAt}
+                    isModelled={soilPhObs.isModelled}
+                    coverageFraction={soilPhObs.coverageFraction}
+                  />
                 </div>
               ) : null}
             </div>
@@ -492,65 +462,39 @@ export function ParcelWorkspaceView({
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <HonestyTimeSeriesChart
                 title="Seasonal Rainfall vs. 10-Year Baseline"
-                subtitle="Dekadal accumulation across the May to October rainy season"
+                summarySentence="Dekadal accumulation across the May to October rainy season"
                 unit="mm"
-                variant="bar"
+                chartType="bar"
                 data={profile.rainfallChartSeries}
-                primaryColor="#2563eb"
-                provenance={{
-                  source: 'chirps',
-                  spatialResolutionM: 5500,
-                  temporalResolution: 'daily',
-                  observedAt: '2026-06-14T00:00:00.000Z',
-                  retrievedAt: '2026-06-15T06:00:00.000Z',
-                  isModelled: false,
-                  qualityFlag: 'ok',
-                }}
+                sourceId="chirps"
+                spatialResolutionM={5500}
+                observedAt="2026-06-14T00:00:00.000Z"
+                isModelled={false}
               />
 
               <HonestyTimeSeriesChart
                 title="Regional Root-Zone Soil Moisture"
-                subtitle="Volumetric moisture fraction in top 100 cm (~9 km cell)"
+                summarySentence="Volumetric moisture fraction in top 100 cm (~9 km cell)"
                 unit="m³/m³"
-                variant="area"
+                chartType="line"
                 data={profile.soilMoistureChartSeries}
-                primaryColor="#00b159"
-                referenceThreshold={{
-                  value: 0.18,
-                  label: '0.18 m³/m³ establishment threshold',
-                }}
-                provenance={{
-                  source: 'nasa_smap',
-                  spatialResolutionM: 9000,
-                  temporalResolution: '3-day',
-                  observedAt: '2026-06-13T00:00:00.000Z',
-                  retrievedAt: '2026-06-15T06:00:00.000Z',
-                  isModelled: true,
-                  qualityFlag: 'ok',
-                }}
+                sourceId="nasa_smap"
+                spatialResolutionM={9000}
+                observedAt="2026-06-13T00:00:00.000Z"
+                isModelled={true}
               />
 
               <HonestyTimeSeriesChart
                 title="Canopy Greenness (MODIS NDVI)"
-                subtitle="16-day composite vegetation index (250 m resolution)"
+                summarySentence="16-day composite vegetation index (250 m resolution)"
                 unit="NDVI"
-                variant="line"
+                chartType="line"
                 data={profile.ndviChartSeries}
-                primaryColor="#0a4232"
-                cloudGapRange={{
-                  startLabel: 'Jul D3',
-                  endLabel: 'Aug D1',
-                  note: 'Cloud cover masked during peak August rains',
-                }}
-                provenance={{
-                  source: 'nasa_modis_ndvi',
-                  spatialResolutionM: 250,
-                  temporalResolution: '16-day',
-                  observedAt: '2026-06-10T00:00:00.000Z',
-                  retrievedAt: '2026-06-15T06:00:00.000Z',
-                  isModelled: false,
-                  qualityFlag: 'ok',
-                }}
+                gapNotice="Cloud cover masked during peak August rains"
+                sourceId="nasa_modis_ndvi"
+                spatialResolutionM={250}
+                observedAt="2026-06-10T00:00:00.000Z"
+                isModelled={false}
               />
             </div>
 
@@ -586,19 +530,17 @@ export function ParcelWorkspaceView({
                             {obs.value} {obs.unit}
                           </td>
                           <td className="px-3 py-2.5 text-[#374151]">
-                            {formatSourceName(obs.provenance.source)}
+                            {formatSourceName(obs.sourceId)}
                           </td>
                           <td className="px-3 py-2.5 text-[#4b5563]">
-                            {formatResolutionHonesty(obs.provenance.spatialResolutionM)}
+                            {formatResolutionHonesty(obs.spatialResolutionM)}
                           </td>
                           <td className="tabular px-3 py-2.5 text-[#4b5563]">
-                            {formatObservationDate(obs.provenance.observedAt)}
+                            {formatObservationDate(obs.observedAt)}
                           </td>
                           <td className="px-3 py-2.5">
-                            <Badge
-                              variant={obs.provenance.isModelled ? 'Modelled' : 'Measured'}
-                            >
-                              {obs.provenance.isModelled ? 'Modelled' : 'Measured'}
+                            <Badge variant={obs.isModelled ? 'Modelled' : 'Measured'}>
+                              {obs.isModelled ? 'Modelled' : 'Measured'}
                             </Badge>
                           </td>
                         </tr>

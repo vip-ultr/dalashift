@@ -101,9 +101,7 @@ export function RotationStrategyCard({
                   <span className="text-xs font-semibold text-ink">
                     {leg.cropName}
                     {fieldLang === 'ha' && hausaInfo ? (
-                      <span className="ml-1 font-normal text-[#8e5636]">
-                        ({hausaInfo.hausa})
-                      </span>
+                      <span className="ml-1 font-normal text-[#8e5636]">({hausaInfo.hausa})</span>
                     ) : null}
                   </span>
                 </div>

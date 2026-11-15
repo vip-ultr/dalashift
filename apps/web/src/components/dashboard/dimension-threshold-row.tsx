@@ -1,7 +1,4 @@
-import {
-  ASSESSMENT_DIMENSION_LABELS,
-  type AssessmentStatus,
-} from '@dalashift/shared/constants';
+import { ASSESSMENT_DIMENSION_LABELS, type AssessmentStatus } from '@dalashift/shared/constants';
 import type { DimensionAssessment } from '@dalashift/shared/types';
 import { BookOpen, CheckCircle2, HelpCircle, MinusCircle, XCircle } from 'lucide-react';
 
@@ -59,23 +56,18 @@ export function DimensionThresholdRow({
   showCitations = true,
   className,
 }: DimensionThresholdRowProps) {
-  const label =
-    ASSESSMENT_DIMENSION_LABELS[dimension.dimension] ?? dimension.dimension;
+  const label = ASSESSMENT_DIMENSION_LABELS[dimension.dimension] ?? dimension.dimension;
   const meta = STATUS_META[dimension.status];
   const StatusIcon = meta.Icon;
 
-  const hasRange =
-    dimension.threshold.min !== null || dimension.threshold.max !== null;
+  const hasRange = dimension.threshold.min !== null || dimension.threshold.max !== null;
   const rangeText = hasRange
     ? `${dimension.threshold.min !== null ? formatMetricValue(dimension.threshold.min, 1) : 'any'} to ${dimension.threshold.max !== null ? formatMetricValue(dimension.threshold.max, 1) : 'any'} ${dimension.unit ?? ''}`.trim()
     : 'Qualitative check';
 
   return (
     <div
-      className={cn(
-        'rounded-lg border border-border/80 bg-[#f4f5f6]/75 p-3 text-xs',
-        className,
-      )}
+      className={cn('rounded-lg border border-border/80 bg-[#f4f5f6]/75 p-3 text-xs', className)}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="font-semibold text-ink">{label}</span>
@@ -115,9 +107,7 @@ export function DimensionThresholdRow({
           {dimension.sourceId ? (
             <span className="tabular">
               {formatSourceName(dimension.sourceId)}
-              {dimension.observedAt
-                ? ` · ${formatObservationDate(dimension.observedAt)}`
-                : ''}
+              {dimension.observedAt ? ` · ${formatObservationDate(dimension.observedAt)}` : ''}
             </span>
           ) : null}
         </div>

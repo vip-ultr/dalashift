@@ -1,10 +1,8 @@
 import type * as React from 'react';
 
 import { PrintableFieldSheet } from '../../../../../components/dashboard/printable-field-sheet';
-import {
-  CASE_STUDY_PROFILES,
-  getCaseStudyByFarmId,
-} from '../../../../../features/cases/case-study-data';
+import { RegisteredFarmReport } from '../../../../../components/dashboard/registered-farm-report';
+import { getCaseStudyByFarmId } from '../../../../../features/cases/case-study-data';
 
 export default async function FarmReportPage({
   params,
@@ -12,8 +10,11 @@ export default async function FarmReportPage({
   readonly params: Promise<{ farmId: string }>;
 }): Promise<React.JSX.Element> {
   const { farmId } = await params;
-  const profile =
-    getCaseStudyByFarmId(farmId) ?? CASE_STUDY_PROFILES[0]!;
+  const profile = getCaseStudyByFarmId(farmId);
 
-  return <PrintableFieldSheet profile={profile} />;
+  return profile ? (
+    <PrintableFieldSheet profile={profile} />
+  ) : (
+    <RegisteredFarmReport farmId={farmId} />
+  );
 }

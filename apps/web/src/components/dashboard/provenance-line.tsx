@@ -42,9 +42,7 @@ export function ProvenanceLine({
       <span
         className={cn(
           'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium',
-          isModelled
-            ? 'bg-[#fdf6e5] text-[#8e5636]'
-            : 'bg-[#e4edf4] text-[#3d6382]',
+          isModelled ? 'bg-[#fdf6e5] text-[#8e5636]' : 'bg-[#e4edf4] text-[#3d6382]',
         )}
       >
         <Database className="size-3 shrink-0" />
@@ -71,9 +69,7 @@ export function ProvenanceLine({
         Observed {dateLabel}
       </span>
 
-      {coverageFraction !== undefined &&
-      coverageFraction !== null &&
-      coverageFraction < 1 ? (
+      {coverageFraction !== undefined && coverageFraction !== null && coverageFraction < 1 ? (
         <>
           <span aria-hidden="true" className="text-ink-faint">
             ·

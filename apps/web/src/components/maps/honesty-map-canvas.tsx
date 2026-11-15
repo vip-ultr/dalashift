@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  SPATIAL_RESOLUTION_METRES,
-  type SpatialResolutionKey,
-} from '@dalashift/shared/constants';
+import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
 import { area as turfArea, polygon as turfPolygon } from '@turf/turf';
 import {
@@ -29,13 +26,12 @@ import {
 export interface HonestyMapCanvasProps {
   readonly parcels: readonly Parcel[];
   readonly activeParcelId?: string | null;
+  readonly selectedParcelId?: string | null;
   readonly onSelectParcel?: (parcelId: string) => void;
   readonly initialResolutionKey?: SpatialResolutionKey;
   readonly interactiveDraw?: boolean;
-  readonly onGeometryChange?: (
-    geometry: GeoJSONGeometry,
-    previewAreaHa: number,
-  ) => void;
+  readonly onGeometryChange?: (geometry: GeoJSONGeometry, previewAreaHa: number) => void;
+  readonly heightClass?: string;
   readonly className?: string;
 }
 
@@ -99,18 +95,18 @@ const GRID_OVERLAY_OPTIONS: readonly {
 export function HonestyMapCanvas({
   parcels,
   activeParcelId,
+  selectedParcelId,
   onSelectParcel,
   initialResolutionKey = 'smapSoilMoisture',
   interactiveDraw = false,
   onGeometryChange,
+  heightClass,
   className,
 }: HonestyMapCanvasProps) {
   const [selectedGridKey, setSelectedGridKey] =
     useState<SpatialResolutionKey>(initialResolutionKey);
   const [showGridOverlay, setShowGridOverlay] = useState(true);
-  const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'topographic'>(
-    'satellite',
-  );
+  const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'topographic'>('satellite');
   const [zoomLevel, setZoomLevel] = useState<number>(15);
   const [drawMode, setDrawMode] = useState<'view' | 'polygon' | 'gps_point'>(
     interactiveDraw ? 'polygon' : 'view',
@@ -122,12 +118,11 @@ export function HonestyMapCanvas({
     [8.2702, 12.0493],
   ]);
 
-  const activeParcel =
-    parcels.find((p) => p.id === activeParcelId) ?? parcels[0] ?? null;
+  const effectiveParcelId = activeParcelId ?? selectedParcelId;
+  const activeParcel = parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
 
   const activeGridOption =
-    GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ??
-    GRID_OVERLAY_OPTIONS[0]!;
+    GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ?? GRID_OVERLAY_OPTIONS[0]!;
 
   // Compute live Turf.js area preview when drawing a polygon
   const drawnPreviewHa = useMemo(() => {
@@ -176,10 +171,7 @@ export function HonestyMapCanvas({
 
     const baseLng = 8.2695 + normX * 0.003;
     const baseLat = 12.0515 - normY * 0.003;
-    const coord: [number, number] = [
-      Number(baseLng.toFixed(5)),
-      Number(baseLat.toFixed(5)),
-    ];
+    const coord: [number, number] = [Number(baseLng.toFixed(5)), Number(baseLat.toFixed(5))];
 
     if (drawMode === 'gps_point') {
       const pointGeo: GeoJSONGeometry = { type: 'Point', coordinates: coord };
@@ -210,6 +202,7 @@ export function HonestyMapCanvas({
       className={cn(
         'relative flex min-h-[440px] w-full flex-col justify-between overflow-hidden rounded-2xl border border-border select-none',
         basemapStyle === 'satellite' ? 'bg-[#1c2b21]' : 'bg-[#eae6dc]',
+        heightClass,
         className,
       )}
     >
@@ -237,26 +230,17 @@ export function HonestyMapCanvas({
               x2="0"
               y2="24"
               stroke={
-                basemapStyle === 'satellite'
-                  ? 'rgba(255,255,255,0.045)'
-                  : 'rgba(109,99,81,0.09)'
+                basemapStyle === 'satellite' ? 'rgba(255,255,255,0.045)' : 'rgba(109,99,81,0.09)'
               }
               strokeWidth="2"
             />
           </pattern>
-          <pattern
-            id="coord-grid"
-            width="80"
-            height="80"
-            patternUnits="userSpaceOnUse"
-          >
+          <pattern id="coord-grid" width="80" height="80" patternUnits="userSpaceOnUse">
             <path
               d="M 80 0 L 0 0 0 80"
               fill="none"
               stroke={
-                basemapStyle === 'satellite'
-                  ? 'rgba(255,255,255,0.06)'
-                  : 'rgba(109,99,81,0.12)'
+                basemapStyle === 'satellite' ? 'rgba(255,255,255,0.06)' : 'rgba(109,99,81,0.12)'
               }
               strokeWidth="1"
             />
@@ -271,43 +255,23 @@ export function HonestyMapCanvas({
         <polygon
           points="70,60 310,45 340,210 95,230"
           fill={
-            basemapStyle === 'satellite'
-              ? 'rgba(42, 74, 52, 0.55)'
-              : 'rgba(195, 214, 204, 0.45)'
+            basemapStyle === 'satellite' ? 'rgba(42, 74, 52, 0.55)' : 'rgba(195, 214, 204, 0.45)'
           }
-          stroke={
-            basemapStyle === 'satellite'
-              ? 'rgba(255,255,255,0.12)'
-              : 'rgba(109,99,81,0.22)'
-          }
+          stroke={basemapStyle === 'satellite' ? 'rgba(255,255,255,0.12)' : 'rgba(109,99,81,0.22)'}
           strokeWidth="1.5"
         />
         <polygon
           points="450,70 720,95 690,290 430,260"
           fill={
-            basemapStyle === 'satellite'
-              ? 'rgba(58, 82, 48, 0.45)'
-              : 'rgba(228, 237, 232, 0.6)'
+            basemapStyle === 'satellite' ? 'rgba(58, 82, 48, 0.45)' : 'rgba(228, 237, 232, 0.6)'
           }
-          stroke={
-            basemapStyle === 'satellite'
-              ? 'rgba(255,255,255,0.12)'
-              : 'rgba(109,99,81,0.22)'
-          }
+          stroke={basemapStyle === 'satellite' ? 'rgba(255,255,255,0.12)' : 'rgba(109,99,81,0.22)'}
           strokeWidth="1.5"
         />
         <polygon
           points="120,310 370,295 390,485 105,470"
-          fill={
-            basemapStyle === 'satellite'
-              ? 'rgba(72, 66, 46, 0.4)'
-              : 'rgba(244, 231, 221, 0.5)'
-          }
-          stroke={
-            basemapStyle === 'satellite'
-              ? 'rgba(255,255,255,0.1)'
-              : 'rgba(109,99,81,0.2)'
-          }
+          fill={basemapStyle === 'satellite' ? 'rgba(72, 66, 46, 0.4)' : 'rgba(244, 231, 221, 0.5)'}
+          stroke={basemapStyle === 'satellite' ? 'rgba(255,255,255,0.1)' : 'rgba(109,99,81,0.2)'}
           strokeWidth="1.5"
         />
 
@@ -341,7 +305,8 @@ export function HonestyMapCanvas({
               fontWeight="600"
               fontFamily="var(--ds-font-sans)"
             >
-              {activeGridOption.source} pixel · {formatResolutionShortBadge(activeGridOption.metres)}
+              {activeGridOption.source} pixel ·{' '}
+              {formatResolutionShortBadge(activeGridOption.metres)}
             </text>
           </g>
         ) : null}
@@ -410,11 +375,7 @@ export function HonestyMapCanvas({
               >
                 <polygon
                   points={polyPoints}
-                  fill={
-                    isSelected
-                      ? 'rgba(0, 177, 89, 0.36)'
-                      : 'rgba(255, 255, 255, 0.22)'
-                  }
+                  fill={isSelected ? 'rgba(0, 177, 89, 0.36)' : 'rgba(255, 255, 255, 0.22)'}
                   stroke={isSelected ? '#00b159' : '#ffffff'}
                   strokeWidth={isSelected ? '3' : '2'}
                 />
@@ -493,14 +454,7 @@ export function HonestyMapCanvas({
             <circle cx="465" cy="210" r="4.5" fill="#ffffff" stroke="#00b159" strokeWidth="2" />
             <circle cx="450" cy="320" r="4.5" fill="#ffffff" stroke="#00b159" strokeWidth="2" />
             <circle cx="335" cy="310" r="4.5" fill="#ffffff" stroke="#00b159" strokeWidth="2" />
-            <text
-              x="400"
-              y="268"
-              textAnchor="middle"
-              fill="#ffffff"
-              fontSize="12"
-              fontWeight="700"
-            >
+            <text x="400" y="268" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="700">
               Preview: {formatMetricValue(drawnPreviewHa, 2)} ha
             </text>
           </g>
@@ -519,17 +473,11 @@ export function HonestyMapCanvas({
             <select
               id="grid-cell-select"
               value={selectedGridKey}
-              onChange={(e) =>
-                setSelectedGridKey(e.target.value as SpatialResolutionKey)
-              }
+              onChange={(e) => setSelectedGridKey(e.target.value as SpatialResolutionKey)}
               className="bg-transparent text-xs font-medium text-white outline-none cursor-pointer"
             >
               {GRID_OVERLAY_OPTIONS.map((opt) => (
-                <option
-                  key={opt.key}
-                  value={opt.key}
-                  className="bg-[#1f2022] text-white"
-                >
+                <option key={opt.key} value={opt.key} className="bg-[#1f2022] text-white">
                   Cell Overlay: {opt.label}
                 </option>
               ))}
@@ -553,16 +501,12 @@ export function HonestyMapCanvas({
           <button
             type="button"
             onClick={() =>
-              setBasemapStyle((prev) =>
-                prev === 'satellite' ? 'topographic' : 'satellite',
-              )
+              setBasemapStyle((prev) => (prev === 'satellite' ? 'topographic' : 'satellite'))
             }
             className="map-hud-pill inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium cursor-pointer"
           >
             <Compass className="size-3.5 text-[#76a1c2]" />
-            <span>
-              Basemap: {basemapStyle === 'satellite' ? 'Satellite' : 'Vector'}
-            </span>
+            <span>Basemap: {basemapStyle === 'satellite' ? 'Satellite' : 'Vector'}</span>
           </button>
         </div>
       </div>
@@ -667,7 +611,8 @@ export function HonestyMapCanvas({
           <p className="mt-1 text-white/85">
             Values from <strong>{activeGridOption.source}</strong> represent{' '}
             {formatSpatialResolutionPhrase(activeGridOption.metres)} (roughly{' '}
-            <strong className="tabular">{cellToParcelRatio.toLocaleString()}x</strong> the area of this parcel).
+            <strong className="tabular">{cellToParcelRatio.toLocaleString()}x</strong> the area of
+            this parcel).
           </p>
         </div>
 

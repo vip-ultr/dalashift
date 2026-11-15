@@ -1,28 +1,25 @@
 import type { Metadata, Viewport } from 'next';
-import { Geologica, Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
 
 import './globals.css';
 
 /**
- * Fonts.
- *
  * Geologica for display headings and the wordmark, Inter for body, tables, and
- * dense workspace UI. Both have system-ui fallbacks in the CSS variables, so a
- * failed font fetch degrades to the system stack rather than breaking the build.
+ * dense workspace UI. Bundled fonts keep builds independent of Google Fonts.
  */
-const inter = Inter({
-  subsets: ['latin'],
+const inter = localFont({
+  src: './fonts/inter-latin-variable.woff2',
   display: 'swap',
   variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
+  weight: '100 900',
 });
 
-const geologica = Geologica({
-  subsets: ['latin'],
+const geologica = localFont({
+  src: './fonts/geologica-latin-variable.woff2',
   display: 'swap',
   variable: '--font-geologica',
-  weight: ['400', '500', '600', '700'],
+  weight: '100 900',
 });
 
 const DESCRIPTION = 'Climate-informed crop rotation decisions for rain-fed farmers.';

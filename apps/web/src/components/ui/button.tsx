@@ -16,6 +16,8 @@ const buttonVariants = cva(
         obsidian:
           'bg-[#1f2022]/90 text-white backdrop-blur-md hover:bg-[#1f2022] border border-white/10',
         ghost: 'bg-transparent text-ink hover:bg-[#f4f5f6]',
+        outline:
+          'bg-transparent text-ink border border-[#d1d5db] hover:bg-[#f4f5f6] active:bg-[#e5e7eb]',
         destructive: 'bg-[#c0392b] text-white hover:bg-[#a93226]',
       },
       size: {
@@ -35,8 +37,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   readonly children?: ReactNode;
 }
 
@@ -49,11 +50,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
-      type={type}
-      className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
-    >
+    <button type={type} className={cn(buttonVariants({ variant, size }), className)} {...props}>
       {children}
     </button>
   );

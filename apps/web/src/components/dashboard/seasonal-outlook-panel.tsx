@@ -42,10 +42,7 @@ export function SeasonalOutlookPanel({
   return (
     <section
       aria-label="Seasonal risk outlook"
-      className={cn(
-        'rounded-2xl border border-border bg-surface-raised p-5 sm:p-6',
-        className,
-      )}
+      className={cn('rounded-2xl border border-border bg-surface-raised p-5 sm:p-6', className)}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -55,9 +52,7 @@ export function SeasonalOutlookPanel({
           </Badge>
           <Badge variant={onsetMeta.variant}>{onsetMeta.label}</Badge>
         </div>
-        <span className="text-xs font-medium text-ink-muted">
-          Not a weather forecast
-        </span>
+        <span className="text-xs font-medium text-ink-muted">Not a weather forecast</span>
       </div>
 
       <h3 className="mt-2.5 text-lg font-semibold text-ink">
@@ -73,16 +68,12 @@ export function SeasonalOutlookPanel({
       {/* Headline Metrics */}
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl bg-[#f4f5f6] p-4">
-          <span className="text-xs font-medium text-ink-muted">
-            Season rainfall to date
-          </span>
+          <span className="text-xs font-medium text-ink-muted">Season rainfall to date</span>
           <div className="mt-1 flex items-baseline gap-1.5 tabular">
             <span className="text-2xl font-semibold text-ink">
               {formatMetricValue(outlook.rainfallToDate.valueMm, 0)}
             </span>
-            <span className="text-xs text-ink-muted">
-              {outlook.rainfallToDate.unit}
-            </span>
+            <span className="text-xs text-ink-muted">{outlook.rainfallToDate.unit}</span>
           </div>
           <p className="mt-1 text-xs text-ink-muted tabular">
             Long-term normal: {formatMetricValue(outlook.rainfallToDate.normalMm, 0)}{' '}
@@ -91,9 +82,7 @@ export function SeasonalOutlookPanel({
         </div>
 
         <div className="rounded-xl bg-[#f4f5f6] p-4">
-          <span className="text-xs font-medium text-ink-muted">
-            Comparison vs. normal
-          </span>
+          <span className="text-xs font-medium text-ink-muted">Comparison vs. normal</span>
           <div className="mt-1 flex items-baseline gap-1.5 tabular">
             <span
               className={cn(
@@ -113,9 +102,7 @@ export function SeasonalOutlookPanel({
         </div>
 
         <div className="rounded-xl bg-[#f4f5f6] p-4">
-          <span className="text-xs font-medium text-ink-muted">
-            Onset timing vs. record
-          </span>
+          <span className="text-xs font-medium text-ink-muted">Onset timing vs. record</span>
           <div className="mt-1 flex items-baseline gap-1.5 tabular">
             <CalendarClock className="size-5 text-[#3d6382]" />
             <span className="text-xl font-semibold text-ink">

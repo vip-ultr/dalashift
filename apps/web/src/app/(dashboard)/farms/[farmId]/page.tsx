@@ -1,10 +1,8 @@
 import type * as React from 'react';
 
 import { ParcelWorkspaceView } from '../../../../components/dashboard/parcel-workspace-view';
-import {
-  CASE_STUDY_PROFILES,
-  getCaseStudyByFarmId,
-} from '../../../../features/cases/case-study-data';
+import { RegisteredFarmWorkspace } from '../../../../components/dashboard/registered-farm-workspace';
+import { getCaseStudyByFarmId } from '../../../../features/cases/case-study-data';
 
 export default async function FarmParcelWorkspacePage({
   params,
@@ -12,8 +10,11 @@ export default async function FarmParcelWorkspacePage({
   readonly params: Promise<{ farmId: string }>;
 }): Promise<React.JSX.Element> {
   const { farmId } = await params;
-  const profile =
-    getCaseStudyByFarmId(farmId) ?? CASE_STUDY_PROFILES[0]!;
+  const profile = getCaseStudyByFarmId(farmId);
 
-  return <ParcelWorkspaceView profile={profile} />;
+  return profile ? (
+    <ParcelWorkspaceView profile={profile} />
+  ) : (
+    <RegisteredFarmWorkspace farmId={farmId} />
+  );
 }
