@@ -159,22 +159,24 @@ export function ParcelWorkspaceView({
         </div>
       </div>
 
-      {/* Sticky Situation Banner */}
-      <SituationBanner
-        headline={`${activeParcel.name}: ${profile.plantingTrigger.condition}`}
-        subheadline={`Crop rotation strategy: ${profile.rotationComparison.strategies[0]?.label ?? 'Baseline'}`}
-        evidenceStrength={profile.rotationComparison.strategies[0]?.evidenceStrength ?? 'moderate'}
-        evidenceStrengthReason={
-          profile.rotationComparison.strategies[0]?.evidenceStrengthReason ??
-          'Field interview baseline verified'
-        }
-        limitations={profile.rotationComparison.limitations}
-        rulesetVersion={profile.rotationComparison.rulesetVersion}
-        showAdviserMeta={viewMode === 'adviser'}
-      />
-
       {/* Main Content Container */}
       <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 sm:px-6 lg:px-8">
+        {/* Field Situation Summary Banner */}
+        <SituationBanner
+          headline={`${activeParcel.name}: ${profile.plantingTrigger.condition}`}
+          subheadline={`Crop rotation strategy: ${profile.rotationComparison.strategies[0]?.label ?? 'Baseline'}`}
+          evidenceStrength={
+            profile.rotationComparison.strategies[0]?.evidenceStrength ?? 'moderate'
+          }
+          evidenceStrengthReason={
+            profile.rotationComparison.strategies[0]?.evidenceStrengthReason ??
+            'Field interview baseline verified'
+          }
+          limitations={profile.rotationComparison.limitations}
+          rulesetVersion={profile.rotationComparison.rulesetVersion}
+          showAdviserMeta={viewMode === 'adviser'}
+        />
+
         {/* Adviser Mode Diagnostic Strip */}
         {viewMode === 'adviser' ? (
           <div className="rounded-[12px] border border-[#0a4232]/25 bg-[#0a4232] p-4 text-white shadow-xs">
@@ -202,7 +204,7 @@ export function ParcelWorkspaceView({
         ) : null}
 
         {/* Workspace Navigation Tabs */}
-        <div className="rounded-t-[12px] bg-white px-4 pt-2 shadow-xs">
+        <div className="rounded-[12px] border border-[#e5e7eb] bg-white px-4 pt-2 shadow-xs">
           <UnderlineTabs
             ariaLabel="Parcel intelligence sections"
             value={activeTab}
@@ -257,7 +259,7 @@ export function ParcelWorkspaceView({
                 parcels={profile.parcels}
                 selectedParcelId={activeParcel.id}
                 onSelectParcel={setSelectedParcelId}
-                heightClass="h-[380px]"
+                heightClass="h-[400px]"
               />
             </div>
 
@@ -371,12 +373,25 @@ export function ParcelWorkspaceView({
         {/* TAB 4: Honesty Map & Environmental Time Series */}
         {activeTab === 'environment' ? (
           <div className="space-y-6">
-            <HonestyMapCanvas
-              parcels={profile.parcels}
-              selectedParcelId={activeParcel.id}
-              onSelectParcel={setSelectedParcelId}
-              heightClass="h-[460px]"
-            />
+            <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
+              <div className="mb-3.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="font-display text-base font-bold text-[#111315]">
+                    Interactive Field Land Map · {activeParcel.name}
+                  </h3>
+                  <p className="text-xs text-[#4b5563]">
+                    Satellite view with GPS boundary, ESRI World Imagery, and observation
+                    footprints.
+                  </p>
+                </div>
+              </div>
+              <HonestyMapCanvas
+                parcels={profile.parcels}
+                selectedParcelId={activeParcel.id}
+                onSelectParcel={setSelectedParcelId}
+                heightClass="h-[400px]"
+              />
+            </div>
 
             {/* SoilGrids 250 m Baseline Summary Card */}
             <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">

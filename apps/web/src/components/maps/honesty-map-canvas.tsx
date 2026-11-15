@@ -86,7 +86,7 @@ export function HonestyMapCanvas({
 
   const [selectedGridKey, setSelectedGridKey] =
     useState<SpatialResolutionKey>(initialResolutionKey);
-  const [showGridOverlay, setShowGridOverlay] = useState(true);
+  const [showGridOverlay, setShowGridOverlay] = useState(false);
   const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'street'>('satellite');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);

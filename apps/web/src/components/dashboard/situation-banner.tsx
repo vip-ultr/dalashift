@@ -44,7 +44,10 @@ export function SituationBanner({
   return (
     <section
       aria-label="Current parcel situation"
-      className={cn('rounded-2xl border border-border bg-surface-raised p-5 sm:p-6', className)}
+      className={cn(
+        'rounded-[12px] border border-[#e5e7eb] bg-white p-5 sm:p-6 shadow-xs',
+        className,
+      )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
