@@ -2,7 +2,7 @@
 
 import type { GeoJSONGeometry } from '@dalashift/shared/types';
 import { geometrySchema } from '@dalashift/shared/schemas';
-import { AlertCircle, LoaderCircle, Sprout } from 'lucide-react';
+import { AlertCircle, LoaderCircle, MapPin, Plus, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
@@ -309,9 +309,24 @@ export function RegisteredFarmWorkspace({
                 </div>
               </>
             ) : (
-              <p className="rounded-xl border border-[#e5e7eb] bg-white p-5 text-sm">
-                No parcel geometry is available for this holding yet.
-              </p>
+              <div className="rounded-xl border border-dashed border-[#d1d5db] bg-white p-6 text-center">
+                <MapPin className="mx-auto size-8 text-[#00b159]" />
+                <h3 className="mt-2 text-sm font-semibold text-[#111315]">
+                  No parcel geometry captured yet
+                </h3>
+                <p className="mt-1 text-xs text-[#6b7280]">
+                  Add or capture this farm&apos;s parcel boundary or GPS point to start receiving
+                  satellite intelligence.
+                </p>
+                <div className="mt-4 flex justify-center">
+                  <Link href="/farms/new">
+                    <Button variant="primary" size="sm">
+                      <Plus className="mr-1 size-3.5" />
+                      <span>Capture Parcel on Map</span>
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             )}
           </section>
 

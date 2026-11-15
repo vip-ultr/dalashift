@@ -1,13 +1,22 @@
 'use client';
 
 import { area } from '@turf/turf';
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Plus, Trash2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Crosshair,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { z } from 'zod';
 
 import { ParcelVectorThumbnail } from '../../../../components/farms/parcel-vector-thumbnail';
+import { HonestyMapCanvas } from '../../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../../components/ui/badge';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
@@ -201,9 +210,51 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       locationUncertaintyM: null,
     },
   ]);
+  const [activeDraftParcelId, setActiveDraftParcelId] = React.useState<string>('draft-parcel-1');
   const [submitting, setSubmitting] = React.useState(false);
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [createdFarmId, setCreatedFarmId] = React.useState<string | null>(null);
+
+  const activeDraftParcel =
+    draftParcels.find((p) => p.id === activeDraftParcelId) ?? draftParcels[0]!;
+
+  const mappedDraftParcels = React.useMemo(() => {
+    return draftParcels.flatMap((dp) => {
+      if (!hasValidGeometryDraft(dp)) return [];
+      const geom = buildParcelGeometry(dp);
+      return [
+        {
+          id: dp.id,
+          farmId: 'draft-farm',
+          name: dp.name,
+          geometry: geom,
+          areaHa: computePolygonHa(dp) ?? 0,
+          locationUncertaintyM: dp.locationUncertaintyM,
+          geometryMethod: dp.geometryMethod,
+        },
+      ];
+    });
+  }, [draftParcels]);
+
+  const handleMapCoordinateCapture = (lon: number, lat: number) => {
+    const targetId = activeDraftParcelId || draftParcels[0]?.id;
+    if (!targetId) return;
+    const targetParcel = draftParcels.find((p) => p.id === targetId);
+    const widthDeg =
+      targetParcel?.geometryMethod === 'drawn_polygon' ? (targetParcel.widthDeg ?? 0.001) : null;
+    const heightDeg = widthDeg ? widthDeg * 0.85 : null;
+
+    updateParcel(targetId, {
+      centerLon: lon,
+      centerLat: lat,
+      widthDeg,
+      heightDeg,
+      locationUncertaintyM:
+        targetParcel?.geometryMethod === 'gps_point'
+          ? (targetParcel.locationUncertaintyM ?? 250)
+          : null,
+    });
+  };
 
   const isBeansAmbiguous =
     cropSearch.trim().toLowerCase() === 'beans' || cropSearch.trim().toLowerCase() === 'bean';
@@ -762,15 +813,89 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   Parcels{farmName.trim() ? ` in ${farmName}` : ''} ({draftParcels.length})
                 </h2>
                 <p className="text-xs text-[#4b5563]">
-                  Enter the farmer&apos;s coordinates. GPS points need an uncertainty radius.
-                  Polygon mode creates a rectangle from the centre and span below, not a traced
-                  boundary.
+                  Capture coordinates on the interactive map or enter them below. GPS points need an
+                  uncertainty radius. Polygon mode draws a rectangle based on the centre coordinate
+                  and span.
                 </p>
               </div>
               <Button type="button" variant="secondary" size="sm" onClick={addDraftParcel}>
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Add Another Parcel</span>
               </Button>
+            </div>
+
+            {/* Live Interactive Map for Boundary Capture */}
+            <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] bg-white p-4">
+              <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Crosshair className="h-4 w-4 text-[#00b159]" />
+                    <h3 className="font-display text-sm font-bold text-[#111315]">
+                      Capture Land Parcel on Map · {activeDraftParcel.name}
+                    </h3>
+                  </div>
+                  <p className="mt-0.5 text-xs text-[#4b5563]">
+                    Click anywhere on the satellite map to position this parcel. The coordinates
+                    will sync automatically.
+                  </p>
+                </div>
+
+                {draftParcels.length > 1 ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-[#6b7280]">Target:</span>
+                    <select
+                      value={activeDraftParcelId}
+                      aria-label="Select active parcel for map capture"
+                      onChange={(e) => setActiveDraftParcelId(e.target.value)}
+                      className="rounded-md border border-[#e5e7eb] bg-[#f4f5f6] px-2 py-1 text-xs font-semibold text-[#111315]"
+                    >
+                      {draftParcels.map((dp, i) => (
+                        <option key={dp.id} value={dp.id}>
+                          {dp.name || `Parcel ${i + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
+              </div>
+
+              <HonestyMapCanvas
+                parcels={mappedDraftParcels}
+                captureMode={true}
+                capturePoint={
+                  activeDraftParcel.centerLon !== null && activeDraftParcel.centerLat !== null
+                    ? { lon: activeDraftParcel.centerLon, lat: activeDraftParcel.centerLat }
+                    : null
+                }
+                onCoordinateCapture={handleMapCoordinateCapture}
+                heightClass="h-[380px]"
+              />
+
+              {/* Quick Presets & Guidance */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-[#6b7280]">
+                <span className="font-semibold text-[#374151]">Quick locations:</span>
+                <button
+                  type="button"
+                  onClick={() => handleMapCoordinateCapture(8.271, 12.05)}
+                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
+                >
+                  Tofa Farmland (8.271°E, 12.050°N)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMapCoordinateCapture(8.283, 12.046)}
+                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
+                >
+                  Doka Village (8.283°E, 12.046°N)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMapCoordinateCapture(8.31, 12.005)}
+                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
+                >
+                  South Valley (8.310°E, 12.005°N)
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -781,7 +906,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 return (
                   <div
                     key={dp.id}
-                    className="rounded-[12px] border border-[#e5e7eb] bg-[#fafafb] p-4"
+                    onClick={() => setActiveDraftParcelId(dp.id)}
+                    className={`rounded-[12px] border p-4 transition-colors ${
+                      dp.id === activeDraftParcelId
+                        ? 'border-[#00b159] bg-[#ebfaef]/40 ring-1 ring-[#00b159]'
+                        : 'border-[#e5e7eb] bg-[#fafafb] hover:bg-white'
+                    }`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
