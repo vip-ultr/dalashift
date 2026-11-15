@@ -15,12 +15,9 @@ import type * as React from 'react';
 import { PublicNavbar } from '../components/layout/public-navbar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { CASE_STUDY_PROFILES } from '../features/cases/case-study-data';
 import { formatCropWithHausa } from '../lib/utilities/format';
 
 export default function LandingPage(): React.JSX.Element {
-  const featured = CASE_STUDY_PROFILES[0];
-
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#111827]">
       <PublicNavbar />
@@ -103,7 +100,7 @@ export default function LandingPage(): React.JSX.Element {
                     </span>
                     <div>
                       <div className="text-xs font-bold text-[#111827]">
-                        {featured ? featured.farm.name : 'Doka North Holding'}
+                        Demonstration Field Holding
                       </div>
                       <div className="text-[11px] text-[#6b7280]">
                         Field Demonstration · 2026 Wet Season
@@ -247,55 +244,6 @@ export default function LandingPage(): React.JSX.Element {
         </div>
       </section>
 
-      {/* Field Validation Summary Strip */}
-      <section className="border-t border-[#e5e7eb] bg-[#fafafa] py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center border-b border-[#e5e7eb] pb-6">
-            <div>
-              <span className="text-xs font-semibold text-[#0a4232] uppercase">
-                Field Evidence
-              </span>
-              <h3 className="font-display text-2xl font-bold text-[#111827]">
-                Validated in Field Case Studies
-              </h3>
-            </div>
-            <Link href="/cases">
-              <Button variant="secondary" size="sm">
-                <span>View Full Validation Records</span>
-                <ArrowRight className="size-3.5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {CASE_STUDY_PROFILES.map((cs) => (
-              <div
-                key={cs.slug}
-                className="rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-xs"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#111827]">{cs.farmerName}</span>
-                  <Badge variant="pass">Validated</Badge>
-                </div>
-                <div className="mt-1 text-xs text-[#6b7280]">
-                  {cs.village} · {cs.holdingSummary}
-                </div>
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {cs.cropCodes.slice(0, 3).map((code) => (
-                    <span
-                      key={code}
-                      className="rounded bg-[#f4f5f6] px-2 py-0.5 text-[11px] font-medium text-[#4b5563]"
-                    >
-                      {formatCropWithHausa(code, false)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Minimalist Footer */}
       <footer className="border-t border-[#e5e7eb] bg-white py-10 text-xs text-[#6b7280]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
@@ -313,9 +261,6 @@ export default function LandingPage(): React.JSX.Element {
           <div className="flex flex-wrap items-center gap-6 text-[#4b5563]">
             <Link href="/farms" className="hover:text-[#0a4232]">
               Fields
-            </Link>
-            <Link href="/cases" className="hover:text-[#0a4232]">
-              Case Studies
             </Link>
             <Link href="/methodology" className="hover:text-[#0a4232]">
               Data Sources

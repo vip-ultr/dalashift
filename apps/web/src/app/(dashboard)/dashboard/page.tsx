@@ -9,16 +9,13 @@ import {
   Plus,
   ShieldCheck,
   Sprout,
-  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
-import { HonestyMapCanvas } from '../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
-import { CASE_STUDY_PROFILES } from '../../../features/cases/case-study-data';
 
 const farmListResponseSchema = z.object({
   farms: z.array(
@@ -45,26 +42,14 @@ export default function DashboardOverviewPage(): React.JSX.Element {
   >([]);
   const [userName, setUserName] = React.useState<string>('Farmer');
   const [loading, setLoading] = React.useState(true);
-  const [needsSignIn, setNeedsSignIn] = React.useState(false);
-
-  const allCaseParcels = React.useMemo(
-    () => CASE_STUDY_PROFILES.flatMap((cs) => cs.parcels),
-    [],
-  );
-  const [selectedParcelId, setSelectedParcelId] = React.useState<string>(
-    allCaseParcels[0]?.id ?? '',
-  );
 
   React.useEffect(() => {
     let active = true;
 
     async function loadDashboardData() {
       try {
-        // Fetch profile
         const profileRes = await fetch('/api/profile', { cache: 'no-store' });
-        if (profileRes.status === 401) {
-          if (active) setNeedsSignIn(true);
-        } else if (profileRes.ok) {
+        if (profileRes.ok) {
           const profileData: unknown = await profileRes.json();
           const parsedProfile = profileResponseSchema.safeParse(profileData);
           if (parsedProfile.success && parsedProfile.data.profile.full_name) {
@@ -72,11 +57,8 @@ export default function DashboardOverviewPage(): React.JSX.Element {
           }
         }
 
-        // Fetch farms
         const farmsRes = await fetch('/api/farms', { cache: 'no-store' });
-        if (farmsRes.status === 401) {
-          if (active) setNeedsSignIn(true);
-        } else if (farmsRes.ok) {
+        if (farmsRes.ok) {
           const farmsData: unknown = await farmsRes.json();
           const parsedFarms = farmListResponseSchema.safeParse(farmsData);
           if (parsedFarms.success && active) {
@@ -107,7 +89,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
         <div className="flex flex-col justify-between gap-4 rounded-[14px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:flex-row sm:items-center">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Badge variant="Strong">2026 Wet Season Intelligence</Badge>
+              <Badge variant="Strong">2026 Wet Season</Badge>
               <span className="text-xs font-medium text-[#6b7280]">
                 Active Farm Workspace
               </span>
@@ -147,12 +129,12 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               </div>
             </div>
             <div className="tabular mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              {loading ? '...' : farms.length > 0 ? farms.length : '3 (Validation)'}
+              {loading ? '...' : farms.length}
             </div>
             <p className="mt-1 text-[11px] text-[#6b7280]">
               {farms.length > 0
-                ? `${totalRegisteredArea.toFixed(1)} ha total land area registered`
-                : 'Showing verified field holdings'}
+                ? `${totalRegisteredArea.toFixed(1)} ha total land area`
+                : 'No farms added yet'}
             </p>
           </div>
 
@@ -167,7 +149,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               Moisture Watch
             </div>
             <p className="mt-1 text-[11px] text-[#6b7280]">
-              Conditioned on 20 mm 3-day rainfall threshold
+              Conditioned on confirmed rainfall threshold
             </p>
           </div>
 
@@ -197,7 +179,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               Protected
             </div>
             <p className="mt-1 text-[11px] text-[#6b7280]">
-              Row-Level Security active on private parcel records
+              Row-Level Security active on your farm records
             </p>
           </div>
         </div>
@@ -210,14 +192,13 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                 Your Registered Holdings
               </h2>
               <p className="mt-0.5 text-xs text-[#6b7280]">
-                Access farm parcels, view multi-strategy rotation evaluations, and inspect evidence
-                strength.
+                Access farm parcels, view rotation evaluations, and inspect environmental evidence.
               </p>
             </div>
             <Link href="/farms/new">
               <Button variant="outline" size="sm">
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Register Another Farm</span>
+                <span>Register Farm</span>
               </Button>
             </Link>
           </div>
@@ -260,103 +241,27 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               ))}
             </div>
           ) : (
-            <div className="mt-4 rounded-[10px] border border-dashed border-[#d1d5db] bg-[#fafafb] p-6 text-center">
+            <div className="mt-4 rounded-[10px] border border-dashed border-[#d1d5db] bg-[#fafafb] p-8 text-center">
               <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#ebfaef] text-[#00b159]">
                 <Sprout className="h-5 w-5" aria-hidden="true" />
               </div>
-              <h3 className="mt-2 text-sm font-semibold text-[#111315]">
-                No private holdings registered yet
+              <h3 className="mt-2.5 text-sm font-semibold text-[#111315]">
+                No farms registered yet
               </h3>
               <p className="mt-1 text-xs text-[#6b7280]">
-                Register your first parcel with GPS coordinates or a drawn boundary to get tailored
-                rotation guidance.
+                Add your farm boundary or GPS point to start receiving environmental analysis and crop guidance.
               </p>
-              <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <div className="mt-4 flex justify-center">
                 <Link href="/farms/new">
-                  <Button variant="primary" size="sm">
-                    <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>Register Farm Now</span>
-                  </Button>
-                </Link>
-                <Link href="/cases">
-                  <Button variant="secondary" size="sm">
-                    <Users className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>Explore Verified Case Studies</span>
+                  <Button variant="primary" size="md">
+                    <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                    <span>Add Your First Farm</span>
                   </Button>
                 </Link>
               </div>
             </div>
           )}
         </section>
-
-        {/* Interactive Map & Field Validation Quick Access */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-8">
-            <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <h2 className="font-display text-base font-bold text-[#111315]">
-                    Interactive Geospatial Map
-                  </h2>
-                  <p className="text-xs text-[#6b7280]">
-                    MapLibre satellite imagery of monitored farm holdings.
-                  </p>
-                </div>
-                <Link href="/farms">
-                  <Button variant="secondary" size="sm">
-                    <span>Full Map View</span>
-                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Button>
-                </Link>
-              </div>
-              <HonestyMapCanvas
-                parcels={allCaseParcels}
-                selectedParcelId={selectedParcelId}
-                onSelectParcel={setSelectedParcelId}
-                heightClass="h-[360px]"
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-4">
-            <div className="flex h-full flex-col justify-between rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Badge variant="pass">Field Validated</Badge>
-                  <span className="text-[11px] text-[#6b7280]">Benchmark</span>
-                </div>
-                <h3 className="font-display text-base font-bold text-[#111315]">
-                  Village Benchmark Cases
-                </h3>
-                <p className="text-xs leading-relaxed text-[#4b5563]">
-                  Inspect ground-truth rotation comparisons and moisture trigger rules recorded
-                  directly from local farmers:
-                </p>
-
-                <div className="space-y-2 pt-1">
-                  {CASE_STUDY_PROFILES.map((cs) => (
-                    <Link
-                      key={cs.slug}
-                      href={`/cases/${cs.slug}`}
-                      className="block rounded-[8px] border border-[#e5e7eb] bg-[#fafafb] p-2.5 transition-colors hover:border-[#00b159] hover:bg-white"
-                    >
-                      <div className="text-xs font-semibold text-[#111315]">{cs.farmerName}</div>
-                      <div className="text-[11px] text-[#6b7280]">
-                        {cs.holdingSummary.slice(0, 55)}...
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-4 border-t border-[#f3f4f6] pt-3">
-                <Link href="/cases" className="text-xs font-semibold text-[#00b159] hover:underline">
-                  View all case studies &rarr;
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

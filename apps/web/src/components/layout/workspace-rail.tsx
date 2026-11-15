@@ -34,12 +34,6 @@ const PRIMARY_NAV_ITEMS = [
     exactExclude: '/farms/new',
   },
   {
-    href: '/cases',
-    label: 'Field Validation',
-    icon: Users,
-    matchPrefix: '/cases',
-  },
-  {
     href: '/farms/new',
     label: 'Add Farm / Parcel',
     icon: PlusCircle,
@@ -207,7 +201,7 @@ export function WorkspaceRail() {
       {/* Desktop 64px Vertical Icon Rail */}
       <aside
         aria-label="Workspace navigation rail"
-        className="hidden w-16 shrink-0 flex-col items-center justify-between border-r border-[#e5e7eb] bg-white py-4 lg:flex print:hidden"
+        className="sticky top-0 hidden h-screen w-16 shrink-0 flex-col items-center justify-between border-r border-[#e5e7eb] bg-white py-4 lg:flex print:hidden"
       >
         <div className="flex flex-col items-center gap-3">
           <Link

@@ -90,41 +90,28 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-[#fafafb] text-[#111315]">
-      {/* Minimal Top Bar */}
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/brand/logo-horizontal.svg"
-            alt="DalaShift"
-            width={130}
-            height={30}
-            priority
-            className="h-7 w-auto"
-          />
-        </Link>
+    <div className="flex min-h-screen flex-col justify-center bg-[#fafafb] px-4 py-8 text-[#111315]">
+      <div className="mx-auto w-full max-w-[392px]">
+        {/* Brand Header */}
+        <div className="mb-6 flex justify-center">
+          <Link href="/">
+            <Image
+              src="/brand/logo-horizontal.svg"
+              alt="DalaShift"
+              width={140}
+              height={32}
+              priority
+              className="h-8 w-auto"
+            />
+          </Link>
+        </div>
 
-        <Link
-          href="/cases"
-          className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-1.5 text-xs font-medium text-[#4b5563] shadow-2xs transition-colors hover:border-[#0a4232] hover:text-[#0a4232]"
-        >
-          <span>View Field Case Studies</span>
-          <ArrowRight className="h-3.5 w-3.5 text-[#0a4232]" aria-hidden="true" />
-        </Link>
-      </header>
-
-      {/* Centered 380px Auth Container */}
-      <main className="mx-auto flex w-full max-w-[392px] flex-1 flex-col justify-center px-4 py-8">
-        <div className="rounded-[16px] border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
-          <div className="space-y-1.5 text-center">
-            <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
-              {mode === 'login' ? 'Welcome back' : 'Create your account'}
+        {/* Card */}
+        <div className="rounded-[16px] border border-[#e5e7eb] bg-white p-7 shadow-xs">
+          <div className="text-center">
+            <h1 className="font-display text-xl font-bold tracking-tight text-[#111315]">
+              {mode === 'login' ? 'Sign in to DalaShift' : 'Create your account'}
             </h1>
-            <p className="text-xs text-[#6b7280]">
-              {mode === 'login'
-                ? 'Sign in to view your registered farm parcels and seasonal guidance.'
-                : 'Create an account to register your farm parcels and view environmental intelligence.'}
-            </p>
           </div>
 
           <div className="mt-5">
@@ -147,7 +134,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 <Input
                   id="auth-fullname"
                   type="text"
-                  placeholder="e.g. Bello Yusuf Maitama"
+                  placeholder="Your full name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   autoComplete="name"
@@ -160,14 +147,11 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
               <Input
                 id="auth-identifier"
                 type="text"
-                placeholder="farmer@example.org or +234..."
+                placeholder="name@example.com or phone"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 autoComplete="username"
               />
-              <p className="text-[11px] text-[#6b7280]">
-                Use an email or phone number (for example, 080... or +234...).
-              </p>
             </div>
 
             <div className="space-y-1.5">
@@ -175,22 +159,12 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
               <Input
                 id="auth-password"
                 type="password"
-                placeholder="Enter at least 6 characters"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
-
-            {mode === 'register' ? (
-              <div className="rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f6] p-3 text-xs text-[#374151]">
-                <p className="leading-relaxed">
-                  <strong>Farm data privacy:</strong> Your farm location is used only to
-                  retrieve environmental data for your land and is never shared publicly
-                  without your explicit consent.
-                </p>
-              </div>
-            ) : null}
 
             {errorMessage ? (
               <div
@@ -200,6 +174,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 {errorMessage}
               </div>
             ) : null}
+
             <Button
               type="submit"
               variant="primary"
@@ -209,34 +184,15 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
             >
               <span>
                 {submitting
-                  ? 'Opening workspace...'
+                  ? 'Please wait...'
                   : mode === 'login'
-                    ? 'Sign in to workspace'
-                    : 'Create account & add farm'}
+                    ? 'Sign in'
+                    : 'Create account'}
               </span>
             </Button>
           </form>
-
-          {/* Direct Demo / Guest Access Shortcut */}
-          <div className="mt-5 border-t border-[#e5e7eb] pt-4 text-center">
-            <p className="text-xs text-[#6b7280]">
-              Looking to explore field data without signing in?
-            </p>
-            <Link
-              href="/cases"
-              className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#00b159] hover:underline"
-            >
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>Explore Field Case Studies without signing in</span>
-            </Link>
-          </div>
         </div>
-      </main>
-
-      <footer className="py-4 text-center text-[11px] text-[#6b7280]">
-        Your session is private and time-limited. Database Row-Level Security protects each farmer's
-        records.
-      </footer>
+      </div>
     </div>
   );
 }

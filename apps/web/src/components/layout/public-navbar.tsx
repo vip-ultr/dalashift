@@ -15,7 +15,6 @@ export function PublicNavbar() {
   const navLinks = [
     { href: '/', label: 'Overview' },
     { href: '/farms', label: 'Field Workspace' },
-    { href: '/cases', label: 'Field Validation' },
     { href: '/methodology', label: 'Methodology' },
   ];
 
