@@ -86,7 +86,7 @@ export default function LandingPage(): React.JSX.Element {
                     <span>Field Grounded</span>
                   </div>
                   <p className="mt-1 text-xs text-[#6b7280]">
-                    Validated in Tofa LGA with local Hausa crop terminology.
+                    Validated with smallholder farmers and local Hausa crop terminology.
                   </p>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function LandingPage(): React.JSX.Element {
                         {featured ? featured.farm.name : 'Doka North Holding'}
                       </div>
                       <div className="text-[11px] text-[#6b7280]">
-                        Tofa LGA · 2026 Wet Season
+                        Field Demonstration · 2026 Wet Season
                       </div>
                     </div>
                   </div>
@@ -256,7 +256,7 @@ export default function LandingPage(): React.JSX.Element {
                 Field Evidence
               </span>
               <h3 className="font-display text-2xl font-bold text-[#111827]">
-                Validated in Tofa LGA, Kano State
+                Validated in Field Case Studies
               </h3>
             </div>
             <Link href="/cases">

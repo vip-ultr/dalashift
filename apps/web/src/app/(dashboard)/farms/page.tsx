@@ -82,7 +82,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
             <div className="flex items-center gap-2">
               <Badge variant="Strong">2026 Wet Season</Badge>
               <span className="text-xs font-medium text-[#6b7280]">
-                Tofa LGA, Kano State · Multi-Parcel Holdings
+                Northern Nigeria · Multi-Parcel Holdings
               </span>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
@@ -260,7 +260,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
         {/* All Holdings & Parcels Grid */}
         <div className="space-y-3">
           <h2 className="font-display text-lg font-bold text-[#111315]">
-            All Registered Holdings in Tofa LGA ({CASE_STUDY_PROFILES.length})
+            Verified Field Holdings ({CASE_STUDY_PROFILES.length})
           </h2>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">

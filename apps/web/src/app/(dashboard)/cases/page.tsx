@@ -24,17 +24,17 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="Strong">Field Validation · Tofa LGA</Badge>
+                <Badge variant="Strong">Field Validation</Badge>
                 <span className="text-xs font-medium text-[#6b7280]">
                   Doka Village · Kano State, Nigeria · Public Access
                 </span>
               </div>
               <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
-                Doka Village Field Case Studies
+                Field Validation Case Studies
               </h1>
               <p className="max-w-3xl text-sm leading-relaxed text-[#4b5563]">
-                Three in-person interviews conducted in Hausa in Doka village, Tofa Local Government
-                Area. Select any farmer below to inspect their multi-parcel holding,
+                In-person ground-truth interviews conducted in Hausa with local farmers.
+                Select any farmer below to inspect their multi-parcel holding,
                 moisture-conditioned planting trigger, and 3-strategy rotation comparison without
                 signing in.
               </p>
@@ -59,7 +59,7 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#1d4ed8]" aria-hidden="true" />
             <div>
               <strong>Validation Scope &amp; Consent:</strong> Field validation
-              covers Doka village in Tofa LGA, Kano State. It does not claim validation across all
+              covers our initial validation holdings in Kano State. It does not claim validation across all
               of Nigeria. Bello Yusuf Maitama and Amina Habibu consented to publication and GPS
               capture; Abubakar (Dan Hajiya) consented to publication while GPS capture was not
               raised, so his plots use representative Doka coordinates.

@@ -109,7 +109,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             <div className="flex items-center gap-2">
               <Badge variant="Strong">2026 Wet Season Intelligence</Badge>
               <span className="text-xs font-medium text-[#6b7280]">
-                Tofa LGA, Kano State · Active Workspace
+                Active Farm Workspace
               </span>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
@@ -152,7 +152,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             <p className="mt-1 text-[11px] text-[#6b7280]">
               {farms.length > 0
                 ? `${totalRegisteredArea.toFixed(1)} ha total land area registered`
-                : 'Showing verified Tofa LGA holdings'}
+                : 'Showing verified field holdings'}
             </p>
           </div>
 
@@ -299,7 +299,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                     Interactive Geospatial Map
                   </h2>
                   <p className="text-xs text-[#6b7280]">
-                    MapLibre satellite imagery of monitored holdings in Tofa LGA.
+                    MapLibre satellite imagery of monitored farm holdings.
                   </p>
                 </div>
                 <Link href="/farms">
@@ -323,14 +323,14 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Badge variant="pass">Field Validated</Badge>
-                  <span className="text-[11px] text-[#6b7280]">Tofa LGA</span>
+                  <span className="text-[11px] text-[#6b7280]">Benchmark</span>
                 </div>
                 <h3 className="font-display text-base font-bold text-[#111315]">
-                  Doka Village Benchmark Cases
+                  Village Benchmark Cases
                 </h3>
                 <p className="text-xs leading-relaxed text-[#4b5563]">
                   Inspect ground-truth rotation comparisons and moisture trigger rules recorded
-                  directly from Tofa LGA farmers:
+                  directly from local farmers:
                 </p>
 
                 <div className="space-y-2 pt-1">

@@ -108,7 +108,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
           href="/cases"
           className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-1.5 text-xs font-medium text-[#4b5563] shadow-2xs transition-colors hover:border-[#0a4232] hover:text-[#0a4232]"
         >
-          <span>View Tofa LGA Case Studies</span>
+          <span>View Field Case Studies</span>
           <ArrowRight className="h-3.5 w-3.5 text-[#0a4232]" aria-hidden="true" />
         </Link>
       </header>
@@ -220,14 +220,14 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
           {/* Direct Demo / Guest Access Shortcut */}
           <div className="mt-5 border-t border-[#e5e7eb] pt-4 text-center">
             <p className="text-xs text-[#6b7280]">
-              Reviewing for the hackathon or working offline in the field?
+              Looking to explore field data without signing in?
             </p>
             <Link
               href="/cases"
               className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#00b159] hover:underline"
             >
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>Explore Doka Village Case Studies without signing in</span>
+              <span>Explore Field Case Studies without signing in</span>
             </Link>
           </div>
         </div>

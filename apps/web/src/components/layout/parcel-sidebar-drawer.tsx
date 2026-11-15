@@ -97,8 +97,8 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
         {/* Validated Case Studies List */}
         <div className="mt-4">
           <div className="flex items-center justify-between text-[11px] font-semibold tracking-wider text-ink-muted uppercase">
-            <span>Doka Village Case Studies</span>
-            <span>Tofa LGA</span>
+            <span>Verified Field Cases</span>
+            <span>Field Plots</span>
           </div>
 
           <ul className="mt-2 space-y-1.5">
@@ -130,7 +130,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                       </div>
                       <div className="mt-0.5 flex items-center gap-1.5">
                         <span className="inline-flex items-center rounded bg-[#00b159] px-1.5 py-0.2 text-[10px] font-medium text-white">
-                          Tofa LGA
+                          Verified Plot
                         </span>
                         <span className="text-[11px] text-ink-muted tabular">
                           {formatMetricValue(holdingArea, 1)} ha · {cs.parcels.length} parcels

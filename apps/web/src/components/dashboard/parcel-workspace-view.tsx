@@ -354,7 +354,7 @@ export function ParcelWorkspaceView({
                     Prospective Crop Suitability Shortlist
                   </h2>
                   <p className="text-xs text-[#4b5563]">
-                    Evaluates candidate crops for Tofa LGA against seasonal rainfall, temperature,
+                    Evaluates candidate crops against seasonal rainfall, temperature,
                     SoilGrids 250 m soil pH, and farmer management priorities. Grouped by ordinal
                     rank (First Choice, Tied / Viable with Trade-offs, Lower Fit).
                   </p>
