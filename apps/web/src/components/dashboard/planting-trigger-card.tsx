@@ -10,10 +10,7 @@ import type { PlantingTriggerAssessment } from '@dalashift/shared/types';
 import { CloudRain, Compass, Droplets, Sprout, UserCheck } from 'lucide-react';
 
 import { cn } from '../../lib/utilities/cn';
-import {
-  formatMetricValue,
-  PLANTING_TRIGGER_TITLES,
-} from '../../lib/utilities/format';
+import { formatMetricValue, PLANTING_TRIGGER_TITLES } from '../../lib/utilities/format';
 import { Badge } from '../ui/badge';
 
 export interface PlantingTriggerCardProps {
@@ -41,10 +38,7 @@ export function PlantingTriggerCard({
   return (
     <section
       aria-label="Planting condition and moisture trigger"
-      className={cn(
-        'rounded-2xl border border-border bg-surface-raised p-5 sm:p-6',
-        className,
-      )}
+      className={cn('rounded-2xl border border-border bg-surface-raised p-5 sm:p-6', className)}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -64,7 +58,9 @@ export function PlantingTriggerCard({
             When to sow: Condition over calendar date
           </h3>
           <p className="mt-1 text-sm text-ink-muted">
-            In northern Nigeria, early rains are often followed by dry spells. DalaShift evaluates soil moisture and rainfall conditions against your stated risk posture rather than guessing a calendar date.
+            In northern Nigeria, early rains are often followed by dry spells. DalaShift evaluates
+            soil moisture and rainfall conditions against your stated risk posture rather than
+            guessing a calendar date.
           </p>
         </div>
       </div>
@@ -135,9 +131,7 @@ export function PlantingTriggerCard({
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {isRecommended ? (
-                      <Badge variant="pass">Selected condition</Badge>
-                    ) : null}
+                    {isRecommended ? <Badge variant="pass">Selected condition</Badge> : null}
                     {isFarmerRule ? (
                       <Badge variant="farmer">Farmer&apos;s stated rule</Badge>
                     ) : null}
@@ -146,21 +140,15 @@ export function PlantingTriggerCard({
                     ) : null}
                   </div>
 
-                  <h4 className="mt-2.5 text-sm font-semibold text-ink">
-                    {titles[fieldLang]}
-                  </h4>
-                  <p className="mt-1.5 text-xs leading-relaxed text-ink">
-                    {profile.condition}
-                  </p>
+                  <h4 className="mt-2.5 text-sm font-semibold text-ink">{titles[fieldLang]}</h4>
+                  <p className="mt-1.5 text-xs leading-relaxed text-ink">{profile.condition}</p>
                 </div>
 
                 <div className="mt-3 border-t border-border/80 pt-2.5 text-[11px] text-ink-muted">
                   <p>
                     <strong className="text-ink">Trade-off:</strong> {profile.riskProfile}
                   </p>
-                  <p className="mt-1 text-[#8e5636]">
-                    Field practice: {titles.exampleFarmer}
-                  </p>
+                  <p className="mt-1 text-[#8e5636]">Field practice: {titles.exampleFarmer}</p>
                 </div>
               </div>
             );

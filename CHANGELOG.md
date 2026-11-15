@@ -14,19 +14,28 @@ the build.
 
 ## [Unreleased]
 
-### Remaining Frontend Handoff Items (Continue Here on Next Device)
+### Frontend Handoff Completed
 
-1. **Finish TypeScript Prop Alignment (`pnpm typecheck` in `apps/web`):**
-   - Run `cd apps/web && npx tsc --noEmit` to see the remaining prop-name mismatches between the Phase B components (`SituationBanner`, `RotationStrategyCard`, `SuitabilityShortlistCard`, `HonestyTimeSeriesChart`, `HonestyMapCanvas`, `UnderlineTabs`, `ProvenanceLine`) and the newly created Phase C callers (`parcel-workspace-view.tsx`, `printable-field-sheet.tsx`, `cases/page.tsx`, `farms/page.tsx`, `farms/new/page.tsx`, `page.tsx`, and `case-study-data.ts`).
-   - Specifically:
-     - In `apps/web/src/features/cases/case-study-data.ts` and `parcel-workspace-view.tsx` / `printable-field-sheet.tsx` / `cases/page.tsx` / `page.tsx`, align `ComparisonResult` (`comparison.strategies` vs. `comparison.options`, `strategy.label` vs. `optionName`, `strategy.rank` vs. `rankPosition`, `priorities.plantingTrigger` vs. `plantingTriggerRule`, `obs.sourceId` vs. `obs.provenance`) with `packages/shared/types/index.ts`.
-     - In `apps/web/src/app/(dashboard)/farms/new/page.tsx`, import `area` from `@turf/turf` instead of `@turf/area`.
-     - In `apps/web/src/components/dashboard/situation-banner.tsx`, import `EvidenceStrength` from `@dalashift/shared/constants`.
-2. **Run Full Workspace Verification (`pnpm check` & `pnpm validate:style`):**
-   - Ensure `pnpm typecheck`, `pnpm lint`, and `pnpm validate:style` all exit `0`.
-   - Remember: **Never use an em dash (U+2014)** anywhere in code, comments, or documentation (`pnpm validate:style` is passing with zero em dashes).
-3. **End-to-End Smoke Test (`pnpm dev`):**
-   - Start the dev server and verify navigation across `/`, `/cases`, `/cases/bello-yusuf-maitama`, `/farms`, `/farms/new`, `/reports`, `/methodology`, `/profile`, `/login`, and `/register`.
+- Sign-in and registration use Supabase Auth with validation and explicit
+  consent.
+- Farm onboarding creates the holding, parcels, crop records and priorities
+  through the existing authenticated endpoints, then requests an analysis.
+  Partial saves are surfaced instead of silently discarded.
+- Registered holdings load from the signed-in farmer's API response.
+  Case-study pages continue to use published examples, and unknown farm IDs no
+  longer fall back to a public demo.
+- Registered-farm workspaces and reports use backend data, run comparisons and
+  generate printable reports with source attribution and coordinate redaction.
+- Profile language preference loads from and saves to `/api/profile`; workspace
+  perspective remains session-only, and coordinate redaction is always enforced.
+- Web dev, build and start commands load the repository-root `.env.local`,
+  preserve deployment-injected values, and exclude Supabase CLI credentials.
+- Inter and Geologica are bundled locally, removing build-time Google Fonts
+  requests. Web development and production builds use Webpack because the
+  Next.js 16.4.6 Turbopack report route panicked during local verification.
+- Verification passed: Web production build, TypeScript, ESLint, all 13
+  Vitest tests, formatting, writing-style and Markdown-link checks. Route smoke
+  tests returned 200, and unauthenticated `GET /api/farms` returned 401.
 
 ### Fixed
 

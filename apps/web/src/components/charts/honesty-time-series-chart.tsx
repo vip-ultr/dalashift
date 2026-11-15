@@ -98,10 +98,7 @@ export function HonestyTimeSeriesChart({
         <div className="mt-4 h-56 w-full" aria-label={`${title}. ${summarySentence}`}>
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'bar' ? (
-              <BarChart
-                data={[...data]}
-                margin={{ top: 8, right: 12, left: -12, bottom: 0 }}
-              >
+              <BarChart data={[...data]} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis
                   dataKey="label"
@@ -153,10 +150,7 @@ export function HonestyTimeSeriesChart({
                 ) : null}
               </BarChart>
             ) : (
-              <LineChart
-                data={[...data]}
-                margin={{ top: 8, right: 12, left: -12, bottom: 0 }}
-              >
+              <LineChart data={[...data]} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis
                   dataKey="label"

@@ -726,7 +726,8 @@ export const CASE_STUDY_PROFILES: readonly CaseStudyFullProfile[] = [
   createCaseStudyProfile({
     slug: 'amina-habibu',
     farmerName: 'Amina Habibu',
-    holdingSummary: '~4 ha (3 main fields + 2 smaller plots) · Structured ridge ratios & kalankuwa borders',
+    holdingSummary:
+      '~4 ha (3 main fields + 2 smaller plots) · Structured ridge ratios & kalankuwa borders',
     farmingExperience:
       'Experienced farmer managing roughly 4 hectares across five parcels in Doka village, trained through Bayero University extension outreach.',
     verbatimQuote:
@@ -826,7 +827,8 @@ export const CASE_STUDY_PROFILES: readonly CaseStudyFullProfile[] = [
   createCaseStudyProfile({
     slug: 'abubakar-dan-hajiya',
     farmerName: 'Abubakar (Dan Hajiya)',
-    holdingSummary: '~30 ha owned holding divided into 3 ha plots · 2-to-3-year cereal-legume cycle',
+    holdingSummary:
+      '~30 ha owned holding divided into 3 ha plots · 2-to-3-year cereal-legume cycle',
     farmingExperience:
       '30 years of farming experience in Doka village, managing roughly 30 hectares divided into 3-hectare management plots across rainy and dry seasons.',
     verbatimQuote:
@@ -925,4 +927,3 @@ export function getCaseStudyByFarmId(farmIdOrSlug: string): CaseStudyFullProfile
     (item) => item.farm.id === farmIdOrSlug || item.slug === farmIdOrSlug,
   );
 }
-

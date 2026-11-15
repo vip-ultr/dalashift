@@ -3,10 +3,8 @@ import {
   CalendarClock,
   FileText,
   GitCompareArrows,
-  MapPin,
   Quote,
   ShieldCheck,
-  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import type * as React from 'react';
@@ -15,10 +13,7 @@ import { ParcelVectorThumbnail } from '../../../components/farms/parcel-vector-t
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { CASE_STUDY_PROFILES } from '../../../features/cases/case-study-data';
-import {
-  formatCropWithHausa,
-  PLANTING_TRIGGER_TITLES,
-} from '../../../lib/utilities/format';
+import { formatCropWithHausa, PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
 
 export default function CaseStudiesOverviewPage(): React.JSX.Element {
   return (
@@ -38,10 +33,10 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
                 Doka Village Field Case Studies
               </h1>
               <p className="max-w-3xl text-sm leading-relaxed text-[#4b5563]">
-                Three in-person interviews conducted in Hausa in Doka village,
-                Tofa Local Government Area. Select any farmer below to inspect
-                their multi-parcel holding, moisture-conditioned planting
-                trigger, and 3-strategy rotation comparison without signing in.
+                Three in-person interviews conducted in Hausa in Doka village, Tofa Local Government
+                Area. Select any farmer below to inspect their multi-parcel holding,
+                moisture-conditioned planting trigger, and 3-strategy rotation comparison without
+                signing in.
               </p>
             </div>
 
@@ -61,17 +56,13 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
 
           {/* Scope Honesty Strip */}
           <div className="mt-4 flex items-start gap-2.5 rounded-[8px] border border-[#cce0f5] bg-[#eef5fc] p-3 text-xs text-[#1d4ed8]">
-            <ShieldCheck
-              className="mt-0.5 h-4 w-4 shrink-0 text-[#1d4ed8]"
-              aria-hidden="true"
-            />
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#1d4ed8]" aria-hidden="true" />
             <div>
-              <strong>Validation Scope &amp; Consent (ADR-0011 D-12):</strong>{' '}
-              Field validation covers Doka village in Tofa LGA, Kano State. It
-              does not claim validation across all of Nigeria. Bello Yusuf
-              Maitama and Amina Habibu consented to publication and GPS capture;
-              Abubakar (Dan Hajiya) consented to publication while GPS capture
-              was not raised, so his plots use representative Doka coordinates.
+              <strong>Validation Scope &amp; Consent (ADR-0011 D-12):</strong> Field validation
+              covers Doka village in Tofa LGA, Kano State. It does not claim validation across all
+              of Nigeria. Bello Yusuf Maitama and Amina Habibu consented to publication and GPS
+              capture; Abubakar (Dan Hajiya) consented to publication while GPS capture was not
+              raised, so his plots use representative Doka coordinates.
             </div>
           </div>
         </div>
@@ -79,12 +70,8 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
         {/* 3 Case Study Cards */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {CASE_STUDY_PROFILES.map((cs, index) => {
-            const totalHa = cs.parcels.reduce(
-              (sum, parcel) => sum + (parcel.areaHa ?? 0),
-              0,
-            );
-            const triggerRule =
-              cs.priorities.plantingTriggerRule ?? 'wait_for_confirmed_moisture';
+            const totalHa = cs.parcels.reduce((sum, parcel) => sum + (parcel.areaHa ?? 0), 0);
+            const triggerRule = cs.priorities.plantingTrigger ?? 'wait_for_confirmed_moisture';
 
             return (
               <article
@@ -116,12 +103,10 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
 
                   {/* Holding & Experience */}
                   <div className="rounded-[8px] bg-[#f4f5f6] p-3 text-xs">
-                    <div className="font-semibold text-[#111315]">
-                      {cs.holdingSummary}
-                    </div>
+                    <div className="font-semibold text-[#111315]">{cs.holdingSummary}</div>
                     <div className="tabular mt-1 text-[#4b5563]">
-                      {cs.parcels.length} mapped parcels ({totalHa.toFixed(1)} ha
-                      represented) · {cs.farmingExperience}
+                      {cs.parcels.length} mapped parcels ({totalHa.toFixed(1)} ha represented) ·{' '}
+                      {cs.farmingExperience}
                     </div>
                   </div>
 
@@ -141,7 +126,8 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
                       <span>Stated Planting Trigger Rule:</span>
                     </div>
                     <p className="text-xs font-medium text-[#111315]">
-                      {PLANTING_TRIGGER_TITLES[triggerRule] ?? triggerRule}
+                      {PLANTING_TRIGGER_TITLES[triggerRule as keyof typeof PLANTING_TRIGGER_TITLES]
+                        ?.en ?? triggerRule}
                     </p>
                   </div>
 
@@ -169,18 +155,18 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
                       <span>3-Strategy Rotation Comparison:</span>
                     </div>
                     <ul className="space-y-1 text-xs text-[#374151]">
-                      {cs.rotationComparison.options.map((opt, idx) => (
+                      {cs.rotationComparison.strategies.map((opt, idx) => (
                         <li
-                          key={opt.optionId}
+                          key={`${opt.label}-${idx}`}
                           className="flex items-center justify-between gap-2"
                         >
                           <span className="truncate">
-                            {idx + 1}. {opt.optionName}
+                            {idx + 1}. {opt.label}
                           </span>
                           <span className="shrink-0 font-mono text-[11px] font-semibold text-[#0b4f2f]">
-                            {opt.rankPosition === 'first'
+                            {opt.rank === 'first'
                               ? '1st Choice'
-                              : opt.rankPosition === 'tied'
+                              : opt.rank === 'tied'
                                 ? 'Tied'
                                 : 'Baseline'}
                           </span>

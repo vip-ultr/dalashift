@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  FolderPlus,
-  HelpCircle,
-  Search,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, FolderPlus, HelpCircle, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -38,8 +32,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   );
 
   const totalValidatedHa = CASE_STUDY_PROFILES.reduce(
-    (sum, cs) =>
-      sum + cs.parcels.reduce((pSum, parcel) => pSum + (parcel.areaHa ?? 0), 0),
+    (sum, cs) => sum + cs.parcels.reduce((pSum, parcel) => pSum + (parcel.areaHa ?? 0), 0),
     0,
   );
 
@@ -73,7 +66,8 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           <div>
             <h2 className="text-base font-bold text-ink">2026 Wet Season</h2>
             <p className="text-xs text-ink-muted tabular">
-              {formatMetricValue(totalValidatedHa, 2)} ha across {CASE_STUDY_PROFILES.length} holdings
+              {formatMetricValue(totalValidatedHa, 2)} ha across {CASE_STUDY_PROFILES.length}{' '}
+              holdings
             </p>
           </div>
           <button
@@ -110,13 +104,9 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           <ul className="mt-2 space-y-1.5">
             {filteredCases.map((cs) => {
               const firstParcel = cs.parcels[0]!;
-              const holdingArea = cs.parcels.reduce(
-                (s, p) => s + (p.areaHa ?? 0),
-                0,
-              );
+              const holdingArea = cs.parcels.reduce((s, p) => s + (p.areaHa ?? 0), 0);
               const href = `/cases/${cs.slug}`;
-              const isActive =
-                pathname === href || pathname.includes(cs.farm.id);
+              const isActive = pathname === href || pathname.includes(cs.farm.id);
 
               return (
                 <li key={cs.slug}>
@@ -124,9 +114,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                     href={href}
                     className={cn(
                       'flex items-center gap-2.5 rounded-lg p-2 transition-colors',
-                      isActive
-                        ? 'bg-[#e9ecef] text-ink'
-                        : 'hover:bg-[#f4f5f6] text-ink',
+                      isActive ? 'bg-[#e9ecef] text-ink' : 'hover:bg-[#f4f5f6] text-ink',
                     )}
                   >
                     <ParcelVectorThumbnail
@@ -161,11 +149,10 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           <div className="mx-auto flex size-9 items-center justify-center rounded-lg bg-surface-raised text-ink shadow-2xs">
             <FolderPlus className="size-4.5" />
           </div>
-          <h3 className="mt-2.5 text-sm font-semibold text-ink">
-            Add your farm or parcel
-          </h3>
+          <h3 className="mt-2.5 text-sm font-semibold text-ink">Add your farm or parcel</h3>
           <p className="mt-1 text-xs leading-relaxed text-ink-muted">
-            Capture a GPS point with accuracy radius or draw your field boundary on the map to compare rotations for your land.
+            Capture a GPS point with accuracy radius or draw your field boundary on the map to
+            compare rotations for your land.
           </p>
           <Link
             href="/farms/new"
@@ -182,7 +169,8 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
             Working with an extension officer?
           </h3>
           <p className="mt-1 text-xs text-ink-muted">
-            Switch between Farmer View and Adviser View or print a shareable sheet for local review with your malamin gona.
+            Switch between Farmer View and Adviser View or print a shareable sheet for local review
+            with your malamin gona.
           </p>
           <Link
             href="/reports"

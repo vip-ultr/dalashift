@@ -4,23 +4,23 @@ import { describe, expect, it } from 'vitest';
 import HomePage from '../src/app/page';
 
 /**
- * Smoke test for the Phase 1 placeholder route.
+ * Smoke test for the landing page route.
  *
- * This is not a product test. It exists so the workspace has a working test
- * harness from the first commit, and so the placeholder page cannot silently
- * change its meaning (it declares the project is in Phase 1).
+ * Verifies that the page renders core branding, Tofa LGA field validation context,
+ * and the resolution honesty principles.
  */
-describe('placeholder home route', () => {
-  it('states that the project is in Phase 1', () => {
+describe('landing page route', () => {
+  it('renders DalaShift branding and Tofa LGA case study context', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
-    expect(markup).toContain('Phase 1');
     expect(markup).toContain('DalaShift');
+    expect(markup).toContain('Tofa LGA');
   });
 
-  it('does not present itself as a finished product', () => {
+  it('surfaces resolution honesty and deterministic ruleset principles', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
-    expect(markup.toLowerCase()).toContain('not yet implemented');
+    expect(markup).toContain('Resolution Honesty');
+    expect(markup).toContain('Deterministic Ruleset');
   });
 });

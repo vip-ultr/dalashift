@@ -181,12 +181,16 @@ flowchart TB
 ```bash
 corepack enable
 pnpm install
-cp .env.example apps/web/.env.local   # fill in real values
+cp .env.example .env.local   # fill in web runtime values only
 pnpm dev
 ```
 
-Full instructions, including Windows setup, branch naming and the commit
-convention: **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
+The web commands load the repository-root `.env.local`; deployment-provided
+values take precedence, and the file is optional on Vercel. If your local
+settings are still in `apps/web/.env.local`, migrate only web runtime values to
+the root file. Keep Supabase CLI credentials in the CLI's user-level login or
+password prompts, not in the web environment. See
+**[`CONTRIBUTING.md`](./CONTRIBUTING.md)** for setup details.
 
 ---
 

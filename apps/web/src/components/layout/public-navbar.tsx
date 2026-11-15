@@ -19,24 +19,16 @@ export function PublicNavbar({ className }: PublicNavbarProps) {
 
   return (
     <header
-      className={cn(
-        'sticky top-3 z-40 mx-auto w-full max-w-[1200px] px-4 sm:px-6',
-        className,
-      )}
+      className={cn('sticky top-3 z-40 mx-auto w-full max-w-[1200px] px-4 sm:px-6', className)}
     >
       <div className="flex h-16 items-center justify-between rounded-[40px] border border-white/70 bg-white/80 px-5 shadow-[0_2px_16px_rgba(21,21,21,0.04)] backdrop-blur-md">
         {/* Brand Wordmark */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2.5 text-ink hover:opacity-90"
-        >
+        <Link href="/" className="inline-flex items-center gap-2.5 text-ink hover:opacity-90">
           <span className="flex size-9 items-center justify-center rounded-xl bg-[#00b159] text-white shadow-xs">
             <Sprout className="size-5" />
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-bold tracking-tight">
-              DalaShift
-            </span>
+            <span className="font-display text-lg font-bold tracking-tight">DalaShift</span>
             <span className="hidden rounded-full bg-[#ede8e2] px-2 py-0.5 text-[10px] font-medium text-[#6d6351] sm:inline-block">
               Working Name
             </span>
@@ -48,22 +40,13 @@ export function PublicNavbar({ className }: PublicNavbarProps) {
           aria-label="Primary navigation"
           className="hidden items-center gap-7 text-sm font-medium text-ink md:flex"
         >
-          <Link
-            href="/cases"
-            className="transition-colors hover:text-[#00b159]"
-          >
+          <Link href="/cases" className="transition-colors hover:text-[#00b159]">
             Tofa LGA Case Studies
           </Link>
-          <Link
-            href="/farms"
-            className="transition-colors hover:text-[#00b159]"
-          >
+          <Link href="/farms" className="transition-colors hover:text-[#00b159]">
             Field Workspace
           </Link>
-          <Link
-            href="/methodology"
-            className="transition-colors hover:text-[#00b159]"
-          >
+          <Link href="/methodology" className="transition-colors hover:text-[#00b159]">
             Methodology &amp; Sources
           </Link>
         </nav>

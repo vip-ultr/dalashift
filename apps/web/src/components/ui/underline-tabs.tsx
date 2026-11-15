@@ -5,8 +5,10 @@ import type { ReactNode } from 'react';
 import { cn } from '../../lib/utilities/cn';
 
 export interface UnderlineTabItem<T extends string> {
-  readonly id: T;
+  readonly id?: T;
+  readonly value?: T;
   readonly label: string;
+  readonly badge?: number | string;
   readonly badgeCount?: number | string;
   readonly badgeTone?: 'green' | 'neutral' | 'warning';
   readonly icon?: ReactNode;
@@ -14,8 +16,11 @@ export interface UnderlineTabItem<T extends string> {
 
 export interface UnderlineTabsProps<T extends string> {
   readonly tabs: readonly UnderlineTabItem<T>[];
-  readonly activeTab: T;
-  readonly onSelect: (tabId: T) => void;
+  readonly activeTab?: T;
+  readonly value?: T;
+  readonly onSelect?: (tabId: T) => void;
+  readonly onValueChange?: (tabId: T) => void;
+  readonly ariaLabel?: string;
   readonly className?: string;
 }
 
@@ -26,26 +31,38 @@ export interface UnderlineTabsProps<T extends string> {
 export function UnderlineTabs<T extends string>({
   tabs,
   activeTab,
+  value,
   onSelect,
+  onValueChange,
+  ariaLabel,
   className,
 }: UnderlineTabsProps<T>) {
+  const current = value ?? activeTab;
+  const handleSelect = (tabId: T) => {
+    onSelect?.(tabId);
+    onValueChange?.(tabId);
+  };
+
   return (
     <div
       role="tablist"
+      aria-label={ariaLabel}
       className={cn(
         'flex items-center gap-6 overflow-x-auto border-b border-border px-1',
         className,
       )}
     >
       {tabs.map((tab) => {
-        const isActive = tab.id === activeTab;
+        const tabKey = (tab.id ?? tab.value) as T;
+        const count = tab.badge ?? tab.badgeCount;
+        const isActive = tabKey === current;
         return (
           <button
-            key={tab.id}
+            key={tabKey}
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onSelect(tab.id)}
+            onClick={() => handleSelect(tabKey)}
             className={cn(
               'relative inline-flex h-[42px] shrink-0 items-center gap-2 border-b-2 text-sm transition-colors cursor-pointer',
               isActive
@@ -55,7 +72,7 @@ export function UnderlineTabs<T extends string>({
           >
             {tab.icon}
             <span>{tab.label}</span>
-            {tab.badgeCount !== undefined ? (
+            {count !== undefined ? (
               <span
                 className={cn(
                   'inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium leading-none tabular',
@@ -66,7 +83,7 @@ export function UnderlineTabs<T extends string>({
                       : 'bg-[#f4f5f6] text-ink-muted',
                 )}
               >
-                {tab.badgeCount}
+                {count}
               </span>
             ) : null}
           </button>

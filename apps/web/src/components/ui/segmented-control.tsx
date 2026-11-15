@@ -13,8 +13,10 @@ export interface SegmentedOption<T extends string> {
 export interface SegmentedControlProps<T extends string> {
   readonly options: readonly SegmentedOption<T>[];
   readonly value: T;
-  readonly onChange: (next: T) => void;
+  readonly onChange?: (next: T) => void;
+  readonly onValueChange?: (next: T) => void;
   readonly size?: 'sm' | 'md';
+  readonly fullWidth?: boolean;
   readonly className?: string;
   readonly ariaLabel?: string;
 }
@@ -27,16 +29,24 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  onValueChange,
   size = 'md',
+  fullWidth = false,
   className,
   ariaLabel,
 }: SegmentedControlProps<T>) {
+  const handleChange = (next: T) => {
+    onChange?.(next);
+    onValueChange?.(next);
+  };
+
   return (
     <div
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
         'inline-flex items-center rounded-lg bg-[#e9ecef] p-1',
+        fullWidth && 'w-full',
         size === 'md' ? 'h-[42px]' : 'h-[34px]',
         className,
       )}
@@ -49,7 +59,7 @@ export function SegmentedControl<T extends string>({
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange(opt.value)}
+            onClick={() => handleChange(opt.value)}
             className={cn(
               'inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 transition-all cursor-pointer whitespace-nowrap',
               size === 'md' ? 'h-[34px] text-sm' : 'h-[26px] text-xs',

@@ -17,9 +17,7 @@ export function Label({ className, children, optional = false, ...props }: Label
       {...props}
     >
       <span>{children}</span>
-      {optional ? (
-        <span className="text-xs font-normal text-ink-muted">Optional</span>
-      ) : null}
+      {optional ? <span className="text-xs font-normal text-ink-muted">Optional</span> : null}
     </label>
   );
 }

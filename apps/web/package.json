@@ -4,9 +4,9 @@
   "private": true,
   "description": "DalaShift web application: Next.js App Router frontend and server-side API.",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node scripts/with-root-env.mjs dev",
+    "build": "node scripts/with-root-env.mjs build",
+    "start": "node scripts/with-root-env.mjs start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@dalashift/shared": "workspace:*",
     "@hookform/resolvers": "^7.0.6",
+    "@next/env": "^16.4.6",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
     "@turf/turf": "^7.4.0",

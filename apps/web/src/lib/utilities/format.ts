@@ -92,32 +92,21 @@ export function formatObservationDate(isoDate: string | null | undefined): strin
  */
 export const formatResolutionHonesty = formatSpatialResolutionPhrase;
 
-export function formatMetric(
-  value: number | null | undefined,
-  unit = '',
-  decimals = 1,
-): string {
+export function formatMetric(value: number | null | undefined, unit = '', decimals = 1): string {
   const formatted = formatMetricValue(value, decimals);
   if (formatted === 'n/a') return formatted;
   return unit ? `${formatted} ${unit}` : formatted;
 }
 
-export function formatCropWithHausa(
-  cropCode: string,
-  includeHausa = true,
-): string {
+export function formatCropWithHausa(cropCode: string, includeHausa = true): string {
   const entry = HAUSA_CROP_NAMES[cropCode];
   if (!entry) {
     return cropCode.replace(/_/g, ' ');
   }
-  return includeHausa
-    ? `${entry.localEnglish} (${entry.hausa})`
-    : entry.localEnglish;
+  return includeHausa ? `${entry.localEnglish} (${entry.hausa})` : entry.localEnglish;
 }
 
-  value: number | null | undefined,
-  decimals = 1,
-): string {
+export function formatMetricValue(value: number | null | undefined, decimals = 1): string {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return 'n/a';
   }

@@ -39,15 +39,12 @@ export function SituationBanner({
   showAdviserMeta = false,
   className,
 }: SituationBannerProps) {
-  const strength = STRENGTH_CONFIG[evidenceStrength];
+  const strength = STRENGTH_CONFIG[evidenceStrength] ?? STRENGTH_CONFIG.moderate;
 
   return (
     <section
       aria-label="Current parcel situation"
-      className={cn(
-        'rounded-2xl border border-border bg-surface-raised p-5 sm:p-6',
-        className,
-      )}
+      className={cn('rounded-2xl border border-border bg-surface-raised p-5 sm:p-6', className)}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -71,9 +68,7 @@ export function SituationBanner({
         ) : null}
       </div>
 
-      <h2 className="mt-2.5 text-lg font-semibold leading-snug text-ink sm:text-xl">
-        {headline}
-      </h2>
+      <h2 className="mt-2.5 text-lg font-semibold leading-snug text-ink sm:text-xl">{headline}</h2>
 
       {subheadline ? (
         <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{subheadline}</p>
@@ -92,7 +87,8 @@ export function SituationBanner({
           <div className="flex shrink-0 items-center gap-1.5 font-medium text-[#8e5636]">
             <ShieldAlert className="size-3.5 shrink-0" />
             <span className="tabular">
-              {limitations.length} documented {limitations.length === 1 ? 'limitation' : 'limitations'}
+              {limitations.length} documented{' '}
+              {limitations.length === 1 ? 'limitation' : 'limitations'}
             </span>
           </div>
         ) : null}

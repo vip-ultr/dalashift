@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, CheckCircle2, Lock, ShieldCheck, Sprout } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -9,6 +9,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { SegmentedControl } from '../ui/segmented-control';
+import { createClient } from '../../lib/supabase/client';
 
 export interface AuthCardProps {
   readonly initialMode: 'login' | 'register';
@@ -17,26 +18,40 @@ export interface AuthCardProps {
 export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   const router = useRouter();
   const [mode, setMode] = React.useState<'login' | 'register'>(initialMode);
-  const [role, setRole] = React.useState<'farmer' | 'extension_officer'>('farmer');
+  const [role, setRole] = React.useState<'farmer' | 'extension_worker'>('farmer');
   const [fullName, setFullName] = React.useState('');
   const [identifier, setIdentifier] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [consentChecked, setConsentChecked] = React.useState(true);
+  const [consentChecked, setConsentChecked] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [noticeMessage, setNoticeMessage] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
   const handleModeSwitch = (nextMode: 'login' | 'register') => {
     setMode(nextMode);
     setErrorMessage(null);
+    setNoticeMessage(null);
     router.push(nextMode === 'login' ? '/login' : '/register');
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
+    setNoticeMessage(null);
 
-    if (!identifier.trim() || !password.trim()) {
+    const accountIdentifier = identifier.trim();
+    if (!accountIdentifier || !password) {
       setErrorMessage('Please enter your phone number or email and password.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMessage('Your password must be at least 8 characters long.');
+      return;
+    }
+
+    if (mode === 'register' && !fullName.trim()) {
+      setErrorMessage('Please enter your full name.');
       return;
     }
 
@@ -48,10 +63,40 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
     }
 
     setSubmitting(true);
-    window.setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const supabase = createClient();
+      const isEmail = accountIdentifier.includes('@');
+      const credentials = isEmail
+        ? { email: accountIdentifier, password }
+        : { phone: accountIdentifier, password };
+      const result =
+        mode === 'login'
+          ? await supabase.auth.signInWithPassword(credentials)
+          : await supabase.auth.signUp({
+              ...credentials,
+              options: { data: { full_name: fullName.trim(), role } },
+            });
+
+      if (result.error) {
+        setErrorMessage(result.error.message);
+        return;
+      }
+
+      if (mode === 'register' && !result.data.session) {
+        setNoticeMessage(
+          isEmail
+            ? 'Account created. Check your email to confirm the address, then sign in.'
+            : 'Account created. Complete phone verification with your administrator before signing in.',
+        );
+        return;
+      }
+
       router.push(mode === 'register' ? '/farms/new' : '/farms');
-    }, 250);
+    } catch {
+      setErrorMessage('Unable to connect to the account service. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -129,7 +174,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                     options={[
                       { value: 'farmer', label: 'Smallholder Farmer' },
                       {
-                        value: 'extension_officer',
+                        value: 'extension_worker',
                         label: 'Extension Officer (Malamin Gona)',
                       },
                     ]}
@@ -172,10 +217,9 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                     className="mt-0.5 h-4 w-4 rounded border-[#d1d5db] accent-[#00b159]"
                   />
                   <span className="leading-relaxed">
-                    <strong>Farm data privacy (ADR-0006):</strong> Your farm
-                    location is used only to retrieve environmental data for
-                    your land and is never shared publicly without your explicit
-                    consent.
+                    <strong>Farm data privacy (ADR-0006):</strong> Your farm location is used only
+                    to retrieve environmental data for your land and is never shared publicly
+                    without your explicit consent.
                   </span>
                 </label>
               </div>
@@ -187,6 +231,14 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] px-3 py-2 text-xs font-medium text-[#b42318]"
               >
                 {errorMessage}
+              </div>
+            ) : null}
+            {noticeMessage ? (
+              <div
+                role="status"
+                className="rounded-[8px] border border-[#b7ebc9] bg-[#ebfaef] px-3 py-2 text-xs font-medium text-[#0b4f2f]"
+              >
+                {noticeMessage}
               </div>
             ) : null}
 
@@ -224,8 +276,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
       </main>
 
       <footer className="py-4 text-center text-[11px] text-[#6b7280]">
-        Protected by Supabase Row-Level Security (RLS) · Farmers only read their
-        own farm records.
+        Protected by Supabase Row-Level Security (RLS) · Farmers only read their own farm records.
       </footer>
     </div>
   );
