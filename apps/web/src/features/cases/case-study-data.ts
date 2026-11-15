@@ -842,7 +842,7 @@ export const CASE_STUDY_PROFILES: readonly CaseStudyFullProfile[] = [
       farmingMethod: 'mixed',
       irrigationMethod: 'rainfed',
       soilNotes:
-        'Managed in 3 ha rotation blocks; coordinates kept synthetic because GPS capture was not raised in Interview 03 (ADR-0011 D-12).',
+        'Managed in 3 ha rotation blocks; coordinates kept synthetic because GPS capture was not raised in Interview 03.',
     },
     parcels: [
       {

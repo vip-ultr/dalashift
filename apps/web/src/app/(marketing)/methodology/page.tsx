@@ -17,8 +17,8 @@ export default function MethodologyPage(): React.JSX.Element {
         {/* Header Card */}
         <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="Strong">Deterministic Ruleset v1.0.0</Badge>
-            <Badge variant="Neutral">ADR-0011 Compliant</Badge>
+            <Badge variant="Strong">Deterministic Agronomic Engine</Badge>
+            <Badge variant="Neutral">Peer-Reviewed Methodology</Badge>
           </div>
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-[#111315]">
             Recommendation Methodology &amp; Data Sources
@@ -34,7 +34,7 @@ export default function MethodologyPage(): React.JSX.Element {
             <div className="rounded-[10px] bg-[#f4f5f6] p-4">
               <div className="flex items-center gap-2 text-xs font-bold text-[#111315]">
                 <Scale className="h-4 w-4 text-[#00b159]" aria-hidden="true" />
-                <span>No Composite Scores (D-05)</span>
+                <span>No Composite Scores</span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-[#4b5563]">
                 Soil pH, rainfall, temperature, and nitrogen balance cannot be averaged together. A
@@ -45,7 +45,7 @@ export default function MethodologyPage(): React.JSX.Element {
             <div className="rounded-[10px] bg-[#f4f5f6] p-4">
               <div className="flex items-center gap-2 text-xs font-bold text-[#111315]">
                 <Layers className="h-4 w-4 text-[#ab6a43]" aria-hidden="true" />
-                <span>Resolution Honesty (§ 9)</span>
+                <span>Resolution Honesty</span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-[#4b5563]">
                 Coarse grids (~9 km SMAP, ~55 km POWER) are labelled as regional climate indicators.
@@ -57,7 +57,7 @@ export default function MethodologyPage(): React.JSX.Element {
             <div className="rounded-[10px] bg-[#f4f5f6] p-4">
               <div className="flex items-center gap-2 text-xs font-bold text-[#111315]">
                 <ShieldCheck className="h-4 w-4 text-[#0a4232]" aria-hidden="true" />
-                <span>Dual Rule Provenance (D-11)</span>
+                <span>Dual Rule Provenance</span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-[#4b5563]">
                 Published literature rules (e.g. Yusuf et al. 2009; Brouwer &amp; Heibloem 1986) are

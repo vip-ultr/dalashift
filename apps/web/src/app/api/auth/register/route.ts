@@ -10,11 +10,11 @@ import {
 } from '../../../../lib/auth/server';
 
 const registerSchema = z.object({
-  fullName: z.string().trim().min(1).max(120),
+  fullName: z.string().trim().max(120).optional().default('Farmer'),
   identifier: z.string().trim().min(1).max(254),
-  password: z.string().min(8).max(128),
-  role: z.enum(['farmer', 'extension_worker']),
-  consentAccepted: z.literal(true),
+  password: z.string().min(6).max(128),
+  role: z.string().optional().default('farmer'),
+  consentAccepted: z.boolean().optional().default(true),
 });
 
 const DUPLICATE_ACCOUNT = 'An account could not be created. Try signing in instead.';
@@ -103,9 +103,9 @@ export async function POST(request: Request) {
 
     const { error: profileError } = await admin.from('profiles').insert({
       id: account.id,
-      full_name: parsed.data.fullName,
+      full_name: parsed.data.fullName || 'Farmer',
       phone,
-      role: parsed.data.role,
+      role: 'farmer',
     });
 
     if (profileError) {

@@ -86,7 +86,7 @@ export function ParcelWorkspaceView({
                 {profile.village} · {profile.lga}, {profile.state}
               </span>
               {!profile.consentedToGps ? (
-                <Badge variant="accent">Representative Coordinates (ADR-0011 D-12)</Badge>
+                <Badge variant="accent">Representative Coordinates</Badge>
               ) : null}
             </div>
             <h1 className="font-display text-xl font-bold tracking-tight text-[#111827] sm:text-2xl">
@@ -112,8 +112,8 @@ export function ParcelWorkspaceView({
               value={viewMode}
               onValueChange={setViewMode}
               options={[
-                { value: 'farmer', label: 'Farmer View' },
-                { value: 'adviser', label: 'Adviser (Malamin Gona)' },
+                { value: 'farmer', label: 'Standard View' },
+                { value: 'adviser', label: 'Detailed View' },
               ]}
             />
             <Link href={`/farms/${profile.farm.id}/reports`}>
@@ -210,12 +210,11 @@ export function ParcelWorkspaceView({
                 <ShieldCheck className="h-5 w-5 text-[#4ade80]" aria-hidden="true" />
                 <div>
                   <h2 className="text-sm font-semibold">
-                    Extension Adviser Diagnostic Mode (Malamin Gona)
+                    Detailed Diagnostic Inspection
                   </h2>
                   <p className="text-xs text-white/80">
-                    Showing deterministic ruleset IDs ({profile.rotationComparison.rulesetVersion}),
-                    per-dimension threshold audit rows, and resolution footprints. No composite
-                    weights or black-box scores are used (ADR-0011 D-05).
+                    Showing deterministic ruleset audit rows and resolution footprints. No composite
+                    weights or black-box scores are used.
                   </p>
                 </div>
               </div>

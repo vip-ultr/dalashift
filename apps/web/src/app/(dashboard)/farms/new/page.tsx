@@ -382,7 +382,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <Badge variant="Strong">Parcel-First Onboarding (ADR-0011)</Badge>
+              <Badge variant="Strong">Parcel Registration</Badge>
               <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-[#111315]">
                 Register Farm Holding &amp; Parcels
               </h1>
@@ -397,7 +397,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           {/* Stepper Bar */}
           <div className="mt-5 grid grid-cols-3 gap-2">
             {[
-              { num: 1 as const, title: '1. Holding & Farmer Mode' },
+              { num: 1 as const, title: '1. Holding & Advisory Focus' },
               { num: 2 as const, title: '2. Crops (Hausa) & Trigger' },
               { num: 3 as const, title: '3. Parcel Map / GPS Points' },
             ].map((item) => (
@@ -423,20 +423,20 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         {step === 1 ? (
           <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
             <div className="space-y-2">
-              <Label>Advisory Mode (D-09)</Label>
+              <Label>Advisory Focus</Label>
               <SegmentedControl
                 fullWidth
-                ariaLabel="Farmer advisory mode"
+                ariaLabel="Advisory focus"
                 value={farmerMode}
                 onValueChange={setFarmerMode}
                 options={[
                   {
                     value: 'existing',
-                    label: 'Existing Farmer (Rotation & Planting Trigger)',
+                    label: 'Existing Farm (Rotation & Moisture Trigger)',
                   },
                   {
                     value: 'prospective',
-                    label: 'Prospective Farmer (New Plot Crop Suitability)',
+                    label: 'Prospective Land (Crop Suitability Screening)',
                   },
                 ]}
               />
@@ -560,8 +560,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   />
                   <div className="space-y-2">
                     <div className="font-semibold">
-                      Clarification required (ADR-0011 D-08): Which legume do you mean by
-                      &ldquo;beans&rdquo;?
+                      Clarification required: Which legume do you mean by &ldquo;beans&rdquo;?
                     </div>
                     <p>
                       In Kano State field interviews, English translations often render three
@@ -655,9 +654,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               </div>
             </div>
 
-            {/* Planting Trigger Rule (D-10) */}
+            {/* Planting Trigger Rule */}
             <div className="space-y-2">
-              <Label>Your stated planting trigger rule (Moisture-conditioned, D-10)</Label>
+              <Label>Your stated planting trigger rule (Moisture-conditioned)</Label>
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
                 <button
                   type="button"

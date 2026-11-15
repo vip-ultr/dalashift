@@ -18,11 +18,9 @@ export interface AuthCardProps {
 export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   const router = useRouter();
   const [mode, setMode] = React.useState<'login' | 'register'>(initialMode);
-  const [role, setRole] = React.useState<'farmer' | 'extension_worker'>('farmer');
   const [fullName, setFullName] = React.useState('');
   const [identifier, setIdentifier] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [consentChecked, setConsentChecked] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -42,20 +40,13 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
       return;
     }
 
-    if (password.length < 8) {
-      setErrorMessage('Your password must be at least 8 characters long.');
+    if (password.length < 6) {
+      setErrorMessage('Your password must be at least 6 characters long.');
       return;
     }
 
     if (mode === 'register' && !fullName.trim()) {
       setErrorMessage('Please enter your full name.');
-      return;
-    }
-
-    if (mode === 'register' && !consentChecked) {
-      setErrorMessage(
-        'Please confirm the farm data privacy disclosure before creating an account.',
-      );
       return;
     }
 
@@ -71,8 +62,8 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 fullName: fullName.trim(),
                 identifier: accountIdentifier,
                 password,
-                role,
-                consentAccepted: consentChecked,
+                role: 'farmer',
+                consentAccepted: true,
               },
         ),
       });
@@ -132,7 +123,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
             <p className="text-xs text-[#6b7280]">
               {mode === 'login'
                 ? 'Sign in to view your registered farm parcels and seasonal guidance.'
-                : 'Register your farm parcels or advise farmers as an extension officer.'}
+                : 'Create an account to register your farm parcels and view environmental intelligence.'}
             </p>
           </div>
 
@@ -151,37 +142,17 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
 
           <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
             {mode === 'register' ? (
-              <>
-                <div className="space-y-1.5">
-                  <Label htmlFor="auth-fullname">Full name</Label>
-                  <Input
-                    id="auth-fullname"
-                    type="text"
-                    placeholder="e.g. Bello Yusuf Maitama"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    autoComplete="name"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Account role</Label>
-                  <SegmentedControl
-                    fullWidth
-                    size="sm"
-                    ariaLabel="Account role"
-                    value={role}
-                    onValueChange={setRole}
-                    options={[
-                      { value: 'farmer', label: 'Smallholder Farmer' },
-                      {
-                        value: 'extension_worker',
-                        label: 'Extension Officer (Malamin Gona)',
-                      },
-                    ]}
-                  />
-                </div>
-              </>
+              <div className="space-y-1.5">
+                <Label htmlFor="auth-fullname">Full name</Label>
+                <Input
+                  id="auth-fullname"
+                  type="text"
+                  placeholder="e.g. Bello Yusuf Maitama"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  autoComplete="name"
+                />
+              </div>
             ) : null}
 
             <div className="space-y-1.5">
@@ -195,8 +166,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 autoComplete="username"
               />
               <p className="text-[11px] text-[#6b7280]">
-                Use an email or phone in international format (for example, +234…). No verification
-                code is sent in this version.
+                Use an email or phone number (for example, 080... or +234...).
               </p>
             </div>
 
@@ -205,7 +175,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
               <Input
                 id="auth-password"
                 type="password"
-                placeholder="Enter at least 8 characters"
+                placeholder="Enter at least 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
@@ -214,19 +184,11 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
 
             {mode === 'register' ? (
               <div className="rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f6] p-3 text-xs text-[#374151]">
-                <label className="flex cursor-pointer items-start gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={consentChecked}
-                    onChange={(e) => setConsentChecked(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-[#d1d5db] accent-[#00b159]"
-                  />
-                  <span className="leading-relaxed">
-                    <strong>Farm data privacy (ADR-0006):</strong> Your farm location is used only
-                    to retrieve environmental data for your land and is never shared publicly
-                    without your explicit consent.
-                  </span>
-                </label>
+                <p className="leading-relaxed">
+                  <strong>Farm data privacy:</strong> Your farm location is used only to
+                  retrieve environmental data for your land and is never shared publicly
+                  without your explicit consent.
+                </p>
               </div>
             ) : null}
 
@@ -272,7 +234,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
       </main>
 
       <footer className="py-4 text-center text-[11px] text-[#6b7280]">
-        Your session is private and time-limited. Database Row-Level Security protects each farmer’s
+        Your session is private and time-limited. Database Row-Level Security protects each farmer's
         records.
       </footer>
     </div>

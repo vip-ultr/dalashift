@@ -44,7 +44,12 @@ export function normalizeIdentifier(value: string): { email: string } | { phone:
     return emailSchema.safeParse(email).success ? { email } : null;
   }
 
-  const phone = identifier.replace(/[\s()-]/g, '');
+  let phone = identifier.replace(/[\s().-]/g, '');
+  if (phone.startsWith('0') && phone.length === 11) {
+    phone = `+234${phone.slice(1)}`;
+  } else if (!phone.startsWith('+') && /^\d{10,14}$/.test(phone)) {
+    phone = `+${phone}`;
+  }
   return /^\+[1-9]\d{7,14}$/.test(phone) ? { phone } : null;
 }
 

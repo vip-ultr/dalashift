@@ -58,7 +58,7 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
           <div className="mt-4 flex items-start gap-2.5 rounded-[8px] border border-[#cce0f5] bg-[#eef5fc] p-3 text-xs text-[#1d4ed8]">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#1d4ed8]" aria-hidden="true" />
             <div>
-              <strong>Validation Scope &amp; Consent (ADR-0011 D-12):</strong> Field validation
+              <strong>Validation Scope &amp; Consent:</strong> Field validation
               covers Doka village in Tofa LGA, Kano State. It does not claim validation across all
               of Nigeria. Bello Yusuf Maitama and Amina Habibu consented to publication and GPS
               capture; Abubakar (Dan Hajiya) consented to publication while GPS capture was not

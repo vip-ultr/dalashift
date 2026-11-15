@@ -122,7 +122,7 @@ export function PrintableFieldSheet({
               </div>
               <div className="inline-flex items-center gap-1 rounded bg-[#f4f5f6] px-2 py-0.5 text-[11px] font-medium text-[#111315]">
                 <Lock className="h-3 w-3 text-[#00b159]" aria-hidden="true" />
-                <span>Exact GPS coordinates redacted for farmer privacy (ADR-0011 D-12)</span>
+                <span>Exact GPS coordinates redacted for privacy</span>
               </div>
             </div>
           </header>
@@ -175,7 +175,7 @@ export function PrintableFieldSheet({
             <div className="rounded-[8px] border border-[#e5e7eb] p-4">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-xs font-bold tracking-wider text-[#111315] uppercase">
-                  2A. Moisture Planting Trigger (D-10)
+                  2A. Moisture Planting Trigger
                 </h2>
                 <Badge
                   variant={
@@ -208,7 +208,7 @@ export function PrintableFieldSheet({
             <div className="rounded-[8px] border border-[#e5e7eb] p-4">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-xs font-bold tracking-wider text-[#111315] uppercase">
-                  2B. Seasonal Rainfall Risk Indicator (D-07)
+                  2B. Seasonal Rainfall Risk Indicator
                 </h2>
                 <Badge variant="Neutral">Not an Operational Weather Forecast</Badge>
               </div>

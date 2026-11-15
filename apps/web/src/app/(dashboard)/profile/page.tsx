@@ -39,7 +39,6 @@ function getApiError(payload: unknown, fallback: string): string {
 }
 
 export default function ProfileSettingsPage(): React.JSX.Element {
-  const [role, setRole] = React.useState<'farmer' | 'adviser'>('adviser');
   const [defaultLanguage, setDefaultLanguage] = React.useState<LanguageSelection>('unset');
   const [savedLanguage, setSavedLanguage] = React.useState<Language | null>(null);
   const [hasUnsupportedLanguage, setHasUnsupportedLanguage] = React.useState(false);
@@ -82,7 +81,6 @@ export default function ProfileSettingsPage(): React.JSX.Element {
           setDefaultLanguage(language ?? 'unset');
           setSavedLanguage(language);
           setHasUnsupportedLanguage(Boolean(storedLanguage && !language));
-          setRole(parsed.data.profile.role === 'extension_worker' ? 'adviser' : 'farmer');
           setProfileLoaded(true);
         }
       } catch (error) {
@@ -157,40 +155,13 @@ export default function ProfileSettingsPage(): React.JSX.Element {
             <div>
               <h1 className="font-display text-xl font-bold text-[#111315]">Profile Preferences</h1>
               <p className="text-xs text-[#6b7280]">
-                Save your preferred language. Workspace perspective is a session-only display
-                choice.
+                Save your preferred language and review coordinate privacy settings.
               </p>
             </div>
           </div>
 
           <div className="mt-6 space-y-5 border-t border-[#e5e7eb] pt-5">
-            <section aria-labelledby="workspace-perspective-heading">
-              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <div>
-                  <h2
-                    id="workspace-perspective-heading"
-                    className="text-sm font-semibold text-[#111315]"
-                  >
-                    Workspace Perspective (Session Only)
-                  </h2>
-                  <p className="text-xs text-[#6b7280]">
-                    This display choice is not saved and does not change account permissions.
-                  </p>
-                </div>
-                <SegmentedControl
-                  size="sm"
-                  ariaLabel="Session-only workspace perspective"
-                  value={role}
-                  onValueChange={setRole}
-                  options={[
-                    { value: 'farmer', label: 'Smallholder Farmer' },
-                    { value: 'adviser', label: 'Extension Adviser' },
-                  ]}
-                />
-              </div>
-            </section>
-
-            <section aria-labelledby="language-heading" className="border-t border-[#f3f4f6] pt-4">
+            <section aria-labelledby="language-heading">
               <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div>
                   <h2 id="language-heading" className="text-sm font-semibold text-[#111315]">
