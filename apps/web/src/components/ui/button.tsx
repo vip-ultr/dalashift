@@ -10,6 +10,8 @@ const buttonVariants = cva(
       variant: {
         primary:
           'bg-[#0a4232] text-white shadow-xs hover:bg-[#072f24] active:scale-[0.99]',
+        forest:
+          'bg-[#0a4232] text-white shadow-xs hover:bg-[#072f24] active:scale-[0.99]',
         secondary:
           'bg-white text-[#111827] border border-[#e5e7eb] shadow-xs hover:bg-[#f9fafb] hover:border-[#d1d5db] active:bg-[#f3f4f6]',
         accent:

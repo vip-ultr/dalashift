@@ -146,7 +146,8 @@ export function HonestyMapCanvas({
     async function initMap() {
       if (!mapContainerRef.current) return;
       try {
-        const maplibregl = (await import('maplibre-gl')).default;
+        const maplibreModule: any = await import('maplibre-gl');
+        const maplibregl = maplibreModule.default || maplibreModule;
 
         // ESRI World Imagery or OpenStreetMap
         const satelliteTiles =

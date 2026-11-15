@@ -159,47 +159,6 @@ export function ParcelWorkspaceView({
           </div>
         </div>
       </div>
-                <Printer className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Print Field Sheet</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Multi-Parcel Switcher Strip */}
-        <div className="mx-auto mt-4 max-w-7xl border-t border-[#f3f4f6] pt-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-1 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
-              Parcels in Holding ({profile.parcels.length}):
-            </span>
-            {profile.parcels.map((parcel) => {
-              const isSelected = parcel.id === activeParcel.id;
-              return (
-                <button
-                  key={parcel.id}
-                  type="button"
-                  onClick={() => setSelectedParcelId(parcel.id)}
-                  className={`flex items-center gap-2.5 rounded-[10px] border px-3 py-1.5 text-left transition-all ${
-                    isSelected
-                      ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f] shadow-xs'
-                      : 'border-[#e5e7eb] bg-[#fafafb] text-[#374151] hover:border-[#d1d5db] hover:bg-white'
-                  }`}
-                >
-                  <ParcelVectorThumbnail geometry={parcel.geometry} size={24} active={isSelected} />
-                  <div>
-                    <div className="text-xs font-semibold">{parcel.name}</div>
-                    <div className="tabular text-[11px] text-[#6b7280]">
-                      {parcel.areaHa !== null
-                        ? `${parcel.areaHa.toFixed(2)} ha polygon`
-                        : `GPS point (±${parcel.locationUncertaintyM ?? 500} m)`}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
 
       {/* Sticky Situation Banner */}
       <SituationBanner

@@ -12,6 +12,7 @@ const badgeVariants = cva(
         primary: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
         accent: 'bg-[#f9efea] text-[#c26e4a] border border-[#c26e4a]/25',
         pass: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
+        literature: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
         farmer: 'bg-[#f9efea] text-[#c26e4a] border border-[#c26e4a]/25',
         satellite: 'bg-[#f0f4f8] text-[#2c5282] border border-[#2c5282]/20',
         warning: 'bg-[#fef9ee] text-[#b45309] border border-[#b45309]/20',
