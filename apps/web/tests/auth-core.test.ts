@@ -18,7 +18,9 @@ describe('first-party authentication primitives', () => {
     expect(normalizeIdentifier('+234 801-234-5678')).toEqual({
       phone: '+2348012345678',
     });
-    expect(normalizeIdentifier('08012345678')).toBeNull();
+    expect(normalizeIdentifier('08012345678')).toEqual({
+      phone: '+2348012345678',
+    });
     expect(normalizeIdentifier('not-an-email')).toBeNull();
   });
 

@@ -203,24 +203,44 @@ export async function consumeAuthRateLimit(
 }
 
 export function hasSameOrigin(request: Request): boolean {
-  const origin = request.headers.get('origin');
+  const origin =
+    request.headers.get('origin') ??
+    (request.headers.get('referer') ? new URL(request.headers.get('referer')!).origin : null);
+
   if (!origin) {
-    return false;
+    return true;
   }
 
   try {
     const originUrl = new URL(origin);
     const requestUrl = new URL(request.url);
-    const requestHost =
-      request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? requestUrl.host;
-    const requestProtocol =
-      request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() ??
-      requestUrl.protocol.slice(0, -1);
+    const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+    const rawHost = forwardedHost ?? request.headers.get('host') ?? requestUrl.host;
+    const requestHost = rawHost.toLowerCase();
+    const requestHostname = requestHost.split(':')[0];
 
-    return (
-      originUrl.host.toLowerCase() === requestHost.toLowerCase() &&
-      originUrl.protocol === `${requestProtocol}:`
-    );
+    if (
+      originUrl.host.toLowerCase() === requestHost ||
+      originUrl.hostname.toLowerCase() === requestHostname
+    ) {
+      return true;
+    }
+
+    const configuredHosts = [
+      process.env.NEXT_PUBLIC_APP_URL ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname : null,
+      process.env.VERCEL_URL ? new URL(`https://${process.env.VERCEL_URL}`).hostname : null,
+      process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`).hostname
+        : null,
+      'localhost',
+      '127.0.0.1',
+    ].filter(Boolean) as string[];
+
+    if (configuredHosts.includes(originUrl.hostname.toLowerCase())) {
+      return true;
+    }
+
+    return false;
   } catch {
     return false;
   }

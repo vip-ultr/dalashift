@@ -17,7 +17,8 @@ const registerSchema = z.object({
   consentAccepted: z.boolean().optional().default(true),
 });
 
-const DUPLICATE_ACCOUNT = 'An account could not be created. Try signing in instead.';
+const DUPLICATE_ACCOUNT =
+  'An account with this email or phone number already exists. Please sign in instead.';
 
 export async function POST(request: Request) {
   if (!hasSameOrigin(request)) {

@@ -170,7 +170,16 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 role="alert"
                 className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] px-3 py-2 text-xs font-medium text-[#b42318]"
               >
-                {errorMessage}
+                <div>{errorMessage}</div>
+                {mode === 'register' && errorMessage.toLowerCase().includes('already exists') ? (
+                  <button
+                    type="button"
+                    onClick={() => handleModeSwitch('login')}
+                    className="mt-1.5 block font-bold text-[#0a4232] underline hover:text-[#06291f] cursor-pointer"
+                  >
+                    Switch to Sign in
+                  </button>
+                ) : null}
               </div>
             ) : null}
 

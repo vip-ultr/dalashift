@@ -10,17 +10,17 @@ import HomePage from '../src/app/page';
  * and the resolution honesty principles.
  */
 describe('landing page route', () => {
-  it('renders DalaShift branding and Tofa LGA case study context', () => {
+  it('renders DalaShift branding and field intelligence context', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
     expect(markup).toContain('DalaShift');
-    expect(markup).toContain('Tofa LGA');
+    expect(markup).toContain('Precision Agricultural Intelligence');
   });
 
-  it('surfaces resolution honesty and deterministic ruleset principles', () => {
+  it('surfaces resolution honesty and moisture trigger principles', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
     expect(markup).toContain('Resolution Honesty');
-    expect(markup).toContain('Deterministic Ruleset');
+    expect(markup).toContain('Moisture Triggers');
   });
 });

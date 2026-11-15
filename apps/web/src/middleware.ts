@@ -31,6 +31,11 @@ export function middleware(request: NextRequest): NextResponse {
   }
 
   if (hasSession && AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
+    if (request.nextUrl.searchParams.has('switch') || request.nextUrl.searchParams.has('new')) {
+      const response = NextResponse.next();
+      response.cookies.delete(SESSION_COOKIE_NAME);
+      return response;
+    }
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     url.search = '';

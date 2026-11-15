@@ -170,12 +170,18 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
         )}
       </div>
 
-      <div className="border-t border-[#f3f4f6] p-3">
+      <div className="border-t border-[#f3f4f6] p-3 space-y-2">
         <Link href="/farms/new">
           <Button variant="outline" size="sm" className="w-full text-xs">
             <Plus className="mr-1 size-3.5" />
             Add New Farm
           </Button>
+        </Link>
+        <Link
+          href="/register?new=true"
+          className="block text-center text-[11px] font-medium text-[#6b7280] hover:text-[#0a4232] transition-colors"
+        >
+          Create another account
         </Link>
       </div>
     </aside>
