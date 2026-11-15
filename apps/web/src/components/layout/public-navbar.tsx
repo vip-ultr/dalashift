@@ -4,8 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { BookOpen, ChevronRight, Home, LogIn, Menu, Plus, Tractor, X } from 'lucide-react';
 
+import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
 
 export function PublicNavbar() {
@@ -13,13 +14,13 @@ export function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: 'Overview' },
-    { href: '/farms', label: 'Field Workspace' },
-    { href: '/methodology', label: 'Methodology' },
+    { href: '/', label: 'Overview', icon: Home },
+    { href: '/farms', label: 'Field Workspace', icon: Tractor },
+    { href: '/methodology', label: 'Methodology', icon: BookOpen },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#e5e7eb] bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-[#e5e7eb] bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -65,74 +66,84 @@ export function PublicNavbar() {
           </Link>
         </div>
 
-        {/* Mobile Hamburger Button */}
+        {/* Mobile Hamburger / Close Button */}
         <div className="flex md:hidden">
           <button
             type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex size-9 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#4b5563] hover:bg-[#f3f4f6]"
-            aria-label="Open navigation menu"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="flex size-10 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#111827] hover:bg-[#f9fafb] active:bg-[#f3f4f6] transition-colors cursor-pointer"
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
           >
-            <Menu className="size-5" />
+            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Slide-Over Drawer from Left */}
+      {/* Mobile Menu Panel - Solid, Modern, Professional Dropdown */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          {/* Backdrop */}
+        <div className="fixed inset-x-0 top-16 bottom-0 z-50 flex flex-col md:hidden">
+          {/* Solid dim backdrop without blur */}
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 top-16 bg-black/60 transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
           />
 
-          {/* Drawer Panel */}
-          <div className="relative flex w-[280px] max-w-[80vw] flex-col justify-between bg-white p-5 shadow-2xl">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-[#e5e7eb]">
-                <Image
-                  src="/brand/logo-horizontal.svg"
-                  alt="DalaShift"
-                  width={120}
-                  height={28}
-                  className="h-7 w-auto"
-                />
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-md text-[#4b5563] hover:bg-[#f3f4f6]"
-                  aria-label="Close menu"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              <nav className="mt-4 flex flex-col gap-1">
-                {navLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex h-10 items-center rounded-lg px-3 text-sm font-medium text-[#111827] hover:bg-[#eaf2ee] hover:text-[#0a4232]"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+          {/* Solid Opaque White Menu Container */}
+          <div className="relative z-10 w-full border-b border-[#e5e7eb] bg-white shadow-2xl animate-in slide-in-from-top-2 duration-200">
+            <div className="px-5 pt-3 pb-6 space-y-4">
+              <nav className="flex flex-col space-y-1">
+                {navLinks.map((item) => {
+                  const active = pathname === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        'flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition-colors',
+                        active
+                          ? 'bg-[#eaf2ee] text-[#0a4232] font-semibold'
+                          : 'text-[#374151] hover:bg-[#f9fafb] hover:text-[#111827]',
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            'flex size-8 items-center justify-center rounded-lg',
+                            active ? 'bg-[#0a4232] text-white' : 'bg-[#f3f4f6] text-[#4b5563]',
+                          )}
+                        >
+                          <Icon className="size-4" />
+                        </span>
+                        <span>{item.label}</span>
+                      </div>
+                      <ChevronRight
+                        className={cn('size-4', active ? 'text-[#0a4232]' : 'text-[#9ca3af]')}
+                      />
+                    </Link>
+                  );
+                })}
               </nav>
-            </div>
 
-            <div className="flex flex-col gap-2 pt-4 border-t border-[#e5e7eb]">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="secondary" size="md" className="w-full">
-                  Sign in
-                </Button>
-              </Link>
-              <Link href="/farms/new" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="primary" size="md" className="w-full">
-                  Add Farm
-                </Button>
-              </Link>
+              <div className="h-px w-full bg-[#f3f4f6]" />
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="secondary" size="md" className="w-full justify-center">
+                    <LogIn className="mr-2 size-4" />
+                    <span>Sign in</span>
+                  </Button>
+                </Link>
+                <Link href="/farms/new" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" size="md" className="w-full justify-center">
+                    <Plus className="mr-1.5 size-4" />
+                    <span>Add Farm</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

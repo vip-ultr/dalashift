@@ -113,12 +113,12 @@ export function WorkspaceRail() {
         <div className="fixed inset-0 z-50 flex lg:hidden print:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-black/60 transition-opacity"
             onClick={() => setMobileDrawerOpen(false)}
           />
 
           {/* Drawer Panel */}
-          <aside className="relative flex w-[280px] max-w-[85vw] flex-col justify-between bg-white p-5 shadow-2xl">
+          <aside className="relative flex w-[280px] max-w-[85vw] flex-col justify-between bg-white p-5 shadow-2xl border-r border-[#e5e7eb]">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-[#e5e7eb]">
                 <Image
