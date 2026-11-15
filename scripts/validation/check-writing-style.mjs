@@ -61,7 +61,10 @@ const IGNORED_DIRECTORIES = new Set(['node_modules', '.git', '.next', 'dist', 'b
  * punctuation is the translator's, not ours, and altering it would change the
  * record. The same principle applies to quoted material elsewhere.
  */
-const VERBATIM_RECORD_PATTERNS = [/^docs\/research\/field-interviews\/[^/]+\/transcript\.md$/];
+const VERBATIM_RECORD_PATTERNS = [
+  /^docs\/research\/field-interviews\/[^/]+\/transcript\.md$/,
+  /^apps\/web\/AGENTS\.md$/,
+];
 
 function isVerbatimRecord(relativePath) {
   return VERBATIM_RECORD_PATTERNS.some((pattern) => pattern.test(relativePath));

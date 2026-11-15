@@ -8,20 +8,21 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-[#f4f5f6] text-ink border border-[#e5e7eb]',
-        accent: 'bg-[#00b159] text-white',
-        pass: 'bg-[#e6f7ee] text-[#0a4232] border border-[#00b159]/25',
-        farmer: 'bg-[#fdf6e5] text-[#8e5636] border border-[#ab6a43]/30',
-        satellite: 'bg-[#e4edf4] text-[#3d6382] border border-[#76a1c2]/35',
-        literature: 'bg-[#e4ede8] text-[#0a4232] border border-[#0a4232]/20',
-        warning: 'bg-[#fdf6e5] text-[#b9770e] border border-[#b9770e]/25',
-        danger: 'bg-[#fceeec] text-[#c0392b] border border-[#c0392b]/25',
-        obsidian: 'bg-[#1f2022] text-white',
-        Strong: 'bg-[#e6f7ee] text-[#0a4232] border border-[#00b159]/25',
-        Moderate: 'bg-[#fdf6e5] text-[#b9770e] border border-[#b9770e]/25',
-        Neutral: 'bg-[#f4f5f6] text-ink border border-[#e5e7eb]',
-        Measured: 'bg-[#fdf6e5] text-[#8e5636] border border-[#ab6a43]/30',
-        Modelled: 'bg-[#e4edf4] text-[#3d6382] border border-[#76a1c2]/35',
+        default: 'bg-[#f4f5f6] text-[#4b5563] border border-[#e5e7eb]',
+        primary: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
+        accent: 'bg-[#f9efea] text-[#c26e4a] border border-[#c26e4a]/25',
+        pass: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
+        farmer: 'bg-[#f9efea] text-[#c26e4a] border border-[#c26e4a]/25',
+        satellite: 'bg-[#f0f4f8] text-[#2c5282] border border-[#2c5282]/20',
+        warning: 'bg-[#fef9ee] text-[#b45309] border border-[#b45309]/20',
+        danger: 'bg-[#fef2f2] text-[#b91c1c] border border-[#b91c1c]/20',
+        obsidian: 'bg-[#111827] text-white',
+        Strong: 'bg-[#eaf2ee] text-[#0a4232] border border-[#0a4232]/20',
+        Moderate: 'bg-[#fef9ee] text-[#b45309] border border-[#b45309]/20',
+        Weak: 'bg-[#fef2f2] text-[#b91c1c] border border-[#b91c1c]/20',
+        Measured: 'bg-[#f0f4f8] text-[#2c5282] border border-[#2c5282]/20',
+        Modelled: 'bg-[#f9efea] text-[#c26e4a] border border-[#c26e4a]/25',
+        Neutral: 'bg-[#f4f5f6] text-[#4b5563] border border-[#e5e7eb]',
       },
     },
     defaultVariants: {
@@ -31,7 +32,8 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
+  extends HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof badgeVariants> {
   readonly children: ReactNode;
 }
 

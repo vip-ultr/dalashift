@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowRight, ShieldCheck, Sprout } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -101,21 +102,23 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
     <div className="flex min-h-screen flex-col justify-between bg-[#fafafb] text-[#111315]">
       {/* Minimal Top Bar */}
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#00b159] text-white shadow-xs">
-            <Sprout className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <span className="font-display text-lg font-bold tracking-tight text-[#111315]">
-            DalaShift
-          </span>
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/brand/logo-horizontal.svg"
+            alt="DalaShift"
+            width={130}
+            height={30}
+            priority
+            className="h-7 w-auto"
+          />
         </Link>
 
         <Link
           href="/cases"
-          className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-1.5 text-xs font-medium text-[#374151] shadow-2xs transition-colors hover:border-[#00b159] hover:text-[#111315]"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-1.5 text-xs font-medium text-[#4b5563] shadow-2xs transition-colors hover:border-[#0a4232] hover:text-[#0a4232]"
         >
           <span>View Tofa LGA Case Studies</span>
-          <ArrowRight className="h-3.5 w-3.5 text-[#00b159]" aria-hidden="true" />
+          <ArrowRight className="h-3.5 w-3.5 text-[#0a4232]" aria-hidden="true" />
         </Link>
       </header>
 

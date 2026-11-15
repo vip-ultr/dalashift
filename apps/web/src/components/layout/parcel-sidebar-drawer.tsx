@@ -156,25 +156,25 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           </p>
           <Link
             href="/farms/new"
-            className="mt-3.5 inline-flex h-8 items-center justify-center rounded-full bg-[#00b159] px-4 text-xs font-medium text-white transition-colors hover:bg-[#00994d]"
+            className="mt-3.5 inline-flex h-8 items-center justify-center rounded-lg bg-[#0a4232] px-4 text-xs font-medium text-white transition-colors hover:bg-[#072f24]"
           >
             + Add fields
           </Link>
         </div>
 
         {/* Extension Officer / Methodology Card */}
-        <div className="mt-3 rounded-xl border-2 border-[#00b159] bg-surface-raised p-4 text-center">
+        <div className="mt-3 rounded-xl border border-[#0a4232]/20 bg-[#eaf2ee]/50 p-4 text-center">
           <HelpCircle className="mx-auto size-5 text-[#0a4232]" />
-          <h3 className="mt-1.5 text-sm font-semibold text-ink">
+          <h3 className="mt-1.5 text-sm font-semibold text-[#111827]">
             Working with an extension officer?
           </h3>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="mt-1 text-xs text-[#4b5563]">
             Switch between Farmer View and Adviser View or print a shareable sheet for local review
             with your malamin gona.
           </p>
           <Link
             href="/reports"
-            className="mt-3 inline-flex h-8 items-center justify-center rounded-full bg-[#0a4232] px-4 text-xs font-medium text-white transition-colors hover:bg-[#0e5440]"
+            className="mt-3 inline-flex h-8 items-center justify-center rounded-lg bg-[#0a4232] px-4 text-xs font-medium text-white transition-colors hover:bg-[#072f24]"
           >
             Open printable reports
           </Link>

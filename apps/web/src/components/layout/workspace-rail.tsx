@@ -1,33 +1,34 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import {
   BookOpen,
   FileText,
-  FolderKanban,
   LayoutGrid,
-  LogOut,
+  Menu,
   PlusCircle,
-  Sprout,
   UserCircle2,
   Users,
+  X,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import * as React from 'react';
 
 import { cn } from '../../lib/utilities/cn';
+import { Button } from '../ui/button';
 
 const PRIMARY_NAV_ITEMS = [
   {
     href: '/farms',
-    label: 'My Farms & Map',
+    label: 'Fields & Map',
     icon: LayoutGrid,
     matchPrefix: '/farms',
     exactExclude: '/farms/new',
   },
   {
     href: '/cases',
-    label: 'Tofa Case Studies',
+    label: 'Field Validation',
     icon: Users,
     matchPrefix: '/cases',
   },
@@ -39,7 +40,7 @@ const PRIMARY_NAV_ITEMS = [
   },
   {
     href: '/reports',
-    label: 'Field Reports',
+    label: 'Advisory Reports',
     icon: FileText,
     matchPrefix: '/reports',
   },
@@ -48,41 +49,21 @@ const PRIMARY_NAV_ITEMS = [
 const SECONDARY_NAV_ITEMS = [
   {
     href: '/methodology',
-    label: 'Methodology & Sources',
+    label: 'Data & Methodology',
     icon: BookOpen,
     matchPrefix: '/methodology',
   },
   {
     href: '/profile',
-    label: 'Farmer / Adviser Profile',
+    label: 'Settings',
     icon: UserCircle2,
     matchPrefix: '/profile',
   },
 ] as const;
 
-/**
- * 56px desktop icon rail (`lg+`) and mobile bottom navigation bar (`< lg`)
- * modeled on the OneSoil workspace shell (`--sidebar-width: 56px`).
- */
 export function WorkspaceRail() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [signOutError, setSignOutError] = React.useState(false);
-
-  const handleSignOut = async () => {
-    setSignOutError(false);
-    try {
-      const response = await fetch('/api/auth/logout', { method: 'POST' });
-      if (!response.ok) {
-        setSignOutError(true);
-        return;
-      }
-      router.replace('/login');
-      router.refresh();
-    } catch {
-      setSignOutError(true);
-    }
-  };
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const isItemActive = (item: {
     readonly href: string;
@@ -97,20 +78,148 @@ export function WorkspaceRail() {
 
   return (
     <>
-      {/* Desktop 56px Vertical Icon Rail */}
+      {/* Mobile Top Header with Logo and Hamburger Menu Button (Replaces bottom nav) */}
+      <div className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b border-[#e5e7eb] bg-white px-4 lg:hidden print:hidden">
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/brand/logo-horizontal.svg"
+            alt="DalaShift"
+            width={112}
+            height={26}
+            className="h-6 w-auto"
+          />
+        </Link>
+        <button
+          type="button"
+          onClick={() => setMobileDrawerOpen(true)}
+          className="flex size-9 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#4b5563] hover:bg-[#f3f4f6]"
+          aria-label="Open sidebar menu"
+        >
+          <Menu className="size-5" />
+        </button>
+      </div>
+
+      {/* Mobile Slide-Over Drawer from Left */}
+      {mobileDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden print:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+
+          {/* Drawer Panel */}
+          <aside className="relative flex w-[280px] max-w-[85vw] flex-col justify-between bg-white p-5 shadow-2xl">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-[#e5e7eb]">
+                <Image
+                  src="/brand/logo-horizontal.svg"
+                  alt="DalaShift"
+                  width={120}
+                  height={28}
+                  className="h-7 w-auto"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-md text-[#4b5563] hover:bg-[#f3f4f6]"
+                  aria-label="Close menu"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <span className="text-[11px] font-semibold tracking-wider text-[#9ca3af] uppercase">
+                  Workspace
+                </span>
+                <nav className="mt-2 flex flex-col gap-1">
+                  {PRIMARY_NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    const active = isItemActive(item);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileDrawerOpen(false)}
+                        className={cn(
+                          'flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors',
+                          active
+                            ? 'bg-[#eaf2ee] text-[#0a4232]'
+                            : 'text-[#4b5563] hover:bg-[#f9fafb] hover:text-[#111827]',
+                        )}
+                      >
+                        <Icon className="size-4.5" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              <div className="mt-6">
+                <span className="text-[11px] font-semibold tracking-wider text-[#9ca3af] uppercase">
+                  Preferences
+                </span>
+                <nav className="mt-2 flex flex-col gap-1">
+                  {SECONDARY_NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    const active = isItemActive(item);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileDrawerOpen(false)}
+                        className={cn(
+                          'flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors',
+                          active
+                            ? 'bg-[#eaf2ee] text-[#0a4232]'
+                            : 'text-[#4b5563] hover:bg-[#f9fafb] hover:text-[#111827]',
+                        )}
+                      >
+                        <Icon className="size-4.5" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#e5e7eb]">
+              <Link href="/farms/new" onClick={() => setMobileDrawerOpen(false)}>
+                <Button variant="primary" size="md" className="w-full">
+                  + Add Field
+                </Button>
+              </Link>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop 64px Vertical Icon Rail */}
       <aside
-        aria-label="Workspace navigation"
-        className="hidden w-[56px] shrink-0 flex-col items-center justify-between border-r border-border bg-surface-raised py-3 lg:flex print:hidden"
+        aria-label="Workspace navigation rail"
+        className="hidden w-16 shrink-0 flex-col items-center justify-between border-r border-[#e5e7eb] bg-white py-4 lg:flex print:hidden"
       >
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-3">
           <Link
             href="/"
             title="DalaShift Home"
             aria-label="DalaShift Home"
-            className="mb-2 flex size-10 items-center justify-center rounded-xl bg-[#00b159] text-white shadow-xs transition-transform hover:scale-105"
+            className="flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-105"
           >
-            <Sprout className="size-5" />
+            <Image
+              src="/brand/logo.svg"
+              alt="DalaShift"
+              width={34}
+              height={34}
+              priority
+              className="size-8.5 w-auto"
+            />
           </Link>
+
+          <div className="my-1 h-px w-8 bg-[#e5e7eb]" />
 
           {PRIMARY_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -123,14 +232,14 @@ export function WorkspaceRail() {
                 aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'group relative flex size-10 items-center justify-center rounded-lg transition-colors',
+                  'group relative flex size-10 items-center justify-center rounded-xl transition-all',
                   active
-                    ? 'bg-[#e9ecef] text-ink'
-                    : 'text-[#74777d] hover:bg-[#f4f5f6] hover:text-ink',
+                    ? 'bg-[#eaf2ee] text-[#0a4232] shadow-2xs font-semibold'
+                    : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
                 )}
               >
                 <Icon className="size-5" />
-                <span className="pointer-events-none absolute left-13 z-50 hidden rounded bg-[#1f2022] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
+                <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
                   {item.label}
                 </span>
               </Link>
@@ -138,7 +247,7 @@ export function WorkspaceRail() {
           })}
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-3">
           {SECONDARY_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = isItemActive(item);
@@ -150,79 +259,21 @@ export function WorkspaceRail() {
                 aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'group relative flex size-10 items-center justify-center rounded-lg transition-colors',
+                  'group relative flex size-10 items-center justify-center rounded-xl transition-all',
                   active
-                    ? 'bg-[#e9ecef] text-ink'
-                    : 'text-[#74777d] hover:bg-[#f4f5f6] hover:text-ink',
+                    ? 'bg-[#eaf2ee] text-[#0a4232]'
+                    : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
                 )}
               >
                 <Icon className="size-5" />
-                <span className="pointer-events-none absolute left-13 z-50 hidden rounded bg-[#1f2022] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
+                <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
                   {item.label}
                 </span>
               </Link>
             );
           })}
-          <button
-            type="button"
-            title="Sign out"
-            aria-label="Sign out"
-            onClick={handleSignOut}
-            className="group relative flex size-10 items-center justify-center rounded-lg text-[#74777d] transition-colors hover:bg-[#f4f5f6] hover:text-ink"
-          >
-            <LogOut className="size-5" />
-            <span className="pointer-events-none absolute left-13 z-50 hidden rounded bg-[#1f2022] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-              Sign out
-            </span>
-          </button>
         </div>
       </aside>
-
-      {/* Mobile Sticky Bottom Bar */}
-      <nav
-        aria-label="Mobile workspace navigation"
-        className="fixed right-0 bottom-0 left-0 z-40 flex h-16 items-center justify-around border-t border-border bg-surface-raised px-2 lg:hidden print:hidden"
-      >
-        <Link
-          href="/"
-          className="flex flex-col items-center gap-1 px-2 py-1 text-[11px] font-medium text-ink-muted"
-        >
-          <FolderKanban className="size-5" />
-          <span>Home</span>
-        </Link>
-        {PRIMARY_NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const active = isItemActive(item);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex flex-col items-center gap-1 px-2 py-1 text-[11px] font-medium',
-                active ? 'text-[#00b159]' : 'text-ink-muted',
-              )}
-            >
-              <Icon className="size-5" />
-              <span className="truncate max-w-[76px]">{item.label.split(' ')[0]}</span>
-            </Link>
-          );
-        })}
-        <button
-          type="button"
-          title="Sign out"
-          aria-label="Sign out"
-          onClick={handleSignOut}
-          className="flex flex-col items-center gap-1 px-2 py-1 text-[11px] font-medium text-ink-muted"
-        >
-          <LogOut className="size-5" />
-          <span>Sign out</span>
-        </button>
-        {signOutError ? (
-          <span role="alert" className="sr-only">
-            Unable to sign out. Please try again.
-          </span>
-        ) : null}
-      </nav>
     </>
   );
 }

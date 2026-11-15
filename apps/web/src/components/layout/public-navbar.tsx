@@ -1,129 +1,145 @@
 'use client';
 
-import { Compass, Menu, Sprout, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
-import { cn } from '../../lib/utilities/cn';
+import { Button } from '../ui/button';
 
-export interface PublicNavbarProps {
-  readonly className?: string;
-}
+export function PublicNavbar() {
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-/**
- * Floating pill navigation bar modeled on OneSoil's public header (`rounded-[40px]`
- * with subtle blur and crisp contrast over the warm sand `#f6f4ef` background).
- */
-export function PublicNavbar({ className }: PublicNavbarProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const navLinks = [
+    { href: '/', label: 'Overview' },
+    { href: '/farms', label: 'Field Workspace' },
+    { href: '/cases', label: 'Field Validation' },
+    { href: '/methodology', label: 'Methodology' },
+  ];
 
   return (
-    <header
-      className={cn('sticky top-3 z-40 mx-auto w-full max-w-[1200px] px-4 sm:px-6', className)}
-    >
-      <div className="flex h-16 items-center justify-between rounded-[40px] border border-white/70 bg-white/80 px-5 shadow-[0_2px_16px_rgba(21,21,21,0.04)] backdrop-blur-md">
-        {/* Brand Wordmark */}
-        <Link href="/" className="inline-flex items-center gap-2.5 text-ink hover:opacity-90">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-[#00b159] text-white shadow-xs">
-            <Sprout className="size-5" />
-          </span>
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-bold tracking-tight">DalaShift</span>
-            <span className="hidden rounded-full bg-[#ede8e2] px-2 py-0.5 text-[10px] font-medium text-[#6d6351] sm:inline-block">
-              Working Name
-            </span>
-          </div>
+    <header className="sticky top-0 z-40 w-full border-b border-[#e5e7eb] bg-white/95 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Brand Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/brand/logo-horizontal.svg"
+            alt="DalaShift"
+            width={140}
+            height={32}
+            priority
+            className="h-8 w-auto"
+          />
         </Link>
 
-        {/* Desktop Links */}
-        <nav
-          aria-label="Primary navigation"
-          className="hidden items-center gap-7 text-sm font-medium text-ink md:flex"
-        >
-          <Link href="/cases" className="transition-colors hover:text-[#00b159]">
-            Tofa LGA Case Studies
-          </Link>
-          <Link href="/farms" className="transition-colors hover:text-[#00b159]">
-            Field Workspace
-          </Link>
-          <Link href="/methodology" className="transition-colors hover:text-[#00b159]">
-            Methodology &amp; Sources
-          </Link>
+        {/* Desktop Nav Links */}
+        <nav className="hidden items-center gap-7 md:flex">
+          {navLinks.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium transition-colors ${
+                  active
+                    ? 'text-[#0a4232]'
+                    : 'text-[#4b5563] hover:text-[#111827]'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Right Actions */}
-        <div className="hidden items-center gap-2.5 md:flex">
-          <Link
-            href="/login"
-            className="inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-medium text-ink transition-colors hover:bg-black/5"
-          >
-            Sign in
+        {/* Action Buttons */}
+        <div className="hidden items-center gap-3 md:flex">
+          <Link href="/login">
+            <Button variant="ghost" size="sm">
+              Sign in
+            </Button>
           </Link>
-          <Link
-            href="/cases/bello-yusuf-maitama"
-            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#00b159] px-4 text-sm font-medium text-white transition-colors hover:bg-[#00994d]"
-          >
-            <Compass className="size-4" />
-            Open Workspace
+          <Link href="/farms/new">
+            <Button variant="primary" size="sm">
+              Add Farm
+            </Button>
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={menuOpen}
-          className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-black/5 md:hidden cursor-pointer"
-        >
-          {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        {/* Mobile Hamburger Button */}
+        <div className="flex md:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex size-9 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#4b5563] hover:bg-[#f3f4f6]"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="size-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Dropdown Drawer */}
-      {menuOpen ? (
-        <div className="mt-2 rounded-3xl border border-border bg-[#151515] p-5 text-white shadow-xl md:hidden">
-          <nav className="flex flex-col gap-2">
-            <Link
-              href="/cases"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-2xl bg-white/10 px-4 py-3 text-base font-medium hover:bg-white/15"
-            >
-              Tofa LGA Case Studies
-            </Link>
-            <Link
-              href="/farms"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-2xl bg-white/10 px-4 py-3 text-base font-medium hover:bg-white/15"
-            >
-              Field Workspace
-            </Link>
-            <Link
-              href="/methodology"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-2xl bg-white/10 px-4 py-3 text-base font-medium hover:bg-white/15"
-            >
-              Methodology &amp; Data Sources
-            </Link>
-            <div className="mt-2 grid grid-cols-2 gap-2 pt-2 border-t border-white/15">
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="flex h-12 items-center justify-center rounded-2xl bg-white/10 text-sm font-medium"
-              >
-                Sign in
+      {/* Mobile Slide-Over Drawer from Left */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+
+          {/* Drawer Panel */}
+          <div className="relative flex w-[280px] max-w-[80vw] flex-col justify-between bg-white p-5 shadow-2xl">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-[#e5e7eb]">
+                <Image
+                  src="/brand/logo-horizontal.svg"
+                  alt="DalaShift"
+                  width={120}
+                  height={28}
+                  className="h-7 w-auto"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-md text-[#4b5563] hover:bg-[#f3f4f6]"
+                  aria-label="Close menu"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <nav className="mt-4 flex flex-col gap-1">
+                {navLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex h-10 items-center rounded-lg px-3 text-sm font-medium text-[#111827] hover:bg-[#eaf2ee] hover:text-[#0a4232]"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-4 border-t border-[#e5e7eb]">
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="secondary" size="md" className="w-full">
+                  Sign in
+                </Button>
               </Link>
-              <Link
-                href="/farms/new"
-                onClick={() => setMenuOpen(false)}
-                className="flex h-12 items-center justify-center rounded-2xl bg-[#00b159] text-sm font-medium text-white"
-              >
-                + Add Farm
+              <Link href="/farms/new" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="primary" size="md" className="w-full">
+                  Add Farm
+                </Button>
               </Link>
             </div>
-          </nav>
+          </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }
