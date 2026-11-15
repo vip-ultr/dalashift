@@ -106,7 +106,12 @@ for (const file of collectFiles()) {
   const lines = content.split('\n');
   const relative = path.relative(repoRoot, file);
 
-  if (isVerbatimRecord(relative)) {
+  // Match the exemption patterns against a POSIX-style path. `path.relative`
+  // returns backslashes on Windows, so an unnormalised path never matches a
+  // forward-slash pattern and the exemption silently fails on Windows only.
+  const normalised = relative.split(path.sep).join('/');
+
+  if (isVerbatimRecord(normalised)) {
     continue;
   }
 

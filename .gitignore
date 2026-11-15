@@ -36,6 +36,13 @@ dist/
 *.tsbuildinfo
 next-env.d.ts
 
+# The build handoff documents are tracked. The generic `build/` rule above
+# exists for build output, not for this directory, and it silently excluded
+# every file under docs/build/ until it was negated here. The link checker
+# in CI is what caught it.
+!docs/build/
+!docs/build/**
+
 # ─────────────────────────────────────────────────────────────
 # Geospatial data: large rasters and derived tiles must not enter git
 # ─────────────────────────────────────────────────────────────
