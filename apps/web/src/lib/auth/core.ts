@@ -5,6 +5,7 @@ import {
   scrypt as deriveKeyCallback,
   timingSafeEqual,
 } from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
 const SCRYPT_COST = 16_384;
@@ -62,6 +63,17 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, encodedHash: string): Promise<boolean> {
+  // Accounts that predate the move off Supabase Auth carry a GoTrue bcrypt
+  // hash. Those passwords keep working, and the hash is upgraded to scrypt the
+  // next time the account signs in.
+  if (/^\$2[aby]\$/.test(encodedHash)) {
+    try {
+      return await bcrypt.compare(password, encodedHash);
+    } catch {
+      return false;
+    }
+  }
+
   const [algorithm, cost, blockSize, parallelization, saltHex, keyHex] = encodedHash.split('$');
   if (
     algorithm !== 'scrypt' ||
@@ -81,6 +93,15 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
   const actualKey = await deriveKey(password, salt);
 
   return timingSafeEqual(actualKey, expectedKey);
+}
+
+/**
+ * Whether a stored hash predates the move off Supabase Auth.
+ *
+ * Such a hash is upgraded to scrypt the next time the account signs in.
+ */
+export function isLegacyHash(encodedHash: string): boolean {
+  return /^\$2[aby]\$/.test(encodedHash);
 }
 
 export function hashSessionToken(token: string): string {

@@ -22,12 +22,20 @@ const accountRowSchema = z.object({
   phone: z.string().nullable(),
 });
 
-function getJwtSecret(): string {
-  const secret = process.env.SUPABASE_JWT_SECRET;
-  if (!secret) {
-    throw new Error('First-party authentication is not configured.');
-  }
-  return secret;
+/**
+ * The project's JWT secret, or null when it is not configured.
+ *
+ * The secret is what lets the app mint a database access token whose subject
+ * is the account id, so PostgREST resolves `auth.uid()` and the existing Row
+ * Level Security policies apply. It lives in the Supabase dashboard under
+ * Settings, then API, then JWT Secret.
+ *
+ * It is deliberately not fatal here. Without it, signing in still works and
+ * the session is still created; what does not work is reading farmer-scoped
+ * rows, because the database would treat the request as anonymous.
+ */
+function getJwtSecret(): string | null {
+  return process.env.SUPABASE_JWT_SECRET ?? null;
 }
 
 export function getAuthenticationAdminClient() {
@@ -35,7 +43,6 @@ export function getAuthenticationAdminClient() {
   if (!client) {
     throw new Error('First-party authentication storage is not configured.');
   }
-  getJwtSecret();
   return client;
 }
 
@@ -150,14 +157,17 @@ export async function getAuthenticatedClient() {
     throw new Error('Unable to load the authentication account.');
   }
 
-  const accessToken = createDatabaseAccessToken(parsedAccount.data.id, getJwtSecret());
+  const secret = getJwtSecret();
+  const accessToken = secret
+    ? createDatabaseAccessToken(parsedAccount.data.id, secret)
+    : null;
   return {
     user: {
       id: parsedAccount.data.id,
       email: parsedAccount.data.email,
       phone: parsedAccount.data.phone,
     },
-    supabase: await createClient(accessToken),
+    supabase: await createClient(accessToken ?? undefined),
   };
 }
 

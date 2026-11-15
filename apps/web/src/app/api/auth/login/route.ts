@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { normalizeIdentifier, verifyPassword } from '../../../../lib/auth/core';
+import {
+  hashPassword,
+  isLegacyHash,
+  normalizeIdentifier,
+  verifyPassword,
+} from '../../../../lib/auth/core';
 import {
   consumeAuthRateLimit,
   createSession,
@@ -76,6 +81,16 @@ export async function POST(request: Request) {
     }
 
     await createSession(account.id);
+
+    // A hash that predates the move off Supabase Auth is upgraded the first
+    // time the account signs in, so the bcrypt format does not linger.
+    if (isLegacyHash(passwordHash)) {
+      const admin = getAuthenticationAdminClient();
+      await admin
+        .from('local_accounts')
+        .update({ password_hash: await hashPassword(parsed.data.password) })
+        .eq('id', account.id);
+    }
     return NextResponse.json(
       { success: true },
       { status: 200, headers: { 'Cache-Control': 'no-store' } },
