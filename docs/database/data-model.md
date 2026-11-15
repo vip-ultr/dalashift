@@ -12,8 +12,10 @@ Related: [`postgis-design.md`](./postgis-design.md) ·
 
 ## 1. Platform
 
-Supabase = managed PostgreSQL with **PostGIS**, plus Auth, Storage and Row
-Level Security. The team owns the schema through versioned migrations; the
+Supabase = managed PostgreSQL with **PostGIS**, Storage and Row Level
+Security. Application-managed credentials and sessions map to Supabase's
+`auth.uid()` RLS identity through short-lived server-signed JWTs. The team owns
+the schema through versioned migrations; the
 Supabase dashboard is not used to create tables.
 
 **Design rules:**
@@ -32,7 +34,8 @@ Supabase dashboard is not used to create tables.
 
 ```mermaid
 erDiagram
-    AUTH_USERS ||--|| PROFILES : "extends"
+    LOCAL_ACCOUNTS ||--|| PROFILES : "owns"
+    LOCAL_ACCOUNTS ||--o{ LOCAL_SESSIONS : "has"
     PROFILES ||--o{ FARMS : "owns"
     FARMS ||--o{ PARCELS : "divided into"
     FARMS ||--o{ FARM_CROPS : "grows"
@@ -58,13 +61,50 @@ erDiagram
 
 ## 3. Table specifications
 
-### 3.1 `profiles`
+### 3.1 `local_accounts`
 
-Extends `auth.users`. Created by a trigger on user insert.
+Server-only credentials and sign-in identifiers. Passwords are never stored in
+plaintext. Existing account UUIDs are preserved when migrating from Supabase
+Auth; legacy accounts retain a null password hash until a verified reset path
+is available.
+
+| Column         | Type          | Notes                                              |
+| -------------- | ------------- | -------------------------------------------------- |
+| `id`           | `uuid` PK     | Stable identity and `auth.uid()` subject.          |
+| `email`        | `text`        | Normalized lowercase email, unique when present.   |
+| `phone`        | `text`        | International phone, unique when present.          |
+| `password_hash`| `text`        | scrypt hash; `NULL` for preserved legacy accounts. |
+| `created_at`   | `timestamptz` | `default now()`                                    |
+
+RLS is enabled with no client policies. Only server-side authentication code
+uses the service-role client to access this table.
+
+### 3.2 `local_sessions`
+
+Server-only opaque sessions. The browser cookie contains a cryptographically
+random token; the database stores only its SHA-256 hash. Sessions expire after
+seven days and can be revoked at sign-out.
+
+| Column        | Type          | Notes                                  |
+| ------------- | ------------- | -------------------------------------- |
+| `id`          | `uuid` PK     | `default gen_random_uuid()`            |
+| `user_id`     | `uuid` FK     | → `local_accounts(id)` `on delete cascade` |
+| `token_hash`  | `text`        | Unique SHA-256 hash, never the cookie token |
+| `expires_at`  | `timestamptz` | Absolute expiry                         |
+| `revoked_at`  | `timestamptz` | Null until revoked                      |
+| `created_at`  | `timestamptz` | `default now()`                         |
+
+RLS is enabled with no client policies. The session cookie is HttpOnly,
+SameSite=Lax and Secure in production.
+
+### 3.3 `profiles`
+
+One-to-one with `local_accounts`. It remains the user profile and the RLS
+identity anchor.
 
 | Column            | Type        | Notes                                                        |
 | ----------------- | ----------- | ------------------------------------------------------------ |
-| `id`              | `uuid` PK   | `= auth.users.id`. **The RLS identity anchor.**            |
+| `id`              | `uuid` PK   | `= local_accounts.id`. **The RLS identity anchor.**       |
 | `full_name`       | `text`      | Required.                                                    |
 | `phone`           | `text`      | Contact for reports and field follow-up.                     |
 | `preferred_language` | `text`   | `default 'en'`. **[Proposed]** collected only if an interface language ships. |
@@ -77,7 +117,7 @@ Extends `auth.users`. Created by a trigger on user insert.
 
 ---
 
-### 3.2 `farms`
+### 3.4 `farms`
 
 A farm is the farmer's holding. It has no boundary of its own. Its area is
 the sum of parcel areas, and its centroid is maintained from parcel geometry.
@@ -110,7 +150,7 @@ write either value directly.
 
 ---
 
-### 3.3 `parcels`
+### 3.5 `parcels`
 
 A parcel is the unit of environmental analysis and crop comparison. It always
 has geometry in SRID 4326. Drawn polygons are stored as polygons. A GPS point
@@ -136,7 +176,7 @@ crop records and recomputing every historical analysis. Carrying a nullable
 
 ---
 
-### 3.4 `crops`: the reference catalog
+### 3.6 `crops`: the reference catalog
 
 Seeded from the versioned catalog in the repository. **Every agronomic value
 must cite a source.**
@@ -169,7 +209,7 @@ interpretation remains unverified.
 
 ---
 
-### 3.5 `farm_crops`
+### 3.7 `farm_crops`
 
 | Column                   | Type        | Notes                                                       |
 | ------------------------ | ----------- | ----------------------------------------------------------- |
@@ -198,7 +238,7 @@ queryable without a join, and the transition is a single `UPDATE`.
 
 ---
 
-### 3.6 `farm_priorities`
+### 3.8 `farm_priorities`
 
 The farmer's stated objectives for a farm. **Required by the NASA Space Apps
 "Field Shift" challenge brief** (which names "farmer priorities").
@@ -215,7 +255,7 @@ The farmer's stated objectives for a farm. **Required by the NASA Space Apps
 
 ---
 
-### 3.7 `data_sources`
+### 3.9 `data_sources`
 
 The runtime registry of every external source. Mirrors
 [`../api/data-sources.md`](../api/data-sources.md).
@@ -234,7 +274,7 @@ The runtime registry of every external source. Mirrors
 
 ---
 
-### 3.8 `grid_cells`
+### 3.10 `grid_cells`
 
 A reference table of the grid cells that coarse products are sampled from.
 Avoids repeating a cell geometry on every observation row.
@@ -255,7 +295,7 @@ resolution honestly.
 
 ---
 
-### 3.9 `environmental_observations`
+### 3.11 `environmental_observations`
 
 The core provenance-bearing table.
 
@@ -289,7 +329,7 @@ Rows are read-only to authenticated clients. Missing source values remain
 
 ---
 
-### 3.10 `analyses`
+### 3.12 `analyses`
 
 An immutable record of a computation over a farm's observations.
 
@@ -314,7 +354,7 @@ analyses must remain reproducible. The snapshot says what was true at the time.
 
 ---
 
-### 3.11 `recommendation_rulesets`
+### 3.13 `recommendation_rulesets`
 
 Versioned rule definitions. The content is stored as JSON so it can be
 diffed and audited.
@@ -330,7 +370,7 @@ diffed and audited.
 
 ---
 
-### 3.12 `recommendations`
+### 3.14 `recommendations`
 
 | Column            | Type         | Notes                                                       |
 | ----------------- | ------------ | ----------------------------------------------------------- |
@@ -353,7 +393,7 @@ diffed and audited.
 
 ---
 
-### 3.13 `rotation_strategies`
+### 3.15 `rotation_strategies`
 
 **Required by the NASA Space Apps "Field Shift" challenge brief.** A rotation
 strategy is the comparison unit.
@@ -383,7 +423,7 @@ That is deliberate: it makes the submission visibly compliant.
 
 ---
 
-### 3.14 `rotation_legs`
+### 3.16 `rotation_legs`
 
 The ordered composition of a rotation strategy.
 
@@ -403,7 +443,7 @@ The ordered composition of a rotation strategy.
 
 ---
 
-### 3.15 `reports`
+### 3.17 `reports`
 
 | Column          | Type          | Notes                                                    |
 | --------------- | ------------- | -------------------------------------------------------- |
@@ -423,7 +463,7 @@ stale binary. The stored file is a convenience, not the source of truth.
 
 ---
 
-### 3.16 `external_cache`
+### 3.18 `external_cache`
 
 | Column        | Type          | Notes                                                       |
 | ------------- | ------------- | ----------------------------------------------------------- |
@@ -453,7 +493,7 @@ operations can read or write the cache.
 
 ---
 
-### 3.17 `soil_properties` (pre-baked SoilGrids)
+### 3.19 `soil_properties` (pre-baked SoilGrids)
 
 **[Proposed]** Because the SoilGrids REST API is degraded and rate-limited to
 5 calls/minute, we pre-bake the soil grid for the supported region into a

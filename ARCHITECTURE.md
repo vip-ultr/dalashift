@@ -142,12 +142,11 @@ flowchart LR
         About["/about"]
         Method["/methodology"]
     end
-    subgraph Auth["(auth): unauthenticated"]
+    subgraph Auth["(auth): sign-in and registration"]
         Login["/login"]
         Reg["/register"]
-        CB["/auth/callback"]
     end
-    subgraph Dash["(dashboard): authenticated, RLS-scoped"]
+    subgraph Dash["(dashboard): user-scoped API access"]
         Farms["/farms"]
         Farm["/farms/[farmId]"]
         FarmEnv["/farms/[farmId]/environment"]
@@ -183,15 +182,15 @@ hackathon.
 
 | Data class                     | Mechanism                                                     |
 | ------------------------------ | ------------------------------------------------------------- |
-| Session / user                 | Supabase Auth session, read server-side in RSC.               |
-| Farm, crop, profile data       | Direct Supabase client queries from RSC/server actions, with RLS enforcing ownership. |
+| Session / user                 | First-party opaque session cookie, verified server-side.      |
+| Farm, crop, profile data       | Server Supabase client with a short-lived user-scoped JWT; RLS enforces ownership. |
 | Environmental observations     | Server-side fetch → Supabase cache → RSC render. Never from the client. |
 | Map interaction state          | Client state (React) inside the map feature.                  |
 | Form state                     | React Hook Form + Zod resolver.                              |
 
-**Rule:** the browser may read the database **directly through the anon key**,
-but only for data the RLS policies allow, and only through
-`lib/supabase/client.ts`. The browser never calls NASA.
+**Rule:** the browser never queries Supabase directly. Authenticated database
+access stays server-side, uses a short-lived JWT for the verified user, and
+continues to rely on RLS. The browser never calls NASA.
 
 ### 3.4 Map architecture
 
@@ -331,7 +330,8 @@ Security. The team owns the schema through versioned migrations in
 
 ```mermaid
 erDiagram
-    AUTH_USERS ||--|| PROFILES : "extends"
+    LOCAL_ACCOUNTS ||--|| PROFILES : "owns"
+    LOCAL_ACCOUNTS ||--o{ LOCAL_SESSIONS : "has"
     PROFILES ||--o{ FARMS : "owns"
     FARMS ||--o{ FARM_PLOTS : "divided into"
     FARMS ||--o{ FARM_CROPS : "grows"
@@ -347,13 +347,21 @@ erDiagram
     FARMS ||--o{ REPORTS : "reported in"
     DATA_SOURCES ||--o{ EXTERNAL_CACHE : "cached"
 
-    AUTH_USERS {
+    LOCAL_ACCOUNTS {
         uuid id PK
         string email
+        string phone
+        string password_hash
         timestamptz created_at
     }
+    LOCAL_SESSIONS {
+        uuid user_id FK
+        string token_hash
+        timestamptz expires_at
+        timestamptz revoked_at
+    }
     PROFILES {
-        uuid id PK "FK auth.users"
+        uuid id PK "FK local_accounts"
         text full_name
         string phone
         string preferred_language
@@ -857,12 +865,24 @@ is suitable. Adding your own note about the soil would let me check."
 
 ### 10.1 Authentication
 
-Supabase Auth. Email/password for the MVP. **[Open]** Whether to add OTP or
-social login: deferred; it is a Phase 3 decision and does not affect the
-architecture.
+The application owns email/phone plus password registration. Passwords are
+stored as scrypt hashes in `local_accounts`. A random opaque session token is
+stored only as a SHA-256 hash in `local_sessions` and sent in an HttpOnly,
+Secure-in-production, SameSite=Lax cookie with a seven-day expiry.
 
-Sessions are cookie-based via `@supabase/ssr`, which keeps the token out of
-client-side JavaScript and makes middleware checks possible.
+The server verifies the opaque session and signs a five-minute HS256 JWT for
+the account UUID using `SUPABASE_JWT_SECRET`. The database client uses that
+user-scoped token, so existing `auth.uid()` RLS policies remain authoritative.
+The service-role client is limited to authentication tables, registration-time
+profile creation, cache maintenance and trusted environmental-observation
+ingestion. The observation path runs only after a user-scoped request verifies
+parcel ownership; user-facing farm reads and writes never use service role.
+Email/SMS verification and account recovery are not implemented. Existing
+Supabase Auth account IDs and farm data are preserved, but legacy password
+hashes cannot be transferred. Legacy accounts remain locked out until an
+administrator verifies identity out of band and performs a separately
+reviewed password reset. This release has no recovery route or reset
+procedure.
 
 ### 10.2 Authorization model
 
@@ -883,20 +903,21 @@ non-farmer workflow is designed in the MVP**.
 the boundary.**
 
 - Every farmer-scoped table has RLS policies keyed on `auth.uid()`.
-- The anon key can only do what RLS permits: a forged request cannot read
-  another farmer's farms.
-- The service-role key bypasses RLS and is used only for: scheduled refresh
-  jobs, and admin operations. It is never used to serve a user request
+- The server uses the anon key with a short-lived JWT for the verified user;
+  a forged request cannot read another farmer's farms.
+- The service-role key bypasses RLS and is used only for auth tables,
+  registration-time profile creation, cache maintenance and validated
+  environmental-observation ingestion. It never serves farmer business data
   directly.
-- Route handlers that write verify the caller's identity before touching the
-  service-role client.
+- Route handlers verify the caller's first-party session before accessing
+  user-scoped data.
 
-### 10.4 Middleware
+### 10.4 Route handling
 
-Next.js middleware performs an unauthenticated redirect for `(dashboard)`
-routes and redirects authenticated users away from `(auth)` routes. This is a
-**user-experience** measure. RLS remains the security boundary, so a bug in
-middleware cannot leak data.
+Protected API handlers verify the first-party session before creating the
+user-scoped Supabase client. A missing or expired session returns 401. Page
+navigation is a user-experience layer only; it cannot grant access to data.
+RLS remains the security boundary.
 
 ---
 
@@ -1009,7 +1030,7 @@ sequenceDiagram
 
 ### 12.2 What is never stored
 
-- Passwords (Supabase Auth holds them).
+- Plaintext passwords. The application stores only scrypt hashes.
 - Raw upstream payloads without normalisation and provenance.
 - Farmer PII outside the profile table.
 - Rasters in Postgres.
@@ -1093,7 +1114,7 @@ flowchart TB
 
 | Control                          | Implementation                                                    |
 | -------------------------------- | ----------------------------------------------------------------- |
-| Authentication                   | Supabase Auth, cookie sessions via `@supabase/ssr`                 |
+| Authentication                   | First-party scrypt credentials, hashed opaque sessions, short-lived JWT |
 | Authorization                    | PostgreSQL RLS on every farmer-scoped table                       |
 | Secret isolation                 | `import "server-only"`; `SUPABASE_SERVICE_ROLE_KEY` never in client |
 | Input validation                 | Zod at every route handler, server action and upstream response   |
@@ -1284,6 +1305,8 @@ decision index below is a summary; **the ADR is the source of truth.**
 | [ADR-0008](docs/decisions/ADR-0008-google-earth-engine-dependency.md) | Google Earth Engine as an optional dependency | **Open** |
 | [ADR-0009](docs/decisions/ADR-0009-repository-visibility.md) | Repository visibility | **Open** |
 | [ADR-0010](docs/decisions/ADR-0010-dependency-and-ci-runtime-policy.md) | Dependency update policy and CI action runtime | Accepted |
+| [ADR-0012](docs/decisions/ADR-0012-first-party-authentication.md) | First-party authentication with Supabase RLS | Accepted |
+| [ADR-0012](docs/decisions/ADR-0012-first-party-authentication.md) | First-party authentication with Supabase RLS | Accepted |
 
 ---
 

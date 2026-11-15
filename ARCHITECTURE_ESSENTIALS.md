@@ -24,7 +24,7 @@ Full detail: [`ARCHITECTURE.md`](./ARCHITECTURE.md). Rules for agents:
 | Maps              | MapLibre GL JS + Terra Draw                     | 6.x / 1.x  |
 | Backend           | Next.js server-side (Route Handlers, Actions)   | n/a        |
 | Database          | Supabase PostgreSQL + PostGIS                   | n/a        |
-| Auth              | Supabase Auth                                   | n/a        |
+| Auth              | First-party credentials and server sessions    | n/a        |
 | Storage           | Supabase Storage (private buckets)              | n/a        |
 | DB security       | Row Level Security                              | n/a        |
 | Hosting           | Vercel                                          | n/a        |
@@ -65,9 +65,9 @@ library.
 | Browser ↔ server              | The browser is untrusted. Validate everything server-side.             |
 | `features/` ↔ `features/`     | No cross-feature internal imports. Share via `packages/shared` or the DB. |
 | Client ↔ `lib/integrations/`  | Forbidden. Server-only.                                                 |
-| Client ↔ Supabase             | Allowed for farmer-scoped reads/writes via the anon key. **RLS is the boundary.** |
+| Client ↔ Supabase             | Forbidden. Authenticated access is server-side; RLS is the boundary.   |
 | App ↔ upstream APIs           | Only through an integration module with timeout, retry, cache, provenance. |
-| Service-role client           | Background jobs and admin only. Never for a user request.               |
+| Service-role client           | Auth tables, registration profile creation, cache and ingestion only. |
 
 ### Integration module contract
 
@@ -92,7 +92,8 @@ apps/web/src/
   features/            Vertical slices: the unit of product work
   lib/integrations/    SERVER-ONLY. One module per external data source
   lib/geospatial/      Area, zonal stats, coordinate utilities
-  lib/supabase/        Browser + server clients, query helpers
+  lib/auth/            Password hashing, session verification, scoped tokens
+  lib/supabase/        Server clients, query helpers
   lib/utilities/       Generic helpers (cn, format). No domain logic
   hooks/               Shared React hooks
   types/               App-local types (shared ones go in packages/shared)
@@ -111,7 +112,9 @@ docs/                  research/ api/ database/ product/ design/ hackathon/ deci
 
 | Entity                    | Key columns                                                     | Notes                                    |
 | ------------------------- | --------------------------------------------------------------- | ---------------------------------------- |
-| `profiles`                | `id` (=`auth.users.id`), `full_name`, `phone`, `role`          | Extends the auth user                    |
+| `local_accounts`          | `id`, `email`, `phone`, `password_hash`                         | Credentials; server-only access          |
+| `local_sessions`          | `user_id`, `token_hash`, `expires_at`, `revoked_at`             | Opaque server-managed sessions           |
+| `profiles`                | `id` (=`local_accounts.id`), `full_name`, `phone`, `role`       | `auth.uid()` remains the RLS identity    |
 | `farms`                   | `farmer_id`, `name`, `centroid` (Point), `boundary` (Polygon), `area_ha` | `area_ha` computed by PostGIS   |
 | `farm_plots`              | `farm_id`, `boundary`, `area_ha`                                 | Optional subdivision                     |
 | `crops`                   | `code`, `name`, `agronomic_requirements` (jsonb)                | Seeded from the versioned catalog        |
@@ -130,8 +133,9 @@ docs/                  research/ api/ database/ product/ design/ hackathon/ deci
 
 ### Farm save
 
-Client draws polygon → Turf area (preview only) → `POST /api/farms` → Zod
-validate → insert with `farmer_id = auth.uid()` → **PostGIS computes
+Client draws polygon → Turf area (preview only) → `POST /api/farms` → session
+verification → short-lived user JWT → Zod validate → insert with
+`farmer_id = auth.uid()` → **PostGIS computes
 `area_ha` and centroid** → return.
 
 ### Environmental read
@@ -170,6 +174,8 @@ Never write "your farm's soil moisture".
 ## 8. Security rules
 
 - RLS on every farmer-scoped table. A table without policies is a defect.
+- Password hashes and opaque session-token hashes are private to the server.
+- `SUPABASE_JWT_SECRET` is server-only and signs five-minute database tokens.
 - `SUPABASE_SERVICE_ROLE_KEY` → server only, never `NEXT_PUBLIC_*`.
 - NASA Earthdata token, GEE keys, provider keys → server only.
 - Zod validation on every input **and** every upstream response.

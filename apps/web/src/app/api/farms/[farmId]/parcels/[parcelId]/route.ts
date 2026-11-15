@@ -3,7 +3,7 @@ import { geometrySchema } from '@dalashift/shared/schemas';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { createClient } from '../../../../../../lib/supabase/server';
+import { getAuthenticatedClient } from '../../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string; parcelId: string }>;
@@ -26,11 +26,11 @@ export async function GET(_request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm or parcel id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   const { data, error } = await supabase
     .from('parcels_public')
@@ -57,11 +57,11 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm or parcel id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   let body: unknown;
   try {
@@ -129,11 +129,11 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm or parcel id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   const { data, error } = await supabase
     .from('parcels')

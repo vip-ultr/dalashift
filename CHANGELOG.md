@@ -14,6 +14,16 @@ the build.
 
 ## [Unreleased]
 
+### Authentication
+
+- Replaced Supabase Auth signup and sign-in with first-party account endpoints.
+  Passwords use scrypt hashes, opaque session cookies are HttpOnly and
+  time-limited, and farm data remains protected by `auth.uid()`-based RLS.
+- Preserved existing account UUIDs and farm ownership. Existing password hashes
+  cannot be migrated; a verified legacy-account reset flow remains required.
+- Added Vercel configuration for the server-only `SUPABASE_JWT_SECRET`.
+  Email and phone verification are not available in this release.
+
 ### Frontend Handoff Completed
 
 - Sign-in and registration use Supabase Auth with validation and explicit

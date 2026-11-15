@@ -1,16 +1,15 @@
 import { farmInputSchema } from '@dalashift/shared/schemas';
 import { NextResponse } from 'next/server';
 
-import { createClient } from '../../../lib/supabase/server';
+import { getAuthenticatedClient } from '../../../lib/supabase/server';
 
 /** List the signed-in farmer's farms. Database RLS enforces ownership. */
 export async function GET() {
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   const { data, error } = await supabase
     .from('farms')
@@ -27,12 +26,11 @@ export async function GET() {
 
 /** Create a farm for the authenticated user. The owner id never comes from the body. */
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase, user } = authContext;
 
   let body: unknown;
   try {
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from('farms')
     .insert({
-      farmer_id: authData.user.id,
+      farmer_id: user.id,
       name: parsed.data.name,
       farming_method: parsed.data.farmingMethod,
       irrigation_method: parsed.data.irrigationMethod,

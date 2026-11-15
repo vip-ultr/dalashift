@@ -51,7 +51,7 @@ If the team agrees to disclose publicly after a fix, a SECURITY advisory and a
 
 | Class                     | Examples                                          | Handling                                        |
 | ------------------------- | ------------------------------------------------- | ----------------------------------------------- |
-| **Credentials**           | Supabase service-role key, Earthdata token, provider keys | Server-side only. Never in `NEXT_PUBLIC_*`. Never in Git. |
+| **Credentials**           | Supabase service-role key and JWT secret, Earthdata token, provider keys | Server-side only. Never in `NEXT_PUBLIC_*`. Never in Git. |
 | **Personal data**         | Farmer name, phone, email, precise farm location  | RLS-protected. Never in Git. Never in logs.     |
 | **Farm business data**    | Boundaries, crops, planting dates, yields          | RLS-protected. Export only with explicit consent. |
 | **Public research data**  | NASA products, SoilGrids, crop calendars           | Licence + attribution obligations apply.        |
@@ -60,8 +60,11 @@ If the team agrees to disclose publicly after a fix, a SECURITY advisory and a
 
 - **Row Level Security** on every table that holds farmer data. A new table
   shipped without policies is a security defect, not an oversight.
-- **Least privilege.** The browser uses the `anon` key; it can only do what
-  RLS permits. The service-role key is used only in server modules.
+- **Least privilege.** The server uses the anon key with a short-lived,
+  user-scoped JWT for farmer data. The service-role key is limited to
+  authentication tables, registration-time profile creation, cache maintenance
+  and validated environmental-observation ingestion after parcel ownership is
+  checked with the user-scoped token.
 - **`import "server-only"`** in `apps/web/src/lib/integrations/*` to make an
   accidental client import a build-time error rather than a runtime leak.
 - **Secret scanning** in CI (gitleaks) plus a `.gitignore` that excludes all
@@ -74,6 +77,10 @@ If the team agrees to disclose publicly after a fix, a SECURITY advisory and a
 - **Caching** so upstream quota is never the availability failure mode.
 - **Safe error handling.** Internal errors are logged server-side; the client
   receives a generic message.
+- **First-party sessions.** Passwords use scrypt, opaque session tokens are
+  stored as hashes, and cookies are HttpOnly, SameSite=Lax and Secure in
+  production. Auth routes require same-origin requests and database-backed
+  rate limits.
 - **Security headers** set in `apps/web/next.config.ts`
   (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
   `Permissions-Policy`).
@@ -116,7 +123,8 @@ These are acknowledged, not hidden. They are tracked as open issues.
 | ------------------------------------------------------ | -------- | ------------------------------------------ |
 | RLS policies are specified but not yet implemented     | High     | Phase 2 first task                         |
 | No automated dependency vulnerability audit yet         | Medium   | Add `pnpm audit` to CI                     |
-| Rate limiting not implemented                           | Medium   | Phase 2: use Vercel firewall or Postgres-backed limiter |
+| No email/SMS verification or account recovery           | High     | Implement before production use with real farmer data   |
+| Legacy account password migration not implemented       | High     | Manual admin reset after out-of-band identity verification |
 | No CSP configured yet                                   | Medium   | Phase 2: required before any external script loads |
 | GitHub branch protection not configured                 | Medium   | Team action, outside the repository        |
 | No account deletion flow                                | Medium   | Phase 2                                    |

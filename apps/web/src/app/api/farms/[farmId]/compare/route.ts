@@ -35,7 +35,7 @@ import {
   NASA_POWER_DAILY_SOURCE,
   NASA_POWER_VARIABLES,
 } from '../../../../../lib/integrations/nasa-power';
-import { createClient } from '../../../../../lib/supabase/server';
+import { getAuthenticatedClient } from '../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string }>;
@@ -72,11 +72,11 @@ export async function GET(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Parcel id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   let analysesQuery = supabase
     .from('analyses')
@@ -134,11 +134,11 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   let body: unknown = {};
   try {

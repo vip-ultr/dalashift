@@ -6,10 +6,10 @@
 
 </div>
 
-> **Status: Phase 1 (research, product definition, architecture and repository
-> foundation).** The product is not yet implemented. This repository contains the
-> research, the architecture, the database design and the working agreements
-> that the build will follow.
+> **Status: Phase 2 (build).** The repository now includes a working Next.js
+> application, database migrations, first-party account access and the
+> documented research and architecture behind the product. See
+> [`CHANGELOG.md`](./CHANGELOG.md) for the current implementation record.
 >
 > **Working name.** "DalaShift" is provisional. It is not a final brand and
 > should not be presented as one.
@@ -19,18 +19,18 @@
 This repository was created on **13 November 2026** (the day before the 2026
 NASA Space Apps Challenge began) and was committed before the event started.
 
-What exists here is **preparation, not a solution**:
+Before the event, this repository held the preparation foundation:
 
-| In this repository (before the event)                                     | Not in this repository |
+| In this repository (before the event)                                     | Not in this repository before the event |
 | ---------------------------------------------------------------------------- | --------------------- |
 | Research into NASA and other open data sources, with citations and verification dates | Authentication, the farmer dashboard, functional maps |
 | Product definition: requirements, personas, user flows                      | Live NASA API integration |
 | Technical architecture, database design, RLS design                         | The crop recommendation engine |
 | A working repository skeleton, tooling and CI                               | Database migrations, reports, product pages |
 
-`apps/web/src/app/page.tsx` is a placeholder page whose only job is to say
-this out loud. **No part of the working application existed before the
-event.** The application itself is built during the challenge.
+The working application and versioned schema are now in `apps/web/` and
+`supabase/migrations/`. This history is retained to make clear what was
+prepared before the event and what was built during it.
 
 Where an agronomic value or a recommendation appears anywhere in this
 repository, it comes from a cited source or from the documented rules engine,
@@ -154,7 +154,8 @@ farm locations anywhere in supported coverage. But:
 | UI          | Tailwind CSS · shadcn/ui · Lucide · Recharts         |
 | Maps        | MapLibre GL JS                                      |
 | Backend     | Next.js server-side (Route Handlers, Server Actions)  |
-| Database    | Supabase: PostgreSQL + PostGIS · Auth · Storage · RLS  |
+| Database    | Supabase: PostgreSQL + PostGIS · Storage · RLS          |
+| Authentication | First-party passwords and server-managed sessions   |
 | Hosting     | Vercel                                               |
 | Tooling     | Node 22 · pnpm workspaces · ESLint · Prettier · Vitest |
 

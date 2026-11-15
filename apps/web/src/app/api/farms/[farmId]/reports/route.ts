@@ -42,7 +42,7 @@ import {
   buildFarmReportPayload,
   type ReportKind,
 } from '../../../../../features/reports/build-farm-report';
-import { createClient } from '../../../../../lib/supabase/server';
+import { getAuthenticatedClient } from '../../../../../lib/supabase/server';
 import {
   createReportSignedUrl,
   uploadFarmReportArtifact,
@@ -87,11 +87,11 @@ export async function GET(_request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase } = authContext;
 
   const { data: reports, error } = await supabase
     .from('reports')
@@ -133,11 +133,11 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase, user } = authContext;
 
   let body: unknown = {};
   try {
@@ -467,7 +467,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   const { storagePath, signedUrl } = await uploadFarmReportArtifact({
     supabase,
-    farmerId: authData.user.id,
+    farmerId: user.id,
     farmId,
     reportId: String(insertedReport.id),
     payload,

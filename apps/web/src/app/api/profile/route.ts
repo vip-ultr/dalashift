@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { createClient } from '../../../lib/supabase/server';
+import { getAuthenticatedClient } from '../../../lib/supabase/server';
 
 const profileUpdateSchema = z.object({
   fullName: z.string().trim().min(1).max(120).optional(),
@@ -12,18 +12,18 @@ const profileUpdateSchema = z.object({
 
 /** Read the authenticated farmer's profile row. */
 export async function GET() {
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase, user } = authContext;
 
   const { data, error } = await supabase
     .from('profiles')
     .select(
       'id, full_name, phone, preferred_language, farming_experience, role, created_at, updated_at',
     )
-    .eq('id', authData.user.id)
+    .eq('id', user.id)
     .maybeSingle();
 
   if (error) {
@@ -33,19 +33,20 @@ export async function GET() {
 
   return NextResponse.json({
     profile: data ?? {
-      id: authData.user.id,
-      email: authData.user.email ?? null,
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
     },
   });
 }
 
 /** Update the authenticated farmer's profile row (RLS enforces `id = auth.uid()`). */
 export async function PATCH(request: Request) {
-  const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData.user) {
+  const authContext = await getAuthenticatedClient();
+  if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const { supabase, user } = authContext;
 
   let body: unknown;
   try {
@@ -75,7 +76,7 @@ export async function PATCH(request: Request) {
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
-    .eq('id', authData.user.id)
+    .eq('id', user.id)
     .select(
       'id, full_name, phone, preferred_language, farming_experience, role, created_at, updated_at',
     )

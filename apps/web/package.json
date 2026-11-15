@@ -17,7 +17,6 @@
     "@dalashift/shared": "workspace:*",
     "@hookform/resolvers": "^7.0.6",
     "@next/env": "^16.4.6",
-    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
     "@turf/turf": "^7.4.0",
     "class-variance-authority": "^0.7.1",

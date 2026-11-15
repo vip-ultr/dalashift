@@ -9,7 +9,6 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { SegmentedControl } from '../ui/segmented-control';
-import { createClient } from '../../lib/supabase/client';
 
 export interface AuthCardProps {
   readonly initialMode: 'login' | 'register';
@@ -24,20 +23,17 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   const [password, setPassword] = React.useState('');
   const [consentChecked, setConsentChecked] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [noticeMessage, setNoticeMessage] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
   const handleModeSwitch = (nextMode: 'login' | 'register') => {
     setMode(nextMode);
     setErrorMessage(null);
-    setNoticeMessage(null);
     router.push(nextMode === 'login' ? '/login' : '/register');
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
-    setNoticeMessage(null);
 
     const accountIdentifier = identifier.trim();
     if (!accountIdentifier || !password) {
@@ -64,30 +60,32 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
 
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      const isEmail = accountIdentifier.includes('@');
-      const credentials = isEmail
-        ? { email: accountIdentifier, password }
-        : { phone: accountIdentifier, password };
-      const result =
-        mode === 'login'
-          ? await supabase.auth.signInWithPassword(credentials)
-          : await supabase.auth.signUp({
-              ...credentials,
-              options: { data: { full_name: fullName.trim(), role } },
-            });
+      const response = await fetch(mode === 'login' ? '/api/auth/login' : '/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          mode === 'login'
+            ? { identifier: accountIdentifier, password }
+            : {
+                fullName: fullName.trim(),
+                identifier: accountIdentifier,
+                password,
+                role,
+                consentAccepted: consentChecked,
+              },
+        ),
+      });
+      const result: unknown = await response.json();
 
-      if (result.error) {
-        setErrorMessage(result.error.message);
-        return;
-      }
-
-      if (mode === 'register' && !result.data.session) {
-        setNoticeMessage(
-          isEmail
-            ? 'Account created. Check your email to confirm the address, then sign in.'
-            : 'Account created. Complete phone verification with your administrator before signing in.',
-        );
+      if (!response.ok) {
+        const message =
+          typeof result === 'object' &&
+          result !== null &&
+          'error' in result &&
+          typeof result.error === 'string'
+            ? result.error
+            : 'Unable to access your account. Please try again.';
+        setErrorMessage(message);
         return;
       }
 
@@ -193,6 +191,10 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 onChange={(e) => setIdentifier(e.target.value)}
                 autoComplete="username"
               />
+              <p className="text-[11px] text-[#6b7280]">
+                Use an email or phone in international format (for example, +234…). No verification
+                code is sent in this version.
+              </p>
             </div>
 
             <div className="space-y-1.5">
@@ -233,15 +235,6 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 {errorMessage}
               </div>
             ) : null}
-            {noticeMessage ? (
-              <div
-                role="status"
-                className="rounded-[8px] border border-[#b7ebc9] bg-[#ebfaef] px-3 py-2 text-xs font-medium text-[#0b4f2f]"
-              >
-                {noticeMessage}
-              </div>
-            ) : null}
-
             <Button
               type="submit"
               variant="primary"
@@ -276,7 +269,8 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
       </main>
 
       <footer className="py-4 text-center text-[11px] text-[#6b7280]">
-        Protected by Supabase Row-Level Security (RLS) · Farmers only read their own farm records.
+        Your session is private and time-limited. Database Row-Level Security protects each farmer’s
+        records.
       </footer>
     </div>
   );

@@ -93,12 +93,32 @@ Minimum set for local development:
 
 | Variable                        | Why                                              |
 | ------------------------------- | ------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Database, auth and storage                       |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Database and storage                             |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Paste the Supabase publishable key here. It is public by design; RLS remains the access boundary. |
 | `NEXT_PUBLIC_MAP_STYLE_URL`     | MapLibre basemap style                           |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Server-side account/session storage and data ingestion |
+| `SUPABASE_JWT_SECRET`           | Server-only signing key for short-lived RLS-scoped database tokens |
 
 Additional variables are needed for external data sources. See
 `docs/api/data-sources.md` for which ones and how to obtain them.
+
+### First-party authentication deployment
+
+The app manages passwords and sessions itself. Apply the migration
+`20261114160000_first_party_auth.sql`, then set `SUPABASE_JWT_SECRET` as a
+server-only environment variable in Vercel. Use the project's legacy HS256 JWT
+secret from Supabase API settings. It is used only to sign short-lived tokens
+with the signed-in account UUID, allowing existing `auth.uid()` RLS policies
+to continue protecting farm data. Never use it in a `NEXT_PUBLIC_` variable.
+
+New passwords are stored as scrypt hashes. Existing Supabase Auth user IDs,
+profiles and farm records are preserved, but their password hashes cannot be
+transferred. Those legacy accounts remain locked out until an administrator
+verifies the user's identity out of band and performs a separately reviewed
+password reset. This release has no recovery route or reset procedure. Never
+allow signup to claim an existing account based only on an email or phone
+match. No email or SMS verification is currently sent, so users must enter
+contact details they control.
 
 ### Verify the setup
 

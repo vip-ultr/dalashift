@@ -1,7 +1,8 @@
 # Row Level Security Policies
 
-**Status: initial policies exist** in `supabase/migrations/`. This document
-describes the intended policy model; the migrations are authoritative.
+**Status: initial policies exist** in `supabase/migrations/`. Authentication
+tables are server-only and have RLS enabled without client policies. This
+document describes the intended policy model; migrations are authoritative.
 
 Companion to [`data-model.md`](./data-model.md).
 
@@ -26,8 +27,9 @@ and a 48-hour build. **The design should make the safe path the default path.**
 
 ```mermaid
 flowchart LR
-    B["Browser<br/>(anon key)"] -->|"direct query"| PG[("PostgreSQL<br/>+ PostGIS")]
-    S["Next.js server<br/>(service role)"] -->|"elevated"| PG
+    B["Browser<br/>(HttpOnly session)"] -->|"API request"| S["Next.js server"]
+    S -->|"anon key + short-lived user JWT"| PG[("PostgreSQL<br/>+ PostGIS")]
+    S -->|"auth tables only"| A["Supabase service role"]
     PG -->|"policy check:<br/>auth.uid() = farmer_id"| RLS["RLS engine"]
     RLS -->|allow| ROW["row returned"]
     RLS -->|"deny (no error, zero rows)"| EMPTY["empty result"]
@@ -42,12 +44,14 @@ yours" (which is the correct behaviour, and prevents existence disclosure).
 
 ## 3. The identity anchor
 
-`auth.uid()` returns the authenticated user's UUID from the JWT. Every
+`auth.uid()` returns the authenticated user's UUID from the short-lived,
+server-signed database JWT. The server issues that token only after verifying
+the opaque session against `local_sessions`. Every
 farmer-scoped table stores `farmer_id` (or derives it through a parent) so
 that the policy is a single equality check.
 
-**`profiles.id = auth.users.id`**: the profile row *is* the auth user. There
-is no separate identity mapping to get wrong.
+**`profiles.id = local_accounts.id`**: the profile row and application account
+share a stable UUID, which is the JWT `sub` and RLS identity.
 
 ---
 
@@ -69,14 +73,14 @@ CREATE POLICY profiles_select_own ON profiles
 CREATE POLICY profiles_update_own ON profiles
   FOR UPDATE USING (id = auth.uid()) WITH CHECK (id = auth.uid());
 
--- No INSERT policy: the row is created by a trigger on auth.users insert.
+-- No INSERT policy: profile creation is performed by server-side registration.
 -- No DELETE policy: account deletion goes through a controlled path.
 ```
 
-**[Proposed]** Note the deliberate absence of an `INSERT` policy. The profile
-is created by a `SECURITY DEFINER` trigger, which bypasses RLS by design.
-Without that trigger, the user could not create their own profile. With an
-`INSERT` policy, a user could create a profile for *someone else*.
+**Note the deliberate absence of an `INSERT` policy.** The server creates the
+profile after creating the account. The service-role use is limited to
+authentication records; all later profile reads and updates use a
+user-scoped token and RLS.
 
 ### 4.2 `farms`
 
@@ -361,7 +365,8 @@ will not.
 - [ ] Policies written for every table.
 - [ ] `WITH CHECK` present on every `INSERT`/`UPDATE` policy.
 - [ ] The cross-account isolation test passes.
-- [ ] The `auth.users` insert trigger creates the profile row.
+- [ ] First-party registration creates both the account and profile.
+- [ ] Account/session/rate-limit tables have RLS enabled and no client policies.
 - [ ] The service-role client exists in exactly one place, marked
       `server-only`.
 - [ ] No policy grants write access to `environmental_observations`,

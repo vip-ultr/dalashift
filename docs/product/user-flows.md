@@ -55,7 +55,7 @@ flowchart TD
 | Step | Screen                | What the farmer does                                     | What the system does                                       |
 | ---- | --------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
 | 1    | Landing              | Understands the proposition                                | States plainly what it uses and what it cannot do           |
-| 2    | Auth                 | Creates an account or signs in                            | Supabase Auth; a `profiles` row is created by trigger       |
+| 2    | Auth                 | Creates an account or signs in                            | First-party session; server creates `local_accounts` and `profiles` |
 | 3    | Onboarding: crops    | Taps their crops from a searchable list                   | Stores `farm_crops` with `status`                          |
 | 4    | Onboarding: land     | Says whether the land is in use                            | Sets the mode                                              |
 | 5    | Onboarding: water    | Says rainfed or irrigated, and how                        | Stores `irrigation_method`: a direct input to the water dimension |

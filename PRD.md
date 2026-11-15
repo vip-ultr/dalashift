@@ -226,7 +226,7 @@ validation objective. No quantitative engagement targets are set; see
 | FR-1.4   | The profile may record general farming experience.                                             | [Confirmed] |
 | FR-1.5   | Only information with a clear product purpose is collected; the form must state why each field is asked. | [Proposed] |
 | FR-1.6   | A farmer can access and edit their own profile, and can delete their account.                  | [Proposed] |
-| FR-1.7   | Authentication is via Supabase Auth.                                                            | [Confirmed] |
+| FR-1.7   | Authentication uses first-party passwords and server-managed sessions.                           | [Confirmed] |
 
 **[Proposed] Scope note.** "Preferred language" is collected in Phase 2, but
 **no translation of the interface is committed for the MVP**; the platform's
@@ -235,8 +235,10 @@ on the experience is a privacy cost with no user benefit. Either the MVP
 ships a Hausa interface, or the field is deferred to Phase 3. See
 [§ 19, OQ-1](#19-assumptions-and-open-questions).
 
-**[Confirmed]** Account credentials are handled by Supabase Auth. DalaShift
-stores no passwords.
+**[Confirmed]** Account credentials are handled by the application. Passwords
+are stored only as scrypt hashes; session tokens are stored only as hashes.
+Email and phone ownership is not verified in the current version. See
+[`ADR-0012`](./docs/decisions/ADR-0012-first-party-authentication.md).
 
 ### FR-2: Farm registration and geographical selection
 
@@ -274,7 +276,7 @@ requires only collecting information with a clear purpose:
 | ------------------------- | --------- | ---------------------------------------------------------- |
 | Full name                 | Yes       | Personalises reports; identifies the farm owner            |
 | Contact (phone/email)     | Yes       | Account recovery; report delivery; field follow-up        |
-| Password                  | Yes       | Account security (held by Supabase Auth)                   |
+| Password                  | Yes       | Account security (stored as an application-generated scrypt hash) |
 | Preferred language        | **No** (MVP) | No interface translation in the MVP; see OQ-1          |
 | Farming experience        | Optional  | Allows the platform to calibrate explanation depth         |
 | Farm name                 | Yes       | Distinguishes multiple farms; used in reports              |
@@ -606,7 +608,7 @@ journey that proves the product is honest.
 
 | # | Capability                                                                | Notes                                        |
 | - | ------------------------------------------------------------------------- | -------------------------------------------- |
-| 1 | Farmer registration and authentication                                    | Supabase Auth                               |
+| 1 | Farmer registration and authentication                                    | First-party session and credential flow     |
 | 2 | Farmer profile                                                            | Name, contact, language, experience         |
 | 3 | Farm registration: name, location, boundary polygon, derived area         | Map-based                                   |
 | 4 | Farm details: farming method, irrigation, soil notes, photographs         | Optional fields clearly marked              |

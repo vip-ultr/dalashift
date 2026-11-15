@@ -28,7 +28,6 @@ recalled. **Every entry is compatible with MIT, Apache-2.0 and AGPL-3.0.**
 | Package                    | Licence      | Version  |
 | -------------------------- | ------------ | -------- |
 | `@hookform/resolvers`      | MIT          | 7.0.6    |
-| `@supabase/ssr`            | MIT          | 0.12.7   |
 | `@supabase/supabase-js`    | MIT          | 2.119.0  |
 | `@turf/turf`               | MIT          | 7.4.0    |
 | `class-variance-authority` | Apache-2.0   | 0.7.1    |

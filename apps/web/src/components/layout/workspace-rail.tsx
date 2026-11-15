@@ -5,13 +5,15 @@ import {
   FileText,
   FolderKanban,
   LayoutGrid,
+  LogOut,
   PlusCircle,
   Sprout,
   UserCircle2,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import * as React from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
@@ -64,6 +66,23 @@ const SECONDARY_NAV_ITEMS = [
  */
 export function WorkspaceRail() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signOutError, setSignOutError] = React.useState(false);
+
+  const handleSignOut = async () => {
+    setSignOutError(false);
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST' });
+      if (!response.ok) {
+        setSignOutError(true);
+        return;
+      }
+      router.replace('/login');
+      router.refresh();
+    } catch {
+      setSignOutError(true);
+    }
+  };
 
   const isItemActive = (item: {
     readonly href: string;
@@ -144,6 +163,18 @@ export function WorkspaceRail() {
               </Link>
             );
           })}
+          <button
+            type="button"
+            title="Sign out"
+            aria-label="Sign out"
+            onClick={handleSignOut}
+            className="group relative flex size-10 items-center justify-center rounded-lg text-[#74777d] transition-colors hover:bg-[#f4f5f6] hover:text-ink"
+          >
+            <LogOut className="size-5" />
+            <span className="pointer-events-none absolute left-13 z-50 hidden rounded bg-[#1f2022] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
+              Sign out
+            </span>
+          </button>
         </div>
       </aside>
 
@@ -176,6 +207,21 @@ export function WorkspaceRail() {
             </Link>
           );
         })}
+        <button
+          type="button"
+          title="Sign out"
+          aria-label="Sign out"
+          onClick={handleSignOut}
+          className="flex flex-col items-center gap-1 px-2 py-1 text-[11px] font-medium text-ink-muted"
+        >
+          <LogOut className="size-5" />
+          <span>Sign out</span>
+        </button>
+        {signOutError ? (
+          <span role="alert" className="sr-only">
+            Unable to sign out. Please try again.
+          </span>
+        ) : null}
       </nav>
     </>
   );

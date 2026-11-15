@@ -2,7 +2,7 @@
 
 | Field    | Value                                                              |
 | -------- | ------------------------------------------------------------------ |
-| Status   | Accepted                                                          |
+| Status   | Superseded in part by ADR-0012 (authentication only)                |
 | Date     | 2026-11-13                                                        |
 | Deciders | Team                                                              |
 | Related  | `ARCHITECTURE.md` § 5, `SECURITY.md`, `docs/database/`, `PRD.md` § 5 |

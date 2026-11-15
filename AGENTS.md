@@ -56,13 +56,12 @@ validated.
 **Phase 1. Research, product definition, architecture and repository
 foundation. COMPLETE.**
 
-**Phase 2. Build.** Implementation begins at the hackathon venue.
+**Phase 2. Build.** Active. Frontend and backend implementation is underway.
 
-Phase 1 explicitly did **not** include: authentication, the farmer dashboard,
-functional maps, live NASA API integration, the recommendation engine,
-database migrations, or report generation. Do not treat the existence of
-`apps/web/src/app/page.tsx` as product code: it is a placeholder so the
-workspace builds.
+Phase 1 explicitly did **not** include product implementation. Phase 2 has
+since added application features and database migrations. Inspect the current
+code and changelog rather than treating the original Phase 1 exclusions as
+the current product state.
 
 When you start Phase 2 work, first check `docs/decisions/` for any ADR that
 constrains your approach, and update `ARCHITECTURE_ESSENTIALS.md` if you change
@@ -82,7 +81,7 @@ a core rule.
 | Mapping          | MapLibre GL JS + a documented tile provider                            |
 | Backend          | Next.js server-side logic and API routes (no separate backend service)   |
 | Database         | Supabase (PostgreSQL) with PostGIS                                      |
-| Auth             | Supabase Auth                                                           |
+| Auth             | First-party account auth and server-managed sessions                    |
 | Storage          | Supabase Storage                                                        |
 | Database security| Row Level Security                                                      |
 | Hosting          | Vercel                                                                  |
@@ -102,8 +101,11 @@ separate pull requests.
    `apps/web/src/lib/integrations/`, which is server-only. Client components
    never call NASA, Supabase service-role, or any other protected endpoint
    directly.
-2. **Never expose secrets.** The service-role key, Earthdata token, GEE
-   credentials and provider keys are server-only. `NEXT_PUBLIC_` means
+   Authenticated database access also stays server-side. The application
+   verifies its own session and supplies a short-lived user-scoped JWT so
+   PostgreSQL RLS remains the data authorization boundary.
+2. **Never expose secrets.** The service-role key, JWT signing secret,
+   Earthdata token, GEE credentials and provider keys are server-only. `NEXT_PUBLIC_` means
    "shipped to the browser". Never put a secret in one.
 3. **PostGIS is the geospatial authority.** Polygons are stored with SRID 4326;
    all area, distance and containment computation happens in PostGIS
@@ -280,7 +282,7 @@ fails, fix the underlying file rather than skipping the check.
 2. **Farmers may only read their own data.** Cross-farmer access is never
    allowed without an explicit, audited role.
 3. **Service-role key is server-only.** Never in `NEXT_PUBLIC_*`, never in
-   `src/lib/supabase/client.ts`, never in a Client Component.
+   any browser module, never in a Client Component.
 4. **No secrets in Git.** `.env*` is ignored; `.env.example` holds placeholders
    only.
 5. **No real farmer data in Git.** Farm boundaries, names, phone numbers and
