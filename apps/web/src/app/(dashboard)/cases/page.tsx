@@ -22,47 +22,22 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
         {/* Page Header */}
         <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="Strong">Field Validation</Badge>
-                <span className="text-xs font-medium text-[#6b7280]">
-                  Doka Village · Kano State, Nigeria · Public Access
-                </span>
-              </div>
-              <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
-                Field Validation Case Studies
+            <div className="space-y-1.5">
+              <Badge variant="Strong">Field Benchmarks</Badge>
+              <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
+                Field Case Studies
               </h1>
-              <p className="max-w-3xl text-sm leading-relaxed text-[#4b5563]">
-                In-person ground-truth interviews conducted in Hausa with local farmers.
-                Select any farmer below to inspect their multi-parcel holding,
-                moisture-conditioned planting trigger, and 3-strategy rotation comparison without
-                signing in.
+              <p className="max-w-2xl text-xs text-[#4b5563] sm:text-sm">
+                Explore real holding structures, crop rotation comparisons, and moisture triggers.
               </p>
             </div>
 
             <div className="flex shrink-0 flex-wrap items-center gap-2.5">
               <Link href="/farms/new">
                 <Button variant="primary" size="md">
-                  <span>+ Register Your Own Farm</span>
+                  <span>+ Register Farm</span>
                 </Button>
               </Link>
-              <Link href="/methodology">
-                <Button variant="secondary" size="md">
-                  <span>Methodology &amp; Citations</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Scope Honesty Strip */}
-          <div className="mt-4 flex items-start gap-2.5 rounded-[8px] border border-[#cce0f5] bg-[#eef5fc] p-3 text-xs text-[#1d4ed8]">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#1d4ed8]" aria-hidden="true" />
-            <div>
-              <strong>Validation Scope &amp; Consent:</strong> Field validation
-              covers our initial validation holdings in Kano State. It does not claim validation across all
-              of Nigeria. Bello Yusuf Maitama and Amina Habibu consented to publication and GPS
-              capture; Abubakar (Dan Hajiya) consented to publication while GPS capture was not
-              raised, so his plots use representative Doka coordinates.
             </div>
           </div>
         </div>
@@ -105,19 +80,9 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
                   <div className="rounded-[8px] bg-[#f4f5f6] p-3 text-xs">
                     <div className="font-semibold text-[#111315]">{cs.holdingSummary}</div>
                     <div className="tabular mt-1 text-[#4b5563]">
-                      {cs.parcels.length} mapped parcels ({totalHa.toFixed(1)} ha represented) ·{' '}
-                      {cs.farmingExperience}
+                      {cs.parcels.length} mapped parcels ({totalHa.toFixed(1)} ha represented)
                     </div>
                   </div>
-
-                  {/* Verbatim Quote */}
-                  <blockquote className="rounded-r-[8px] border-l-4 border-l-[#ab6a43] bg-[#f6f4ef] p-3 text-xs leading-relaxed text-[#1f2937] italic">
-                    <div className="mb-1 flex items-center gap-1.5 not-italic font-semibold text-[#ab6a43]">
-                      <Quote className="h-3 w-3" aria-hidden="true" />
-                      <span>Translated from Hausa interview transcript</span>
-                    </div>
-                    &ldquo;{cs.verbatimQuote}&rdquo;
-                  </blockquote>
 
                   {/* Stated Planting Trigger Rule */}
                   <div className="space-y-1">

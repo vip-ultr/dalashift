@@ -176,32 +176,6 @@ export function ParcelWorkspaceView({
 
       {/* Main Content Container */}
       <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 sm:px-6 lg:px-8">
-        {/* Verbatim Field Interview Callout (for Doka case studies) */}
-        {isCaseStudy ? (
-          <div className="rounded-[12px] border border-[#e5e7eb] border-l-4 border-l-[#ab6a43] bg-white p-4 shadow-xs sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-[#ab6a43] uppercase">
-                  <Quote className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Field Interview Ground Truth · {profile.farmerName}</span>
-                </div>
-                <blockquote className="text-sm leading-relaxed text-[#1f2937] italic">
-                  &ldquo;{profile.verbatimQuote}&rdquo;
-                </blockquote>
-                <p className="text-xs text-[#6b7280]">
-                  {profile.farmingExperience} · Source record:{' '}
-                  <code className="rounded bg-[#f4f5f6] px-1.5 py-0.5 text-[11px] text-[#374151]">
-                    {profile.quoteSourceRef}
-                  </code>
-                </p>
-              </div>
-              <div className="shrink-0">
-                <Badge variant="Measured">Consent Verified</Badge>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         {/* Adviser Mode Diagnostic Strip */}
         {viewMode === 'adviser' ? (
           <div className="rounded-[12px] border border-[#0a4232]/25 bg-[#0a4232] p-4 text-white shadow-xs">
