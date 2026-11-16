@@ -101,8 +101,8 @@ export function ParcelWorkspaceView({
               value={languageMode}
               onValueChange={setLanguageMode}
               options={[
-                { value: 'ha', label: 'English + Hausa' },
-                { value: 'en', label: 'English Only' },
+                { value: 'ha', label: 'English + Hausa', shortLabel: 'Hausa' },
+                { value: 'en', label: 'English Only', shortLabel: 'English' },
               ]}
             />
             <SegmentedControl
@@ -111,8 +111,8 @@ export function ParcelWorkspaceView({
               value={viewMode}
               onValueChange={setViewMode}
               options={[
-                { value: 'farmer', label: 'Standard View' },
-                { value: 'adviser', label: 'Detailed View' },
+                { value: 'farmer', label: 'Standard View', shortLabel: 'Standard' },
+                { value: 'adviser', label: 'Detailed View', shortLabel: 'Detailed' },
               ]}
             />
             <Link href={`/farms/${profile.farm.id}/reports`}>

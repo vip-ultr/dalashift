@@ -476,6 +476,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               <Label>Advisory Focus</Label>
               <SegmentedControl
                 fullWidth
+                stackOnMobile
                 ariaLabel="Advisory focus"
                 value={farmerMode}
                 onValueChange={setFarmerMode}
@@ -483,10 +484,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   {
                     value: 'existing',
                     label: 'Existing Farm (Rotation & Moisture Trigger)',
+                    shortLabel: 'Existing Farm (Rotation & Moisture)',
                   },
                   {
                     value: 'prospective',
                     label: 'Prospective Land (Crop Suitability Screening)',
+                    shortLabel: 'Prospective Land (Suitability)',
                   },
                 ]}
               />
@@ -523,7 +526,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   }}
                   options={[
                     { value: 'rainfed', label: 'Rainfed' },
-                    { value: 'mixed', label: 'Mixed Season' },
+                    { value: 'mixed', label: 'Mixed Season', shortLabel: 'Mixed' },
                     { value: 'irrigated', label: 'Irrigated' },
                     { value: 'unknown', label: 'Not sure' },
                   ]}
@@ -952,8 +955,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                             updateParcel(dp.id, { geometryMethod: method })
                           }
                           options={[
-                            { value: 'drawn_polygon', label: 'Drawn Polygon' },
-                            { value: 'gps_point', label: 'Single GPS Point' },
+                            { value: 'drawn_polygon', label: 'Drawn Polygon', shortLabel: 'Polygon' },
+                            { value: 'gps_point', label: 'Single GPS Point', shortLabel: 'GPS Point' },
                           ]}
                         />
                         {draftParcels.length > 1 ? (

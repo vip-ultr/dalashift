@@ -88,8 +88,8 @@ export function PrintableFieldSheet({
               value={lang}
               onValueChange={setLang}
               options={[
-                { value: 'ha', label: 'English + Hausa' },
-                { value: 'en', label: 'English Only' },
+                { value: 'ha', label: 'English + Hausa', shortLabel: 'Hausa' },
+                { value: 'en', label: 'English Only', shortLabel: 'English' },
               ]}
             />
             <Button variant="primary" size="md" onClick={() => window.print()}>
