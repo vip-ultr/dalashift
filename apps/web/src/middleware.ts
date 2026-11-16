@@ -12,7 +12,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const SESSION_COOKIE_NAME = 'dalashift_session';
 
-const PROTECTED_PREFIXES = ['/dashboard', '/farms', '/cases', '/reports', '/profile'];
+const PROTECTED_PREFIXES = ['/dashboard', '/profile'];
 const AUTH_ROUTES = ['/login', '/register'];
 
 export function middleware(request: NextRequest): NextResponse {

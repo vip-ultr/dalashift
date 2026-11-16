@@ -62,9 +62,10 @@ export async function createSession(userId: string): Promise<void> {
   }
 
   const cookieStore = await cookies();
+  const isHttps = process.env.NEXT_PUBLIC_APP_URL?.startsWith('https://');
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: Boolean(isHttps),
     sameSite: 'lax',
     path: '/',
     maxAge: SESSION_TTL_SECONDS,

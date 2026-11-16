@@ -80,7 +80,17 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
         return;
       }
 
-      router.push(mode === 'register' ? '/farms/new' : '/dashboard');
+      const nextUrl =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('next')
+          : null;
+      const destination =
+        nextUrl && nextUrl.startsWith('/') && !nextUrl.startsWith('//')
+          ? nextUrl
+          : mode === 'register'
+            ? '/farms/new'
+            : '/dashboard';
+      router.push(destination);
     } catch {
       setErrorMessage('Unable to connect to the account service. Please try again.');
     } finally {

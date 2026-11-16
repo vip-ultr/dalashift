@@ -1048,7 +1048,15 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 role="alert"
                 className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] p-3 text-xs font-medium text-[#b42318]"
               >
-                {statusMessage}
+                <span>{statusMessage}</span>
+                {statusMessage.toLowerCase().includes('auth') || statusMessage.toLowerCase().includes('sign in') ? (
+                  <Link
+                    href="/login?next=/farms/new"
+                    className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
+                  >
+                    Sign in to save holding
+                  </Link>
+                ) : null}
                 {createdFarmId ? (
                   <Link
                     href={`/farms/${createdFarmId}`}
