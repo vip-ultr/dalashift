@@ -327,7 +327,7 @@ export function ParcelWorkspaceView({
               ) : null}
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {profile.rotationComparison.strategies.map((strategy, idx) => (
                 <RotationStrategyCard
                   key={`${strategy.label}-${idx}`}
@@ -468,7 +468,7 @@ export function ParcelWorkspaceView({
             </div>
 
             {/* 3 Time-Series Charts with Explicit Provenance Lines */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <HonestyTimeSeriesChart
                 title="Seasonal Rainfall vs. 10-Year Baseline"
                 summarySentence="Dekadal accumulation across the May to October rainy season"

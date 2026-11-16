@@ -93,7 +93,7 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
           <Link href={`/farms/${farmId}`} className="text-sm font-medium text-[#0a4232] underline">
             Back to farm
           </Link>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={generateReport} disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : null}
               {loading ? 'Generating…' : 'Generate report'}

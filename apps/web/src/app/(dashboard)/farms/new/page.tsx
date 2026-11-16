@@ -446,17 +446,17 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           </div>
 
           {/* Stepper Bar */}
-          <div className="mt-5 grid grid-cols-3 gap-2">
+          <div className="mt-5 grid grid-cols-3 gap-1.5 sm:gap-2">
             {[
-              { num: 1 as const, title: '1. Holding & Advisory Focus' },
-              { num: 2 as const, title: '2. Crops (Hausa) & Trigger' },
-              { num: 3 as const, title: '3. Parcel Map / GPS Points' },
+              { num: 1 as const, title: '1. Holding & Advisory Focus', short: '1. Holding' },
+              { num: 2 as const, title: '2. Crops (Hausa) & Trigger', short: '2. Crops' },
+              { num: 3 as const, title: '3. Parcel Map / GPS Points', short: '3. Parcels' },
             ].map((item) => (
               <button
                 key={item.num}
                 type="button"
                 onClick={() => setStep(item.num)}
-                className={`rounded-[8px] border px-3 py-2 text-left text-xs font-semibold transition-colors ${
+                className={`rounded-[8px] border px-2 sm:px-3 py-2 text-left text-xs font-semibold transition-colors ${
                   step === item.num
                     ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f]'
                     : step > item.num
@@ -464,7 +464,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       : 'border-[#e5e7eb] bg-[#f4f5f6] text-[#6b7280]'
                 }`}
               >
-                {item.title}
+                <span className="sm:hidden">{item.short}</span>
+                <span className="hidden sm:inline">{item.title}</span>
               </button>
             ))}
           </div>
@@ -543,7 +544,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       event.target.value as 'borehole' | 'river' | 'canal' | 'other' | 'unknown',
                     )
                   }
-                  className="h-[42px] w-full rounded-[8px] border border-transparent bg-[#f4f5f6] px-3 text-sm text-[#111315] focus:border-[#00b159] focus:bg-white focus:outline-none"
+                  className="h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs sm:text-sm font-medium text-[#111315] transition-colors focus:border-[#00b159] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                 >
                   <option value="unknown">Not sure</option>
                   <option value="borehole">Borehole</option>
@@ -657,7 +658,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       id="prev-crop"
                       value={previousCrop}
                       onChange={(e) => setPreviousCrop(e.target.value)}
-                      className="h-[42px] w-full rounded-[8px] border border-transparent bg-[#f4f5f6] px-3 text-xs font-medium text-[#111315] focus:border-[#00b159] focus:bg-white focus:outline-none"
+                      className="h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs sm:text-sm font-medium text-[#111315] transition-colors focus:border-[#00b159] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                     >
                       <option value="">Not recorded</option>
                       {CATALOG_CROPS.map((c) => (
@@ -674,7 +675,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       id="curr-crop"
                       value={currentCrop}
                       onChange={(e) => setCurrentCrop(e.target.value)}
-                      className="h-[42px] w-full rounded-[8px] border border-transparent bg-[#f4f5f6] px-3 text-xs font-medium text-[#111315] focus:border-[#00b159] focus:bg-white focus:outline-none"
+                      className="h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs sm:text-sm font-medium text-[#111315] transition-colors focus:border-[#00b159] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                     >
                       <option value="">Choose a crop</option>
                       {CATALOG_CROPS.map((c) => (
@@ -693,7 +694,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   id="plan-crop"
                   value={plannedCrop}
                   onChange={(e) => setPlannedCrop(e.target.value)}
-                  className="h-[42px] w-full rounded-[8px] border border-transparent bg-[#f4f5f6] px-3 text-xs font-medium text-[#111315] focus:border-[#00b159] focus:bg-white focus:outline-none"
+                  className="h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs sm:text-sm font-medium text-[#111315] transition-colors focus:border-[#00b159] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                 >
                   <option value="">Choose a crop</option>
                   {CATALOG_CROPS.map((c) => (
@@ -847,7 +848,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       value={activeDraftParcelId}
                       aria-label="Select active parcel for map capture"
                       onChange={(e) => setActiveDraftParcelId(e.target.value)}
-                      className="rounded-md border border-[#e5e7eb] bg-[#f4f5f6] px-2 py-1 text-xs font-semibold text-[#111315]"
+                      className="rounded-lg border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-xs font-semibold text-[#111315] transition-colors focus:border-[#00b159] focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                     >
                       {draftParcels.map((dp, i) => (
                         <option key={dp.id} value={dp.id}>
@@ -868,7 +869,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     : null
                 }
                 onCoordinateCapture={handleMapCoordinateCapture}
-                heightClass="h-[380px]"
+                heightClass="h-[300px] sm:h-[380px] lg:h-[420px]"
               />
 
               {/* Quick Presets & Guidance */}
@@ -967,7 +968,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       </div>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-4">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                       <div>
                         <Label>Parcel name</Label>
                         <Input

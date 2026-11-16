@@ -545,10 +545,10 @@ export function HonestyMapCanvas({
       </svg>
 
       {/* Floating Top Left HUD: Satellite Layer Selector */}
-      <div className="relative z-10 m-4 flex flex-wrap items-center gap-2">
+      <div className="relative z-10 m-2 sm:m-4 flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#111827]/85 p-1.5 text-xs text-white shadow-lg backdrop-blur-md">
           <Layers className="ml-1.5 size-4 text-[#c26e4a]" />
-          <span className="text-[11px] font-medium text-white/70">Satellite Layer:</span>
+          <span className="hidden sm:inline text-[11px] font-medium text-white/70">Satellite Layer:</span>
           <select
             value={selectedGridKey}
             aria-label="Satellite data layer resolution overlay"
@@ -577,7 +577,7 @@ export function HonestyMapCanvas({
       </div>
 
       {/* Floating Bottom HUD: Field Context & Basemap Switcher */}
-      <div className="relative z-10 m-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="relative z-10 m-2 sm:m-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827]/85 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
           <span className="font-semibold text-white">
             {capturePoint

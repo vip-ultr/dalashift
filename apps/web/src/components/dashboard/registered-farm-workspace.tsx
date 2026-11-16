@@ -243,7 +243,7 @@ export function RegisteredFarmWorkspace({
               · {farmData.parcels.length} {farmData.parcels.length === 1 ? 'parcel' : 'parcels'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button type="button" onClick={runAssessment} disabled={running || !selectedParcelId}>
               {running ? (
                 <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
@@ -383,7 +383,7 @@ export function RegisteredFarmWorkspace({
                 {comparison.seasonalOutlook.framingNote}
               </p>
             </header>
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {comparison.comparison.strategies.map((strategy, index) => (
                 <article
                   key={`${strategy.kind}-${strategy.label}`}

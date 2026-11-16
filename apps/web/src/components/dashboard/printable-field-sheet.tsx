@@ -68,7 +68,8 @@ export function PrintableFieldSheet({
                 <select
                   value={profile.slug}
                   onChange={(e) => onSelectProfile(e.target.value)}
-                  className="h-8 rounded-[8px] border border-[#e5e7eb] bg-[#f4f5f6] px-2.5 text-xs font-semibold text-[#111315]"
+                  aria-label="Select demonstration holding"
+                  className="h-8 rounded-[8px] border border-[#e5e7eb] bg-[#fafafb] px-2.5 text-xs font-semibold text-[#111315] transition-colors focus:border-[#00b159] focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                 >
                   {allProfiles.map((p) => (
                     <option key={p.slug} value={p.slug}>

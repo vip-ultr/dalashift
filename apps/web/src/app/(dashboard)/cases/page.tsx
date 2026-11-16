@@ -36,7 +36,7 @@ export default function CaseStudiesOverviewPage(): React.JSX.Element {
         </div>
 
         {/* 3 Case Study Cards */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {CASE_STUDY_PROFILES.map((cs, index) => {
             const totalHa = cs.parcels.reduce((sum, parcel) => sum + (parcel.areaHa ?? 0), 0);
             const triggerRule = cs.priorities.plantingTrigger ?? 'wait_for_confirmed_moisture';

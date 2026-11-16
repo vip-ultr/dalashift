@@ -35,7 +35,7 @@ export function PublicNavbar() {
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-4 lg:gap-7 md:flex">
           {navLinks.map((item) => {
             const active = pathname === item.href;
             return (
@@ -43,7 +43,7 @@ export function PublicNavbar() {
                 key={item.href}
                 href={item.href}
                 className={`text-sm font-medium transition-colors ${
-                  active ? 'text-[#0a4232]' : 'text-[#4b5563] hover:text-[#111827]'
+                  active ? 'text-[#0a4232] font-semibold' : 'text-[#4b5563] hover:text-[#111827]'
                 }`}
               >
                 {item.label}
