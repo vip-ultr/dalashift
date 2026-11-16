@@ -21,7 +21,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
 
   const [farmRes, parcelsRes, cropsRes, prioritiesRes] = await Promise.all([
     supabase
@@ -30,6 +30,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
         'id, name, farming_method, irrigation_method, soil_notes, area_ha, created_at, updated_at',
       )
       .eq('id', farmId)
+      .eq('farmer_id', user.id)
       .maybeSingle(),
     supabase
       .from('parcels_public')
@@ -77,7 +78,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
 
   let body: unknown;
   try {
@@ -110,6 +111,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     .from('farms')
     .update(updateFields)
     .eq('id', farmId)
+    .eq('farmer_id', user.id)
     .select(
       'id, name, farming_method, irrigation_method, soil_notes, area_ha, created_at, updated_at',
     )
@@ -137,12 +139,13 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
 
   const { data, error } = await supabase
     .from('farms')
     .delete()
     .eq('id', farmId)
+    .eq('farmer_id', user.id)
     .select('id')
     .maybeSingle();
 

@@ -9,11 +9,12 @@ export async function GET() {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
 
   const { data, error } = await supabase
     .from('farms')
     .select('id, name, farming_method, irrigation_method, soil_notes, area_ha, created_at')
+    .eq('farmer_id', user.id)
     .order('created_at', { ascending: false });
 
   if (error) {

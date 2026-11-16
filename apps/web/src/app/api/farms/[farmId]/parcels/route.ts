@@ -25,7 +25,22 @@ export async function GET(_request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
+
+  const { data: farm, error: farmError } = await supabase
+    .from('farms')
+    .select('id')
+    .eq('id', farmId)
+    .eq('farmer_id', user.id)
+    .maybeSingle();
+
+  if (farmError) {
+    console.error('Failed to verify farm ownership', farmError);
+    return NextResponse.json({ error: 'Unable to load parcels.' }, { status: 500 });
+  }
+  if (!farm) {
+    return NextResponse.json({ error: 'Farm not found.' }, { status: 404 });
+  }
 
   const { data, error } = await supabase
     .from('parcels_public')
@@ -52,7 +67,22 @@ export async function POST(request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
-  const { supabase } = authContext;
+  const { supabase, user } = authContext;
+
+  const { data: farm, error: farmError } = await supabase
+    .from('farms')
+    .select('id')
+    .eq('id', farmId)
+    .eq('farmer_id', user.id)
+    .maybeSingle();
+
+  if (farmError) {
+    console.error('Failed to verify farm ownership', farmError);
+    return NextResponse.json({ error: 'Unable to load parcels.' }, { status: 500 });
+  }
+  if (!farm) {
+    return NextResponse.json({ error: 'Farm not found.' }, { status: 404 });
+  }
 
   let body: unknown;
   try {

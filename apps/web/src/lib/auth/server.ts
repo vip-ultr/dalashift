@@ -165,7 +165,7 @@ export async function getAuthenticatedClient() {
       email: parsedAccount.data.email,
       phone: parsedAccount.data.phone,
     },
-    supabase: await createClient(accessToken ?? undefined),
+    supabase: accessToken ? await createClient(accessToken) : admin,
   };
 }
 
