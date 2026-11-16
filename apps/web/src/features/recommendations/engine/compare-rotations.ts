@@ -35,6 +35,7 @@ const GOAL_DIMENSIONS: Partial<Record<FarmerGoal, readonly AssessmentDimension[]
   maturity_reliability: ['season_length'],
   less_work: ['management_requirement'],
   reduce_risk: ['climate_rainfall', 'water_availability', 'season_length'],
+  drought_tolerance: ['climate_rainfall', 'water_availability', 'season_length'],
 };
 
 /** Order complete rotation options by the farmer's stated goals and evidence. */

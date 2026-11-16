@@ -14,11 +14,13 @@ import {
   ASSESSMENT_DIMENSIONS,
   ASSESSMENT_STATUSES,
   CROP_CATEGORIES,
+  CROP_STATUSES,
   EVIDENCE_KINDS,
   EVIDENCE_STRENGTHS,
   FARMER_GOALS,
   FARMING_METHODS,
   GEOMETRY_METHODS,
+  INTENDED_USES,
   IRRIGATION_METHODS,
   LIMITATION_KINDS,
   PLANTING_TRIGGERS,
@@ -26,6 +28,11 @@ import {
   RULE_SOURCE_TYPES,
   SEASONS,
   TEMPORAL_RESOLUTIONS,
+  type CropStatus,
+  type FarmerGoal,
+  type IntendedUse,
+  type PlantingTrigger,
+  type Season,
 } from '../constants';
 
 /** ISO 8601 timestamp in UTC. */
@@ -89,9 +96,29 @@ export type ValidatedProvenancedValue = z.infer<typeof provenancedValueSchema>;
 /** A farm creation payload. The farm is the holding, not a single field. */
 export const farmInputSchema = z.object({
   name: z.string().trim().min(1, 'A farm name is required').max(120),
-  farmingMethod: z.enum(FARMING_METHODS).default('unknown'),
-  irrigationMethod: z.enum(IRRIGATION_METHODS).default('unknown'),
-  soilNotes: z.string().trim().max(2000).optional(),
+  farmingMethod: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return 'unknown';
+      const clean = v.trim().toLowerCase();
+      return (FARMING_METHODS as readonly string[]).includes(clean) ? clean : 'unknown';
+    }, z.enum(FARMING_METHODS))
+    .default('unknown'),
+  irrigationMethod: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return 'unknown';
+      const clean = v.trim().toLowerCase();
+      if (clean === 'borehole') return 'well';
+      if (clean === 'canal') return 'furrow';
+      if (clean === 'other') return 'unknown';
+      return (IRRIGATION_METHODS as readonly string[]).includes(clean) ? clean : 'unknown';
+    }, z.enum(IRRIGATION_METHODS))
+    .default('unknown'),
+  soilNotes: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      z.string().max(2000).nullable().optional(),
+    )
+    .default(null),
 });
 
 export type FarmInput = z.infer<typeof farmInputSchema>;
@@ -108,10 +135,29 @@ export const parcelInputSchema = z
     farmId: z.string().uuid(),
     name: z.string().trim().min(1, 'A parcel name is required').max(120),
     geometry: geometrySchema,
-    geometryMethod: z.enum(GEOMETRY_METHODS).default('gps_point'),
+    geometryMethod: z
+      .preprocess((v) => {
+        if (typeof v !== 'string' || !v.trim()) return 'gps_point';
+        const clean = v.trim().toLowerCase();
+        if (clean === 'point' || clean === 'gps' || clean === 'single_point') return 'gps_point';
+        if (clean === 'polygon' || clean === 'drawn') return 'drawn_polygon';
+        return (GEOMETRY_METHODS as readonly string[]).includes(clean) ? clean : 'gps_point';
+      }, z.enum(GEOMETRY_METHODS))
+      .default('gps_point'),
     /** How far the recorded location may be off, in metres. */
-    locationUncertaintyM: z.number().min(0).max(5000).nullable().default(null),
-    notes: z.string().trim().max(2000).optional(),
+    locationUncertaintyM: z
+      .preprocess((v) => {
+        if (v === '' || v === null || v === undefined) return null;
+        const parsed = Number(v);
+        return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+      }, z.number().min(0).max(5000).nullable())
+      .default(null),
+    notes: z
+      .preprocess(
+        (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+        z.string().max(2000).nullable().optional(),
+      )
+      .default(null),
   })
   .refine(
     (value) =>
@@ -126,22 +172,146 @@ export const parcelInputSchema = z
 
 export type ParcelInput = z.infer<typeof parcelInputSchema>;
 
+const CROP_STATUS_ALIASES: Record<string, CropStatus> = {
+  previous: 'previous',
+  last: 'previous',
+  past: 'previous',
+  current: 'current',
+  now: 'current',
+  present: 'current',
+  planned: 'planned',
+  next: 'planned',
+  candidate: 'planned',
+  future: 'planned',
+};
+
+const SEASON_ALIASES: Record<string, Season> = {
+  rainy: 'rainy',
+  wet: 'rainy',
+  rain: 'rainy',
+  rainy_season: 'rainy',
+  dry: 'dry',
+  dry_season: 'dry',
+  harmattan: 'harmattan',
+  year_round: 'year_round',
+  all_year: 'year_round',
+  unknown: 'unknown',
+};
+
+const INTENDED_USE_ALIASES: Record<string, IntendedUse> = {
+  commercial: 'commercial',
+  market: 'commercial',
+  cash: 'commercial',
+  household: 'household',
+  home: 'household',
+  subsistence: 'household',
+  both: 'both',
+  unknown: 'unknown',
+};
+
 /** A crop record attached to a farm or parcel. */
 export const farmCropInputSchema = z.object({
   farmId: z.string().uuid(),
   parcelId: z.string().uuid().nullable().default(null),
   cropId: z.string().uuid(),
-  status: z.enum(['current', 'previous', 'planned']),
-  plantingDate: calendarDate.nullable().default(null),
-  expectedHarvestDate: calendarDate.nullable().default(null),
-  harvestDate: calendarDate.nullable().default(null),
-  season: z.enum(SEASONS).default('unknown'),
-  intendedUse: z.enum(['commercial', 'household', 'both', 'unknown']).default('unknown'),
-  areaHa: z.number().positive().max(10_000).nullable().default(null),
-  notes: z.string().trim().max(2000).nullable().default(null),
+  status: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return 'current';
+      const clean = v.trim().toLowerCase();
+      return CROP_STATUS_ALIASES[clean] ?? ((CROP_STATUSES as readonly string[]).includes(clean) ? clean : 'current');
+    }, z.enum(CROP_STATUSES))
+    .default('current'),
+  plantingDate: z
+    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .default(null),
+  expectedHarvestDate: z
+    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .default(null),
+  harvestDate: z
+    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .default(null),
+  season: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return 'unknown';
+      const clean = v.trim().toLowerCase();
+      return SEASON_ALIASES[clean] ?? ((SEASONS as readonly string[]).includes(clean) ? clean : 'unknown');
+    }, z.enum(SEASONS))
+    .default('unknown'),
+  intendedUse: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return 'unknown';
+      const clean = v.trim().toLowerCase();
+      return INTENDED_USE_ALIASES[clean] ?? ((INTENDED_USES as readonly string[]).includes(clean) ? clean : 'unknown');
+    }, z.enum(INTENDED_USES))
+    .default('unknown'),
+  areaHa: z
+    .preprocess((v) => {
+      if (v === '' || v === null || v === undefined) return null;
+      const parsed = Number(v);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }, z.number().positive().max(10_000).nullable())
+    .default(null),
+  notes: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      z.string().max(2000).nullable().optional(),
+    )
+    .default(null),
 });
 
 export type FarmCropInput = z.infer<typeof farmCropInputSchema>;
+
+const GOAL_ALIASES: Record<string, FarmerGoal> = {
+  drought_tolerance: 'reduce_risk',
+  drought: 'reduce_risk',
+  dry_spell_tolerance: 'reduce_risk',
+  risk_reduction: 'reduce_risk',
+  reduce_risk: 'reduce_risk',
+  risk: 'reduce_risk',
+  fertility: 'improve_soil_fertility',
+  soil_fertility: 'improve_soil_fertility',
+  restore_fertility: 'improve_soil_fertility',
+  improve_soil_fertility: 'improve_soil_fertility',
+  water: 'conserve_water',
+  moisture: 'conserve_water',
+  conserve_water: 'conserve_water',
+  conserve_moisture: 'conserve_water',
+  income: 'increase_income',
+  market_value: 'increase_income',
+  increase_income: 'increase_income',
+  cash: 'increase_income',
+  food: 'food_security',
+  food_security: 'food_security',
+  household_food: 'food_security',
+  subsistence: 'food_security',
+  maturity: 'maturity_reliability',
+  early_maturity: 'maturity_reliability',
+  maturity_reliability: 'maturity_reliability',
+  reliable_harvest: 'maturity_reliability',
+  reliability: 'maturity_reliability',
+  work: 'less_work',
+  less_work: 'less_work',
+  labour: 'less_work',
+  labor: 'less_work',
+  less_labor: 'less_work',
+  less_labour: 'less_work',
+};
+
+const TRIGGER_ALIASES: Record<string, PlantingTrigger> = {
+  wait_for_confirmed_moisture: 'wait_for_confirmed_moisture',
+  confirmed_moisture: 'wait_for_confirmed_moisture',
+  moisture_confirmed: 'wait_for_confirmed_moisture',
+  wait_for_moisture: 'wait_for_confirmed_moisture',
+  moisture: 'wait_for_confirmed_moisture',
+  plant_on_first_rains: 'plant_on_first_rains',
+  first_rains: 'plant_on_first_rains',
+  early_rains: 'plant_on_first_rains',
+  sow_on_first_rains: 'plant_on_first_rains',
+  prepare_and_plant_quickly: 'prepare_and_plant_quickly',
+  prepare_quickly: 'prepare_and_plant_quickly',
+  plant_quickly: 'prepare_and_plant_quickly',
+  quick_planting: 'prepare_and_plant_quickly',
+};
 
 /**
  * A farmer's stated priorities.
@@ -151,11 +321,50 @@ export type FarmCropInput = z.infer<typeof farmCropInputSchema>;
  */
 export const farmerPrioritiesInputSchema = z.object({
   farmId: z.string().uuid(),
-  goals: z.array(z.enum(FARMER_GOALS)).max(FARMER_GOALS.length).default([]),
-  riskTolerance: z.number().min(0).max(1).nullable().default(null),
-  openToChange: z.boolean().nullable().default(null),
-  plantingTrigger: z.enum(PLANTING_TRIGGERS).nullable().default(null),
-  notes: z.string().trim().max(2000).nullable().default(null),
+  goals: z
+    .preprocess(
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        const normalized = val
+          .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+          .map((item) => {
+            const clean = item.trim().toLowerCase();
+            return GOAL_ALIASES[clean] ?? ((FARMER_GOALS as readonly string[]).includes(clean) ? clean : null);
+          })
+          .filter((item): item is FarmerGoal => Boolean(item));
+        return Array.from(new Set(normalized));
+      },
+      z.array(z.enum(FARMER_GOALS)).max(FARMER_GOALS.length),
+    )
+    .default([]),
+  riskTolerance: z
+    .preprocess((v) => {
+      if (v === '' || v === null || v === undefined) return null;
+      const parsed = typeof v === 'number' ? v : Number(v);
+      return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : null;
+    }, z.number().min(0).max(1).nullable())
+    .default(null),
+  openToChange: z
+    .preprocess((v) => {
+      if (typeof v === 'boolean') return v;
+      if (v === 'true' || v === 1 || v === '1') return true;
+      if (v === 'false' || v === 0 || v === '0') return false;
+      return null;
+    }, z.boolean().nullable())
+    .default(null),
+  plantingTrigger: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return null;
+      const clean = v.trim().toLowerCase();
+      return TRIGGER_ALIASES[clean] ?? null;
+    }, z.enum(PLANTING_TRIGGERS).nullable())
+    .default(null),
+  notes: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      z.string().max(2000).nullable().optional(),
+    )
+    .default(null),
 });
 
 export type FarmerPrioritiesInput = z.infer<typeof farmerPrioritiesInputSchema>;

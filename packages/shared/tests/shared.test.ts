@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { RESOLUTION_DESCRIPTIONS, SPATIAL_RESOLUTION_METRES } from '../constants';
-import { provenancedValueSchema } from '../schemas';
+import {
+  farmCropInputSchema,
+  farmInputSchema,
+  farmerPrioritiesInputSchema,
+  parcelInputSchema,
+  provenancedValueSchema,
+} from '../schemas';
 
 describe('SPATIAL_RESOLUTION_METRES', () => {
   it('records the real resolution of each source, not a flattering one', () => {
@@ -61,5 +67,135 @@ describe('provenancedValueSchema', () => {
 
   it('rejects a non-finite value', () => {
     expect(provenancedValueSchema.safeParse({ ...valid, value: Number.NaN }).success).toBe(false);
+  });
+});
+
+describe('farmerPrioritiesInputSchema', () => {
+  const farmId = 'a0000000-0000-4000-8000-000000000001';
+
+  it('accepts valid goals and planting triggers', () => {
+    const res = farmerPrioritiesInputSchema.safeParse({
+      farmId,
+      goals: ['improve_soil_fertility', 'reduce_risk'],
+      plantingTrigger: 'wait_for_confirmed_moisture',
+      riskTolerance: null,
+      openToChange: null,
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.goals).toEqual(['improve_soil_fertility', 'reduce_risk']);
+    }
+  });
+
+  it('normalizes drought_tolerance alias safely to reduce_risk', () => {
+    const res = farmerPrioritiesInputSchema.safeParse({
+      farmId,
+      goals: ['improve_soil_fertility', 'drought_tolerance'],
+      plantingTrigger: 'plant_on_first_rains',
+      riskTolerance: null,
+      openToChange: null,
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.goals).toContain('reduce_risk');
+    }
+  });
+
+  it('handles null or empty inputs gracefully', () => {
+    const res = farmerPrioritiesInputSchema.safeParse({
+      farmId,
+      goals: null,
+      plantingTrigger: '',
+      riskTolerance: '',
+      openToChange: null,
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.goals).toEqual([]);
+      expect(res.data.plantingTrigger).toBeNull();
+      expect(res.data.riskTolerance).toBeNull();
+    }
+  });
+});
+
+describe('farmInputSchema', () => {
+  it('accepts valid input and normalizes borehole alias to well', () => {
+    const res = farmInputSchema.safeParse({
+      name: 'Bello Holding',
+      farmingMethod: 'irrigated',
+      irrigationMethod: 'borehole',
+      soilNotes: '',
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.irrigationMethod).toBe('well');
+      expect(res.data.soilNotes).toBeNull();
+    }
+  });
+
+  it('normalizes canal to furrow and other to unknown', () => {
+    const resCanal = farmInputSchema.safeParse({
+      name: 'Canal Farm',
+      farmingMethod: 'mixed',
+      irrigationMethod: 'canal',
+    });
+    expect(resCanal.success).toBe(true);
+    if (resCanal.success) {
+      expect(resCanal.data.irrigationMethod).toBe('furrow');
+    }
+
+    const resOther = farmInputSchema.safeParse({
+      name: 'Other Farm',
+      farmingMethod: 'unknown',
+      irrigationMethod: 'other',
+    });
+    expect(resOther.success).toBe(true);
+    if (resOther.success) {
+      expect(resOther.data.irrigationMethod).toBe('unknown');
+    }
+  });
+});
+
+describe('parcelInputSchema', () => {
+  const farmId = 'a0000000-0000-4000-8000-000000000001';
+
+  it('accepts gps_point and normalizes string uncertainty and alias', () => {
+    const res = parcelInputSchema.safeParse({
+      farmId,
+      name: 'Parcel 1',
+      geometry: { type: 'Point', coordinates: [8.42, 11.97] },
+      geometryMethod: 'point',
+      locationUncertaintyM: '250',
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.geometryMethod).toBe('gps_point');
+      expect(res.data.locationUncertaintyM).toBe(250);
+    }
+  });
+});
+
+describe('farmCropInputSchema', () => {
+  const farmId = 'a0000000-0000-4000-8000-000000000001';
+  const cropId = 'b0000000-0000-4000-8000-000000000002';
+
+  it('normalizes aliases for crop status, season, and intended use', () => {
+    const res = farmCropInputSchema.safeParse({
+      farmId,
+      cropId,
+      status: 'past',
+      season: 'wet',
+      intendedUse: 'market',
+      plantingDate: '',
+      areaHa: '',
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.status).toBe('previous');
+      expect(res.data.season).toBe('rainy');
+      expect(res.data.intendedUse).toBe('commercial');
+      expect(res.data.plantingDate).toBeNull();
+      expect(res.data.areaHa).toBeNull();
+    }
   });
 });

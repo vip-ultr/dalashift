@@ -4,10 +4,29 @@ import { z } from 'zod';
 import { getAuthenticatedClient } from '../../../lib/supabase/server';
 
 const profileUpdateSchema = z.object({
-  fullName: z.string().trim().min(1).max(120).optional(),
-  phone: z.string().trim().max(40).nullable().optional(),
-  preferredLanguage: z.string().trim().min(2).max(12).optional(),
-  farmingExperience: z.string().trim().max(2000).nullable().optional(),
+  fullName: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined),
+      z.string().min(1).max(120).optional(),
+    ),
+  phone: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      z.string().max(40).nullable().optional(),
+    ),
+  preferredLanguage: z
+    .preprocess((v) => {
+      if (typeof v !== 'string' || !v.trim()) return undefined;
+      const clean = v.trim().toLowerCase();
+      if (clean === 'hausa' || clean === 'ha-ng') return 'ha';
+      if (clean === 'english' || clean === 'en-us' || clean === 'en-ng') return 'en';
+      return clean;
+    }, z.string().min(2).max(12).optional()),
+  farmingExperience: z
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      z.string().max(2000).nullable().optional(),
+    ),
 });
 
 /** Read the authenticated farmer's profile row. */

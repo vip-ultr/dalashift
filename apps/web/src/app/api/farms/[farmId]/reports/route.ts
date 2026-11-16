@@ -56,18 +56,38 @@ const farmIdSchema = z.string().uuid();
 
 const reportRequestSchema = z
   .object({
-    kind: z.enum(['farm_summary', 'seasonal', 'rotation_plan']).default('farm_summary'),
-    parcelId: z.string().uuid().nullable().optional(),
+    kind: z
+      .preprocess((v) => {
+        if (typeof v !== 'string' || !v.trim()) return 'farm_summary';
+        const clean = v.trim().toLowerCase();
+        if (clean === 'summary') return 'farm_summary';
+        if (clean === 'rotation') return 'rotation_plan';
+        return clean;
+      }, z.enum(['farm_summary', 'seasonal', 'rotation_plan']))
+      .default('farm_summary'),
+    parcelId: z
+      .preprocess(
+        (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+        z.string().uuid().nullable().optional(),
+      ),
     periodStart: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .nullable()
-      .optional(),
+      .preprocess(
+        (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+        z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .nullable()
+          .optional(),
+      ),
     periodEnd: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .nullable()
-      .optional(),
+      .preprocess(
+        (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+        z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .nullable()
+          .optional(),
+      ),
   })
   .refine(
     (val) =>

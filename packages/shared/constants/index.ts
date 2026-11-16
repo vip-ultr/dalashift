@@ -181,6 +181,9 @@ export const IRRIGATION_METHODS = [
   'drip',
   'well',
   'river',
+  'borehole',
+  'canal',
+  'other',
   'unknown',
 ] as const;
 export const CROP_STATUSES = ['current', 'previous', 'planned'] as const;
@@ -361,6 +364,7 @@ export const FARMER_GOALS = [
   'maturity_reliability',
   'less_work',
   'reduce_risk',
+  'drought_tolerance',
 ] as const;
 
 export type FarmerGoal = (typeof FARMER_GOALS)[number];
@@ -376,6 +380,7 @@ export const FARMER_GOAL_LABELS: Record<FarmerGoal, string> = {
   maturity_reliability: 'Reliable harvest before the season ends',
   less_work: 'Less work',
   reduce_risk: 'Reduce risk',
+  drought_tolerance: 'Dry-spell tolerance',
 };
 
 /**

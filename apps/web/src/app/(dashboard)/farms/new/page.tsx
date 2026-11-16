@@ -182,9 +182,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [farmingMethod, setFarmingMethod] = React.useState<
     'rainfed' | 'irrigated' | 'mixed' | 'unknown'
   >('unknown');
-  const [irrigationMethod, setIrrigationMethod] = React.useState<
-    'rainfed' | 'borehole' | 'river' | 'canal' | 'other' | 'unknown'
-  >('unknown');
+  const [irrigationMethod, setIrrigationMethod] = React.useState<string>('unknown');
   const [soilNotes, setSoilNotes] = React.useState('');
 
   // Step 2 State
@@ -539,16 +537,17 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 <select
                   id="irrigation-method"
                   value={irrigationMethod}
-                  onChange={(event) =>
-                    setIrrigationMethod(
-                      event.target.value as 'borehole' | 'river' | 'canal' | 'other' | 'unknown',
-                    )
-                  }
+                  onChange={(event) => setIrrigationMethod(event.target.value)}
                   className="h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs sm:text-sm font-medium text-[#111315] transition-colors focus:border-[#00b159] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00b159] cursor-pointer"
                 >
                   <option value="unknown">Not sure</option>
+                  <option value="well">Borehole / Tube Well</option>
+                  <option value="river">River / Stream</option>
+                  <option value="furrow">Canal / Furrow</option>
+                  <option value="drip">Drip Irrigation</option>
+                  <option value="sprinkler">Sprinkler</option>
+                  <option value="hand_irrigation">Hand Irrigation (Buckets)</option>
                   <option value="borehole">Borehole</option>
-                  <option value="river">River</option>
                   <option value="canal">Canal</option>
                   <option value="other">Other</option>
                 </select>
@@ -770,7 +769,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   { id: 'improve_soil_fertility', label: 'Restore Soil Fertility (Legume N)' },
                   { id: 'maturity_reliability', label: 'Reliable Harvest Before Rains End' },
                   { id: 'increase_income', label: 'Market Value & Cash Return' },
-                  { id: 'drought_tolerance', label: 'Dry-Spell Tolerance' },
+                  { id: 'reduce_risk', label: 'Dry-Spell Tolerance & Risk Reduction' },
+                  { id: 'conserve_water', label: 'Conserve Soil Moisture & Water' },
+                  { id: 'food_security', label: 'Household Food Security' },
                   { id: 'less_work', label: 'Lower Fertiliser & Labour Outlay' },
                 ].map((goal) => {
                   const checked = selectedGoals.includes(goal.id);
