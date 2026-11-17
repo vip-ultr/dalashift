@@ -146,8 +146,15 @@ list before confirming the push.
 
 ## 3. Branching
 
-`main` is always deployable and always green. Never commit directly to `main`
-except for documentation-only fixes.
+`main` is always deployable and always green. **Never push directly to `main`,
+not even for documentation-only fixes, and not even for a small change.** Every
+change goes through a branch and a pull request. This is enforced by branch
+protection: direct pushes and force pushes to `main` are rejected by GitHub.
+
+Repository maintainers are exempt from branch protection so a maintainer can
+act in an emergency. A maintainer who uses that exemption still follows this
+document and opens a PR for normal work. Contributors and AI agents must never
+push to `main`.
 
 | Branch type | Pattern                    | Example                        |
 | ----------- | -------------------------- | ------------------------------ |
@@ -160,6 +167,30 @@ except for documentation-only fixes.
 
 `<area>` is one of: `auth`, `farms`, `crops`, `env`, `recommendations`,
 `reports`, `maps`, `db`, `infra`, `ui`.
+
+### Workflow for every contributor and AI agent
+
+Follow these steps in order. This is the same for humans and agents.
+
+1. **Start from an up-to-date `main`.** `git fetch origin && git switch -c <branch> origin/main`.
+2. **Create a branch** using the patterns above. Never work on `main` itself.
+3. **Commit** with Conventional Commits. One logical change per commit.
+4. **Verify locally:** `pnpm check && pnpm test`. Fix failures before pushing.
+5. **Push the branch:** `git push -u origin <branch>`.
+6. **Open a PR** against `main` with the template. Never open a PR straight
+   from `main` into `main`.
+7. **Wait for review and CI.** Address feedback with new commits on the branch.
+8. **Do not merge your own PR.** Another person reviews and merges it.
+9. **Never force-push** to `main` or to a branch someone else is using. Use a
+   new commit or an additive force-with-lease only on your own branch.
+
+External contributors without write access fork the repository, work on a
+branch in their fork, and open the PR from there. The review and CI rules are
+identical.
+
+AI agents: your task is not done until the PR exists and CI is green. Do not
+commit to `main`, do not merge, and do not disable or skip checks. If you are
+unsure whether you are on `main`, run `git branch --show-current` first.
 
 ### Parallel work during the hackathon
 
@@ -234,9 +265,19 @@ Rules:
 5. Fill in the template honestly: the "Claim integrity" and "Data and API
    changes" sections exist to catch overstated accuracy claims before review.
 
-**Branch protection.** `main` should require: 1 approving review, passing CI
-(Prettier, ESLint, TypeScript, tests), and no unresolved conversations. With
-three people, "1 approving review" means a different person authored the change.
+**Branch protection is configured and enforced on `main`.** It requires:
+
+- a pull request with **1 approving review** from someone other than the author,
+- the passing status checks **"Format, lint, typecheck, test"** and
+  **"Secret scan"**,
+- branches to be up to date with `main` before merging (`strict`),
+- all review conversations resolved,
+- no force pushes and no deletion of `main`.
+
+Do not try to work around these. If a check fails, fix the cause in your branch.
+If you cannot get a review, say so in the team channel rather than bypassing
+the rule. The repo owner is exempt from enforcement but is expected to follow
+the same PR process for all normal work.
 
 ### Merge strategy
 
