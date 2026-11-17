@@ -19,6 +19,7 @@ import {
 import { signOut } from '../../lib/auth/sign-out';
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 const PRIMARY_NAV_ITEMS = [
   {
@@ -90,7 +91,7 @@ export function WorkspaceRail() {
   };
 
   return (
-    <>
+    <TooltipProvider>
       {/* Mobile Top Header with Logo and Hamburger Menu Button (Replaces bottom nav) */}
       <div className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b border-[#e5e7eb] bg-white px-4 lg:hidden print:hidden">
         <Link href="/" className="flex items-center gap-2">
@@ -229,21 +230,25 @@ export function WorkspaceRail() {
         className="sticky top-0 hidden h-screen w-16 shrink-0 flex-col items-center justify-between border-r border-[#e5e7eb] bg-white py-4 lg:flex print:hidden"
       >
         <div className="flex flex-col items-center gap-3">
-          <Link
-            href="/"
-            title="DalaShift Home"
-            aria-label="DalaShift Home"
-            className="flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-105"
-          >
-            <Image
-              src="/brand/logo.svg"
-              alt="DalaShift"
-              width={34}
-              height={34}
-              priority
-              className="size-8.5 w-auto"
-            />
-          </Link>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/"
+                aria-label="DalaShift Home"
+                className="flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-105"
+              >
+                <Image
+                  src="/brand/logo.svg"
+                  alt="DalaShift"
+                  width={34}
+                  height={34}
+                  priority
+                  className="size-8.5 w-auto"
+                />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>DalaShift Home</TooltipContent>
+          </Tooltip>
 
           <div className="my-1 h-px w-8 bg-[#e5e7eb]" />
 
@@ -251,24 +256,24 @@ export function WorkspaceRail() {
             const Icon = item.icon;
             const active = isItemActive(item);
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={item.label}
-                aria-label={item.label}
-                aria-current={active ? 'page' : undefined}
-                className={cn(
-                  'group relative flex size-10 items-center justify-center rounded-xl transition-all',
-                  active
-                    ? 'bg-[#eaf2ee] text-[#0a4232] shadow-2xs font-semibold'
-                    : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
-                )}
-              >
-                <Icon className="size-5" />
-                <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-                  {item.label}
-                </span>
-              </Link>
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    aria-label={item.label}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'flex size-10 items-center justify-center rounded-xl transition-all',
+                      active
+                        ? 'bg-[#eaf2ee] text-[#0a4232] shadow-2xs font-semibold'
+                        : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
+                    )}
+                  >
+                    <Icon className="size-5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>{item.label}</TooltipContent>
+              </Tooltip>
             );
           })}
         </div>
@@ -278,40 +283,41 @@ export function WorkspaceRail() {
             const Icon = item.icon;
             const active = isItemActive(item);
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={item.label}
-                aria-label={item.label}
-                aria-current={active ? 'page' : undefined}
-                className={cn(
-                  'group relative flex size-10 items-center justify-center rounded-xl transition-all',
-                  active
-                    ? 'bg-[#eaf2ee] text-[#0a4232]'
-                    : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
-                )}
-              >
-                <Icon className="size-5" />
-                <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-                  {item.label}
-                </span>
-              </Link>
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    aria-label={item.label}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'flex size-10 items-center justify-center rounded-xl transition-all',
+                      active
+                        ? 'bg-[#eaf2ee] text-[#0a4232]'
+                        : 'text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827]',
+                    )}
+                  >
+                    <Icon className="size-5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>{item.label}</TooltipContent>
+              </Tooltip>
             );
           })}
 
           <div className="relative">
-            <button
-              type="button"
-              onClick={handleSignOut}
-              title="Sign out"
-              aria-label="Sign out"
-              className="group relative flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
-            >
-              <LogOut className="size-5" />
-              <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-                Sign out
-              </span>
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  aria-label="Sign out"
+                  className="flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
+                >
+                  <LogOut className="size-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Sign out</TooltipContent>
+            </Tooltip>
             {signOutError && (
               <p
                 role="alert"
@@ -323,6 +329,6 @@ export function WorkspaceRail() {
           </div>
         </div>
       </aside>
-    </>
+    </TooltipProvider>
   );
 }

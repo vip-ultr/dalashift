@@ -11,6 +11,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { cn } from '../../lib/utilities/cn';
 import { formatResolutionShortBadge } from '../../lib/utilities/format';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { MapLibreTerraDrawAdapter } from './terra-draw-maplibre-adapter';
 
 export interface HonestyMapCanvasProps {
@@ -660,18 +661,24 @@ export function HonestyMapCanvas({
           <span className="hidden sm:inline text-[11px] font-medium text-white/70">
             Data layer:
           </span>
-          <select
+          <Select
             value={selectedGridKey}
-            aria-label="Satellite data layer resolution overlay"
-            onChange={(event) => setSelectedGridKey(event.target.value as SpatialResolutionKey)}
-            className="rounded-lg bg-white/10 px-2 py-1 text-xs font-semibold text-white outline-none cursor-pointer"
+            onValueChange={(value) => setSelectedGridKey(value as SpatialResolutionKey)}
           >
-            {GRID_OVERLAY_OPTIONS.map((option) => (
-              <option key={option.key} value={option.key} className="bg-[#111827] text-white">
-                {option.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger
+              aria-label="Satellite data layer resolution overlay"
+              className="h-auto w-auto rounded-lg border-white/20 bg-[#111827]/85 px-2 py-1 text-xs font-semibold text-white hover:border-white/30 focus-visible:ring-offset-[#111827]"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="border-white/20 bg-[#111827] text-white">
+              {GRID_OVERLAY_OPTIONS.map((option) => (
+                <SelectItem key={option.key} value={option.key} className="text-white">
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <button
             type="button"
             onClick={() => setShowGridOverlay((value) => !value)}

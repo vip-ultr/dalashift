@@ -5,38 +5,41 @@ import { useState, type InputHTMLAttributes } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a4232] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
+const inputBase =
+  'min-h-11 w-full rounded-[10px] border bg-surface-raised px-3 text-[16px] leading-5 text-ink placeholder:text-ink-faint transition-colors duration-150 motion-reduce:transition-none disabled:cursor-not-allowed disabled:bg-surface-subtle disabled:text-ink-muted';
+
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   readonly hasError?: boolean;
 }
 
-/**
- * Form input following the OneSoil 42px height, 16px text size, and crisp 2px
- * green focus border convention.
- */
 export function Input({ className, hasError = false, type, ...props }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
+
+  const stateClasses = cn(
+    hasError ? 'border-[#b91c1c] hover:border-[#991b1b]' : 'border-border hover:border-[#d1d5db]',
+    focusRing,
+  );
 
   if (type === 'password') {
     return (
       <div className="relative w-full">
         <input
           type={showPassword ? 'text' : 'password'}
-          className={cn(
-            'h-[42px] w-full rounded-lg border-2 bg-surface-raised px-[13px] py-[9px] pr-10 text-[16px] leading-5 text-ink placeholder:text-[#a5b2bc] transition-colors outline-none',
-            hasError
-              ? 'border-[#c0392b] focus:border-[#c0392b]'
-              : 'border-[#a5b2bc]/35 hover:border-[#a5b2bc]/55 focus:border-[#00b159]',
-            'disabled:cursor-not-allowed disabled:bg-[#f5f7f9] disabled:text-[#8e959e]',
-            className,
-          )}
+          aria-invalid={hasError || undefined}
+          className={cn(inputBase, 'h-11 pr-11', stateClasses, className)}
           {...props}
         />
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#111827] cursor-pointer transition-colors p-0.5 focus:outline-none"
+          className={cn(
+            'absolute right-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-ink-muted transition-colors hover:text-ink motion-reduce:transition-none',
+            focusRing,
+          )}
           aria-label={showPassword ? 'Hide password' : 'Show password'}
-          title={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
         </button>
@@ -47,14 +50,8 @@ export function Input({ className, hasError = false, type, ...props }: InputProp
   return (
     <input
       type={type}
-      className={cn(
-        'h-[42px] w-full rounded-lg border-2 bg-surface-raised px-[13px] py-[9px] text-[16px] leading-5 text-ink placeholder:text-[#a5b2bc] transition-colors outline-none',
-        hasError
-          ? 'border-[#c0392b] focus:border-[#c0392b]'
-          : 'border-[#a5b2bc]/35 hover:border-[#a5b2bc]/55 focus:border-[#00b159]',
-        'disabled:cursor-not-allowed disabled:bg-[#f5f7f9] disabled:text-[#8e959e]',
-        className,
-      )}
+      aria-invalid={hasError || undefined}
+      className={cn(inputBase, 'h-11', stateClasses, className)}
       {...props}
     />
   );

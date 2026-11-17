@@ -11,7 +11,7 @@ export function Label({ className, children, optional = false, ...props }: Label
   return (
     <label
       className={cn(
-        'mb-1.5 flex items-center justify-between text-[14px] font-medium text-ink',
+        'mb-1.5 flex items-center justify-between text-sm font-medium text-ink',
         className,
       )}
       {...props}

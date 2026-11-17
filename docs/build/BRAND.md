@@ -18,7 +18,13 @@ a marketing landing page.
 
 ## 1. Palette
 
-Defined in `apps/web/src/app/globals.css` as Tailwind v4 theme tokens.
+Defined in `apps/web/src/app/globals.css` as Tailwind v4 theme tokens. There is
+one canonical set of tokens. Do not introduce a second naming scheme.
+
+The product is light mode only. The only brand colours are field green and
+terracotta. There is no blue anywhere in the palette, including informational
+and focus states. Semantic colours are chosen to be distinguishable without
+relying on hue alone.
 
 ### Brand
 
@@ -31,7 +37,9 @@ Defined in `apps/web/src/app/globals.css` as Tailwind v4 theme tokens.
 | `--color-brand-accent-tint` | `#f9efea` | Tinted accent surfaces |
 
 A deep field green with a terracotta accent. The green is a working colour
-used sparingly, and green is never used as a generic "good" signal.
+used sparingly for primary actions and is never used as a generic "good"
+signal. The genuine good state uses `--color-positive`, which is a different,
+brighter green and is never a brand colour.
 
 ### Surface
 
@@ -54,9 +62,18 @@ All three pass WCAG 2.1 AA for normal text against the canvas.
 
 ### Semantic
 
-Semantic colours are defined alongside the tokens above: amber for a warning,
-red for a genuine failure, green only where something is genuinely good. A
-missing value is a gap and a muted colour, never a red.
+| Token | Value | Use |
+| ----- | ----- | ---- |
+| `--color-positive` | `#00b159` | A genuinely good condition only. Never a brand colour |
+| `--color-warning` | `#b45309` | A warning that needs attention |
+| `--color-danger` | `#b42318` | A genuine failure |
+| `--color-danger-bg` | `#fdeceb` | Tinted background for danger messages |
+| `--color-info` | `#4b5563` | Neutral informational text, not blue |
+| `--color-focus` | `#0a4232` | The single focus ring colour |
+
+Semantic colours must never be the only carrier of meaning. Pair every state
+with an icon or a text label. A missing value is a gap in a muted colour, never
+a red and never a zero.
 
 ---
 
@@ -67,10 +84,22 @@ missing value is a gap and a muted colour, never a red.
 | `--font-sans` | `Inter`, with the system stack as fallback |
 | `--font-display` | `Geologica`, with the system stack as fallback |
 
-Both are **bundled locally** from `apps/web/src/fonts/`. No build-time
+Both are **bundled locally** from `apps/web/src/app/fonts/`. No build-time
 request is made to a third-party font host, and no font licence obligation
 is created at run time. The licence text is at
-`apps/web/src/fonts/OFL.txt` (SIL Open Font License 1.1).
+`apps/web/src/app/fonts/OFL.txt` (SIL Open Font License 1.1).
+
+The type scale is defined once as custom properties in `globals.css`. Nothing
+is smaller than 12 px.
+
+| Token | Value | Role |
+| ----- | ----- | ---- |
+| `--text-display` | 32 px | Page title |
+| `--text-display-sm` | 28 px | Compact page title |
+| `--text-heading` | 20 px | Section heading |
+| `--text-body` | 16 px | Body and measurements |
+| `--text-secondary` | 14 px | Secondary text |
+| `--text-helper` | 12 px | Labels, captions and axis labels |
 
 | Role | Treatment |
 | ---- | --------- |
@@ -83,8 +112,10 @@ is created at run time. The licence text is at
 | **Measurement** | Display face, large, **tabular figures** |
 | Axis and chart label | Sans, 12 px, never smaller |
 
-`font-variant-numeric: tabular-nums` is set globally, because proportional
-digits make a column of measurements jitter.
+`font-variant-numeric: tabular-nums` is applied through the `.tabular` utility
+on measurement elements, not to the whole document. Keeping it scoped means
+prose and display text retain their natural proportional figures while a
+column of measurements stays aligned. Do not rely on a global body rule.
 
 ---
 
@@ -113,6 +144,15 @@ desktop layout is the enhancement.
 
 Structure comes from spacing, not from heavy borders or shadows. There are
 almost no shadows in the system.
+
+### Radii and focus
+
+Controls use `--radius-control` at 10 px and cards use `--radius-card` at
+12 px. There is a single focus token, `--color-focus`, shared by every
+interactive element. The focus ring is a 2 px solid outline with a 2 px
+offset and is applied in `globals.css` to links, buttons, form controls and
+anything with `role="button"` or `tabindex`. It must never be removed without
+an equivalent replacement.
 
 ---
 

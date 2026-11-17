@@ -4,6 +4,9 @@ import { useId, type ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a4232] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
 export interface UnderlineTabItem<T extends string> {
   readonly id?: T;
   readonly value?: T;
@@ -28,7 +31,7 @@ export interface UnderlineTabsProps<T extends string> {
 }
 
 /**
- * Horizontal tab bar with a crisp 2px `#00b159` active bottom indicator and
+ * Horizontal tab bar with a crisp 2px brand green active bottom indicator and
  * optional pill count badge (`Data +13` style).
  */
 export function UnderlineTabs<T extends string>({
@@ -70,12 +73,13 @@ export function UnderlineTabs<T extends string>({
             role="tab"
             aria-selected={isActive}
             aria-controls={`${idPrefix}-panel-${tabKey}`}
+            data-state={isActive ? 'active' : 'inactive'}
             onClick={() => handleSelect(tabKey)}
             className={cn(
-              'relative inline-flex h-[42px] shrink-0 items-center gap-2 border-b-2 text-sm transition-colors cursor-pointer',
-              isActive
-                ? 'border-[#00b159] font-semibold text-ink'
-                : 'border-transparent font-normal text-ink-muted hover:text-ink',
+              'relative inline-flex h-[42px] shrink-0 items-center gap-2 border-b-2 text-sm transition-colors duration-150 motion-reduce:transition-none cursor-pointer',
+              'data-[state=active]:border-brand-primary data-[state=active]:font-semibold data-[state=active]:text-ink',
+              'data-[state=inactive]:border-transparent data-[state=inactive]:font-normal data-[state=inactive]:text-ink-muted data-[state=inactive]:hover:text-ink',
+              focusRing,
             )}
           >
             {tab.icon}
@@ -83,9 +87,9 @@ export function UnderlineTabs<T extends string>({
             {count !== undefined ? (
               <span
                 className={cn(
-                  'inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium leading-none tabular',
+                  'inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium leading-none tabular',
                   tab.badgeTone === 'green'
-                    ? 'border border-[#00b159] bg-[#e6f7ee] text-[#00994d]'
+                    ? 'border border-brand-primary/25 bg-brand-primary-tint text-brand-primary'
                     : tab.badgeTone === 'warning'
                       ? 'border border-[#b9770e]/40 bg-[#fdf6e5] text-[#b9770e]'
                       : 'bg-[#f4f5f6] text-ink-muted',

@@ -1,17 +1,22 @@
 @import 'tailwindcss';
 
 @theme {
+  /* Brand. Green and terracotta are the only two brand colours.
+     Green is a working colour for primary actions, never a generic "good"
+     signal. The semantic good state uses --color-positive below. */
   --color-brand-primary: #0a4232;
   --color-brand-primary-hover: #072f24;
   --color-brand-primary-tint: #eaf2ee;
   --color-brand-accent: #c26e4a;
   --color-brand-accent-tint: #f9efea;
 
+  /* Surfaces and hairlines. Light mode only. */
   --color-surface-canvas: #fafafa;
   --color-surface-card: #ffffff;
   --color-surface-subtle: #f4f5f6;
   --color-surface-border: #e5e7eb;
 
+  /* Text. */
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-text-muted: #9ca3af;
@@ -25,6 +30,32 @@
   --color-surface-raised: #ffffff;
   --color-border: #e5e7eb;
 
+  /* Semantic states. Chosen to be distinguishable without relying on hue
+     alone. Pair every state with an icon or text label. There is no blue in
+     the palette: --color-info is a neutral ink, not a navy. */
+  --color-positive: #00b159; /* genuine good condition only */
+  --color-warning: #b45309;
+  --color-danger: #b42318;
+  --color-danger-bg: #fdeceb;
+  --color-info: #4b5563;
+
+  /* The single focus colour, shared by every interactive element. */
+  --color-focus: #0a4232;
+
+  /* Radii. */
+  --radius-control: 10px;
+  --radius-card: 12px;
+
+  /* Documented type scale. Nothing below 12px. These are declared here so the
+     next phase can apply them to headings, body and measurement contexts
+     without introducing a second set of sizes. */
+  --text-display: 32px;
+  --text-display-sm: 28px;
+  --text-heading: 20px;
+  --text-body: 16px;
+  --text-secondary: 14px;
+  --text-helper: 12px;
+
   /* The locally bundled fonts are injected as --font-geologica and --font-inter
      by the root layout. Referencing those names here avoids a self-referential
      variable, so the bundled font files actually apply. */
@@ -32,32 +63,49 @@
   --font-sans: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-:root {
-  --bg-canvas: #fafafa;
-  --bg-card: #ffffff;
-  --bg-subtle: #f4f5f6;
-  --border-subtle: #e5e7eb;
-
-  --primary: #0a4232;
-  --primary-hover: #072f24;
-  --primary-tint: #eaf2ee;
-
-  --accent: #c26e4a;
-  --accent-tint: #f9efea;
-
-  --text-main: #111827;
-  --text-muted: #4b5563;
-  --text-faint: #9ca3af;
-}
-
 body {
-  background-color: var(--bg-canvas);
-  color: var(--text-main);
+  background-color: var(--color-surface-canvas);
+  color: var(--color-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Tabular figures for all precision measurements */
+/* A single visible focus ring for every interactive element. Never remove it
+   with outline-none without an equivalent replacement. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling is a preference, not a default. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Honour reduced motion. Near-zero durations keep transitionend and
+   animationend events firing while removing perceptible movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Tabular figures for measurement contexts. Applied by class, not globally,
+   so prose and display text keep their natural proportional figures. See
+   docs/build/BRAND.md for the reasoning. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }

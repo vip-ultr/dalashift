@@ -3,27 +3,30 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a4232] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 cursor-pointer disabled:pointer-events-none disabled:opacity-50 select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a4232]',
+  `inline-flex items-center justify-center gap-2 font-medium transition-colors duration-150 motion-reduce:transition-none cursor-pointer disabled:pointer-events-none disabled:opacity-50 select-none ${focusRing}`,
   {
     variants: {
       variant: {
-        primary: 'bg-[#0a4232] text-white shadow-xs hover:bg-[#072f24] active:scale-[0.99]',
-        forest: 'bg-[#0a4232] text-white shadow-xs hover:bg-[#072f24] active:scale-[0.99]',
-        secondary:
-          'bg-white text-[#111827] border border-[#e5e7eb] shadow-xs hover:bg-[#f9fafb] hover:border-[#d1d5db] active:bg-[#f3f4f6]',
-        accent: 'bg-[#c26e4a] text-white shadow-xs hover:bg-[#a95d3c] active:scale-[0.99]',
-        outline: 'border border-[#0a4232] bg-transparent text-[#0a4232] hover:bg-[#eaf2ee]',
-        ghost: 'bg-transparent text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]',
-        tonal: 'bg-[#eaf2ee] text-[#0a4232] hover:bg-[#d8e8e0]',
-        destructive: 'bg-[#dc2626] text-white hover:bg-[#b91c1c]',
+        primary: 'bg-[#0a4232] text-white hover:bg-[#072f24]',
+        forest: 'bg-[#0a4232] text-white hover:bg-[#072f24]',
+        secondary: 'bg-white text-ink border border-border hover:bg-surface-subtle',
+        accent: 'bg-[#c26e4a] text-white hover:bg-[#a95d3c]',
+        outline:
+          'border border-[#0a4232] bg-transparent text-[#0a4232] hover:bg-brand-primary-tint',
+        ghost: 'bg-transparent text-ink-muted hover:bg-surface-subtle hover:text-ink',
+        tonal: 'bg-brand-primary-tint text-[#0a4232] hover:bg-[#d8e8e0]',
+        destructive: 'bg-[#fef2f2] text-[#b91c1c] border border-[#fecaca] hover:bg-[#fee2e2]',
       },
       size: {
-        xs: 'h-7 px-2.5 text-xs rounded-md',
-        sm: 'h-8 px-3 text-xs rounded-lg',
-        md: 'h-10 px-4 text-sm rounded-lg',
-        lg: 'h-11 px-5 text-base rounded-lg',
-        icon: 'size-9 rounded-lg',
+        xs: 'h-7 px-2.5 text-xs rounded-[10px]',
+        sm: 'h-8 px-3 text-xs rounded-[10px]',
+        md: 'h-11 px-4 text-base rounded-[10px]',
+        lg: 'h-11 px-5 text-base rounded-[10px]',
+        icon: 'size-11 rounded-[10px]',
       },
     },
     defaultVariants: {
