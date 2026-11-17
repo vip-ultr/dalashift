@@ -792,7 +792,7 @@ export function RegisteredFarmWorkspace({
                     setDrawnGeometry(geometry);
                     setIsDrawing(false);
                   }}
-                  heightClass="h-[460px]"
+                  heightClass="h-[320px] sm:h-[420px] lg:h-[460px]"
                 />
                 <div className="flex flex-wrap gap-2">
                   {farmData.parcels.map((parcel) => (
@@ -933,10 +933,12 @@ export function RegisteredFarmWorkspace({
                   }}
                 >
                   <Pencil className="size-3.5" aria-hidden="true" />
-                  {isDrawing ? 'Drawing: click vertices, then finish' : 'Draw boundary on map'}
+                  {isDrawing ? 'Drawing: tap corners, then press Done' : 'Draw a new field'}
                 </Button>
                 {drawnGeometry ? (
-                  <span className="text-xs text-[#0b4f2f]">Polygon captured from the map.</span>
+                  <span className="text-xs text-brand-primary">
+                    Field boundary captured. Check its size above, then add it.
+                  </span>
                 ) : null}
                 <Button type="button" size="sm" onClick={() => void handleAddParcel()}>
                   <Plus className="size-3.5" aria-hidden="true" />
