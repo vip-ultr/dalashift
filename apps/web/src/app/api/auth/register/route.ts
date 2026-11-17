@@ -10,11 +10,16 @@ import {
 } from '../../../../lib/auth/server';
 
 const registerSchema = z.object({
-  fullName: z.string().trim().max(120).optional().default('Farmer'),
+  // The profiles table requires a non-empty name, so require one instead of
+  // inventing the placeholder "Farmer" for callers that omit it.
+  fullName: z.string().trim().min(1).max(120),
   identifier: z.string().trim().min(1).max(254),
   password: z.string().min(6).max(128),
-  role: z.string().optional().default('farmer'),
-  consentAccepted: z.boolean().optional().default(true),
+  // Self-registration may only create farmer accounts. Privileged roles are
+  // rejected explicitly below instead of being silently downgraded.
+  role: z.enum(['farmer', 'extension_worker', 'researcher', 'admin']).default('farmer'),
+  // Consent is a gate, not a flag to ignore: registration requires it.
+  consentAccepted: z.boolean().default(false),
 });
 
 const DUPLICATE_ACCOUNT =
@@ -44,6 +49,18 @@ export async function POST(request: Request) {
       {
         error: 'Enter a valid email address or international phone number and complete all fields.',
       },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+  if (parsed.data.role !== 'farmer') {
+    return NextResponse.json(
+      { error: 'Self-registration is only available for farmer accounts.' },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+  if (!parsed.data.consentAccepted) {
+    return NextResponse.json(
+      { error: 'You must accept the consent terms to create an account.' },
       { status: 400, headers: { 'Cache-Control': 'no-store' } },
     );
   }
@@ -104,9 +121,9 @@ export async function POST(request: Request) {
 
     const { error: profileError } = await admin.from('profiles').insert({
       id: account.id,
-      full_name: parsed.data.fullName || 'Farmer',
+      full_name: parsed.data.fullName,
       phone,
-      role: 'farmer',
+      role: parsed.data.role,
     });
 
     if (profileError) {

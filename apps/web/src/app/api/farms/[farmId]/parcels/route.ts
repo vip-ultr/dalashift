@@ -2,7 +2,7 @@ import { parcelInputSchema } from '@dalashift/shared/schemas';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getAuthenticatedClient } from '../../../../../lib/supabase/server';
+import { getAuthenticatedClient, hasSameOrigin } from '../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string }>;
@@ -61,6 +61,9 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { farmId } = await params;
   if (invalidFarmId(farmId)) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
+  }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
   }
 
   const authContext = await getAuthenticatedClient();

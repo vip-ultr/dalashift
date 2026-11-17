@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { signOut } from '../../lib/auth/sign-out';
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
 
@@ -65,13 +66,16 @@ const SECONDARY_NAV_ITEMS = [
 export function WorkspaceRail() {
   const pathname = usePathname();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } finally {
-      window.location.href = '/login?signout=true';
+    setSignOutError(null);
+    const result = await signOut();
+    if (!result.ok) {
+      setSignOutError(result.error);
+      return;
     }
+    window.location.assign('/login');
   };
 
   const isItemActive = (item: {
@@ -199,6 +203,11 @@ export function WorkspaceRail() {
                     <LogOut className="size-4.5" />
                     <span>Sign out</span>
                   </button>
+                  {signOutError && (
+                    <p role="alert" className="mt-1 px-3 text-xs text-[#b42318]">
+                      {signOutError}
+                    </p>
+                  )}
                 </nav>
               </div>
             </div>
@@ -290,18 +299,28 @@ export function WorkspaceRail() {
             );
           })}
 
-          <button
-            type="button"
-            onClick={handleSignOut}
-            title="Sign out"
-            aria-label="Sign out"
-            className="group relative flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
-          >
-            <LogOut className="size-5" />
-            <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-              Sign out
-            </span>
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              title="Sign out"
+              aria-label="Sign out"
+              className="group relative flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
+            >
+              <LogOut className="size-5" />
+              <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
+                Sign out
+              </span>
+            </button>
+            {signOutError && (
+              <p
+                role="alert"
+                className="absolute right-11 bottom-0 z-50 w-56 rounded-md border border-[#fecdca] bg-white p-2 text-xs text-[#b42318] shadow-md"
+              >
+                {signOutError}
+              </p>
+            )}
+          </div>
         </div>
       </aside>
     </>

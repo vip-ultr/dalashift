@@ -2,7 +2,8 @@ import { farmCropInputSchema } from '@dalashift/shared/schemas';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getAuthenticatedClient } from '../../../../../../lib/supabase/server';
+import { requireFarmOwnership } from '../../../../../../lib/auth/farm-access';
+import { getAuthenticatedClient, hasSameOrigin } from '../../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string; cropRecordId: string }>;
@@ -18,10 +19,17 @@ export async function PUT(request: Request, { params }: RouteContext) {
   if (!idSchema.safeParse(farmId).success || !idSchema.safeParse(cropRecordId).success) {
     return NextResponse.json({ error: 'Farm or crop record id is invalid.' }, { status: 400 });
   }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
+  }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 
@@ -74,15 +82,22 @@ export async function PUT(request: Request, { params }: RouteContext) {
 }
 
 /** Delete a crop record without exposing records hidden by RLS. */
-export async function DELETE(_request: Request, { params }: RouteContext) {
+export async function DELETE(request: Request, { params }: RouteContext) {
   const { farmId, cropRecordId } = await params;
   if (!idSchema.safeParse(farmId).success || !idSchema.safeParse(cropRecordId).success) {
     return NextResponse.json({ error: 'Farm or crop record id is invalid.' }, { status: 400 });
+  }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
   }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 

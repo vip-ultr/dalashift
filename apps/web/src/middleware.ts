@@ -31,10 +31,13 @@ export function middleware(request: NextRequest): NextResponse {
   }
 
   if (hasSession && AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
-    if (request.nextUrl.searchParams.has('signout') || request.nextUrl.searchParams.has('new')) {
-      const response = NextResponse.next();
-      response.cookies.delete(SESSION_COOKIE_NAME);
-      return response;
+    // /register?new=true is a link from an in-app "add another farmer" flow
+    // while a session is still active, so let it through to the registration
+    // screen. This is NOT a sign-out: sign-out only happens through a POST to
+    // /api/auth/logout, which revokes the server session. Never delete the
+    // cookie here, since that would leave the server session valid.
+    if (request.nextUrl.searchParams.has('new')) {
+      return NextResponse.next();
     }
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';

@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { SegmentedControl } from '../../../components/ui/segmented-control';
+import { signOut } from '../../../lib/auth/sign-out';
 
 const profileResponseSchema = z.object({
   profile: z.object({
@@ -143,11 +144,13 @@ export default function ProfileSettingsPage(): React.JSX.Element {
   }
 
   async function handleSignOut(): Promise<void> {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } finally {
-      window.location.href = '/login?signout=true';
+    setErrorMessage(null);
+    const result = await signOut();
+    if (!result.ok) {
+      setErrorMessage(result.error);
+      return;
     }
+    window.location.assign('/login');
   }
 
   const languageChanged = savedLanguage !== defaultLanguage || hasUnsupportedLanguage;
@@ -312,11 +315,6 @@ export default function ProfileSettingsPage(): React.JSX.Element {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-[#e5e7eb] pt-4">
-            <Link href="/cases">
-              <Button variant="secondary" size="sm">
-                <span>Open Case Studies</span>
-              </Button>
-            </Link>
             <Button type="button" variant="outline" size="sm" onClick={handleSignOut}>
               <span>Sign out</span>
             </Button>

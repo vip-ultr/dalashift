@@ -21,7 +21,8 @@ import {
   OPEN_METEO_SOURCE,
 } from '../../../../../lib/integrations/open-meteo';
 import { fetchSoilGridsCached, SOILGRIDS_SOURCE } from '../../../../../lib/integrations/soilgrids';
-import { getAuthenticatedClient } from '../../../../../lib/supabase/server';
+import { requireFarmOwnership } from '../../../../../lib/auth/farm-access';
+import { getAuthenticatedClient, hasSameOrigin } from '../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string }>;
@@ -48,6 +49,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 
@@ -99,10 +104,17 @@ export async function POST(request: Request, { params }: RouteContext) {
   if (!farmIdSchema.safeParse(farmId).success) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
   }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
+  }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 

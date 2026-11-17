@@ -14,12 +14,10 @@ import {
   type PlantingTrigger,
   type Season,
 } from '@dalashift/shared/constants';
-import { geometrySchema } from '@dalashift/shared/schemas';
 import type {
   Farm,
   FarmCrop,
   FarmerPriorities,
-  Parcel,
   ProvenancedValue,
   RotationRule,
 } from '@dalashift/shared/types';
@@ -41,8 +39,10 @@ import { compareProspectiveSuitability } from '../../../../../features/recommend
 import {
   buildFarmReportPayload,
   type ReportKind,
+  type ReportParcelInput,
 } from '../../../../../features/reports/build-farm-report';
-import { getAuthenticatedClient } from '../../../../../lib/supabase/server';
+import { requireFarmOwnership } from '../../../../../lib/auth/farm-access';
+import { getAuthenticatedClient, hasSameOrigin } from '../../../../../lib/supabase/server';
 import {
   createReportSignedUrl,
   uploadFarmReportArtifact,
@@ -111,6 +111,10 @@ export async function GET(_request: Request, { params }: RouteContext) {
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
+  }
   const { supabase } = authContext;
 
   const { data: reports, error } = await supabase
@@ -152,11 +156,25 @@ export async function POST(request: Request, { params }: RouteContext) {
   if (!farmIdSchema.safeParse(farmId).success) {
     return NextResponse.json({ error: 'Farm id is invalid.' }, { status: 400 });
   }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
+  }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
+  // Ownership is checked before any farm-scoped data is read, and the farm row
+  // is reused below instead of fetching it a second time.
+  const ownership = await requireFarmOwnership(
+    authContext,
+    farmId,
+    'id, farmer_id, name, farming_method, irrigation_method, soil_notes',
+  );
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
+  }
+  const farmRow = ownership.farm;
   const { supabase, user } = authContext;
 
   let body: unknown = {};
@@ -177,12 +195,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     );
   }
 
-  const [farmRes, parcelsRes, cropsRes, rulesRes, farmCropsRes, prioritiesRes] = await Promise.all([
-    supabase
-      .from('farms')
-      .select('id, farmer_id, name, farming_method, irrigation_method, soil_notes')
-      .eq('id', farmId)
-      .maybeSingle(),
+  const [parcelsRes, cropsRes, rulesRes, farmCropsRes, prioritiesRes] = await Promise.all([
     supabase
       .from('parcels_public')
       .select(
@@ -216,36 +229,27 @@ export async function POST(request: Request, { params }: RouteContext) {
       .maybeSingle(),
   ]);
 
-  if (farmRes.error) {
-    console.error('Failed to read farm for report generation', farmRes.error);
-    return NextResponse.json({ error: 'Unable to load farm.' }, { status: 500 });
-  }
-  if (!farmRes.data) {
-    return NextResponse.json({ error: 'Farm not found.' }, { status: 404 });
-  }
-
   const farmingMethod: FarmingMethod = (FARMING_METHODS as readonly string[]).includes(
-    String(farmRes.data.farming_method),
+    String(farmRow.farming_method),
   )
-    ? (farmRes.data.farming_method as FarmingMethod)
+    ? (farmRow.farming_method as FarmingMethod)
     : 'unknown';
   const irrigationMethod: IrrigationMethod = (IRRIGATION_METHODS as readonly string[]).includes(
-    String(farmRes.data.irrigation_method),
+    String(farmRow.irrigation_method),
   )
-    ? (farmRes.data.irrigation_method as IrrigationMethod)
+    ? (farmRow.irrigation_method as IrrigationMethod)
     : 'unknown';
 
   const farm: Farm = {
-    id: String(farmRes.data.id),
-    farmerId: String(farmRes.data.farmer_id),
-    name: String(farmRes.data.name),
+    id: String(farmRow.id),
+    farmerId: String(farmRow.farmer_id),
+    name: String(farmRow.name),
     farmingMethod,
     irrigationMethod,
-    soilNotes: (farmRes.data.soil_notes as string | null) ?? null,
+    soilNotes: (farmRow.soil_notes as string | null) ?? null,
   };
 
-  const parcels: Parcel[] = (parcelsRes.data ?? []).map((row) => {
-    const geoParsed = geometrySchema.safeParse(row.geometry_geojson ?? row.centroid_geojson);
+  const parcels: ReportParcelInput[] = (parcelsRes.data ?? []).map((row) => {
     const geometryMethod: GeometryMethod = (GEOMETRY_METHODS as readonly string[]).includes(
       String(row.geometry_method),
     )
@@ -253,11 +257,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       : 'gps_point';
     return {
       id: String(row.id),
-      farmId: String(row.farm_id),
       name: String(row.name),
-      geometry: geoParsed.success
-        ? geoParsed.data
-        : { type: 'Point', coordinates: [8.27, 12.05] as const },
       areaHa: Number(row.area_ha ?? 0),
       locationUncertaintyM:
         row.location_uncertainty_m !== null && row.location_uncertainty_m !== undefined

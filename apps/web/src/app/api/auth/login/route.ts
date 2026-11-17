@@ -86,10 +86,15 @@ export async function POST(request: Request) {
     // time the account signs in, so the bcrypt format does not linger.
     if (isLegacyHash(passwordHash)) {
       const admin = getAuthenticationAdminClient();
-      await admin
+      const { error: upgradeError } = await admin
         .from('local_accounts')
         .update({ password_hash: await hashPassword(parsed.data.password) })
         .eq('id', account.id);
+      // The password already verified, so a failed upgrade must not fail the
+      // sign-in. Log it so operators can see the legacy hash is still stored.
+      if (upgradeError) {
+        console.error('Failed to upgrade legacy password hash', { code: upgradeError.code });
+      }
     }
     return NextResponse.json(
       { success: true },

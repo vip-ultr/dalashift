@@ -3,7 +3,8 @@ import { geometrySchema } from '@dalashift/shared/schemas';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getAuthenticatedClient } from '../../../../../../lib/supabase/server';
+import { requireFarmOwnership } from '../../../../../../lib/auth/farm-access';
+import { getAuthenticatedClient, hasSameOrigin } from '../../../../../../lib/supabase/server';
 
 interface RouteContext {
   readonly params: Promise<{ farmId: string; parcelId: string }>;
@@ -29,6 +30,10 @@ export async function GET(_request: Request, { params }: RouteContext) {
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 
@@ -56,10 +61,17 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   if (!uuidSchema.safeParse(farmId).success || !uuidSchema.safeParse(parcelId).success) {
     return NextResponse.json({ error: 'Farm or parcel id is invalid.' }, { status: 400 });
   }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
+  }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 
@@ -123,15 +135,22 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 }
 
 /** Delete a parcel from a farm. PostGIS triggers recompute the farm's total area and centroid. */
-export async function DELETE(_request: Request, { params }: RouteContext) {
+export async function DELETE(request: Request, { params }: RouteContext) {
   const { farmId, parcelId } = await params;
   if (!uuidSchema.safeParse(farmId).success || !uuidSchema.safeParse(parcelId).success) {
     return NextResponse.json({ error: 'Farm or parcel id is invalid.' }, { status: 400 });
+  }
+  if (!hasSameOrigin(request)) {
+    return NextResponse.json({ error: 'Request origin is not allowed.' }, { status: 403 });
   }
 
   const authContext = await getAuthenticatedClient();
   if (!authContext) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
+  const ownership = await requireFarmOwnership(authContext, farmId);
+  if (!ownership.ok) {
+    return NextResponse.json({ error: ownership.error }, { status: ownership.status });
   }
   const { supabase } = authContext;
 
