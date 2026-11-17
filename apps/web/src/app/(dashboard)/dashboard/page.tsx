@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  ArrowRight,
-  CheckCircle2,
-  FileText,
-  Layers,
-  MapPin,
-  Plus,
-  ShieldCheck,
-  Sprout,
-} from 'lucide-react';
+import { ArrowRight, FileText, MapPin, Plus } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
@@ -20,6 +11,7 @@ import {
 } from '../../../components/dashboard/data-state-boundary';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { useLanguage } from '../../../i18n/language-provider';
 import { PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
 
 const farmListResponseSchema = z.object({
@@ -43,6 +35,7 @@ const profileResponseSchema = z.object({
 });
 
 export default function DashboardOverviewPage(): React.JSX.Element {
+  const { t } = useLanguage();
   const [farms, setFarms] = React.useState<z.infer<typeof farmListResponseSchema>['farms']>([]);
   const [userName, setUserName] = React.useState<string>('Farmer');
   const [loading, setLoading] = React.useState(true);
@@ -157,38 +150,38 @@ export default function DashboardOverviewPage(): React.JSX.Element {
       : loading
         ? '...'
         : fetchError || !online
-          ? 'Not available'
+          ? t('dashboard.notAvailable')
           : '0';
   const holdingDetail =
     farms.length > 0
       ? `${totalRegisteredArea.toFixed(1)} ha total land area`
       : loading
-        ? 'Loading your farms...'
+        ? t('state.loading')
         : fetchError || !online
-          ? 'Not available'
-          : 'No farms added yet';
+          ? t('dashboard.notAvailable')
+          : t('dashboard.noFarms');
 
   const triggerValue = loading
     ? '...'
     : dataReady
-      ? (triggerTitle ?? 'Not available')
-      : 'Not available';
+      ? (triggerTitle ?? t('dashboard.notAvailable'))
+      : t('dashboard.notAvailable');
   const triggerDetail = dataReady
     ? `For ${firstFarm?.name ?? 'your first farm'}`
     : loading
-      ? 'Loading your farms...'
+      ? t('state.loading')
       : fetchError
-        ? 'Could not load'
+        ? t('state.error')
         : !online
           ? 'You are offline'
-          : 'No farms added yet';
+          : t('dashboard.noFarms');
 
-  const gridsValue = dataReady ? 'ISRIC & SMAP' : 'Not available';
+  const gridsValue = dataReady ? 'ISRIC & SMAP' : t('dashboard.notAvailable');
   const gridsDetail = dataReady
     ? '250 m soil baseline with ~9 km soil moisture'
     : 'Grid details not loaded';
 
-  const privacyValue = dataReady ? 'Protected' : 'Not available';
+  const privacyValue = dataReady ? 'Protected' : t('dashboard.notAvailable');
   const privacyDetail = dataReady
     ? 'Row-Level Security active on your farm records'
     : 'Status not loaded';
@@ -196,108 +189,74 @@ export default function DashboardOverviewPage(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-[#fafafb] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        {/* Top Header Card */}
-        <div className="flex flex-col justify-between gap-4 rounded-[14px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-6 sm:flex-row sm:items-center">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <Badge variant="Strong">2026 Wet Season</Badge>
-              <span className="text-xs font-medium text-[#6b7280]">Active Farm Workspace</span>
-            </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
-              Welcome back, {userName}
+              {t('dashboard.title')}
             </h1>
-            <p className="max-w-2xl text-xs text-[#4b5563] sm:text-sm">
-              Review environmental insights, soil moisture triggers, and deterministic rotation
-              recommendations tailored to your registered land parcels.
-            </p>
+            <p className="text-sm text-[#4b5563]">Welcome back, {userName}</p>
           </div>
 
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
+            <Badge variant="Strong">2026 Wet Season</Badge>
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>Add Farm or Parcel</span>
+                <span>{t('nav.addFarm')}</span>
               </Button>
             </Link>
             <Link href="/reports">
               <Button variant="secondary" size="md">
                 <FileText className="h-4 w-4" aria-hidden="true" />
-                <span>Field Reports</span>
+                <span>{t('nav.reports')}</span>
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* 4 Stat Overview Metrics, derived from your own farm data */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6b7280]">Registered Holdings</span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ebfaef] text-[#00b159]">
-                <Sprout className="h-4 w-4" aria-hidden="true" />
-              </div>
+        <section className="rounded-[12px] border border-[#e5e7eb] bg-white px-5">
+          <dl className="divide-y divide-[#e5e7eb]">
+            <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
+              <dt className="text-sm text-[#4b5563]">{t('dashboard.fields')}</dt>
+              <dd className="tabular">
+                <span className="block text-base font-semibold text-[#111827]">{holdingValue}</span>
+                <span className="block text-xs text-[#6b7280]">{holdingDetail}</span>
+              </dd>
             </div>
-            <div className="tabular mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              {holdingValue}
+            <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
+              <dt className="text-sm text-[#4b5563]">{t('dashboard.plantingTrigger')}</dt>
+              <dd className="tabular">
+                <span className="block text-base font-semibold text-[#111827]">{triggerValue}</span>
+                <span className="block text-xs text-[#6b7280]">{triggerDetail}</span>
+              </dd>
             </div>
-            <p className="mt-1 text-[11px] text-[#6b7280]">{holdingDetail}</p>
-          </div>
+            <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
+              <dt className="text-sm text-[#4b5563]">Soil &amp; climate grids</dt>
+              <dd className="tabular">
+                <span className="block text-base font-semibold text-[#111827]">{gridsValue}</span>
+                <span className="block text-xs text-[#6b7280]">{gridsDetail}</span>
+              </dd>
+            </div>
+            <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
+              <dt className="text-sm text-[#4b5563]">Data privacy</dt>
+              <dd className="tabular">
+                <span className="block text-base font-semibold text-[#111827]">{privacyValue}</span>
+                <span className="block text-xs text-[#6b7280]">{privacyDetail}</span>
+              </dd>
+            </div>
+          </dl>
+        </section>
 
-          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6b7280]">Planting Trigger Status</span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#fdf6e2] text-[#b45309]">
-                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-              </div>
-            </div>
-            <div className="mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              {triggerValue}
-            </div>
-            <p className="mt-1 text-[11px] text-[#6b7280]">{triggerDetail}</p>
-          </div>
-
-          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6b7280]">Soil &amp; Climate Grids</span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eef5fc] text-[#1d4ed8]">
-                <Layers className="h-4 w-4" aria-hidden="true" />
-              </div>
-            </div>
-            <div className="mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              {gridsValue}
-            </div>
-            <p className="mt-1 text-[11px] text-[#6b7280]">{gridsDetail}</p>
-          </div>
-
-          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[#6b7280]">Data Privacy</span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ebfaef] text-[#0a4232]">
-                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-              </div>
-            </div>
-            <div className="mt-2 text-2xl font-bold tracking-tight text-[#111315]">
-              {privacyValue}
-            </div>
-            <p className="mt-1 text-[11px] text-[#6b7280]">{privacyDetail}</p>
-          </div>
-        </div>
-
-        {/* Registered Holdings Section */}
-        <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#f3f4f6] pb-4">
+        <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e7eb] pb-4">
             <div>
-              <h2 className="font-display text-lg font-bold text-[#111315]">
-                Your Registered Holdings
-              </h2>
-              <p className="mt-0.5 text-xs text-[#6b7280]">
-                Access farm parcels, view rotation evaluations, and inspect environmental evidence.
-              </p>
+              <h2 className="font-display text-lg font-bold text-[#111315]">{t('farms.title')}</h2>
+              <p className="mt-0.5 text-sm text-[#6b7280]">{t('farms.hint')}</p>
             </div>
             <Link href="/farms/new">
               <Button variant="outline" size="sm">
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Register Farm</span>
+                <span>{t('farms.addFarm')}</span>
               </Button>
             </Link>
           </div>
@@ -308,34 +267,34 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             emptyKind="no-data"
             sourceName="Farm service"
             errorMessage={fetchError ?? undefined}
-            offlineMessage="You are offline. Showing the farms saved on this device."
+            offlineMessage={t('state.offline')}
             onRetry={() => {
               void load();
             }}
             onPrimaryAction={() => {
               window.location.href = '/farms/new';
             }}
-            primaryActionLabel="Add your first farm"
+            primaryActionLabel={t('nav.addFarm')}
           >
             {farms.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {farms.map((farm) => (
                   <div
                     key={farm.id}
-                    className="flex flex-col justify-between rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 transition-colors hover:border-[#00b159] hover:bg-white"
+                    className="flex flex-col justify-between rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 transition-colors hover:border-[#0a4232] hover:bg-white"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-bold text-[#111315]">{farm.name}</span>
+                        <span className="text-sm font-bold text-[#111315]">{farm.name}</span>
                         <Badge variant="pass">Active</Badge>
                       </div>
                       <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6b7280]">
-                        <MapPin className="h-3.5 w-3.5 text-[#00b159]" aria-hidden="true" />
+                        <MapPin className="h-3.5 w-3.5 text-[#6b7280]" aria-hidden="true" />
                         <span>
                           {farm.area_ha ? `${farm.area_ha.toFixed(2)} ha` : 'Area pending'}
                         </span>
                       </div>
-                      <p className="mt-1 text-[11px] text-[#6b7280]">
+                      <p className="mt-1 text-xs text-[#6b7280]">
                         Farming method: {farm.farming_method || 'Rainfed'}
                       </p>
                     </div>
@@ -344,7 +303,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                         href={`/farms/${farm.id}`}
                         className="inline-flex items-center gap-1 text-xs font-semibold text-[#0a4232] hover:underline"
                       >
-                        <span>Open holding workspace</span>
+                        <span>{t('farms.openWorkspace')}</span>
                         <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                       </Link>
                     </div>

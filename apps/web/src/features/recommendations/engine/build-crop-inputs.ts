@@ -12,6 +12,8 @@ import { assessCrop, type AssessmentObservation, type DimensionRule } from './as
 
 export const DEFAULT_RULESET_VERSION = '2026.11.14-qualitative';
 
+type Language = 'en' | 'ha';
+
 export interface CatalogCropRecord {
   readonly id: string;
   readonly code: string;
@@ -188,12 +190,15 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
  * unset in `data/reference/crop-requirements.json`, this builder records
  * explicit `unverified_requirement` limitations rather than inventing numbers.
  */
-export function evaluateCatalogCropForParcel(input: {
-  readonly crop: CatalogCropRecord;
-  readonly observations: readonly ProvenancedValue[];
-  readonly parcelAreaHa: number | null;
-  readonly rulesetVersion?: string;
-}): CropAssessment {
+export function evaluateCatalogCropForParcel(
+  input: {
+    readonly crop: CatalogCropRecord;
+    readonly observations: readonly ProvenancedValue[];
+    readonly parcelAreaHa: number | null;
+    readonly rulesetVersion?: string;
+  },
+  language: Language = 'en',
+): CropAssessment {
   const rulesetVersion = input.rulesetVersion ?? DEFAULT_RULESET_VERSION;
   const rules: DimensionRule[] = [];
   const mappedObservations: AssessmentObservation[] = [];
@@ -241,7 +246,7 @@ export function evaluateCatalogCropForParcel(input: {
     });
   }
 
-  const precipObs = aggregatePrecipitationMm(input.observations, input.parcelAreaHa);
+  const precipObs = aggregatePrecipitationMm(input.observations, input.parcelAreaHa, language);
   if (precipObs) {
     if (rules.some((rule) => rule.dimension === 'climate_rainfall')) {
       mappedObservations.push({ ...precipObs, dimension: 'climate_rainfall' });
@@ -262,7 +267,7 @@ export function evaluateCatalogCropForParcel(input: {
       citation: tempReq.citation ?? defaultCitation,
       hardConstraint: tempReq.hardConstraint ?? true,
     });
-    const tempObs = aggregateMeanTemperature(input.observations, input.parcelAreaHa);
+    const tempObs = aggregateMeanTemperature(input.observations, input.parcelAreaHa, language);
     if (tempObs) {
       mappedObservations.push(tempObs);
     }
@@ -284,7 +289,7 @@ export function evaluateCatalogCropForParcel(input: {
       citation: soilPhReq.citation ?? defaultCitation,
       hardConstraint: soilPhReq.hardConstraint ?? false,
     });
-    const phObs = extractSoilPhObservation(input.observations, input.parcelAreaHa);
+    const phObs = extractSoilPhObservation(input.observations, input.parcelAreaHa, language);
     if (phObs) {
       mappedObservations.push(phObs);
     }
@@ -321,14 +326,17 @@ export function evaluateCatalogCropForParcel(input: {
     });
   }
 
-  const baseAssessment = assessCrop({
-    cropId: input.crop.id,
-    cropCode: input.crop.code,
-    cropName: input.crop.name,
-    rulesetVersion,
-    rules,
-    observations: mappedObservations,
-  });
+  const baseAssessment = assessCrop(
+    {
+      cropId: input.crop.id,
+      cropCode: input.crop.code,
+      cropName: input.crop.name,
+      rulesetVersion,
+      rules,
+      observations: mappedObservations,
+    },
+    language,
+  );
 
   const combinedLimitations = mergeLimitations(baseAssessment.limitations, catalogLimitations);
 
@@ -341,6 +349,7 @@ export function evaluateCatalogCropForParcel(input: {
 function aggregatePrecipitationMm(
   observations: readonly ProvenancedValue[],
   parcelAreaHa: number | null,
+  language: Language,
 ): AssessmentObservation | null {
   const isForecast = (obs: ProvenancedValue): boolean =>
     obs.rawMetadata?.isForecast === true ||
@@ -376,11 +385,14 @@ function aggregatePrecipitationMm(
   );
   const strength = deriveStrengthFromResolution(latest.spatialResolutionM);
   const limitation =
-    describeSpatialScaleMismatch({
-      sourceName: latest.sourceId,
-      spatialResolutionM: latest.spatialResolutionM,
-      parcelAreaHa,
-    }) ?? undefined;
+    describeSpatialScaleMismatch(
+      {
+        sourceName: latest.sourceId,
+        spatialResolutionM: latest.spatialResolutionM,
+        parcelAreaHa,
+      },
+      language,
+    ) ?? undefined;
 
   return {
     dimension: 'water_availability',
@@ -398,6 +410,7 @@ function aggregatePrecipitationMm(
 function aggregateMeanTemperature(
   observations: readonly ProvenancedValue[],
   parcelAreaHa: number | null,
+  language: Language,
 ): AssessmentObservation | null {
   const valid = observations.filter(
     (obs) =>
@@ -412,11 +425,14 @@ function aggregateMeanTemperature(
   );
   const latest = valid.reduce((prev, curr) => (curr.observedAt > prev.observedAt ? curr : prev));
   const limitation =
-    describeSpatialScaleMismatch({
-      sourceName: latest.sourceId,
-      spatialResolutionM: latest.spatialResolutionM,
-      parcelAreaHa,
-    }) ?? undefined;
+    describeSpatialScaleMismatch(
+      {
+        sourceName: latest.sourceId,
+        spatialResolutionM: latest.spatialResolutionM,
+        parcelAreaHa,
+      },
+      language,
+    ) ?? undefined;
 
   return {
     dimension: 'climate_temperature',
@@ -434,16 +450,20 @@ function aggregateMeanTemperature(
 function extractSoilPhObservation(
   observations: readonly ProvenancedValue[],
   parcelAreaHa: number | null,
+  language: Language,
 ): AssessmentObservation | null {
   const match = observations.find((obs) => obs.variable === ENVIRONMENT_VARIABLES.soilPh);
   if (!match) return null;
 
   const limitation =
-    describeSpatialScaleMismatch({
-      sourceName: match.sourceId,
-      spatialResolutionM: match.spatialResolutionM,
-      parcelAreaHa,
-    }) ?? undefined;
+    describeSpatialScaleMismatch(
+      {
+        sourceName: match.sourceId,
+        spatialResolutionM: match.spatialResolutionM,
+        parcelAreaHa,
+      },
+      language,
+    ) ?? undefined;
 
   return {
     dimension: 'soil_match',

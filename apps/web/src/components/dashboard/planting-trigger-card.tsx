@@ -9,6 +9,7 @@ import {
 import type { PlantingTriggerAssessment } from '@dalashift/shared/types';
 import { CloudRain, Compass, Droplets, Sprout, UserCheck } from 'lucide-react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import { formatMetricValue, PLANTING_TRIGGER_TITLES } from '../../lib/utilities/format';
 import { Badge } from '../ui/badge';
@@ -32,6 +33,7 @@ export function PlantingTriggerCard({
   onSelectTrigger,
   className,
 }: PlantingTriggerCardProps) {
+  const { t } = useLanguage();
   const activeRecommended = assessment.recommendedTrigger;
   const farmerStated = assessment.farmerRule;
 
@@ -77,7 +79,7 @@ export function PlantingTriggerCard({
           ) : null}
         </div>
         <p className="mt-1.5 text-base font-semibold text-ink">
-          {PLANTING_TRIGGER_TITLES[activeRecommended][fieldLang]}
+          {t(`engine.trigger.${activeRecommended}`)}
         </p>
         {fieldLang === 'ha' ? (
           <p className="mt-0.5 text-xs text-ink-muted">
@@ -99,7 +101,6 @@ export function PlantingTriggerCard({
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           {PLANTING_TRIGGERS.map((triggerKey) => {
             const profile = PLANTING_TRIGGER_PROFILES[triggerKey];
-            const titles = PLANTING_TRIGGER_TITLES[triggerKey];
             const isRecommended = triggerKey === activeRecommended;
             const isFarmerRule = triggerKey === farmerStated;
 
@@ -140,7 +141,9 @@ export function PlantingTriggerCard({
                     ) : null}
                   </div>
 
-                  <h4 className="mt-2.5 text-sm font-semibold text-ink">{titles[fieldLang]}</h4>
+                  <h4 className="mt-2.5 text-sm font-semibold text-ink">
+                    {t(`engine.trigger.${triggerKey}`)}
+                  </h4>
                   <p className="mt-1.5 text-xs leading-relaxed text-ink">{profile.condition}</p>
                 </div>
 

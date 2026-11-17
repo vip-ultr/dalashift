@@ -6,17 +6,20 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { BookOpen, ChevronRight, Home, LogIn, Menu, Plus, Tractor, X } from 'lucide-react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
+import { LanguageSwitcher } from '../ui/language-switcher';
 
 export function PublicNavbar() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: 'Overview', icon: Home },
-    { href: '/farms', label: 'Field Workspace', icon: Tractor },
-    { href: '/methodology', label: 'Methodology', icon: BookOpen },
+    { href: '/', label: t('nav.overview'), icon: Home },
+    { href: '/farms', label: t('nav.myFields'), icon: Tractor },
+    { href: '/methodology', label: t('nav.methodology'), icon: BookOpen },
   ];
 
   return (
@@ -52,26 +55,28 @@ export function PublicNavbar() {
           })}
         </nav>
 
-        {/* Action Buttons */}
+        {/* Desktop action cluster: language switcher plus existing buttons */}
         <div className="hidden items-center gap-3 md:flex">
+          <LanguageSwitcher compact />
           <Link href="/login">
             <Button variant="ghost" size="sm">
-              Sign in
+              {t('nav.signIn')}
             </Button>
           </Link>
           <Link href="/farms/new">
             <Button variant="primary" size="sm">
-              Add Farm
+              {t('nav.addFarm')}
             </Button>
           </Link>
         </div>
 
-        {/* Mobile Hamburger / Close Button */}
-        <div className="flex md:hidden">
+        {/* Mobile header: language switcher beside the hamburger, visible without opening */}
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher compact />
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="flex size-10 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#111827] hover:bg-[#f9fafb] active:bg-[#f3f4f6] transition-colors cursor-pointer"
+            className="flex size-10 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#111827] transition-colors hover:bg-[#f9fafb] active:bg-[#f3f4f6] cursor-pointer"
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -128,19 +133,23 @@ export function PublicNavbar() {
                 })}
               </nav>
 
+              <div className="px-1">
+                <LanguageSwitcher className="w-full" />
+              </div>
+
               <div className="h-px w-full bg-[#f3f4f6]" />
 
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="secondary" size="md" className="w-full justify-center">
-                    <LogIn className="mr-2 size-4" />
-                    <span>Sign in</span>
+                    <LogIn className="mr-2 size-4" aria-hidden="true" />
+                    <span>{t('nav.signIn')}</span>
                   </Button>
                 </Link>
                 <Link href="/farms/new" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" size="md" className="w-full justify-center">
-                    <Plus className="mr-1.5 size-4" />
-                    <span>Add Farm</span>
+                    <Plus className="mr-1.5 size-4" aria-hidden="true" />
+                    <span>{t('nav.addFarm')}</span>
                   </Button>
                 </Link>
               </div>

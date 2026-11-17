@@ -6,21 +6,32 @@ import HomePage from '../src/app/page';
 /**
  * Smoke test for the landing page route.
  *
- * Verifies that the page renders core branding, Tofa LGA field validation context,
- * and the resolution honesty principles.
+ * Verifies that the redesigned page renders the DalaShift brand and its
+ * content-led, plain-language hero and how-it-works steps. The old decorative
+ * eyebrow label and icon-card principles were deliberately removed.
  */
 describe('landing page route', () => {
-  it('renders DalaShift branding and field intelligence context', () => {
+  it('renders DalaShift branding and the plain-language hero', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
     expect(markup).toContain('DalaShift');
-    expect(markup).toContain('Precision Agricultural Intelligence');
+    expect(markup).toContain('Know when your field is ready.');
+    expect(markup).toContain('satellite data and local knowledge');
   });
 
-  it('surfaces resolution honesty and moisture trigger principles', () => {
+  it('shows the three how-it-works steps as a simple list', () => {
     const markup = renderToStaticMarkup(<HomePage />);
 
-    expect(markup).toContain('Resolution Honesty');
-    expect(markup).toContain('Moisture Triggers');
+    expect(markup).toContain('How it works');
+    expect(markup).toContain('1. Add your farm');
+    expect(markup).toContain('2. Add a field');
+    expect(markup).toContain('3. Get advice');
+  });
+
+  it('does not render the removed decorative eyebrow and icon-card labels', () => {
+    const markup = renderToStaticMarkup(<HomePage />);
+
+    expect(markup).not.toContain('Precision Agricultural Intelligence');
+    expect(markup).not.toContain('Resolution Honesty');
   });
 });

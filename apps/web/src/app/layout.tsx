@@ -6,6 +6,7 @@ import './globals.css';
 
 import { ServiceWorkerRegistrar } from '../components/layout/service-worker-registrar';
 import { SiteFooter } from '../components/layout/site-footer';
+import { LanguageProvider } from '../i18n/language-provider';
 
 /**
  * Geologica for display headings and the wordmark, Inter for body, tables, and
@@ -77,15 +78,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${geologica.variable}`}>
       <body>
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-surface-card focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-primary focus:shadow-md"
-        >
-          Skip to main content
-        </a>
-        <main id="main-content">{children}</main>
-        <SiteFooter />
-        <ServiceWorkerRegistrar />
+        <LanguageProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-surface-card focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-primary focus:shadow-md"
+          >
+            Skip to main content
+          </a>
+          <main id="main-content">{children}</main>
+          <SiteFooter />
+          <ServiceWorkerRegistrar />
+        </LanguageProvider>
       </body>
     </html>
   );

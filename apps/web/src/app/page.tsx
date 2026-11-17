@@ -1,231 +1,135 @@
-import { ArrowRight, Compass, Database, Droplets, Layers, ShieldCheck, Sprout } from 'lucide-react';
+'use client';
+
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type * as React from 'react';
 
 import { PublicNavbar } from '../components/layout/public-navbar';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { useLanguage } from '../i18n/language-provider';
 
+/**
+ * Landing page. One idea: the field instrument, calm and content-led.
+ * Design note: no eyebrow labels, no icon-square card grids, one primary
+ * action. The report panel is an illustration placed below the action, never
+ * the hero. Tokens: canvas #fafafa, surface #ffffff, ink #111827,
+ * ink-muted #4b5563, border #e5e7eb, primary #0a4232, sunken #f4f5f6.
+ * Widths checked in source: 390, 768, 1440.
+ */
 export default function LandingPage(): React.JSX.Element {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#111827]">
       <PublicNavbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-[#e5e7eb] bg-white pt-12 pb-20 sm:pt-20 sm:pb-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-            {/* Left Content */}
-            <div className="space-y-6 lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#0a4232]/15 bg-[#eaf2ee] px-3.5 py-1 text-xs font-semibold text-[#0a4232]">
-                <Sprout className="size-3.5" />
-                <span>Precision Agricultural Intelligence</span>
-              </div>
+      {/* Hero: one statement, one primary action */}
+      <section className="border-b border-[#e5e7eb] bg-white pt-14 pb-16 sm:pt-20 sm:pb-20">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <h1 className="font-display text-3xl font-bold leading-tight text-[#111827] sm:text-4xl">
+            {t('landing.heroTitle')}
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#4b5563]">
+            {t('landing.heroSubtitle')}
+          </p>
 
-              <h1 className="font-display text-4xl font-bold tracking-tight text-[#111827] sm:text-5xl lg:text-6xl leading-[1.12]">
-                Earth observation intelligence for smallholder fields.
-              </h1>
-
-              <p className="max-w-2xl text-base leading-relaxed text-[#4b5563] sm:text-lg">
-                DalaShift translates NASA satellite data, SoilGrids, and rainfall records into
-                field-specific planting triggers and 3-way crop rotation plans for smallholder
-                farmers.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Link href="/farms">
-                  <Button variant="primary" size="lg">
-                    <span>Open Field Workspace</span>
-                    <ArrowRight className="size-4" />
-                  </Button>
-                </Link>
-                <Link href="/farms/new">
-                  <Button variant="secondary" size="lg">
-                    <span>Add Your Field</span>
-                  </Button>
-                </Link>
-              </div>
-
-              {/* 3 Core Value Props */}
-              <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-3">
-                <div className="rounded-xl border border-[#e5e7eb] bg-[#fafafa] p-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#111827]">
-                    <Database className="size-4 text-[#0a4232]" />
-                    <span>Resolution Honesty</span>
-                  </div>
-                  <p className="mt-1 text-xs text-[#6b7280]">
-                    Clearly marks 250 m soil grids vs. 9 km regional climate data.
-                  </p>
-                </div>
-                <div className="rounded-xl border border-[#e5e7eb] bg-[#fafafa] p-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#111827]">
-                    <Droplets className="size-4 text-[#c26e4a]" />
-                    <span>Moisture Triggers</span>
-                  </div>
-                  <p className="mt-1 text-xs text-[#6b7280]">
-                    Evaluates confirmed soil wetness before planting, not guesswork dates.
-                  </p>
-                </div>
-                <div className="rounded-xl border border-[#e5e7eb] bg-[#fafafa] p-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#111827]">
-                    <ShieldCheck className="size-4 text-[#0a4232]" />
-                    <span>Field Grounded</span>
-                  </div>
-                  <p className="mt-1 text-xs text-[#6b7280]">
-                    Validated with smallholder farmers and local Hausa crop terminology.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: static illustrative example, not live data */}
-            <div className="lg:col-span-5">
-              <div className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white shadow-xl">
-                {/* Header Strip */}
-                <div className="flex items-center justify-between border-b border-[#e5e7eb] bg-[#fafafa] px-5 py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex size-7 items-center justify-center rounded-lg bg-[#0a4232] text-white">
-                      <Compass className="size-4" />
-                    </span>
-                    <div>
-                      <div className="text-xs font-bold text-[#111827]">
-                        Example field report layout
-                      </div>
-                      <div className="text-[11px] text-[#6b7280]">
-                        Illustration only · not live monitoring data
-                      </div>
-                    </div>
-                  </div>
-                  <Badge variant="Neutral">Static example</Badge>
-                </div>
-
-                <p className="bg-[#f4f5f6] px-5 py-2 text-[11px] text-[#4b5563]">
-                  The values below are sample figures used to illustrate the report layout. They are
-                  not live observations from any real farm.
-                </p>
-
-                {/* Satellite Metrics Grid (illustrative sample values) */}
-                <div className="grid grid-cols-2 divide-x divide-y divide-[#e5e7eb] border-b border-[#e5e7eb] bg-white text-xs">
-                  <div className="p-4">
-                    <span className="text-[#6b7280]">Rainfall (14-day)</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">44.5 mm</div>
-                    <span className="text-[11px] font-medium text-[#0a4232]">
-                      CHIRPS 5.5 km satellite
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <span className="text-[#6b7280]">Root-zone Soil Wetness</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.21 m³/m³</div>
-                    <span className="text-[11px] font-medium text-[#0a4232]">
-                      NASA SMAP 9 km grid
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <span className="text-[#6b7280]">Topsoil pH</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">6.1 pH</div>
-                    <span className="text-[11px] font-medium text-[#c26e4a]">
-                      SoilGrids 250 m cell
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <span className="text-[#6b7280]">Canopy Greenness</span>
-                    <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.48 NDVI</div>
-                    <span className="text-[11px] font-medium text-[#0a4232]">
-                      MODIS 250 m composite
-                    </span>
-                  </div>
-                </div>
-
-                {/* Sowing Trigger & Rotation Preview */}
-                <div className="p-5 space-y-3 bg-[#fafafa]">
-                  <div className="rounded-xl border border-[#0a4232]/20 bg-[#eaf2ee]/60 p-3.5">
-                    <div className="flex items-center justify-between text-xs font-semibold text-[#0a4232]">
-                      <span>Moisture Planting Trigger</span>
-                      <Badge variant="pass">Conditions Met</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-[#111827]">
-                      Soil moisture reached 0.18 m³/m³ threshold across 3 rain events. Workable for
-                      sowing.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 text-xs">
-                    <span className="text-[#6b7280]">Tested rotation sequence:</span>
-                    <span className="font-semibold text-[#111827]">
-                      Sorghum (Dawa) → Cowpea (Wake)
-                    </span>
-                  </div>
-                </div>
-
-                <div className="border-t border-[#e5e7eb] bg-white p-4 text-center">
-                  <Link
-                    href="/farms"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0a4232] hover:underline"
-                  >
-                    <span>View all registered holdings on map</span>
-                    <ArrowRight className="size-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/farms">
+              <Button variant="primary" size="lg">
+                <span>{t('landing.primaryAction')}</span>
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Button>
+            </Link>
+            <Link href="/farms/new" className="text-sm font-medium text-[#0a4232] hover:underline">
+              {t('workspace.addField')}
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 3 Pillars Section */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-semibold tracking-wider text-[#0a4232] uppercase">
-              How DalaShift Works
-            </span>
-            <h2 className="font-display text-3xl font-bold tracking-tight text-[#111827]">
-              Engineered for smallholder agriculture.
-            </h2>
-            <p className="text-sm text-[#4b5563]">
-              From farm boundary mapping to soil chemistry and crop rotation, DalaShift delivers
-              explainable insights based on verified agricultural science.
+      {/* How it works: a numbered list with hairline dividers, no icon squares */}
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <h2 className="font-display text-2xl font-bold text-[#111827]">
+            {t('landing.howItWorksTitle')}
+          </h2>
+          <ol className="mt-6 list-none divide-y divide-[#e5e7eb] border-y border-[#e5e7eb]">
+            {[t('landing.howStep1'), t('landing.howStep2'), t('landing.howStep3')].map((step) => (
+              <li key={step} className="py-4 text-base text-[#111827]">
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Illustration only. Static example of a report layout, not the hero. */}
+      <section className="pb-16 sm:pb-24">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white">
+            <div className="border-b border-[#e5e7eb] bg-[#fafafa] px-5 py-4">
+              <div className="text-sm font-semibold text-[#111827]">
+                Example field report layout
+              </div>
+              <div className="mt-0.5 text-xs text-[#4b5563]">Illustration only. Not live data.</div>
+            </div>
+
+            <p className="bg-[#f4f5f6] px-5 py-2.5 text-xs text-[#4b5563]">
+              The values below are sample figures used to illustrate the report layout. They are not
+              live observations from any real farm.
             </p>
-          </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-xs">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-[#eaf2ee] text-[#0a4232]">
-                <Layers className="size-5" />
+            {/* Sample figures with a quiet provenance line beneath each */}
+            <div className="grid grid-cols-2 divide-x divide-y divide-[#e5e7eb] text-xs">
+              <div className="p-4">
+                <span className="text-[#4b5563]">Rainfall (14-day)</span>
+                <div className="tabular mt-1 text-lg font-bold text-[#111827]">44.5 mm</div>
+                <span className="mt-1 block text-xs text-[#4b5563]">CHIRPS 5.5 km satellite</span>
               </div>
-              <h3 className="mt-4 font-display text-lg font-bold text-[#111827]">
-                1. Satellite Observation
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#4b5563]">
-                Integrates NASA SMAP, MODIS, and CHIRPS data layers to provide historical rainfall,
-                vegetation indices, and soil properties for every parcel.
-              </p>
+              <div className="p-4">
+                <span className="text-[#4b5563]">Root-zone soil wetness</span>
+                <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.21 m³/m³</div>
+                <span className="mt-1 block text-xs text-[#4b5563]">NASA SMAP 9 km grid</span>
+              </div>
+              <div className="p-4">
+                <span className="text-[#4b5563]">Topsoil pH</span>
+                <div className="tabular mt-1 text-lg font-bold text-[#111827]">6.1 pH</div>
+                <span className="mt-1 block text-xs text-[#4b5563]">SoilGrids 250 m cell</span>
+              </div>
+              <div className="p-4">
+                <span className="text-[#4b5563]">Canopy greenness</span>
+                <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.48 NDVI</div>
+                <span className="mt-1 block text-xs text-[#4b5563]">MODIS 250 m composite</span>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-xs">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-[#f9efea] text-[#c26e4a]">
-                <Droplets className="size-5" />
+            <div className="space-y-3 bg-[#fafafa] p-5">
+              <div className="rounded-lg border border-[#e5e7eb] p-3.5">
+                <div className="text-xs font-semibold text-[#0a4232]">
+                  Moisture planting trigger: conditions met
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-[#111827]">
+                  Soil moisture reached the 0.18 m³/m³ threshold across three rain events. Workable
+                  for sowing.
+                </p>
               </div>
-              <h3 className="mt-4 font-display text-lg font-bold text-[#111827]">
-                2. Moisture Triggers
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#4b5563]">
-                Replaces risky calendar date planting with moisture-conditioned triggers that reduce
-                the chance of early crop failure from false rainy season onset.
-              </p>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+                <span className="text-[#4b5563]">Tested rotation sequence:</span>
+                <span className="font-semibold text-[#111827]">
+                  Sorghum (Dawa) to Cowpea (Wake)
+                </span>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-xs">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-[#eaf2ee] text-[#0a4232]">
-                <Sprout className="size-5" />
-              </div>
-              <h3 className="mt-4 font-display text-lg font-bold text-[#111827]">
-                3. Rotation Comparison
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#4b5563]">
-                Compares existing cereal-legume rotations against evidence-backed alternatives to
-                restore soil nitrogen, optimize water demand, and stabilize yield.
-              </p>
+            <div className="border-t border-[#e5e7eb] p-4 text-center">
+              <Link
+                href="/farms"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0a4232] hover:underline"
+              >
+                <span>View all registered farms on the map</span>
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </div>

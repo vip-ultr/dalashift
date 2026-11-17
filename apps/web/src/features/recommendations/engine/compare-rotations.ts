@@ -4,7 +4,15 @@ import {
   type FarmerGoal,
   type RankPosition,
 } from '@dalashift/shared/constants';
+import { messages } from '@dalashift/shared/i18n';
 import type { ComparisonResult, Limitation, RotationStrategy } from '@dalashift/shared/types';
+
+type Language = 'en' | 'ha';
+
+/** Look up a keyed message without importing any web/React language state. */
+function t(id: string, fallback: string, language: Language): string {
+  return messages[id]?.[language] ?? messages[id]?.en ?? fallback;
+}
 
 export interface CompareRotationsInput {
   readonly farmId: string;
@@ -39,7 +47,10 @@ const GOAL_DIMENSIONS: Partial<Record<FarmerGoal, readonly AssessmentDimension[]
 };
 
 /** Order complete rotation options by the farmer's stated goals and evidence. */
-export function compareRotations(input: CompareRotationsInput): ComparisonResult {
+export function compareRotations(
+  input: CompareRotationsInput,
+  language: Language = 'en',
+): ComparisonResult {
   if (input.rulesetVersion.trim().length === 0) {
     throw new Error('A ruleset version is required.');
   }
@@ -69,7 +80,7 @@ export function compareRotations(input: CompareRotationsInput): ComparisonResult
     });
   }
 
-  const orderingBasis = buildOrderingBasis(input.goals, dimensionOrder);
+  const orderingBasis = buildOrderingBasis(input.goals, dimensionOrder, language);
   const ranked = rankStrategies(input.strategies, dimensionOrder);
   const strategies = ranked.map(({ strategy, rank }) => ({
     ...strategy,
@@ -163,6 +174,7 @@ function strategyDimensionOrder(
 function buildOrderingBasis(
   goals: readonly FarmerGoal[],
   dimensions: readonly AssessmentDimension[],
+  language: Language,
 ): string {
   const verdictBasis = 'Each strategy is first compared by its least suitable crop assessment.';
   if (goals.length === 0) {
@@ -172,7 +184,11 @@ function buildOrderingBasis(
   if (dimensions.length === 0) {
     return `${verdictBasis} The stated goals (${goalLabels}) have no supported dimensions in this comparison, so equal crop verdicts remain tied.`;
   }
-  return `${verdictBasis} The ordering follows the farmer's goals (${goalLabels}) and compares these dimensions in order: ${dimensions.join(', ')}. Pass is preferred to uncertain. Fail and not assessed do not separate strategies. No weights are applied.`;
+  const pass = t('verdict.pass', 'Pass', language);
+  const uncertain = t('verdict.uncertain', 'uncertain', language).toLowerCase();
+  const fail = t('verdict.fail', 'Fail', language);
+  const notAssessed = t('verdict.notAssessed', 'not assessed', language).toLowerCase();
+  return `${verdictBasis} The ordering follows the farmer's goals (${goalLabels}) and compares these dimensions in order: ${dimensions.join(', ')}. ${pass} is preferred to ${uncertain}. ${fail} and ${notAssessed} do not separate strategies. No weights are applied.`;
 }
 
 function uniqueDimensions(

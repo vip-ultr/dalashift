@@ -1,6 +1,8 @@
 import { SPATIAL_RESOLUTION_METRES } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Limitation } from '@dalashift/shared/types';
 
+type Language = 'en' | 'ha';
+
 /**
  * Grid cell specification for coarse environmental sources.
  *
@@ -113,11 +115,14 @@ export function buildGridCacheKey(input: {
  * covers more area than the parcel itself, so the interface never presents a
  * regional or neighbourhood pixel as a field-level measurement.
  */
-export function describeSpatialScaleMismatch(input: {
-  readonly sourceName: string;
-  readonly spatialResolutionM: number;
-  readonly parcelAreaHa: number | null;
-}): Limitation | null {
+export function describeSpatialScaleMismatch(
+  input: {
+    readonly sourceName: string;
+    readonly spatialResolutionM: number;
+    readonly parcelAreaHa: number | null;
+  },
+  language: Language = 'en',
+): Limitation | null {
   const pixelAreaHa = (input.spatialResolutionM * input.spatialResolutionM) / 10_000;
   const targetAreaHa = input.parcelAreaHa && input.parcelAreaHa > 0 ? input.parcelAreaHa : 1;
 
@@ -132,7 +137,7 @@ export function describeSpatialScaleMismatch(input: {
 
   return {
     kind: 'coarse_resolution',
-    statement: `${input.sourceName} has a spatial resolution of ${resolutionLabel} (about ${Math.round(pixelAreaHa).toLocaleString('en-US')} ha per grid cell), which is much coarser than a ${targetAreaHa.toFixed(2)} ha parcel and describes the surrounding area rather than the individual field.`,
+    statement: `${input.sourceName} has a spatial resolution of ${resolutionLabel} (about ${Math.round(pixelAreaHa).toLocaleString(language === 'ha' ? 'ha-NG' : 'en-US')} ha per grid cell), which is much coarser than a ${targetAreaHa.toFixed(2)} ha parcel and describes the surrounding area rather than the individual field.`,
   };
 }
 

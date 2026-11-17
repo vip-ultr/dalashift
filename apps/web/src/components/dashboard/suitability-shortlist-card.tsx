@@ -3,6 +3,7 @@
 import type { ComparisonResult, RotationStrategy } from '@dalashift/shared/types';
 import { Check, Info, List, ListOrdered, Scale, Sprout } from 'lucide-react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import { HAUSA_CROP_NAMES } from '../../lib/utilities/format';
 import { Button } from '../ui/button';
@@ -15,6 +16,12 @@ export interface SuitabilityShortlistCardProps {
   readonly onSelectPlannedCrop?: (cropCode: string, cropName: string) => void;
   readonly className?: string;
 }
+
+const EVIDENCE_STRENGTH_IDS: Record<RotationStrategy['evidenceStrength'], string> = {
+  strong: 'verdict.strongEvidence',
+  moderate: 'verdict.moderateEvidence',
+  weak: 'verdict.weakEvidence',
+};
 
 /**
  * Prospective farmer suitability shortlist (ADR-0011 Decision D-03 & D-05).
@@ -29,6 +36,7 @@ export function SuitabilityShortlistCard({
   onSelectPlannedCrop,
   className,
 }: SuitabilityShortlistCardProps) {
+  const { t } = useLanguage();
   const hasTies = comparison.strategies.some((s) => s.rank === 'tied');
 
   // Rank is an ordinal position, not a grade. Keep it as plain, neutral text so
@@ -100,8 +108,8 @@ export function SuitabilityShortlistCard({
           const isSelected = selectedPlannedCropCode === cropCode;
 
           // The engine's reason already leads with the strength word and a
-          // connector (because / based on). Strip that lead so the line reads
-          // "Evidence: strong, because ..." without repeating "strong".
+          // connector (because / based on). Strip that lead so the translated
+          // strength label and the reason do not repeat the strength word.
           const evidenceReason = strategy.evidenceStrengthReason;
           const evidencePrefix = `${strategy.evidenceStrength} evidence `;
           const evidenceDetail = evidenceReason
@@ -123,7 +131,7 @@ export function SuitabilityShortlistCard({
 
                 <p className="mt-1.5 text-xs leading-relaxed text-ink-muted">
                   <span className="font-semibold text-ink">
-                    Evidence: {strategy.evidenceStrength}
+                    {t(EVIDENCE_STRENGTH_IDS[strategy.evidenceStrength])}
                   </span>
                   {evidenceDetail ? `, ${evidenceDetail}` : '.'}
                 </p>

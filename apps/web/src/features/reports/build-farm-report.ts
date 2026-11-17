@@ -1,3 +1,4 @@
+import { messages } from '@dalashift/shared/i18n';
 import type {
   ComparisonResult,
   Farm,
@@ -10,6 +11,23 @@ import type {
 } from '@dalashift/shared/types';
 
 export type ReportKind = 'farm_summary' | 'seasonal' | 'rotation_plan';
+
+type Language = 'en' | 'ha';
+
+/** Look up a keyed message without importing any web/React language state. */
+function t(id: string, fallback: string, language: Language): string {
+  return messages[id]?.[language] ?? messages[id]?.en ?? fallback;
+}
+
+const NASA_NOTICE_EN = 'DalaShift is not affiliated with or endorsed by NASA.';
+
+function buildDisclaimer(language: Language): string {
+  // The English notice keeps the attribution-accuracy wording used by the
+  // report; Hausa mode uses the shared footer notice for the same claim.
+  const notice =
+    language === 'ha' ? t('footer.nasaNotice', NASA_NOTICE_EN, language) : NASA_NOTICE_EN;
+  return `${notice} NASA provides Earth observation data, not crop recommendations. All rotation and suitability comparisons require local review by the farmer and an agricultural extension officer (malamin gona).`;
+}
 
 /**
  * The parcel fields a printable report needs. Geometry is deliberately absent:
@@ -122,20 +140,23 @@ const KNOWN_SOURCE_ATTRIBUTIONS: Readonly<Record<string, SourceAttributionRecord
  * Assemble a complete, printable farm report payload with mandatory source
  * attributions and redacted parcel coordinates (FR-6 & ADR-0011 D-12).
  */
-export function buildFarmReportPayload(input: {
-  readonly kind: ReportKind;
-  readonly periodStart: string | null;
-  readonly periodEnd: string | null;
-  readonly farm: Farm;
-  readonly parcels: readonly ReportParcelInput[];
-  readonly crops: readonly FarmCrop[];
-  readonly priorities: FarmerPriorities | null;
-  readonly observations: readonly ProvenancedValue[];
-  readonly comparison: ComparisonResult | null;
-  readonly plantingTrigger: PlantingTriggerAssessment | null;
-  readonly seasonalOutlook: SeasonalOutlook | null;
-  readonly generatedAt?: string;
-}): FarmReportPayload {
+export function buildFarmReportPayload(
+  input: {
+    readonly kind: ReportKind;
+    readonly periodStart: string | null;
+    readonly periodEnd: string | null;
+    readonly farm: Farm;
+    readonly parcels: readonly ReportParcelInput[];
+    readonly crops: readonly FarmCrop[];
+    readonly priorities: FarmerPriorities | null;
+    readonly observations: readonly ProvenancedValue[];
+    readonly comparison: ComparisonResult | null;
+    readonly plantingTrigger: PlantingTriggerAssessment | null;
+    readonly seasonalOutlook: SeasonalOutlook | null;
+    readonly generatedAt?: string;
+  },
+  language: Language = 'en',
+): FarmReportPayload {
   const generatedAt = input.generatedAt ?? new Date().toISOString();
   const totalAreaHa = Number(
     input.parcels.reduce((sum, parcel) => sum + parcel.areaHa, 0).toFixed(3),
@@ -195,7 +216,6 @@ export function buildFarmReportPayload(input: {
     plantingTrigger: input.plantingTrigger,
     seasonalOutlook: input.seasonalOutlook,
     attributions,
-    disclaimer:
-      'DalaShift is not affiliated with or endorsed by NASA. NASA provides Earth observation data, not crop recommendations. All rotation and suitability comparisons require local review by the farmer and an agricultural extension officer (malamin gona).',
+    disclaimer: buildDisclaimer(language),
   };
 }
