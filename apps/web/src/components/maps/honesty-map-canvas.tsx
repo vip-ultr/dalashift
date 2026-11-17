@@ -3,7 +3,7 @@
 import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
 import { Crosshair, Layers, MapPin, Navigation } from 'lucide-react';
-import type { Map as MapLibreMap } from 'maplibre-gl';
+import type { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -69,6 +69,32 @@ const GRID_OVERLAY_OPTIONS: readonly {
   },
 ];
 
+function createFarmPinElement(name?: string, uncertaintyM?: number | null): HTMLElement {
+  const container = document.createElement('div');
+  container.className =
+    'relative flex flex-col items-center pointer-events-auto cursor-grab active:cursor-grabbing group';
+
+  const title = name ? name : 'Farm Location';
+  const uncertaintyBadge = uncertaintyM ? ` (±${uncertaintyM} m)` : '';
+
+  container.innerHTML = `
+    <div class="relative flex items-center justify-center">
+      <span class="absolute -inset-3.5 rounded-full bg-[#00b159]/35 animate-ping"></span>
+      <span class="absolute -inset-1.5 rounded-full bg-[#facc15]/75"></span>
+      <span class="relative z-10 flex size-9 items-center justify-center rounded-full bg-[#00b159] text-white shadow-2xl ring-2 ring-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </span>
+    </div>
+    <div class="mt-1 rounded-md bg-[#111827]/95 px-2 py-0.5 text-[11px] font-bold text-white shadow-lg backdrop-blur-xs whitespace-nowrap border border-white/20 pointer-events-none">
+      ${title}${uncertaintyBadge}
+    </div>
+  `;
+  return container;
+}
+
 export function HonestyMapCanvas({
   parcels = [],
   activeParcelId,
@@ -83,6 +109,8 @@ export function HonestyMapCanvas({
 }: HonestyMapCanvasProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<MapLibreMap | null>(null);
+  const captureMarkerRef = useRef<MapLibreMarker | null>(null);
+  const parcelMarkersRef = useRef<MapLibreMarker[]>([]);
 
   const [selectedGridKey, setSelectedGridKey] =
     useState<SpatialResolutionKey>(initialResolutionKey);
@@ -136,12 +164,14 @@ export function HonestyMapCanvas({
     async function initMap() {
       if (!mapContainerRef.current) return;
       try {
-        const { Map } = await import('maplibre-gl');
+        const { Map, Marker, NavigationControl } = await import('maplibre-gl');
         if (isDisposed || !mapContainerRef.current) return;
 
-        // ESRI World Imagery or OpenStreetMap
+        // ESRI World Imagery with Places and Roads overlay, or OpenStreetMap
         const satelliteTiles =
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+        const referenceTiles =
+          'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
         const streetTiles = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
         const mapStyle = {
@@ -156,6 +186,16 @@ export function HonestyMapCanvas({
                   ? '© Esri, Maxar, Earthstar Geographics'
                   : '© OpenStreetMap contributors',
             },
+            ...(basemapStyle === 'satellite'
+              ? {
+                  'reference-tiles': {
+                    type: 'raster' as const,
+                    tiles: [referenceTiles],
+                    tileSize: 256,
+                    attribution: '© Esri, HERE, Garmin',
+                  },
+                }
+              : {}),
           },
           layers: [
             {
@@ -165,6 +205,17 @@ export function HonestyMapCanvas({
               minzoom: 0,
               maxzoom: 19,
             },
+            ...(basemapStyle === 'satellite'
+              ? [
+                  {
+                    id: 'reference-layer',
+                    type: 'raster' as const,
+                    source: 'reference-tiles',
+                    minzoom: 0,
+                    maxzoom: 19,
+                  },
+                ]
+              : []),
           ],
         };
 
@@ -210,6 +261,7 @@ export function HonestyMapCanvas({
 
         mapInstance = map;
         mapInstanceRef.current = map;
+        map.addControl(new NavigationControl({ showCompass: true, showZoom: true }), 'top-right');
 
         // Auto-fit bounding box of parcels with padding if more than one coordinate
         const fitParcels = () => {
