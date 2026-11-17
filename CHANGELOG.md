@@ -14,6 +14,16 @@ the build.
 
 ## [Unreleased]
 
+### Mapping and Geospatial Visualisation
+
+- Enhanced the interactive MapLibre honesty canvas (`honesty-map-canvas.tsx`):
+  - Fixed map coordinate display to show the actual farm position and real-time GPS location with interactive pulsating pin markers.
+  - Added draggable farm location marker with title and uncertainty badge for high-precision parcel registration.
+  - Added interactive parcel badges across registered farm parcels displaying name, area in hectares, and quick selection.
+  - Added automatic camera centering and smooth fly-to animations when clicking coordinates, selecting presets, or using GPS.
+  - Enhanced geolocation with high-accuracy GPS positioning and active loading states.
+  - Added Esri Places and Roads reference overlay on satellite imagery for clear landmark and boundary recognition.
+
 ### Repository compliance
 
 - Adopted the **Apache License 2.0**. The `LICENSE` file now carries the

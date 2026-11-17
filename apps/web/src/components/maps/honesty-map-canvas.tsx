@@ -2,7 +2,7 @@
 
 import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
-import { Crosshair, Layers, MapPin, Navigation } from 'lucide-react';
+import { Crosshair, Layers, Loader2, MapPin, Navigation } from 'lucide-react';
 import type { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -72,25 +72,40 @@ const GRID_OVERLAY_OPTIONS: readonly {
 function createFarmPinElement(name?: string, uncertaintyM?: number | null): HTMLElement {
   const container = document.createElement('div');
   container.className =
-    'relative flex flex-col items-center pointer-events-auto cursor-grab active:cursor-grabbing group';
+    'relative flex flex-col items-center pointer-events-auto cursor-grab active:cursor-grabbing group -translate-y-1/2';
 
   const title = name ? name : 'Farm Location';
   const uncertaintyBadge = uncertaintyM ? ` (±${uncertaintyM} m)` : '';
 
   container.innerHTML = `
     <div class="relative flex items-center justify-center">
-      <span class="absolute -inset-3.5 rounded-full bg-[#00b159]/35 animate-ping"></span>
-      <span class="absolute -inset-1.5 rounded-full bg-[#facc15]/75"></span>
-      <span class="relative z-10 flex size-9 items-center justify-center rounded-full bg-[#00b159] text-white shadow-2xl ring-2 ring-white">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <span class="absolute -inset-4 rounded-full bg-[#00b159]/40 animate-ping"></span>
+      <span class="absolute -inset-2 rounded-full bg-[#facc15]/80"></span>
+      <span class="relative z-10 flex size-10 items-center justify-center rounded-full bg-[#00b159] text-white shadow-2xl ring-2 ring-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
           <circle cx="12" cy="10" r="3"></circle>
         </svg>
       </span>
     </div>
-    <div class="mt-1 rounded-md bg-[#111827]/95 px-2 py-0.5 text-[11px] font-bold text-white shadow-lg backdrop-blur-xs whitespace-nowrap border border-white/20 pointer-events-none">
+    <div class="mt-1.5 rounded-lg bg-[#111827]/95 px-2.5 py-1 text-[11px] font-bold text-white shadow-xl backdrop-blur-xs whitespace-nowrap border border-white/20 pointer-events-none">
       ${title}${uncertaintyBadge}
     </div>
+  `;
+  return container;
+}
+
+function createParcelBadgeElement(name: string, areaHa?: number): HTMLElement {
+  const container = document.createElement('div');
+  container.className =
+    'flex items-center gap-1.5 rounded-full border border-white/40 bg-[#00b159] px-2.5 py-1 text-[11px] font-bold text-white shadow-xl backdrop-blur-xs pointer-events-auto cursor-pointer hover:scale-105 transition-all ring-2 ring-white/90 hover:bg-[#00964b] -translate-y-1/2';
+  const areaText = areaHa && areaHa > 0 ? ` (${areaHa.toFixed(1)} ha)` : '';
+  container.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+    <span>${name}</span>${areaText ? `<span class="opacity-80 font-normal">${areaText}</span>` : ''}
   `;
   return container;
 }
@@ -109,6 +124,7 @@ export function HonestyMapCanvas({
 }: HonestyMapCanvasProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<MapLibreMap | null>(null);
+  const maplibreModuleRef = useRef<{ Marker: typeof MapLibreMarker } | null>(null);
   const captureMarkerRef = useRef<MapLibreMarker | null>(null);
   const parcelMarkersRef = useRef<MapLibreMarker[]>([]);
 
@@ -118,6 +134,7 @@ export function HonestyMapCanvas({
   const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'street'>('satellite');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
+  const [gpsLoading, setGpsLoading] = useState(false);
 
   const effectiveParcelId = activeParcelId ?? selectedParcelId;
   const activeParcel = parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
@@ -166,6 +183,7 @@ export function HonestyMapCanvas({
       try {
         const { Map, Marker, NavigationControl } = await import('maplibre-gl');
         if (isDisposed || !mapContainerRef.current) return;
+        maplibreModuleRef.current = { Marker };
 
         // ESRI World Imagery with Places and Roads overlay, or OpenStreetMap
         const satelliteTiles =
@@ -397,6 +415,11 @@ export function HonestyMapCanvas({
             const lon = Number(evt.lngLat.lng.toFixed(5));
             const lat = Number(evt.lngLat.lat.toFixed(5));
             onCoordinateCapture(lon, lat);
+            map.flyTo({
+              center: [lon, lat],
+              zoom: Math.max(map.getZoom(), 16),
+              essential: true,
+            });
           }
         });
       } catch {
@@ -409,6 +432,14 @@ export function HonestyMapCanvas({
 
     return () => {
       isDisposed = true;
+      if (captureMarkerRef.current) {
+        captureMarkerRef.current.remove();
+        captureMarkerRef.current = null;
+      }
+      for (const m of parcelMarkersRef.current) {
+        m.remove();
+      }
+      parcelMarkersRef.current = [];
       if (mapInstance) {
         mapInstance.remove();
         mapInstanceRef.current = null;
@@ -435,16 +466,103 @@ export function HonestyMapCanvas({
     }
   }, [parcelFeatures, mapLoaded]);
 
-  // Keep capture point updated dynamically
+  // Keep capture marker and dynamic circles synchronized
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded || !capturePoint) return;
+    const MarkerClass = maplibreModuleRef.current?.Marker;
+    if (!map || !mapLoaded) return;
+
+    if (!capturePoint) {
+      if (captureMarkerRef.current) {
+        captureMarkerRef.current.remove();
+        captureMarkerRef.current = null;
+      }
+      if (map.getSource('capture-point-source')) {
+        const source = map.getSource('capture-point-source') as {
+          setData?: (data: unknown) => void;
+        } | null;
+        source?.setData?.({
+          type: 'FeatureCollection',
+          features: [],
+        });
+      }
+      return;
+    }
+
+    // 1. Maintain visual Pin Marker with pulse halo and location title
+    if (MarkerClass) {
+      if (!captureMarkerRef.current) {
+        const el = createFarmPinElement(
+          activeParcel?.name || 'Farm Location',
+          activeParcel?.locationUncertaintyM ?? null,
+        );
+        const marker = new MarkerClass({ element: el, draggable: captureMode })
+          .setLngLat([capturePoint.lon, capturePoint.lat])
+          .addTo(map);
+
+        marker.on('dragend', () => {
+          const lngLat = marker.getLngLat();
+          const lon = Number(lngLat.lng.toFixed(5));
+          const lat = Number(lngLat.lat.toFixed(5));
+          if (onCoordinateCapture) {
+            onCoordinateCapture(lon, lat);
+          }
+        });
+
+        captureMarkerRef.current = marker;
+      } else {
+        captureMarkerRef.current.setLngLat([capturePoint.lon, capturePoint.lat]);
+      }
+    }
+
+    // 2. Maintain GeoJSON halo source & layers
     try {
-      const source = map.getSource('capture-point-source') as {
-        setData?: (data: unknown) => void;
-      } | null;
-      if (source?.setData) {
-        source.setData({
+      if (!map.getSource('capture-point-source')) {
+        map.addSource('capture-point-source', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: [capturePoint.lon, capturePoint.lat],
+            },
+          },
+        });
+
+        if (!map.getLayer('capture-circle-halo')) {
+          map.addLayer({
+            id: 'capture-circle-halo',
+            type: 'circle',
+            source: 'capture-point-source',
+            paint: {
+              'circle-radius': 18,
+              'circle-color': '#facc15',
+              'circle-opacity': 0.4,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#ffffff',
+            },
+          });
+        }
+
+        if (!map.getLayer('capture-circle-dot')) {
+          map.addLayer({
+            id: 'capture-circle-dot',
+            type: 'circle',
+            source: 'capture-point-source',
+            paint: {
+              'circle-radius': 7,
+              'circle-color': '#00b159',
+              'circle-stroke-width': 2.5,
+              'circle-stroke-color': '#ffffff',
+            },
+          });
+        }
+      } else {
+        const source = map.getSource('capture-point-source') as {
+          setData?: (data: unknown) => void;
+        } | null;
+        source?.setData?.({
           type: 'Feature',
           properties: {},
           geometry: {
@@ -454,15 +572,73 @@ export function HonestyMapCanvas({
         });
       }
     } catch {
-      // Ignore if source not ready
+      // Ignore if map layers are transitioning
     }
-  }, [capturePoint, mapLoaded]);
+  }, [
+    capturePoint,
+    mapLoaded,
+    activeParcel?.name,
+    activeParcel?.locationUncertaintyM,
+    captureMode,
+    onCoordinateCapture,
+  ]);
+
+  // Pan and zoom to captured coordinate whenever updated
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded || !capturePoint) return;
+    map.flyTo({
+      center: [capturePoint.lon, capturePoint.lat],
+      zoom: Math.max(map.getZoom(), 16),
+      essential: true,
+    });
+  }, [capturePoint?.lon, capturePoint?.lat, mapLoaded]);
+
+  // Maintain farm parcel badge markers across the map
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const MarkerClass = maplibreModuleRef.current?.Marker;
+    if (!map || !mapLoaded || !MarkerClass) return;
+
+    for (const m of parcelMarkersRef.current) {
+      m.remove();
+    }
+    parcelMarkersRef.current = [];
+
+    for (const p of parcels) {
+      let lng: number | null = null;
+      let lat: number | null = null;
+
+      if (p.geometry.type === 'Point') {
+        [lng, lat] = p.geometry.coordinates;
+      } else if (p.geometry.type === 'Polygon' && p.geometry.coordinates[0]?.length) {
+        const ring = p.geometry.coordinates[0];
+        const sumLng = ring.reduce((acc, pt) => acc + pt[0], 0);
+        const sumLat = ring.reduce((acc, pt) => acc + pt[1], 0);
+        lng = sumLng / ring.length;
+        lat = sumLat / ring.length;
+      }
+
+      if (lng !== null && lat !== null && typeof lng === 'number' && typeof lat === 'number') {
+        const badgeEl = createParcelBadgeElement(p.name, p.areaHa);
+        badgeEl.onclick = () => {
+          if (onSelectParcel) {
+            onSelectParcel(p.id);
+          }
+        };
+        const marker = new MarkerClass({ element: badgeEl }).setLngLat([lng, lat]).addTo(map);
+        parcelMarkersRef.current.push(marker);
+      }
+    }
+  }, [parcels, mapLoaded, onSelectParcel]);
 
   // Geolocation helper
   const handleUseCurrentLocation = () => {
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      setGpsLoading(true);
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          setGpsLoading(false);
           const lon = Number(pos.coords.longitude.toFixed(5));
           const lat = Number(pos.coords.latitude.toFixed(5));
           if (onCoordinateCapture) {
@@ -471,16 +647,26 @@ export function HonestyMapCanvas({
           if (mapInstanceRef.current) {
             mapInstanceRef.current.flyTo({
               center: [lon, lat],
-              zoom: 16,
+              zoom: 16.5,
+              essential: true,
             });
           }
         },
-        () => {
-          // Fallback to central Northern Nigeria if location is denied
+        (err) => {
+          setGpsLoading(false);
+          console.warn('GPS location retrieval notice:', err);
           if (onCoordinateCapture) {
             onCoordinateCapture(8.271, 12.05);
           }
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.flyTo({
+              center: [8.271, 12.05],
+              zoom: 15.5,
+              essential: true,
+            });
+          }
         },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
       );
     }
   };
@@ -556,11 +742,16 @@ export function HonestyMapCanvas({
           </div>
           <button
             type="button"
+            disabled={gpsLoading}
             onClick={handleUseCurrentLocation}
-            className="flex items-center gap-1.5 rounded-lg bg-[#00b159] px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:bg-[#00964b] cursor-pointer"
+            className="flex items-center gap-1.5 rounded-lg bg-[#00b159] px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:bg-[#00964b] disabled:opacity-75 cursor-pointer"
           >
-            <Navigation className="size-3" />
-            <span>Use My GPS</span>
+            {gpsLoading ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <Navigation className="size-3" />
+            )}
+            <span>{gpsLoading ? 'Locating GPS...' : 'Use My GPS'}</span>
           </button>
         </div>
       ) : null}
