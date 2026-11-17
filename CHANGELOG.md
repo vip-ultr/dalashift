@@ -14,6 +14,15 @@ the build.
 
 ## [Unreleased]
 
+### Mapping and Geospatial Visualisation
+
+- Reworked the interactive MapLibre honesty canvas (`honesty-map-canvas.tsx`):
+  - Parcels now render their real geometry (GPS points or drawn polygons) instead of a decorative rectangle; the resolution footprint is derived from the selected source's real spatial resolution.
+  - Added real polygon drawing with Terra Draw through a custom MapLibre adapter, so farmers can trace a field boundary. Client area is a labelled preview; PostGIS remains the authority on stored area.
+  - GPS capture uses high-accuracy `getCurrentPosition`, flies the camera to the acquired point, and shows an explicit message on denial. No demo coordinate is ever captured silently as a fallback.
+  - Selecting a parcel now flies the camera to it, and the map is no longer destroyed and rebuilt on every parent render.
+  - Configured satellite source `maxzoom` so deep zoom does not return missing tiles.
+
 ### Repository compliance
 
 - Adopted the **Apache License 2.0**. The `LICENSE` file now carries the
