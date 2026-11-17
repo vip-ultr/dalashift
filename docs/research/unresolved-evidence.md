@@ -12,7 +12,7 @@ The following values remain intentionally unset in the crop reference JSON. “U
 | All | Temperature range | Identify local crop and variety evidence, measurement basis and relevant growth stage. |
 | All | Soil pH, texture, drainage tolerance | Obtain local trials or extension recommendations and distinguish preference from tolerance. Do not infer these from coarse regional soil maps. |
 | All | Rooting characteristics | Find species/variety and soil-condition evidence. Do not generalize root depth from one crop. |
-| Sorghum, pearl millet, maize, cowpea, soybean, groundnut | Duration/maturity | Which varieties are actually planted in Doka/Tofa? Record days to physiological or harvest maturity, sowing method and season conditions. Farmer interview duration is variety-specific testimony only. |
+| Sorghum, pearl millet, maize, cowpea, soybean, groundnut | Duration/maturity | Which varieties are actually planted in Tofa? Record days to physiological or harvest maturity, sowing method and season conditions. Farmer interview duration is variety-specific testimony only. |
 | Cowpea, soybean, groundnut | Nitrogen fixation/contribution | What local varieties and inoculation conditions apply? What is the measurement basis and amount of N returned after grain/residue removal? Do not equate biological fixation with fertilizer credit. |
 | All | Nutrient requirements | Which soil tests, varieties, yield targets and fertilizer regimes support recommendations? Farmer-reported fertilizer use is not a crop requirement. |
 | All | Residue/fodder implications | Are residues retained, grazed, removed, burned or incorporated locally? Quantify biomass only where source and method are available. |

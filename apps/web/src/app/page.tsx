@@ -79,7 +79,7 @@ export default function LandingPage(): React.JSX.Element {
               </div>
             </div>
 
-            {/* Right Live Interactive Preview */}
+            {/* Right: static illustrative example, not live data */}
             <div className="lg:col-span-5">
               <div className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white shadow-xl">
                 {/* Header Strip */}
@@ -90,17 +90,22 @@ export default function LandingPage(): React.JSX.Element {
                     </span>
                     <div>
                       <div className="text-xs font-bold text-[#111827]">
-                        Demonstration Field Holding
+                        Example field report layout
                       </div>
                       <div className="text-[11px] text-[#6b7280]">
-                        Field Demonstration · 2026 Wet Season
+                        Illustration only · not live monitoring data
                       </div>
                     </div>
                   </div>
-                  <Badge variant="pass">Active Monitoring</Badge>
+                  <Badge variant="Neutral">Static example</Badge>
                 </div>
 
-                {/* Satellite Metrics Grid */}
+                <p className="bg-[#f4f5f6] px-5 py-2 text-[11px] text-[#4b5563]">
+                  The values below are sample figures used to illustrate the report layout. They are
+                  not live observations from any real farm.
+                </p>
+
+                {/* Satellite Metrics Grid (illustrative sample values) */}
                 <div className="grid grid-cols-2 divide-x divide-y divide-[#e5e7eb] border-b border-[#e5e7eb] bg-white text-xs">
                   <div className="p-4">
                     <span className="text-[#6b7280]">Rainfall (14-day)</span>

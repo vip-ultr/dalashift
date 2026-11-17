@@ -94,7 +94,7 @@ export function PlantingTriggerCard({
       {/* Three coherent risk postures side by side */}
       <div className="mt-5">
         <p className="mb-2.5 text-xs font-semibold tracking-wider text-ink-muted uppercase">
-          Compare the three Doka village planting strategies
+          Compare three moisture-conditioned planting strategies
         </p>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           {PLANTING_TRIGGERS.map((triggerKey) => {
@@ -148,7 +148,6 @@ export function PlantingTriggerCard({
                   <p>
                     <strong className="text-ink">Trade-off:</strong> {profile.riskProfile}
                   </p>
-                  <p className="mt-1 text-[#8e5636]">Field practice: {titles.exampleFarmer}</p>
                 </div>
               </div>
             );

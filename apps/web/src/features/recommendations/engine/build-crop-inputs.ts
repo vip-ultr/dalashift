@@ -21,6 +21,7 @@ export interface CatalogCropRecord {
   readonly growingPeriodDays: {
     readonly min: number | null;
     readonly max: number | null;
+    readonly citation?: string;
   };
   readonly agronomicRequirements: {
     readonly rainfallRequirementMm?: {
@@ -130,12 +131,15 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
     growingPeriodDays: {
       min: numOrNull(gp.min),
       max: numOrNull(gp.max),
+      ...(typeof gp.citation === 'string' ? { citation: gp.citation } : {}),
     },
     agronomicRequirements: {
       rainfallRequirementMm: rain
         ? {
             min: numOrNull(rain.min ?? rain.minMm),
             max: numOrNull(rain.max ?? rain.maxMm),
+            ...(typeof rain.citation === 'string' ? { citation: rain.citation } : {}),
+            hardConstraint: rain.hardConstraint === true,
           }
         : null,
       indicativeCropWaterNeedMmPerSeason: water
@@ -143,6 +147,7 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
             min: numOrNull(water.min ?? water.indicativeSeasonMinMm),
             max: numOrNull(water.max ?? water.indicativeSeasonMaxMm),
             ...(typeof water.evidenceId === 'string' ? { evidenceId: water.evidenceId } : {}),
+            ...(typeof water.citation === 'string' ? { citation: water.citation } : {}),
             useAsHardConstraint: water.useAsHardConstraint === true,
           }
         : null,
@@ -150,12 +155,16 @@ export function mapDatabaseCropRowToCatalogRecord(row: Record<string, unknown>):
         ? {
             min: numOrNull(temp.min ?? temp.optimalMin),
             max: numOrNull(temp.max ?? temp.optimalMax),
+            ...(typeof temp.citation === 'string' ? { citation: temp.citation } : {}),
+            hardConstraint: temp.hardConstraint === true,
           }
         : null,
       soilPh: soilPh
         ? {
             min: numOrNull(soilPh.min),
             max: numOrNull(soilPh.max),
+            ...(typeof soilPh.citation === 'string' ? { citation: soilPh.citation } : {}),
+            hardConstraint: soilPh.hardConstraint === true,
           }
         : null,
     },
@@ -260,7 +269,7 @@ export function evaluateCatalogCropForParcel(input: {
   } else {
     catalogLimitations.push({
       kind: 'unverified_requirement',
-      statement: `Local temperature thresholds for ${input.crop.name} varieties grown in Doka/Tofa are not yet verified.`,
+      statement: `Local temperature thresholds for ${input.crop.name} varieties grown in Tofa LGA are not yet verified.`,
     });
   }
 
@@ -286,20 +295,29 @@ export function evaluateCatalogCropForParcel(input: {
     });
   }
 
-  // 4. Season length / maturity days
+  // 4. Season length / maturity days. The citation must describe maturity, not
+  //    crop water need, so never fall back to the water-need citation here.
   if (input.crop.growingPeriodDays.min !== null || input.crop.growingPeriodDays.max !== null) {
-    rules.push({
-      dimension: 'season_length',
-      min: input.crop.growingPeriodDays.min,
-      max: input.crop.growingPeriodDays.max,
-      unit: 'days',
-      citation: defaultCitation,
-      hardConstraint: false,
-    });
+    const maturityCitation = input.crop.growingPeriodDays.citation;
+    if (maturityCitation) {
+      rules.push({
+        dimension: 'season_length',
+        min: input.crop.growingPeriodDays.min,
+        max: input.crop.growingPeriodDays.max,
+        unit: 'days',
+        citation: maturityCitation,
+        hardConstraint: false,
+      });
+    } else {
+      catalogLimitations.push({
+        kind: 'unverified_requirement',
+        statement: `Maturity bounds for ${input.crop.name} have no crop-specific citation and are not applied.`,
+      });
+    }
   } else {
     catalogLimitations.push({
       kind: 'unverified_requirement',
-      statement: `Days to maturity for ${input.crop.name} depend on the local cultivar planted in Doka and remain unset pending CDA variety verification.`,
+      statement: `Days to maturity for ${input.crop.name} depend on the local cultivar planted in Tofa LGA and remain unset pending CDA variety verification.`,
     });
   }
 
@@ -324,17 +342,38 @@ function aggregatePrecipitationMm(
   observations: readonly ProvenancedValue[],
   parcelAreaHa: number | null,
 ): AssessmentObservation | null {
+  const isForecast = (obs: ProvenancedValue): boolean =>
+    obs.rawMetadata?.isForecast === true ||
+    (typeof obs.rawMetadata?.forecast === 'boolean' && obs.rawMetadata.forecast);
+
+  // Only closed, observed days contribute. Forecasts are modelled future values
+  // and must never be summed into a realised seasonal rainfall total.
   const valid = observations.filter(
     (obs) =>
       (obs.variable === ENVIRONMENT_VARIABLES.precipitation ||
         obs.variable === ENVIRONMENT_VARIABLES.precipitationSatellite) &&
       obs.value !== null &&
-      obs.qualityFlag !== 'missing',
+      obs.qualityFlag !== 'missing' &&
+      !isForecast(obs),
   );
   if (valid.length === 0) return null;
 
-  const totalMm = Number(valid.reduce((sum, item) => sum + (item.value ?? 0), 0).toFixed(1));
-  const latest = valid.reduce((prev, curr) => (curr.observedAt > prev.observedAt ? curr : prev));
+  // Multiple providers can report the same day. Prefer the finest resolution
+  // for each UTC day so overlapping sources are not double counted.
+  const byDay = new Map<string, ProvenancedValue>();
+  for (const obs of valid) {
+    const day = obs.observedAt.slice(0, 10);
+    const existing = byDay.get(day);
+    if (!existing || obs.spatialResolutionM < existing.spatialResolutionM) {
+      byDay.set(day, obs);
+    }
+  }
+  const deduplicated = Array.from(byDay.values());
+
+  const totalMm = Number(deduplicated.reduce((sum, item) => sum + (item.value ?? 0), 0).toFixed(1));
+  const latest = deduplicated.reduce((prev, curr) =>
+    curr.observedAt > prev.observedAt ? curr : prev,
+  );
   const strength = deriveStrengthFromResolution(latest.spatialResolutionM);
   const limitation =
     describeSpatialScaleMismatch({

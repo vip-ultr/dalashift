@@ -43,6 +43,22 @@ interface RouteContext {
 
 const farmIdSchema = z.string().uuid();
 
+/**
+ * Default analysis window: the most recent completed rainy season in Kano
+ * (roughly May to September). Callers may override either bound. Deriving this
+ * from the current date avoids freezing the product to one historical season.
+ */
+function defaultSeasonWindow(now = new Date()): { start: string; end: string } {
+  const year = now.getUTCFullYear();
+  const seasonEnd = new Date(Date.UTC(year, 8, 30)); // 30 September, UTC
+  const resolvedEnd = now >= seasonEnd ? seasonEnd : new Date(Date.UTC(year - 1, 8, 30));
+  const endYear = resolvedEnd.getUTCFullYear();
+  return {
+    start: `${endYear}-05-01`,
+    end: `${endYear}-09-30`,
+  };
+}
+
 const compareRequestSchema = z.object({
   parcelId: z.preprocess(
     (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
@@ -310,8 +326,9 @@ export async function POST(request: Request, { params }: RouteContext) {
       : null;
 
   // 4. Load or fetch environmental observations for the parcel
-  const defaultEnd = parsed.data.endDate ?? '2025-09-30';
-  const defaultStart = parsed.data.startDate ?? '2025-05-01';
+  const seasonWindow = defaultSeasonWindow();
+  const defaultEnd = parsed.data.endDate ?? seasonWindow.end;
+  const defaultStart = parsed.data.startDate ?? seasonWindow.start;
   let dailyObservations: ProvenancedValue[] = [];
   let climatologyObservations: ProvenancedValue[] = [];
 

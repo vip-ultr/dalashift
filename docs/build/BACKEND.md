@@ -43,8 +43,8 @@ policies land together or not at all.
 
 - Every stored geometry is SRID 4326. GeoJSON is `(lng, lat)`; PostGIS is
   `(lat, lng)`. Normalise at the boundary and test it.
-- Area is `ST_Area(boundary::geography) / 10000`. `ST_Area` on a raw 4326
-  geometry returns square degrees, which is wrong.
+- Area is `ST_Area(geometry::geography) / 10000` on each parcel. `ST_Area` on a
+  raw 4326 geometry returns square degrees, which is wrong.
 - `area_ha` is a generated column. The client cannot write it.
 - A parcel carries `location_uncertainty_m` from the GPS fix. This is
   different from the dataset's `spatial_resolution_m` and different from
@@ -88,7 +88,7 @@ before the demo, so the demo never depends on a live upstream call.
 
 | Setting | Value |
 | ------- | ----- |
-| Centre | 12.05 N, 8.27 E (Doka village, Tofa LGA) |
+| Centre | 12.05 N, 8.27 E (Tofa LGA) |
 | Bounding box | 8.2 to 8.35 E, 12.0 to 12.1 N |
 | POWER grid cell | `nasa_power:12.0000:8.1250` |
 | SMAP grid cell | `smap_l3_enhanced:12.0600:8.2800` |

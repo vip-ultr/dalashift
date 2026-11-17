@@ -42,8 +42,8 @@ library.
 1. **External API calls happen only in `src/lib/integrations/`**, which is
    `import "server-only"`.
 2. **No secret reaches the browser.** `NEXT_PUBLIC_*` means public.
-3. **PostGIS computes all geometry.** `ST_Area(boundary::geography)` for area.
-   Never trust a client-computed area.
+3. **PostGIS computes all geometry.** `ST_Area(geometry::geography)` on each
+   parcel for area. Never trust a client-computed area.
 4. **Provenance is mandatory.** Every environmental value carries source,
    licence, spatial resolution, temporal resolution, observation date,
    retrieved date and `isModelled`.
@@ -115,15 +115,15 @@ docs/                  research/ api/ database/ product/ design/ hackathon/ deci
 | `local_accounts`          | `id`, `email`, `phone`, `password_hash`                         | Credentials; server-only access          |
 | `local_sessions`          | `user_id`, `token_hash`, `expires_at`, `revoked_at`             | Opaque server-managed sessions           |
 | `profiles`                | `id` (=`local_accounts.id`), `full_name`, `phone`, `role`       | `auth.uid()` remains the RLS identity    |
-| `farms`                   | `farmer_id`, `name`, `centroid` (Point), `boundary` (Polygon), `area_ha` | `area_ha` computed by PostGIS   |
-| `farm_plots`              | `farm_id`, `boundary`, `area_ha`                                 | Optional subdivision                     |
+| `farms`                   | `farmer_id`, `name`, `centroid` (Point), `area_ha`               | `area_ha` is the sum of parcel areas      |
+| `parcels`                 | `farm_id`, `geometry` (Polygon), `geometry_method`, `area_ha`   | Unit of analysis; `area_ha` from PostGIS  |
 | `crops`                   | `code`, `name`, `agronomic_requirements` (jsonb)                | Seeded from the versioned catalog        |
-| `farm_crops`              | `farm_id`, `plot_id?`, `crop_id`, `status`, `planting_date`, `intended_use` | `status` ∈ current/previous/planned |
+| `farm_crops`              | `farm_id`, `parcel_id?`, `crop_id`, `status`, `planting_date`, `intended_use` | `status` ∈ current/previous/planned |
 | `data_sources`            | `name`, `provider`, `license`, `attribution`, `characteristics`  | Runtime index of every upstream          |
 | `environmental_observations` | `source_id`, `variable`, `value`, `unit`, `location`, `spatial_resolution_m`, `temporal_resolution`, `observed_at`, `retrieved_at`, `is_modelled`, `coverage_fraction` | **Provenance is non-negotiable** |
 | `analyses`                | `farm_id`, `kind`, `status`, `inputs` (jsonb), `code_version`   | Immutable snapshot of the inputs         |
 | `recommendation_rulesets` | `version`, `content_hash`, `content` (jsonb)                    | Versioned                                |
-| `recommendations`         | `analysis_id`, `crop_id`, `verdict`, `score`, `subscores`, `rationale`, `limitations`, `confidence`, `ruleset_version` | |
+| `recommendations`         | `analysis_id`, `crop_id`, `verdict`, `dimensions` (jsonb), `rationale`, `limitations`, `evidence_strength`, `ruleset_version` | No numeric score                |
 | `reports`                 | `farm_id`, `kind`, `params`, `storage_path`                      | File in Supabase Storage                 |
 | `external_cache`          | `source_id`, `cache_key` (unique), `payload`, `expires_at`       | Durable cache across cold starts         |
 
@@ -148,8 +148,9 @@ provenance → render with resolution notices.
 ### Recommendation
 
 Server action → read observations + crop catalog → hard constraints →
-per-dimension scores → verdict → confidence from completeness × resolution ×
-recency → limitations list → persist with `ruleset_version` → render.
+per-dimension measured value against a cited threshold → evidence strength with
+a stated reason → limitations list → persist with `ruleset_version` → render.
+No composite score.
 
 ---
 

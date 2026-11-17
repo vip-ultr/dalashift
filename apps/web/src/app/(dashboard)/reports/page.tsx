@@ -1,22 +1,258 @@
 'use client';
 
+import { AlertCircle, FileText, LoaderCircle, Plus } from 'lucide-react';
+import Link from 'next/link';
 import * as React from 'react';
+import { z } from 'zod';
 
-import { PrintableFieldSheet } from '../../../components/dashboard/printable-field-sheet';
-import { CASE_STUDY_PROFILES, getCaseStudyBySlug } from '../../../features/cases/case-study-data';
+import { DataStateBoundary } from '../../../components/dashboard/data-state-boundary';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+
+const numericValue = z.union([z.number(), z.string().transform(Number)]).nullable();
+
+const farmListSchema = z.object({
+  farms: z.array(z.object({ id: z.string().uuid(), name: z.string(), area_ha: numericValue })),
+});
+
+const reportListSchema = z.object({
+  reports: z.array(
+    z.object({
+      id: z.string(),
+      kind: z.string(),
+      generated_at: z.string(),
+      period_start: z.string().nullable(),
+      period_end: z.string().nullable(),
+      signed_url: z.string().nullable().optional(),
+    }),
+  ),
+});
+
+interface HoldingReports {
+  readonly farmId: string;
+  readonly farmName: string;
+  readonly areaHa: number | null;
+  readonly reports: z.infer<typeof reportListSchema>['reports'];
+  readonly error: string | null;
+}
 
 export default function ReportsHubPage(): React.JSX.Element {
-  const [selectedSlug, setSelectedSlug] = React.useState<string>(
-    CASE_STUDY_PROFILES[0]?.slug ?? 'bello-yusuf-maitama',
+  const [state, setState] = React.useState<'loading' | 'ready' | 'error' | 'unauthenticated'>(
+    'loading',
   );
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [holdings, setHoldings] = React.useState<HoldingReports[]>([]);
 
-  const profile = getCaseStudyBySlug(selectedSlug) ?? CASE_STUDY_PROFILES[0]!;
+  React.useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const farmsResponse = await fetch('/api/farms', { cache: 'no-store' });
+        if (farmsResponse.status === 401) {
+          if (active) setState('unauthenticated');
+          return;
+        }
+        if (!farmsResponse.ok) throw new Error('Unable to load your holdings.');
+        const payload: unknown = await farmsResponse.json();
+        const parsed = farmListSchema.safeParse(payload);
+        if (!parsed.success)
+          throw new Error('The server returned holdings in an unexpected format.');
+
+        const results = await Promise.all(
+          parsed.data.farms.map(async (farm) => {
+            try {
+              const response = await fetch(`/api/farms/${farm.id}/reports`, {
+                cache: 'no-store',
+              });
+              if (!response.ok) {
+                return {
+                  farmId: farm.id,
+                  farmName: farm.name,
+                  areaHa: farm.area_ha,
+                  reports: [],
+                  error: 'Saved reports could not be loaded for this holding.',
+                };
+              }
+              const body: unknown = await response.json();
+              const reportPayload = reportListSchema.safeParse(body);
+              return {
+                farmId: farm.id,
+                farmName: farm.name,
+                areaHa: farm.area_ha,
+                reports: reportPayload.success ? reportPayload.data.reports : [],
+                error: reportPayload.success ? null : 'Saved reports were in an unexpected format.',
+              };
+            } catch {
+              return {
+                farmId: farm.id,
+                farmName: farm.name,
+                areaHa: farm.area_ha,
+                reports: [],
+                error: 'Saved reports could not be loaded for this holding.',
+              };
+            }
+          }),
+        );
+
+        if (active) {
+          setHoldings(results);
+          setState('ready');
+        }
+      } catch (error) {
+        if (active) {
+          setErrorMessage(error instanceof Error ? error.message : 'Unable to load reports.');
+          setState('error');
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const reportCount = holdings.reduce((sum, holding) => sum + holding.reports.length, 0);
 
   return (
-    <PrintableFieldSheet
-      profile={profile}
-      allProfiles={CASE_STUDY_PROFILES}
-      onSelectProfile={setSelectedSlug}
-    />
+    <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:flex-row sm:items-center">
+          <div className="space-y-1.5">
+            <Badge variant="Strong">Reports Hub</Badge>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
+              Reports across your holdings
+            </h1>
+            <p className="max-w-2xl text-xs text-[#4b5563] sm:text-sm">
+              Saved reports and field sheets for your private farms. Exact parcel coordinates are
+              redacted from every generated report.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2.5">
+            <Link href="/farms/new">
+              <Button variant="primary" size="md">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                <span>Add a Farm</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {state === 'unauthenticated' ? (
+          <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 text-sm text-[#4b5563]">
+            <p>Sign in to see reports for your holdings.</p>
+            <Link
+              href="/login?next=/reports"
+              className="mt-3 inline-block font-medium text-[#0a4232] underline"
+            >
+              Sign in
+            </Link>
+          </div>
+        ) : null}
+
+        <DataStateBoundary
+          state={
+            state === 'loading'
+              ? 'loading'
+              : state === 'error'
+                ? 'error'
+                : reportCount === 0
+                  ? 'empty'
+                  : 'ready'
+          }
+          emptyKind="no-data"
+          sourceName="Report service"
+          errorMessage={errorMessage ?? undefined}
+          onRetry={() => window.location.reload()}
+          onPrimaryAction={() => {
+            window.location.href = '/farms';
+          }}
+          primaryActionLabel="Open your farms"
+        >
+          <div className="space-y-4">
+            {holdings.map((holding) => (
+              <section
+                key={holding.farmId}
+                className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#f3f4f6] pb-4">
+                  <div>
+                    <h2 className="font-display text-lg font-bold text-[#111315]">
+                      {holding.farmName}
+                    </h2>
+                    <p className="mt-1 text-xs text-[#6b7280]">
+                      {holding.areaHa === null
+                        ? 'Area unavailable'
+                        : `${holding.areaHa.toFixed(2)} ha`}
+                      {' · '}
+                      {holding.reports.length} saved{' '}
+                      {holding.reports.length === 1 ? 'report' : 'reports'}
+                    </p>
+                  </div>
+                  <Link href={`/farms/${holding.farmId}/reports`}>
+                    <Button variant="secondary" size="sm">
+                      <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span>Generate a report</span>
+                    </Button>
+                  </Link>
+                </div>
+
+                {holding.error ? (
+                  <p role="alert" className="mt-3 flex items-center gap-2 text-xs text-[#b42318]">
+                    <AlertCircle className="size-3.5" aria-hidden="true" />
+                    {holding.error}
+                  </p>
+                ) : null}
+
+                {holding.reports.length > 0 ? (
+                  <ul className="mt-4 divide-y divide-[#e5e7eb]">
+                    {holding.reports.map((report) => (
+                      <li
+                        key={report.id}
+                        className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"
+                      >
+                        <div>
+                          <span className="font-semibold text-[#111315]">
+                            {report.kind.replaceAll('_', ' ')}
+                          </span>
+                          <p className="mt-0.5 text-xs text-[#6b7280]">
+                            Generated {new Date(report.generated_at).toLocaleDateString()}
+                            {report.period_start && report.period_end
+                              ? ` · ${report.period_start} to ${report.period_end}`
+                              : ''}
+                          </p>
+                        </div>
+                        {report.signed_url ? (
+                          <a
+                            href={report.signed_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0a4232] hover:underline"
+                          >
+                            <FileText className="size-3.5" aria-hidden="true" />
+                            Open PDF
+                          </a>
+                        ) : (
+                          <span className="text-xs text-[#9ca3af]">PDF not available</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : holding.error ? null : (
+                  <p className="mt-4 text-xs text-[#6b7280]">
+                    No saved reports yet. Generate one from this holding.
+                  </p>
+                )}
+              </section>
+            ))}
+          </div>
+        </DataStateBoundary>
+
+        {state === 'loading' ? (
+          <p className="flex items-center gap-2 text-sm text-[#4b5563]">
+            <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+            Loading your holdings and reports...
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 }

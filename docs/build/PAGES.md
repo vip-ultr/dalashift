@@ -44,7 +44,7 @@ boundary behind it.
 | `/farms/[farmId]/reports` | `app/(dashboard)/farms/[farmId]/reports/page.tsx` | Khaleel | The printable field sheet for a single holding. |
 | `/reports` | `app/(dashboard)/reports/page.tsx` | Khaleel | Reports across the farmer's holdings. |
 | `/profile` | `app/(dashboard)/profile/page.tsx` | Khaleel | Name, contact details, language preference, and the coordinate-redaction setting. |
-| `/cases` | `app/(dashboard)/cases/page.tsx` | Hamza | The three Tofa LGA validation case studies: Bello Yusuf Maitama, Amina Habibu, and Abubakar (Dan Hajiya). |
+| `/cases` | `app/(dashboard)/cases/page.tsx` | Hamza | The anonymised validation case studies: interviews with smallholders in Tofa LGA. |
 | `/cases/[slug]` | `app/(dashboard)/cases/[slug]/page.tsx` | Hamza | One case study in full: the farmer, the parcels, the crops, the rotation, the environmental evidence with provenance, and the comparison. |
 
 ---
@@ -86,8 +86,6 @@ service, map the error, respond**. Zod validates every input.
 
 | Route | Methods | Purpose |
 | ----- | ------- | ------- |
-| `/api/case-studies` | GET | The published validation case studies. |
-| `/api/case-studies/[slug]` | GET | One case study. |
 | `/api/catalog/crops` | GET | The crop catalog, with aliases and the unresolved-name list. |
 | `/api/profile` | GET, PATCH | The farmer's profile and preferences. |
 
@@ -125,5 +123,5 @@ its presentation, and does not import another slice's internals.
 | ----- | -------- |
 | `features/recommendations/engine/` | `assess-crop.ts`, `assess-planting-trigger.ts`, `build-crop-inputs.ts`, `build-rotation-strategies.ts`, `compare-rotations.ts`, `compare-suitability.ts` |
 | `features/outlook/` | `assess-seasonal-outlook.ts` |
-| `features/cases/` | `case-study-data.ts`, the three published validation cases |
+| `features/crops/` | `catalog.ts`, the cited crop reference list (no personal data) |
 | `features/reports/` | `build-farm-report.ts` |

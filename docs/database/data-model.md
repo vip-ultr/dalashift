@@ -139,8 +139,7 @@ Both values are computed in PostGIS.
 | `updated_at`        | `timestamptz` |                                                                 |
 
 **Constraints:**
-- `CHECK (NOT ST_IsEmpty(boundary))`
-- `CHECK (ST_IsValid(boundary))` (or normalise with `ST_MakeValid` on write)
+- Geometry validity is enforced on `parcels.geometry`, not on `farms`.
 - `CHECK (area_ha > 0 AND area_ha < 100000)`
 
 **Indexes:** `GIST (centroid)` and `btree (farmer_id)`.
@@ -172,7 +171,7 @@ measurement.
 
 **Why it exists now, not later:** adding plots after launch requires backfilling
 crop records and recomputing every historical analysis. Carrying a nullable
-`plot_id` from day one costs one column. See `PRD.md` § 9.3.
+`parcel_id` from day one costs one column. See `PRD.md` § 9.3.
 
 ---
 
@@ -341,7 +340,7 @@ An immutable record of a computation over a farm's observations.
 | `status`         | `text`        | `pending` \| `complete` \| `partial` \| `failed`                            |
 | `period_start`   | `date`        |                                                                           |
 | `period_end`     | `date`        |                                                                           |
-| `inputs`         | `jsonb`       | **Snapshot of the inputs**: farm boundary hash, crop ids, observation ids, farmer priorities snapshot.  |
+| `inputs`         | `jsonb`       | **Snapshot of the inputs**: parcel geometry hash, crop ids, observation ids, farmer priorities snapshot.  |
 | `inputs_hash`    | `text`        | Hash of the inputs, to detect when a re-analysis is needed                |
 | `code_version`   | `text`        | Git SHA of the analysis code                                               |
 | `limitations`    | `jsonb`       | Machine-readable limitations surfaced to the user                          |
@@ -349,7 +348,7 @@ An immutable record of a computation over a farm's observations.
 
 **Indexes:** `btree (farm_id, created_at DESC)`.
 
-**Why `inputs` is a snapshot:** if the farmer changes the farm boundary, old
+**Why `inputs` is a snapshot:** if the farmer changes a parcel's geometry, old
 analyses must remain reproducible. The snapshot says what was true at the time.
 
 ---

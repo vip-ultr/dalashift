@@ -99,9 +99,10 @@ The conditions attached to this decision were met before the flip:
    The `.gitignore` covers environment files, geospatial raster formats,
    audio recordings and derived tiles.
 3. **No real farmer data, no secrets, no large binaries** are committed. The
-   committed case studies carry the farmers' names and the recorded
-   interview material; precise coordinates live in the database, not in the
-   repository. Audio recordings are excluded and were purged from the git
+   committed case studies are anonymised: participants are labelled A, B and C
+   and no name, village, holding detail or precise location is published.
+   Precise coordinates live in the database, not in the repository. Audio
+   recordings and raw translations are excluded and were purged from the git
    history.
 
 **The repository is live at <https://github.com/vip-ultr/dalashift>.**

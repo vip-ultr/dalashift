@@ -83,9 +83,9 @@ have not chosen a crop.
 
 ### D-04: Who is the primary user?
 
-**Evidence.** All three farmers point to the extension officer as the hub.
-Amina: *"I direct them to the agricultural extension officer (malamin gona)."*
-Abubakar: *"if you just send someone who doesn't speak Hausa to hand out
+**Evidence.** All three participants point to the extension officer as the hub.
+One said: *"I direct them to the agricultural extension officer (malamin gona)."*
+Another said: *"if you just send someone who doesn't speak Hausa to hand out
 materials and explain things, it will be hard to gain acceptance."*
 
 | | Option |
@@ -138,8 +138,8 @@ contiguous. The review: a GPS camera records a point, not a boundary.
 
 ### D-08: Is a Hausa interface in scope?
 
-**Evidence.** Abubakar: a Hausa-speaking introducer is what makes acceptance
-possible. PRD OQ-1 currently proposes deferring it.
+**Evidence.** One participant: a Hausa-speaking introducer is what makes
+acceptance possible. PRD OQ-1 currently proposes deferring it.
 
 | | Option |
 | - | ------ |
@@ -151,9 +151,10 @@ possible. PRD OQ-1 currently proposes deferring it.
 
 ### D-09: Farm as one polygon, or a set of parcels?
 
-**Evidence.** Bello: *"they are not located in one single contiguous piece."*
-Amina has three "hectares" plus two smaller plots. Abubakar rotates per
-three-hectare plot.
+**Evidence.** One participant said the parcels are *"not located in one single
+contiguous piece."* Participants manage multiple parcels as one holding and
+describe rotation at the plot level. Exact holding sizes and plot counts are
+withheld because they could identify participants.
 
 | | Option |
 | - | ------ |
@@ -165,9 +166,9 @@ three-hectare plot.
 
 ### D-10: Is the planting recommendation a date, or a trigger?
 
-**Evidence.** All three farmers describe the same situation and give three
-different rules. Bello waits for soil moisture. Amina plants immediately.
-Abubakar plants quickly once moisture is confirmed.
+**Evidence.** All three participants describe the same situation and give three
+different rules: wait for soil moisture, plant immediately on the first rains,
+or plant quickly once moisture is confirmed.
 
 | | Option |
 | - | ------ |
@@ -192,14 +193,16 @@ differ. The rules catalog already requires a citation for every crop.
 
 ### D-12: Consent scope and what may be published
 
-**Evidence.** Names recorded for all three. GPS explicitly consented by
-Interview 01 and 02. Interview 03 did not raise it, and he owns 30 ha.
-Photographs and publication consent were not raised in any interview.
+**Evidence.** Names were recorded in the research record for all three, but
+the published case studies are anonymised. GPS was explicitly consented to by
+Interviewed smallholders A and B; it was not raised with C. Holding sizes are
+withheld as identifying detail. Photographs and publication consent were not
+raised in any interview.
 
 | | Option |
 | - | ------ |
-| **A** | **Names in the public repository** (recommended, subject to actual consent). Strongest evidence for Local Impact. |
-| B | Pseudonymised in the repository, named internally. Safe by default, weaker as evidence. |
+| A | Names in the public repository. Requires confirmed publication consent. |
+| **B** | **Pseudonymised in the repository, named internally** (applied). Safe by default; the anonymised records still carry the research evidence. |
 | C | Case studies private, public summary only. Safest, splits the evidence. |
 
 **Needed from you, per farmer:** what was actually consented for publication.
@@ -260,7 +263,7 @@ flag any you disagree with.
 | 3 | Farmer information is an **input to the comparison**, not profile data. |
 | 4 | GPS is a **point**. Farm boundaries are a separate, later capability. |
 | 5 | Environmental observations carry their **actual** spatial resolution. |
-| 6 | **Tofa LGA**, and **Doka** specifically, is the confirmed case-study location. |
+| 6 | **Tofa LGA** is the confirmed case-study location. |
 | 7 | Farmer reports are **distinguished** from agronomic evidence and from environmental measurements. |
 | 8 | The PRD, architecture, methodology and implementation plan describe **the same product**. |
 

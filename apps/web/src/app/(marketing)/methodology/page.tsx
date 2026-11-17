@@ -5,7 +5,7 @@ import type * as React from 'react';
 import { PublicNavbar } from '../../../components/layout/public-navbar';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
-import { CATALOG_CROPS } from '../../../features/cases/case-study-data';
+import { CATALOG_CROPS } from '../../../features/crops/catalog';
 import { formatCropWithHausa } from '../../../lib/utilities/format';
 
 export default function MethodologyPage(): React.JSX.Element {
@@ -61,8 +61,8 @@ export default function MethodologyPage(): React.JSX.Element {
               </div>
               <p className="mt-1 text-xs leading-relaxed text-[#4b5563]">
                 Published literature rules (e.g. Yusuf et al. 2009; Brouwer &amp; Heibloem 1986) are
-                separated from farmer-reported Doka village practices so each source is cited
-                honestly.
+                kept distinct from anonymised smallholder practices reported in Tofa LGA, Kano
+                State, so each source is cited honestly.
               </p>
             </div>
           </div>
@@ -248,9 +248,9 @@ export default function MethodologyPage(): React.JSX.Element {
           </div>
 
           <div className="mt-6 flex justify-end border-t border-[#e5e7eb] pt-4">
-            <Link href="/cases">
+            <Link href="/farms/new">
               <Button variant="primary" size="md">
-                <span>Inspect Ruleset on Doka Case Studies</span>
+                <span>Apply this methodology to your fields</span>
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>

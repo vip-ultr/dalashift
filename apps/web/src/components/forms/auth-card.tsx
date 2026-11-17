@@ -20,6 +20,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   const [fullName, setFullName] = React.useState('');
   const [identifier, setIdentifier] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [consentAccepted, setConsentAccepted] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -49,6 +50,11 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
       return;
     }
 
+    if (mode === 'register' && !consentAccepted) {
+      setErrorMessage('Please accept the privacy notice to create an account.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const response = await fetch(mode === 'login' ? '/api/auth/login' : '/api/auth/register', {
@@ -62,7 +68,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 identifier: accountIdentifier,
                 password,
                 role: 'farmer',
-                consentAccepted: true,
+                consentAccepted,
               },
         ),
       });
@@ -174,6 +180,23 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
                 autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
+
+            {mode === 'register' ? (
+              <div className="flex items-start gap-2.5 rounded-[8px] border border-[#e5e7eb] bg-[#fafafb] px-3 py-2.5">
+                <input
+                  id="auth-consent"
+                  type="checkbox"
+                  checked={consentAccepted}
+                  onChange={(e) => setConsentAccepted(e.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-[#00b159] cursor-pointer"
+                />
+                <label htmlFor="auth-consent" className="text-xs leading-relaxed text-[#4b5563]">
+                  I consent to DalaShift storing my farm, parcel and profile data to provide field
+                  advice. I understand exact coordinates are redacted from reports and no personal
+                  data is published.
+                </label>
+              </div>
+            ) : null}
 
             {errorMessage ? (
               <div

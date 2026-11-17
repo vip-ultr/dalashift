@@ -16,8 +16,20 @@
   --color-text-secondary: #4b5563;
   --color-text-muted: #9ca3af;
 
-  --font-display: var(--font-display), 'Geologica', sans-serif;
-  --font-sans: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Text tokens used throughout the workspace components. */
+  --color-ink: #111827;
+  --color-ink-muted: #4b5563;
+  --color-ink-faint: #9ca3af;
+
+  /* Surface and border tokens used by cards, panels and controls. */
+  --color-surface-raised: #ffffff;
+  --color-border: #e5e7eb;
+
+  /* The locally bundled fonts are injected as --font-geologica and --font-inter
+     by the root layout. Referencing those names here avoids a self-referential
+     variable, so the bundled font files actually apply. */
+  --font-display: var(--font-geologica), 'Geologica', sans-serif;
+  --font-sans: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 :root {

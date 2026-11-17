@@ -285,8 +285,8 @@ export const RULE_SOURCE_TYPES = ['literature', 'farmer_report'] as const;
 export type RuleSourceType = (typeof RULE_SOURCE_TYPES)[number];
 
 /**
- * The three planting trigger strategies, taken from the three farmers in
- * Doka village (decision D-10).
+ * The three planting trigger strategies, taken from anonymised interviews with
+ * smallholders in Tofa LGA (decision D-10).
  *
  * The engine never recommends a date. It recommends a condition, and the
  * farmer's own rule selects which strategy is put first.

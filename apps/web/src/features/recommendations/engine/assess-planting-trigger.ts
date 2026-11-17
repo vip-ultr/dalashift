@@ -17,9 +17,9 @@ import { DEFAULT_RULESET_VERSION } from './build-crop-inputs';
  * Evaluate the planting trigger condition for a parcel (Decision D-10).
  *
  * The engine never recommends a calendar date. It evaluates soil moisture and
- * recent rainfall observations against the three coherent planting rules
- * documented in the Doka field interviews, and respects the farmer's own
- * stated rule when ordering the recommendation.
+ * recent rainfall observations against the planting rules reported in the
+ * anonymised field interviews, and respects the farmer's own stated rule
+ * when ordering the recommendation.
  */
 export function assessPlantingTrigger(input: {
   readonly parcelId: string | null;
@@ -48,7 +48,8 @@ export function assessPlantingTrigger(input: {
         (obs.variable === ENVIRONMENT_VARIABLES.precipitation ||
           obs.variable === ENVIRONMENT_VARIABLES.precipitationSatellite) &&
         obs.value !== null &&
-        obs.qualityFlag !== 'missing',
+        obs.qualityFlag !== 'missing' &&
+        obs.rawMetadata?.isForecast !== true,
     )
     .sort((a, b) => a.observedAt.localeCompare(b.observedAt));
 

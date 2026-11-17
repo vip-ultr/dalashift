@@ -102,7 +102,7 @@ export function compareProspectiveSuitability(input: {
         ? [
             'Grain legume candidate that can be rotated with cereals in subsequent seasons (Yusuf et al., 2009).',
           ]
-        : ['Staple crop reported by farmers in Doka village, Tofa LGA.'],
+        : ['Staple crop reported by farmers in Tofa LGA.'],
       informationGaps: assessment.limitations.map((item) => item.statement),
       localReviewRisks: [
         `Confirm local variety choice, seed availability, and field-specific soil texture for ${crop.name} with the local extension officer (malamin gona).`,

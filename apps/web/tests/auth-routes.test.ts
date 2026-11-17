@@ -62,8 +62,8 @@ describe('first-party registration route', () => {
 
     const response = await register(
       requestWithBody({
-        fullName: 'Amina Bello',
-        identifier: 'Amina@example.org',
+        fullName: 'Test Farmer',
+        identifier: 'test.farmer@example.org',
         password: 'a-secure-password',
         role: 'farmer',
         consentAccepted: true,
@@ -73,7 +73,7 @@ describe('first-party registration route', () => {
     expect(response.status).toBe(201);
     expect(accountQuery.insert).toHaveBeenCalledWith(
       expect.objectContaining({
-        email: 'amina@example.org',
+        email: 'test.farmer@example.org',
         phone: null,
         password_hash: expect.stringMatching(/^scrypt\$16384\$8\$1\$/),
       }),
@@ -82,7 +82,7 @@ describe('first-party registration route', () => {
     expect(profileInsert).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'b9c9b2ee-6e77-4e31-bd40-58f1125b9e46',
-        full_name: 'Amina Bello',
+        full_name: 'Test Farmer',
         role: 'farmer',
       }),
     );
@@ -97,8 +97,8 @@ describe('first-party registration route', () => {
 
     const response = await register(
       requestWithBody({
-        fullName: 'Amina Bello',
-        identifier: 'amina@example.org',
+        fullName: 'Test Farmer',
+        identifier: 'test.farmer@example.org',
         password: 'a-secure-password',
         role: 'farmer',
         consentAccepted: true,
@@ -113,7 +113,7 @@ describe('first-party registration route', () => {
   it('rejects invalid input before touching the database', async () => {
     const response = await register(
       requestWithBody({
-        fullName: 'Amina Bello',
+        fullName: 'Test Farmer',
         identifier: 'not-an-identifier',
         password: 'a-secure-password',
         role: 'farmer',
@@ -138,7 +138,7 @@ describe('first-party registration route', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          identifier: 'amina@example.org',
+          identifier: 'test.farmer@example.org',
           password: 'a-secure-password',
         }),
       }),

@@ -197,17 +197,18 @@ validation. Every dependency and data source with its licence is recorded in
 ## Field validation
 
 **Tofa Local Government Area, Kano State, Nigeria** is the validation location.
-Three farmers in **Doka village** were interviewed as semi-structured research
-participants, and their records are the ground truth the product is built to
-serve:
+Three smallholders were interviewed as semi-structured research participants.
+Their anonymised records are the aggregate ground truth the product is built to
+serve. Participants are identified only by neutral labels, and no names,
+villages, holding sizes or plot-level details are published:
 
-| Farmer | Holding | Practice |
-| ------ | ------- | -------- |
-| Bello Yusuf Maitama | 2 to 4 ha, not contiguous | Strip cropping. Waits for the soil to hold moisture before planting. |
-| Amina Habibu | About 4 ha across three "hectares" and two smaller plots | Ridge-based strip plans, rotation learned through Bayero University extension training. |
-| Abubakar (Dan Hajiya) | About 30 ha owned, in 3 ha parcels | A two-to-three-year plot-level rotation cycle, modern short-duration varieties. |
+| Participant | Finding |
+| ----------- | ------- |
+| Interviewed smallholder A | Multiple parcels; waits for the soil to hold moisture before planting. |
+| Interviewed smallholder B | Structured strip cropping; plants immediately on the first rains. |
+| Interviewed smallholder C | Plot-level rotation; plants quickly once early moisture is established. |
 
-The case studies, with their consent records, are in
+The anonymised case studies, with their consent notes, are in
 [`docs/research/field-interviews/`](./docs/research/field-interviews/).
 
 Tofa is the **validation site, not the coverage map**. The architecture is
@@ -390,5 +391,5 @@ report.
   for the research partnership and the field interviews.
 - The **open-source geospatial community**: MapLibre, Turf, PostGIS, GDAL and
   the many people who maintain them.
-- The farmers of Doka village, Tofa LGA, whose questions this project is
-  built to answer.
+- The interviewed smallholders of Tofa LGA, whose questions this project is
+  built to answer. Participant identities are withheld.

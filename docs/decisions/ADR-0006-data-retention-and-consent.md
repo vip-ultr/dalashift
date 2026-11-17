@@ -103,7 +103,7 @@ hard delete that cascades to every dependent row.
 
 - The farmer sees *"Your account will be permanently deleted on [date]. You can
   restore it until then."*
-- The hard delete cascades: `farms` → `farm_plots`, `farm_crops`,
+- The hard delete cascades: `farms` → `parcels`, `farm_crops`,
   `farm_priorities`, `analyses` → `recommendations`, `rotation_strategies` →
   `rotation_legs`, `environmental_observations`, `reports`.
 - Storage objects (photographs, generated reports) are deleted from the

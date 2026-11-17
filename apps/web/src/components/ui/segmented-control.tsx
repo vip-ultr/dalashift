@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
@@ -21,6 +21,10 @@ export interface SegmentedControlProps<T extends string> {
   readonly stackOnMobile?: boolean;
   readonly className?: string;
   readonly ariaLabel?: string;
+  /** Prefix for generated tab and panel ids. Consumers should put matching
+   * `id={`${panelIdPrefix}-panel-${value}`}` and `role="tabpanel"` on the
+   * content each option controls. */
+  readonly panelIdPrefix?: string;
 }
 
 /**
@@ -37,7 +41,10 @@ export function SegmentedControl<T extends string>({
   stackOnMobile = false,
   className,
   ariaLabel,
+  panelIdPrefix,
 }: SegmentedControlProps<T>) {
+  const generatedPrefix = useId();
+  const idPrefix = panelIdPrefix ?? generatedPrefix;
   const handleChange = (next: T) => {
     onChange?.(next);
     onValueChange?.(next);
@@ -61,9 +68,11 @@ export function SegmentedControl<T extends string>({
         return (
           <button
             key={opt.value}
+            id={`${idPrefix}-tab-${opt.value}`}
             type="button"
             role="tab"
             aria-selected={isActive}
+            aria-controls={`${idPrefix}-panel-${opt.value}`}
             aria-label={opt.label}
             onClick={() => handleChange(opt.value)}
             className={cn(

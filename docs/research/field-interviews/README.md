@@ -1,13 +1,18 @@
 # DalaShift Field Interviews
 
-Primary research records from the semi-structured farmer interviews conducted in
+Anonymised research records from semi-structured farmer interviews conducted in
 **Tofa Local Government Area, Kano State, Nigeria**.
 
 These are the ground-truth case studies the platform is built to serve. They
 are also the project's main defence against building something plausible but
 wrong: every agronomic threshold, every interface assumption and every claim
-about what a farmer actually needs has to survive contact with these
-recordings.
+about what a farmer actually needs has to survive contact with these records.
+
+> **Anonymisation.** Three smallholders were interviewed. Their names, village,
+> contact details, precise locations, holding sizes and plot-level details have
+> been removed. Participants are labelled A, B and C for reference only. The
+> records retain the research structure, the consent note and the aggregate
+> findings, but no participant is identifiable from them.
 
 ---
 
@@ -15,20 +20,20 @@ recordings.
 
 | Directory | Contents |
 | --------- | -------- |
-| [`interview-01/`](./interview-01/) | Bello Yusuf Maitama, Doka. About 2 to 4 ha, not contiguous. Rainy season only. |
-| [`interview-02/`](./interview-02/) | Amina Habibu, Doka. About 4 ha across three "hectares" and two smaller plots. Rainy and dry season. |
-| [`interview-03/](./interview-03/) | Abubakar (Dan Hajiya), Doka. About 30 ha owned, in plots of about 3 ha. Rainy and dry season. |
+| [`interview-01/`](./interview-01/) | Interviewed smallholder A (anonymous). Multiple parcels, rainy season only. |
+| [`interview-02/`](./interview-02/) | Interviewed smallholder B (anonymous). Rainy and dry season, wells for irrigation. |
+| [`interview-03/`](./interview-03/) | Interviewed smallholder C (anonymous). Rainy and dry season, plot-level rotation. |
 
 Each interview directory contains two documents:
 
 | File | Purpose |
 | ---- | ------- |
-| `transcript.md` | The translated interview record, section by section, as the interviewer structured it. |
-| `case-study.md` | The structured extraction: farmer, farm, practices, crop sequences, challenges, priorities, constraints and consent. |
+| `transcript.md` | The anonymised, translated interview record, section by section, as the interviewer structured it. |
+| `case-study.md` | The structured extraction: practices, crop sequences, challenges, priorities, constraints and consent, with identifying details removed. |
 
-The translated source documents live in `docs/interviews/` as `.docx` files.
-
-**The audio itself is not in this repository.** See § 5.
+**The audio itself is not in this repository.** See § 5. The original raw
+translations were also removed because they could not be meaningfully
+anonymised; these records are the committed artefacts.
 
 ---
 
@@ -36,13 +41,13 @@ The translated source documents live in `docs/interviews/` as `.docx` files.
 
 **Semi-structured individual farmer interviews.**
 
-An interview guide was used as the starting point, with follow-up questions
-depending on each farmer's answers. The number of questions was not fixed and
-farmer records are not expected to contain identical responses. Information was
-recorded as it arose naturally in the conversation.
+An interview guide was used as a starting point, with follow-up questions
+depending on each participant's answers. The number of questions was not fixed
+and participant records are not expected to contain identical responses.
+Information was recorded as it arose naturally in the conversation.
 
 That matters for how these documents should be read. A missing answer means
-"not asked" or "not captured", **not** "the farmer does not do this".
+"not asked" or "not captured", **not** "the participant does not do this".
 
 ### The three information streams
 
@@ -72,7 +77,7 @@ platform itself is built to respect.
 | **Documented agronomic evidence** | Cited, from the agronomic knowledge base | May support or contradict a rotation claim. Every claim carries its reference. |
 | **Environmental observation** | A measurement or model output from a named dataset, with its real spatial resolution | Provides the geographical and climate context. Never implies farm-level precision it does not have. |
 
-A farmer saying "the rains came late this year" is a report. A NASA POWER
+A participant saying "the rains came late this year" is a report. A NASA POWER
 record showing the onset was 11 days later than the 1981 to 2025 median is a
 measurement. **The two can agree, and where they do not, both are recorded.**
 
@@ -80,7 +85,7 @@ measurement. **The two can agree, and where they do not, both are recorded.**
 
 ## 4. Consent
 
-Consent was recorded per farmer and is summarised in each `case-study.md`.
+Consent was recorded per participant and is summarised in each `case-study.md`.
 The permissions are tracked separately, because they are separate decisions:
 
 | Permission | What it authorises |
@@ -93,11 +98,8 @@ The permissions are tracked separately, because they are separate decisions:
 
 **Internal research information and information authorised for public display
 are different things.** The repository, the demo and the NASA submission are
-public artefacts. A farmer's case study may be usable internally while the
-same material is not cleared for public display, and the distinction is
-recorded per farmer rather than assumed.
-
-Contact details and precise coordinates are not published by default.
+public artefacts. The records published here are anonymised: no name, contact
+detail or precise location appears.
 
 ---
 
@@ -108,7 +110,9 @@ Contact details and precise coordinates are not published by default.
 not consent to publish an identifiable recording, and this repository is
 intended to be public for the NASA Space Apps submission.
 
-The transcripts and structured case studies are the committed artefacts.
+The anonymised transcripts and structured case studies are the committed
+artefacts. The original translations and any recordings were removed because
+they could not be meaningfully anonymised.
 
 The recordings were also briefly tracked by accident before the ignore rules
 were added. They were removed from the working tree and purged from the git
@@ -118,133 +122,126 @@ history. See the commit history for the removal and the purge.
 
 ## 6. How these transcripts were produced
 
-**The transcripts are the team's own translations of the Hausa recordings**, not
-machine transcriptions. The source documents are the translated interview
-records in `docs/interviews/`, and the text in each `transcript.md` is taken
-from those.
+**The records are the team's own translations of the Hausa interviews**, not
+machine transcriptions, and have since been anonymised. Section headings are
+the interviewer's.
 
 An automated transcription route was attempted first, using Whisper large-v3,
-and was **abandoned**. The recordings are northern Nigerian Hausa, with
+and was **abandoned**. The recordings were northern Nigerian Hausa, with
 background noise, farm terminology and a partly mixed Hausa and English
 register. The machine output was low to moderate quality: recognisable
 structure, but frequent mishearings of exactly the content that matters here,
 which is crop names, durations, ridge counts and place names. Rather than
 publish a plausible-looking but unreliable transcript, the team's own
-translated records are used.
+translated records were used.
 
-**Consequence, stated plainly.** These transcripts are a **translated
-secondary record**, not a verbatim one. The English is a translation from
-Hausa, so the wording is the translator's rendering of what was said. Before
-any of it is relied on as a factual claim about a farmer, a fluent Hausa
-speaker should check the relevant passage against the recording.
+**Consequence, stated plainly.** These records are a **translated secondary
+record**, not a verbatim one, and they have been anonymised. The English is a
+translation from Hausa, so the wording is the translator's rendering of what
+was said.
 
 What this means in practice:
 
-- **Names, place names and crop names** carry the highest risk of error and
-  are the first thing to verify.
-- **Numbers, durations and ridge counts** were stated precisely by the farmers
-  and should be checked, because a transcription or translation slip turns
-  "four ridges" into a materially different strip plan.
-- **Stated rules and their causal reasoning** are the most important content
-  and should be checked most carefully, because the whole comparison method
-  rests on them.
+- **Crop names and place names** carry the highest risk of error.
+- **Numbers and durations** were stated precisely by the participants and were
+  checked during translation because a slip changes the meaning materially.
+  Where a figure could identify a participant, it has been withheld here.
+- **Stated rules and their causal reasoning** are the most important content,
+  because the whole comparison method rests on them.
 
 ### Recording characteristics
 
-Measured before processing, one-second RMS windows:
+Measured before processing, one-second RMS windows. Individual recordings are
+labelled A, B and C; no participant is identified.
 
 | Recording | Noise floor | Speech level | Estimated SNR | Assessment |
 | --------- | ----------- | ------------ | ------------- | ----------- |
-| Interview 1 | -40.5 dB | -27.4 dB | 13.1 dB | Clean |
-| Interview 2 | -36.4 dB | -25.5 dB | 10.9 dB | Clean |
-| Interview 3 | **-26.4 dB** | -17.1 dB | **9.4 dB** | **Noisy** |
+| Interview A | -40.5 dB | -27.4 dB | 13.1 dB | Clean |
+| Interview B | -36.4 dB | -25.5 dB | 10.9 dB | Clean |
+| Interview C | **-26.4 dB** | -17.1 dB | **9.4 dB** | **Noisy** |
 
-The third recording has a noise floor 10 to 14 dB above the other two and is
-roughly 10 dB louder overall. It would need spectral denoising before
-automated recognition. No recording was clipped.
+Recording C has a noise floor 10 to 14 dB above the other two and is roughly
+10 dB louder overall. No recording was clipped.
 
 ---
 
 ## 7. What the interviews establish
 
-Three farmers, all from **Doka village, Tofa LGA**, interviewed on the same
-research programme. The findings below are drawn from the case studies and
-carry the full detail.
+Three smallholders, all farming in **Tofa LGA**, interviewed on the same
+research programme. The findings below are the aggregate, anonymised findings
+drawn from the case studies.
 
-### 7.1 The three of them are not the same size
+### 7.1 Holdings differ in scale and structure
 
-| Farmer | Farm | Season | Structure |
-| ------ | ---- | ------ | --------- |
-| Bello Yusuf Maitama | About 2 to 4 ha, **not contiguous** | Rainy only | Strip cropping, several parcels |
-| Amina Habibu | About 4 ha | Rainy and dry | Three "hectares" plus two smaller plots, ridge-based strip plans |
-| Abubakar (Dan Hajiya) | **About 30 ha**, owned | Rainy and dry | Plots of about 3 ha, rotation per plot |
+Participants manage holdings of differing sizes, but exact figures are
+withheld. All manage land as more than one parcel, and all include a rainy
+season enterprise. Some also farm in the dry season using wells.
 
-An order of magnitude separates them. **A recommendation for one is not a
-recommendation for another.** The platform cannot assume a single scale, and
-the unit of management is the parcel or plot, not the holding.
+An order of magnitude separates the largest and smallest holdings. **A
+recommendation for one is not a recommendation for another.** The platform
+cannot assume a single scale, and the unit of management is the parcel or plot,
+not the holding.
 
-### 7.2 The three of them use three different planting rules
+### 7.2 The participants use different planting rules
 
-All three describe the same physical situation, the rains starting and then
-dry spells following. All three respond to it differently.
+All describe the same physical situation, the rains starting and then dry
+spells following. They respond to it differently.
 
-| Farmer | Stated rule |
-| ------ | ----------- |
-| Bello Yusuf Maitama | **Wait** until the soil retains sufficient moisture from light showers. "Those who rushed to plant without caution suffered losses." |
-| Amina Habibu | **Plant immediately** on the first rains, without waiting, because the season is short. |
-| Abubakar | **Prepare the land and plant quickly** once the soil has good moisture from the early rains. |
+| Participant | Stated rule |
+| ----------- | ----------- |
+| Interviewed smallholder A | **Wait** until the soil retains sufficient moisture from light showers. |
+| Interviewed smallholder B | **Plant immediately** on the first rains, without waiting, because the season is short. |
+| Interviewed smallholder C | **Prepare the land and plant quickly** once the soil has good moisture from the early rains. |
 
 These are three coherent risk postures. Minimum germination failure, maximum
 season length, and a balance between the two. **The engine's job is to help a
-farmer choose between them for this field, this season.** That is a
-comparison with a decision at the end. It is not a dashboard.
+farmer choose between them for this field, this season.** That is a comparison
+with a decision at the end. It is not a dashboard.
 
 ### 7.3 They described their own rotation rules
 
-Two of the three stated a rotation rule in their own words, and they differ.
-Amina changes crop each season and rotates to sorghum, pearl millet or late
-millet. Abubakar alternates sorghum and soybean plots with white cowpea or
-maize on a two-to-three-year cycle.
+Two of the three stated a rotation rule in their own words, and the two differ.
+One changes crop each season and rotates among cereals and millets, bringing an
+earlier crop back later. The other cycles a cereal and legume sequence across
+plots over a multi-year period. Specific crop lists and cycle lengths are
+withheld in the anonymised records.
 
 **These are the baseline.** The comparison engine's starting point should be
 the practice actually in the field, not a rule invented by the research team.
 
 ### 7.4 Strip cropping is the system, and it is structured
 
-Interview 02 documented it as ridge plans: three ridges sorghum and three
-ridges soybeans on one farm, four and three sorghum and groundnut on another,
-four and four sorghum and soybean on a third, with a boundary line of millet
-locally called *kalankuwa* separating the strips.
+Strip cropping is reported with cereals and legumes in alternate strips, in one
+case separated by a millet boundary line known locally as *kalankuwa*. A stated
+reason is weed suppression, soil surface protection and pest-cycle disruption,
+because pests cannot find large uniform blocks of a single host crop. **That
+third reason is a stated mechanism and it is testable.** It is the kind of
+evidence a comparison engine needs.
 
-Interview 01 gave the agronomic reasons for it, in his own account: weed
-suppression, soil surface protection, and pest-cycle disruption because pests
-cannot find large uniform blocks of a single host crop. **That third reason is
-a stated mechanism and it is testable.** It is the kind of evidence a
-comparison engine needs.
+Exact strip compositions and ridge counts are withheld because they could
+identify a participant.
 
 ### 7.5 Adoption runs through people, and through the Hausa language
 
 All three describe the same structure: village head, ward head, extension
 officer, religious leaders, farmers' association leaders, and lead farmers
-whose visible success persuades their neighbours. Interview 03 states it most
-directly: *"if you just send someone who doesn't speak Hausa to hand out
-materials and explain things, it will be hard to gain acceptance."*
+whose visible success persuades their neighbours. One participant stated that
+someone who does not speak Hausa would struggle to gain acceptance.
 
 **The extension officer appears in all three interviews as the hub.** See
 [D-15](../../decisions/OPEN-DECISIONS.md#d-15-is-the-extension-officer-the-primary-operator).
 
 ### 7.6 Connectivity is not the blocker
 
-Interview 03, on MTN and Airtel coverage: *"We don't have major network
-problems; there is no issue."* Offline-first is a nice-to-have, not a
-prerequisite.
+Coverage varies by carrier but was reported as adequate. Offline-first is a
+nice-to-have, not a prerequisite.
 
 ### 7.7 What they asked for
 
-Interview 02's response to the idea of a 30-day rainfall outlook: *"If farmers
-get access to that, it will be tremendous."* She also described the advice
-farmers already act on, from radio forecasts: plant early-maturing varieties,
-or switch from sorghum to cowpeas, based on expected rainfall.
+One participant responded to the idea of a 30-day rainfall outlook with strong
+interest. They also described the advice farmers already act on from radio
+forecasts: plant early-maturing varieties, or switch from sorghum to cowpeas,
+based on expected rainfall.
 
 **The platform would be grounding in field data the advice farmers already
 act on.** See [D-07](../../decisions/OPEN-DECISIONS.md#d-07-are-rainfall-forecasts-in-scope).
@@ -262,7 +259,7 @@ act on.** See [D-07](../../decisions/OPEN-DECISIONS.md#d-07-are-rainfall-forecas
 | Stated production priorities | How the alternatives are ordered and explained |
 | Practical constraints (seed, labour, land) | Which alternatives are realistic for this farmer |
 | Willingness to consider change | Whether an alternative is presented as an option or only as background |
-| Precise coordinates | The environmental context for the farm, with its real resolution |
+| Precise coordinates | The environmental context for the farm, with its real resolution. Never published. |
 
 ---
 
@@ -273,19 +270,15 @@ act on.** See [D-07](../../decisions/OPEN-DECISIONS.md#d-07-are-rainfall-forecas
 | [`../../product/recommendation-methodology.md`](../../product/recommendation-methodology.md) | How farmer input, environmental data and agronomic evidence combine |
 | [`../../research/nigerian-agriculture.md`](../../research/nigerian-agriculture.md) | The wider regional context and its verification status |
 | [`../../research/crop-calendars.md`](../../research/crop-calendars.md) | Where the planting calendar comes from and how farmer reports refine it |
-| [`../decisions/ADR-0006-data-retention-and-consent.md`](../../decisions/ADR-0006-data-retention-and-consent.md) | Data retention and consent policy |
+| [`../../decisions/ADR-0006-data-retention-and-consent.md`](../../decisions/ADR-0006-data-retention-and-consent.md) | Data retention and consent policy |
 
 ---
 
 ## 10. Open items
 
-- [ ] A fluent Hausa speaker reviews each transcript against the audio and
-      corrects names, numbers and agricultural terms. **This is the single most
-      valuable outstanding action on the whole dataset.**
-- [ ] Confirm which permissions each farmer granted, in particular for public
-      display of their name, photograph and location.
-- [ ] Record the audio reference for each case study (file name and duration)
-      so a reviewer can find the corresponding passage quickly.
+- [ ] Confirm which permissions each participant granted, in particular for
+      public display of a name, photograph and location. No identifying
+      information is published in this repository.
 - [ ] Extract the local crop names into the crop catalog so farmers can find
       their crop by the name they actually use.
 - [ ] Add the remaining interview guide topics that were not covered, if a

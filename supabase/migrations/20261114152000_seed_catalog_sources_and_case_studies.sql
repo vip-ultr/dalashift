@@ -1,6 +1,7 @@
 -- =============================================================================
--- Seed the verified data sources, the research crop catalog, literature
--- rotation evidence, and the three Doka (Tofa LGA) field interview case studies.
+-- Seed the verified data sources, the research crop catalog and literature
+-- rotation evidence. Interview case studies are intentionally not seeded: the
+-- research participants are anonymous and no personal data is stored.
 --
 -- Every crop parameter and rotation rule comes strictly from the verified
 -- research records in data/reference/crop-requirements.json,
@@ -134,10 +135,10 @@ values
     array[]::text[],
     'cereal',
     array['Tofa LGA, Kano State (Sudan Savanna)', 'Northern Nigeria'],
-    '{"min":null,"max":null,"status":"unresolved_for_tofa"}'::jsonb,
-    '{"rainfallRequirementMm":null,"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":650,"evidenceId":"FAO-WATER-03","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
+    '{"min":120,"max":135,"status":"advisory_sudan_savanna","citation":"Kassam (1976), Crops of the West African Semi-Arid Tropics, ICRISAT; local photoperiodic sorghum 120-135 days in the Sudan Savanna. Advisory only, local cultivar unidentified. Accessed 2026-11-17."}'::jsonb,
+    '{"rainfallRequirementMm":{"min":400,"max":null,"citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles (sorghum 400-900 mm/season); corroborated by ICRISAT/WASIP (1990), 400-500 mm in the southern Sahel. 400 mm is the low end of the cited rain-fed range, not a Tofa-local threshold. Accessed 2026-11-17.","hardConstraint":true},"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":650,"evidenceId":"FAO-WATER-03","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
     '{"nitrogenContribution":"consumes","residueLoad":null,"diseaseBreak":null}'::jsonb,
-    '[{"claim":"Indicative seasonal crop water need for sorghum/millet is 450 to 650 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"450-650","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-03)"}]'::jsonb,
+    '[{"claim":"Indicative seasonal crop water need for sorghum/millet is 450 to 650 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"450-650","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-03)"},{"claim":"Rain-fed sorghum seasonal rainfall floor 400 mm (low end of cited 400-900 mm range).","value":">=400","unit":"mm","sourceType":"literature","sourceUrl":"https://admin.concern.net/sites/default/files/media/migrated/crop_weather_and_climate_vulnerability_profiles_.pdf","accessedOn":"2026-11-17","citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles; corroborated by ICRISAT/WASIP (1990)."}]'::jsonb,
     '{"required":null,"applicationsPerSeason":null}'::jsonb,
     'research-2026-11-14'
   ),
@@ -151,10 +152,10 @@ values
     array[]::text[],
     'cereal',
     array['Tofa LGA, Kano State (Sudan Savanna)', 'West African Sahel'],
-    '{"min":null,"max":null,"status":"unresolved_for_tofa"}'::jsonb,
-    '{"rainfallRequirementMm":null,"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":650,"evidenceId":"FAO-WATER-03","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
+    '{"min":55,"max":70,"status":"advisory_early_types","citation":"Ajeigbe et al. (2020), Handbook on Improved Pearl Millet Production Practices in North Eastern Nigeria, ICRISAT; early types mature 55-65 days. Advisory only, local cultivar unidentified. Accessed 2026-11-17."}'::jsonb,
+    '{"rainfallRequirementMm":{"min":250,"max":null,"citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles (pearl millet 250-700 mm/season); Ajeigbe et al. (2020), ICRISAT Nigeria handbook (mostly 250-700 mm). 250 mm is the low end of the cited range, not a Tofa-local threshold. Accessed 2026-11-17.","hardConstraint":true},"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":650,"evidenceId":"FAO-WATER-03","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
     '{"nitrogenContribution":"consumes","residueLoad":null,"diseaseBreak":null}'::jsonb,
-    '[{"claim":"Indicative seasonal crop water need for sorghum/millet is 450 to 650 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"450-650","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-03)"}]'::jsonb,
+    '[{"claim":"Indicative seasonal crop water need for sorghum/millet is 450 to 650 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"450-650","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-03)"},{"claim":"Rain-fed pearl millet seasonal rainfall floor 250 mm (low end of cited 250-700 mm range).","value":">=250","unit":"mm","sourceType":"literature","sourceUrl":"https://oar.icrisat.org/11530/1/Hand%20book%20on%20Millet%20production%20printed%20version.pdf","accessedOn":"2026-11-17","citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles; Ajeigbe et al. (2020), ICRISAT."}]'::jsonb,
     '{"required":null,"applicationsPerSeason":null}'::jsonb,
     'research-2026-11-14'
   ),
@@ -169,9 +170,9 @@ values
     'cereal',
     array['Tofa LGA, Kano State (Sudan Savanna)', 'Northern Guinea Savanna'],
     '{"min":null,"max":null,"status":"unresolved_for_tofa"}'::jsonb,
-    '{"rainfallRequirementMm":null,"indicativeCropWaterNeedMmPerSeason":{"min":500,"max":800,"evidenceId":"FAO-WATER-01","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
+    '{"rainfallRequirementMm":{"min":500,"max":null,"citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles (maize 500-1200 mm/cycle, optimum 600-900 mm); ICRISAT (1984), Agrometeorology of Sorghum and Millet, documents failure-level yields near 400 mm. 500 mm is the low end of the cited range. Maize is marginal in Tofa, which is drier than its core zone. Accessed 2026-11-17.","hardConstraint":true},"indicativeCropWaterNeedMmPerSeason":{"min":500,"max":800,"evidenceId":"FAO-WATER-01","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
     '{"nitrogenContribution":"consumes","residueLoad":null,"diseaseBreak":null}'::jsonb,
-    '[{"claim":"Indicative seasonal crop water need for maize is 500 to 800 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"500-800","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-01)"}]'::jsonb,
+    '[{"claim":"Indicative seasonal crop water need for maize is 500 to 800 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"500-800","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-01)"},{"claim":"Rain-fed maize seasonal rainfall floor 500 mm (low end of cited 500-1200 mm range).","value":">=500","unit":"mm","sourceType":"literature","sourceUrl":"https://admin.concern.net/sites/default/files/media/migrated/crop_weather_and_climate_vulnerability_profiles_.pdf","accessedOn":"2026-11-17","citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles; ICRISAT (1984)."}]'::jsonb,
     '{"required":null,"applicationsPerSeason":null}'::jsonb,
     'research-2026-11-14'
   ),
@@ -185,10 +186,10 @@ values
     array[]::text[],
     'legume',
     array['Tofa LGA, Kano State (Sudan Savanna)', 'Northern Nigeria'],
-    '{"min":null,"max":null,"status":"unresolved_for_tofa"}'::jsonb,
-    '{"rainfallRequirementMm":null,"indicativeCropWaterNeedMmPerSeason":null,"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
+    '{"min":60,"max":85,"status":"advisory_sudan_savanna","citation":"Omoigui et al. (2018), Guide to Cowpea production in West Africa, IITA/ICRISAT (KNARDA Kano partner); Nigerian released varieties 60-85 days. Advisory only, local cultivar unidentified. Accessed 2026-11-17."}'::jsonb,
+    '{"rainfallRequirementMm":{"min":300,"max":null,"citation":"Omoigui et al. (2018), Guide to Cowpea production in West Africa, IITA/ICRISAT; Sudan-savanna short-rainfall band 300-500 mm with 60-70-day varieties. 300 mm is the low end, not a Tofa-local threshold. Accessed 2026-11-17.","hardConstraint":true},"indicativeCropWaterNeedMmPerSeason":null,"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
     '{"nitrogenContribution":"fixes","residueLoad":null,"diseaseBreak":null}'::jsonb,
-    '[{"claim":"Cowpea (Vigna unguiculata) evaluated as a grain legume preceding maize in Northern Guinea Savanna rotation trials; white cowpeas recorded as farmer-reported wording in Doka.","value":"Vigna unguiculata","sourceType":"literature","sourceUrl":"https://doi.org/10.1007/s10705-008-9232-9","accessedOn":"2026-11-14","citation":"Yusuf et al. (2009), Nutrient Cycling in Agroecosystems (NIGERIA-ROT-01)"}]'::jsonb,
+    '[{"claim":"Cowpea (Vigna unguiculata) evaluated as a grain legume preceding maize in Northern Guinea Savanna rotation trials; white cowpeas recorded as farmer-reported wording.","value":"Vigna unguiculata","sourceType":"literature","sourceUrl":"https://doi.org/10.1007/s10705-008-9232-9","accessedOn":"2026-11-14","citation":"Yusuf et al. (2009), Nutrient Cycling in Agroecosystems (NIGERIA-ROT-01)"},{"claim":"Rain-fed cowpea seasonal rainfall floor 300 mm (Sudan-savanna short-rainfall band 300-500 mm).","value":">=300","unit":"mm","sourceType":"literature","sourceUrl":"https://e-catalogs.taat-africa.org/documents/gXagR14m4YfuBmaGpraLNwNKoO1pYcEXTNDQ0yEi.pdf","accessedOn":"2026-11-17","citation":"Omoigui et al. (2018), Guide to Cowpea production in West Africa, IITA/ICRISAT."}]'::jsonb,
     '{"required":null,"applicationsPerSeason":null}'::jsonb,
     'research-2026-11-14'
   ),
@@ -203,7 +204,7 @@ values
     'legume',
     array['Tofa LGA, Kano State (Sudan Savanna)', 'Northern Guinea Savanna'],
     '{"min":null,"max":null,"status":"unresolved_for_tofa"}'::jsonb,
-    '{"rainfallRequirementMm":null,"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":700,"evidenceId":"FAO-WATER-04","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
+    '{"rainfallRequirementMm":{"min":350,"max":null,"citation":"Concern Worldwide, Crop Weather and Climate Vulnerability Profiles (soybean 350-1100 mm/cycle); FAO Irrigation & Drainage 56 range 450-825 mm. Low end of the cited range; soybean is advisory at Tofa dry margin. Accessed 2026-11-17.","hardConstraint":true},"indicativeCropWaterNeedMmPerSeason":{"min":450,"max":700,"evidenceId":"FAO-WATER-04","useAsHardConstraint":false},"temperatureC":null,"soilPh":null,"soilTexture":null,"droughtSensitivity":null,"plantingWindow":null}'::jsonb,
     '{"nitrogenContribution":"fixes","residueLoad":null,"diseaseBreak":null}'::jsonb,
     '[{"claim":"Indicative seasonal crop water need for soybean is 450 to 700 mm per total growing period (FAO rough estimate; crop ET need, not a Tofa rain-fed threshold).","value":"450-700","unit":"mm","sourceType":"literature","sourceUrl":"https://www.fao.org/4/s2022e/s2022e07.htm","accessedOn":"2026-11-14","citation":"Brouwer & Heibloem (1986), FAO Irrigation Water Management Training Manual No. 3, Ch. 3 (FAO-WATER-04)"}]'::jsonb,
     '{"required":null,"applicationsPerSeason":null}'::jsonb,
@@ -324,79 +325,11 @@ on conflict (id) do update set
   mechanism = excluded.mechanism;
 
 -- -----------------------------------------------------------------------------
--- Case studies (docs/research/field-interviews/interview-01..03/case-study.md)
+-- Interview case studies: intentionally NOT seeded.
+--
+-- The field interviews were research with named smallholders. This repository is
+-- public and the product no longer ships a case-study feature, so no personal
+-- data (names, village, holding size, per-farm practice) is stored or rendered.
+-- The interviews are kept only as anonymous, aggregate research evidence under
+-- docs/research/field-interviews/. This seed writes no rows into case_studies.
 -- -----------------------------------------------------------------------------
-insert into public.case_studies (
-  slug,
-  farmer_name,
-  village,
-  lga,
-  state,
-  farming_experience,
-  summary,
-  body,
-  crop_codes,
-  planting_trigger,
-  consented_to_publication,
-  consented_to_gps,
-  published
-)
-values
-  (
-    'bello-yusuf-maitama',
-    'Bello Yusuf Maitama',
-    'Doka',
-    'Tofa',
-    'Kano',
-    'Smallholder farmer managing 2 to 4 hectares across non-contiguous parcels in Doka village.',
-    'Farms 2 to 4 ha across non-contiguous parcels in the rainy season only using strip cropping (sorghum, maize, soybeans, groundnuts, tomatoes, peppers). Waits for confirmed soil moisture across light showers before planting.',
-    'Bello Yusuf Maitama farms roughly 2 to 4 hectares across non-contiguous parcels in Doka village, Tofa LGA, Kano State. Because well water is limited around his parcels, he farms strictly in the rainy season. He practices strip cropping to suppress weeds, protect the soil surface, and disrupt pest cycles. For planting timing, he waits until the soil retains confirmed moisture from early showers rather than rushing on the first rain.',
-    array['sorghum', 'maize', 'soybean', 'groundnut', 'tomato', 'pepper'],
-    'wait_for_confirmed_moisture',
-    true,
-    true,
-    true
-  ),
-  (
-    'amina-habibu',
-    'Amina Habibu',
-    'Doka',
-    'Tofa',
-    'Kano',
-    'Experienced farmer managing roughly 4 hectares across three main fields and two smaller plots, trained through Bayero University extension outreach.',
-    'Manages roughly 4 ha across rainy and dry seasons with structured ridge strip plans (3:3 sorghum and soybean, 4:3 sorghum and groundnut, 4:4 sorghum and soybean separated by kalankuwa millet border lines) and seasonal crop rotation. Plants immediately on the first rains.',
-    'Amina Habibu manages roughly 4 hectares across three larger fields and two smaller plots in Doka village, Tofa LGA, farming in both the rainy and dry seasons. She uses structured ridge ratios separated by millet boundary lines (kalankuwa) and rotates crops across seasons to sorghum, pearl millet, or late millet before returning earlier crops. Because the rainy season can end early, she plants immediately when the first rains arrive.',
-    array['sorghum', 'pearl_millet', 'maize', 'cowpea', 'soybean', 'groundnut', 'tomato', 'pepper'],
-    'plant_on_first_rains',
-    true,
-    true,
-    true
-  ),
-  (
-    'abubakar-dan-hajiya',
-    'Abubakar (Dan Hajiya)',
-    'Doka',
-    'Tofa',
-    'Kano',
-    '30 years of farming experience; owns roughly 30 hectares divided into plots of about 3 hectares each.',
-    'Farms roughly 30 ha in 3 ha plots across rainy and dry seasons. Follows a 2-to-3-year plot rotation alternating sorghum and soybean with white cowpeas or maize. Prepares land and plants quickly once early rains establish good soil moisture.',
-    'Abubakar (Dan Hajiya) has 30 years of farming experience in Doka village, Tofa LGA, managing roughly 30 hectares of owned farmland divided into plots of about 3 hectares. He rotates per plot on a two-to-three-year cycle, alternating sorghum and soybeans with white cowpeas or maize, and notes that soybeans require less chemical fertilizer than maize. He prepares the land and plants quickly once early rains establish good moisture in the soil.',
-    array['sorghum', 'maize', 'cowpea', 'soybean', 'groundnut'],
-    'prepare_and_plant_quickly',
-    true,
-    false,
-    true
-  )
-on conflict (slug) do update set
-  farmer_name = excluded.farmer_name,
-  village = excluded.village,
-  lga = excluded.lga,
-  state = excluded.state,
-  farming_experience = excluded.farming_experience,
-  summary = excluded.summary,
-  body = excluded.body,
-  crop_codes = excluded.crop_codes,
-  planting_trigger = excluded.planting_trigger,
-  consented_to_publication = excluded.consented_to_publication,
-  consented_to_gps = excluded.consented_to_gps,
-  published = excluded.published;

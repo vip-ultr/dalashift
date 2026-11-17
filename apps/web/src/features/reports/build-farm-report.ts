@@ -11,6 +11,16 @@ import type {
 
 export type ReportKind = 'farm_summary' | 'seasonal' | 'rotation_plan';
 
+/**
+ * The parcel fields a printable report needs. Geometry is deliberately absent:
+ * coordinates are redacted in shareable reports, so no geometry (real or
+ * invented) is required to produce one.
+ */
+export type ReportParcelInput = Pick<
+  Parcel,
+  'id' | 'name' | 'areaHa' | 'geometryMethod' | 'locationUncertaintyM'
+>;
+
 export interface SourceAttributionRecord {
   readonly sourceId: string;
   readonly name: string;
@@ -117,7 +127,7 @@ export function buildFarmReportPayload(input: {
   readonly periodStart: string | null;
   readonly periodEnd: string | null;
   readonly farm: Farm;
-  readonly parcels: readonly Parcel[];
+  readonly parcels: readonly ReportParcelInput[];
   readonly crops: readonly FarmCrop[];
   readonly priorities: FarmerPriorities | null;
   readonly observations: readonly ProvenancedValue[];
@@ -138,9 +148,9 @@ export function buildFarmReportPayload(input: {
   if (input.seasonalOutlook) {
     usedSourceIds.add(input.seasonalOutlook.rainfallToDate.sourceId);
   }
-  if (usedSourceIds.size === 0) {
-    usedSourceIds.add('nasa_power');
-  }
+  // Never fabricate an attribution. When no environmental observation was used,
+  // the report carries no source entries rather than claiming a source it did
+  // not consume.
 
   const attributions: SourceAttributionRecord[] = [];
   for (const sourceId of usedSourceIds) {

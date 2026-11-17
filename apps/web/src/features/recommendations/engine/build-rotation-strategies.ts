@@ -77,8 +77,7 @@ export function buildAndCompareRotationStrategies(input: {
       statement:
         input.farmerCropHistory.length > 0
           ? `Recorded farm crop sequence: ${orderedExistingCodes.map((code) => cropsByCode.get(code)?.name ?? code).join(' followed by ')}.`
-          : (farmerRule?.statement ??
-            'Baseline crop practice reported by the farmer in Doka, Tofa LGA.'),
+          : (farmerRule?.statement ?? 'Baseline crop practice reported by the farmer in Tofa LGA.'),
       citation: farmerRule?.sourceUrl ?? 'Farmer-supplied crop record on this parcel',
       value: null,
       unit: null,
@@ -158,7 +157,7 @@ export function buildAndCompareRotationStrategies(input: {
     evidenceStrengthReason: deriveStrategyEvidenceReason(altOneLegs),
   };
 
-  // 3. Alternative 2: Pearl millet / Sorghum & Cowpea sequence (ICRISAT Sahel + Doka farmer report)
+  // 3. Alternative 2: Pearl millet / Sorghum & Cowpea sequence (ICRISAT Sahel + anonymised interview report)
   const icrisatRule = input.rotationRules.find((rule) => rule.id.includes('icrisat'));
   const altTwoCodes = pickDistinctSequence(
     orderedExistingCodes,
@@ -193,7 +192,7 @@ export function buildAndCompareRotationStrategies(input: {
     ],
     benefits: [
       'Pairs lower seasonal water-need dryland cereals (sorghum and pearl millet, FAO indicative 450 to 650 mm) with cowpea.',
-      'Aligns with both Sahelian long-term rotation research (Bado et al., 2022) and seasonal rotation practices reported in Doka interviews.',
+      'Aligns with both Sahelian long-term rotation research (Bado et al., 2022) and seasonal rotation practices reported in the anonymised interviews.',
     ],
     informationGaps: [
       ...collectStrategyGaps(altTwoLegs),

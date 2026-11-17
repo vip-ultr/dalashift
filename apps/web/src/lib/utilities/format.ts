@@ -137,24 +137,18 @@ export const HAUSA_CROP_NAMES: Readonly<
 };
 
 export const PLANTING_TRIGGER_TITLES: Readonly<
-  Record<
-    PlantingTrigger,
-    { readonly en: string; readonly ha: string; readonly exampleFarmer: string }
-  >
+  Record<PlantingTrigger, { readonly en: string; readonly ha: string }>
 > = {
   wait_for_confirmed_moisture: {
     en: 'Wait for confirmed soil moisture across several showers',
     ha: 'Jira har kasa ta rike danshi sosai kafin shuka',
-    exampleFarmer: 'Bello Yusuf Maitama (Doka)',
   },
   plant_on_first_rains: {
     en: 'Plant immediately on the first sustained rains',
     ha: 'Shuka nan take da zarar ruwan sama na farko ya sauka',
-    exampleFarmer: 'Amina Habibu (Doka)',
   },
   prepare_and_plant_quickly: {
     en: 'Prepare the land and sow quickly once early moisture establishes',
     ha: 'Gyara gona da shuka da wuri bayan ruwan farko ya jiqa kasa',
-    exampleFarmer: 'Abubakar / Dan Hajiya (Doka)',
   },
 };

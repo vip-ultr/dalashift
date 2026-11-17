@@ -121,7 +121,7 @@ describe('farmerPrioritiesInputSchema', () => {
 describe('farmInputSchema', () => {
   it('accepts valid input and normalizes borehole alias to well', () => {
     const res = farmInputSchema.safeParse({
-      name: 'Bello Holding',
+      name: 'Test Holding',
       farmingMethod: 'irrigated',
       irrigationMethod: 'borehole',
       soilNotes: '',

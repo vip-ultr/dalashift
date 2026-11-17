@@ -31,7 +31,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
 
 const TOFA_COORDINATES = {
-  name: 'Doka, Tofa LGA, Kano State, Nigeria',
+  name: 'Validation region, Tofa LGA, Kano State, Nigeria',
   latitude: 12.05,
   longitude: 8.27,
   boundingBox: [8.2, 12.0, 8.35, 12.1],

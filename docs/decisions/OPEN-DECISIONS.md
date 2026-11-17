@@ -140,10 +140,10 @@ currently **private**, created 13 November 2026.
 | **B. Private** | The team retains control. The submission link will not open for judges unless it is changed at the last minute, which is how mistakes happen. |
 
 **Recommendation.** **Public**, and before the submission rather than during
-it. The repository holds no secrets, no credentials and no real farmer audio
+it. The repository holds no secrets, no credentials, no real farmer audio
 (the recordings were removed from tracking and purged from the git history on
-13 November). The one outstanding exposure is farmer names in the interview
-case studies, which is **D-12** and should be settled before the flip.
+13 November) and no identifying farmer data. The interview case studies are
+anonymised, which settles the exposure discussed in **D-12**.
 
 **Also note.** Branch protection on `main` is unavailable on a private
 repository without GitHub Pro. Making it public enables it immediately.
@@ -159,23 +159,18 @@ repository without GitHub Pro. Making it public enables it immediately.
 **Question.** Which permissions did each farmer give, and what may appear in a
 public artefact?
 
-**Evidence.** All three interviews recorded a name and a location. Two of the
-three explicitly consented to GPS coordinates on the record:
-
-> "We are completely ready. Whenever you are ready to take the GPS coordinates
-> of the farm, we will lead you there directly." (Bello Yusuf Maitama)
-
-> "We are completely ready. Whenever you come, we will lead you directly to
-> the farms. They aren't far, just a short walk from here." (Amina Habibu)
-
-Interview 03 did not raise coordinates, and his holding is roughly **30
-hectares**, which is materially more sensitive to publish than a 2 hectare
-plot.
+**Evidence.** All three interviews recorded a name and a location in the
+research record, but the published case studies are anonymised: participants
+are labelled A, B and C and no name, village, holding size or precise location
+appears. Two of the three explicitly consented to GPS coordinates on the
+record, but no coordinates are published here.
 
 The review distinguishes five separate permissions: participate, record
 personal information, capture photographs, collect precise coordinates, and
-publish identifiable information. The first two and, for two farmers, the
+publish identifiable information. The first two and, for two participants, the
 fourth are evidenced. The third and fifth were not raised in any interview.
+Publication of identifiable information has not been granted, so the records
+are anonymised by default.
 
 **Options.**
 
@@ -185,16 +180,15 @@ fourth are evidenced. The third and fifth were not raised in any interview.
 | **B. Pseudonymised in the repository, named internally** | Safe by default. Weaker as evidence. |
 | **C. Case studies in a private repository, public summary only** | Safest, and splits the submission evidence. |
 
-**Recommendation.** **Option A for names, with coordinates and contact details
-never published.** The farmers are named academic research participants with
-University of Bayero involvement, and a named local case study is the
-strongest possible evidence for the Local Impact Award. But only if publication
-was actually consented to. **Where it was not, pseudonymise.** Ask each farmer
-directly; the answer is one sentence each and the three interviews already
-built the relationship that makes it askable.
+**Recommendation.** **Option B, pseudonymised in the repository, with
+coordinates and contact details never published.** Publication consent was
+not confirmed for every participant, so the case studies are published under
+neutral labels. The anonymised records still carry the research evidence and
+consent notes, and remain the strongest available evidence for the Local Impact
+Award without exposing participants.
 
-**Needed from the team.** The actual consent per farmer, from whoever
-conducted the interviews.
+**Needed from the team.** The actual consent per participant, from whoever
+conducted the interviews, kept in the internal research record.
 
 **Deadline.** Before D-02, and before any case study is published.
 
@@ -249,9 +243,9 @@ obvious before.
 > "If local lead farmers test it and succeed, others will naturally follow
 > their example." (Interview 01)
 
-> "People even come from neighboring towns like Gwarzo asking about our crops
-> and how to get the improved seeds, and I direct them to the agricultural
-> extension officer (malamin gona) who works closely with us." (Interview 02)
+> "People even come from neighboring towns asking about our crops and how to
+> get the improved seeds, and I direct them to the agricultural extension
+> officer (malamin gona) who works closely with us." (Interviewed smallholder B)
 
 > "The research sector, like Bayero University, can invite agricultural
 > extension experts to educate them. Then these agricultural experts can engage
@@ -460,28 +454,23 @@ different from the coverage fraction. Three separate fields:
 
 **Question.** Can one farm hold more than one geometry?
 
-**Evidence.** Directly from Interview 01:
-
-> "My farmlands span roughly two to four hectares in total, though they are
-> not located in one single contiguous piece."
-
-Interview 02 has a related but different structure: three large farms plus two
-smaller plots, which she counts as one holding of roughly 4 hectares.
-Interview 03 has about 30 hectares in plots of about 3 hectares each.
+**Evidence.** Participants described holdings made up of several separate
+parcels, sometimes non-contiguous, with rotation and strip planning managed at
+the plot level. Exact holding sizes, plot counts and verbatim descriptions are
+withheld because they could identify participants.
 
 **Options.**
 
 | Option | Consequence |
 | ------ | ----------- |
-| **A. One farm, one polygon** | Simple. Wrong for at least one of the three cases. Loses the non-contiguous farmer entirely. |
+| **A. One farm, one polygon** | Simple. Wrong for these cases: it loses the non-contiguous parcels entirely. |
 | **B. Farm holds many geometries** | Correct. Every farm becomes a collection of parcels. The engine analyses per parcel and reports at farm level. |
 | **C. Farm holds many geometries, and a parcel is the unit of analysis** | Correct and precise. More work. |
 
-**Recommendation.** **Option C.** The data model already has `farm_plots`, but
-the current design treats a plot as an optional subdivision rather than a
-parcel with its own geometry. The interviews show the parcel is the real unit
-of management. Interview 03 rotates **per three-hectare plot**, and
-Interview 02 has distinct ridge plans per farm.
+**Recommendation.** **Option C.** The data model now has `parcels` with
+mandatory geometry as the unit of analysis (ADR-0011). The interviews show the
+parcel is the real unit of management, with rotation and strip planning done
+per parcel.
 
 **Needed from the team.** A decision. It changes the schema, not just the
 wording.
@@ -500,11 +489,11 @@ All three farmers described the same physical situation: **the rains start,
 then dry spells follow**. All three responded to it, and **all three chose a
 different trigger**.
 
-| Farmer | Stated rule |
-| ------ | ----------- |
-| Bello Yusuf Maitama | **Wait** until the soil retains sufficient moisture from subsequent light showers. "Those who rushed to plant without caution suffered losses." |
-| Amina Habibu | **Plant immediately** on the first rains, without waiting, because the season is short. |
-| Abubakar | **Prepare the land and plant quickly** once the soil has good moisture from the early rains. |
+| Participant | Stated rule |
+| ----------- | ----------- |
+| Interviewed smallholder A | **Wait** until the soil retains sufficient moisture from subsequent light showers. |
+| Interviewed smallholder B | **Plant immediately** on the first rains, without waiting, because the season is short. |
+| Interviewed smallholder C | **Prepare the land and plant quickly** once the soil has good moisture from the early rains. |
 
 These are three coherent risk postures, not three contradictions: minimum
 germination failure, maximum season length, and a balance between them.
@@ -513,7 +502,7 @@ germination failure, maximum season length, and a balance between them.
 
 | Option | Consequence |
 | ------ | ----------- |
-| **A. A calendar date** | Simple, and wrong for every farmer in the dataset in the year they describe. Would have told Bello to do exactly what cost others their crop. |
+| **A. A calendar date** | Simple, and wrong for every participant in the year they describe. Would have told one participant to do exactly what cost others their crop. |
 | **B. A single trigger for everyone** | Better, but imposes one farmer's risk posture on the others. |
 | **C. A trigger, with the farmer's own rule as an input** | The recommendation is expressed as a condition, and the farmer's stated preference is respected and adjustable. |
 
@@ -534,16 +523,12 @@ question in this register.
 **Question.** Does the rules catalog include rules the farmers stated, or only
 rules from published agronomy?
 
-**Evidence.** Two of the three farmers stated a rotation rule in their own
-words.
-
-> "If you plant on a farm this year, next season you rotate to sorghum, pearl
-> millet, or late millet, and then bring the previous crop back later."
-> (Amina Habibu)
-
-> "Wherever we plant sorghum and soybeans, next time that same spot gets white
-> cowpeas or soybeans, or if it had white cowpeas or soybeans, it gets sorghum
-> or maize, following a two-to-three-year crop rotation cycle." (Abubakar)
+**Evidence.** Two of the three participants stated a rotation rule in their own
+words, and the two differ. One changes crop each season among cereals and
+millets and brings the previous crop back later. The other cycles a cereal and
+legume sequence across plots over a multi-year period. Exact crop lists and
+cycle lengths are withheld in the anonymised records because they could
+identify a participant.
 
 **Options.**
 
@@ -664,7 +649,7 @@ the current documentation.
 | 3 | Farmer information is an **input to the comparison**, not profile data. | Partly true in the PRD and methodology. Needs strengthening, and D-10, D-11 and D-15 are the concrete mechanisms. |
 | 4 | GPS is a **point**, and farm boundaries are a separate, later capability. | ADR-0005 is polygon-centric. See D-06. |
 | 5 | Environmental observations must carry their **actual** spatial resolution. | Already correct in the schema and the methodology. Verify the implementation follows it. |
-| 6 | **Tofa LGA** is the confirmed initial case-study location, and Doka is the specific village. | Already consistent. Add Doka. |
+| 6 | **Tofa LGA** is the confirmed initial case-study location. | Already consistent. No specific village is published. |
 | 7 | Farmer reports must be **distinguished** from documented agronomic evidence and from environmental measurements. | The distinction exists in the methodology but needs to reach the case study documents, which it now does. |
 | 8 | The PRD, architecture, methodology and implementation plan must **describe the same product**. | Requires the decisions above to land first. |
 
@@ -716,9 +701,9 @@ interviews.
 | Document | Relevance |
 | -------- | --------- |
 | [`../research/field-interviews/README.md`](../research/field-interviews/README.md) | The interview methodology and how the case studies are used |
-| [`../research/field-interviews/interview-01/case-study.md`](../research/field-interviews/interview-01/case-study.md) | Bello Yusuf Maitama |
-| [`../research/field-interviews/interview-02/case-study.md`](../research/field-interviews/interview-02/case-study.md) | Amina Habibu |
-| [`../research/field-interviews/interview-03/case-study.md`](../research/field-interviews/interview-03/case-study.md) | Abubakar (Dan Hajiya) |
+| [`../research/field-interviews/interview-01/case-study.md`](../research/field-interviews/interview-01/case-study.md) | Interviewed smallholder A (anonymous) |
+| [`../research/field-interviews/interview-02/case-study.md`](../research/field-interviews/interview-02/case-study.md) | Interviewed smallholder B (anonymous) |
+| [`../research/field-interviews/interview-03/case-study.md`](../research/field-interviews/interview-03/case-study.md) | Interviewed smallholder C (anonymous) |
 | [`../product/recommendation-methodology.md`](../product/recommendation-methodology.md) | The method D-05 and D-10 change |
 | [`../api/data-sources.md`](../api/data-sources.md) | The datasets the comparisons are built on |
 | [`../hackathon/README.md`](../hackathon/README.md) | Rules, deadlines and submission requirements |

@@ -12,10 +12,11 @@
 ## Context
 
 Phase 1 produced a research, architecture and documentation foundation, and
-then the team interviewed **three farmers in Doka village, Tofa LGA, Kano
-State**. A separate architecture review challenged parts of the design. The
-evidence from the interviews and the points from the review together required
-a set of product decisions.
+then the team interviewed **three smallholders in Tofa LGA, Kano State**. The
+participants are anonymous and are labelled A, B and C; no name, village,
+holding size or plot-level detail is published. A separate architecture review
+challenged parts of the design. The evidence from the interviews and the points
+from the review together required a set of product decisions.
 
 All fifteen decisions are recorded in
 [`OPEN-DECISIONS.md`](./OPEN-DECISIONS.md), with the evidence and the
@@ -23,17 +24,18 @@ options. This ADR records the ones that change the architecture. The
 remainder (licence, visibility, consent, data mode, aliases) are recorded
 where they belong and do not need an ADR.
 
-**The three case studies that drove this:**
+**The three anonymised case studies that drove this:**
 
-| Farmer | Farm | Rotation | Planting rule |
-| ------ | ---- | -------- | ------------- |
-| Bello Yusuf Maitama | 2 to 4 ha, not contiguous | Strip cropping, rotation not established | **Waits** for soil moisture |
-| Amina Habibu | About 4 ha, ridge-based strip plans | Explicit, learned from University training | **Plants immediately** on the first rains |
-| Abubakar (Dan Hajiya) | About 30 ha owned, 3 ha plots | Explicit, two-to-three-year cycle | **Plants quickly** once the soil has good moisture |
+| Participant | Rotation | Planting rule |
+| ----------- | -------- | ------------- |
+| Interviewed smallholder A | Strip cropping, rotation not established | **Waits** for soil moisture |
+| Interviewed smallholder B | Explicit, learned from training | **Plants immediately** on the first rains |
+| Interviewed smallholder C | Explicit, multi-year cycle | **Plants quickly** once the soil has good moisture |
 
-All three describe the same physical situation: the rains start, then dry
-spells follow. All three respond to it differently, and each response is
-coherent.
+Holdings, plot counts and exact practices are withheld because they could
+identify the participants. All three describe the same physical situation: the
+rains start, then dry spells follow. All three respond to it differently, and
+each response is coherent.
 
 ---
 
@@ -44,9 +46,9 @@ coherent.
 The tool is not adviser-only. Farmers use it themselves, and advisers and
 extension officers use it on farmers' behalf.
 
-**Evidence.** All three farmers describe the extension officer as the hub of
-adoption: Amina directs visitors to *"the agricultural extension officer
-(malamin gona)"*, and Abubakar describes the chain from University to
+**Evidence.** All three participants describe the extension officer as the hub
+of adoption: one directs visitors to *"the agricultural extension officer
+(malamin gona)"*, and another describes the chain from university to
 extension experts to village heads, mosque leaders and association leaders.
 But each of them also says they will use it themselves: *"We are ready and
 waiting for whatever you bring."*
@@ -87,9 +89,9 @@ modelled value against a **cited threshold**, and states the evidence.
 
 **Evidence.** The architecture review is explicit, and the project's own
 methodology document already conceded the point: *"Thresholds like 0.7 are
-arbitrary until the ruleset has been tested against real farms."* Abubakar's
-adoption test is comprehension: *"if you come with an approach that a rural
-farmer cannot comprehend, they won't trust it."*
+arbitrary until the ruleset has been tested against real farms."* A
+participant's adoption test is comprehension: *"if you come with an approach
+that a rural farmer cannot comprehend, they won't trust it."*
 
 **What replaces the numbers.**
 
@@ -115,9 +117,10 @@ each with its own geometry. Environmental analysis and rotation comparison
 happen **per parcel**. A GPS point and a drawn polygon are both accepted, with
 the GPS point as the default path.
 
-**Evidence.** Bello: *"they are not located in one single contiguous piece."*
-Amina counts three large "hectares" plus two smaller plots as one holding.
-Abubakar rotates per three-hectare plot.
+**Evidence.** One participant said the parcels are *"not located in one single
+contiguous piece."* Participants manage multiple parcels as one holding and
+describe rotation at the plot level. Exact holding sizes and plot counts are
+withheld because they could identify participants.
 
 **Consequence.** `farms` keeps the holding. `farm_plots` becomes a
 **parcel** with mandatory geometry, and becomes the unit of analysis.
@@ -142,8 +145,8 @@ The engine never recommends a **date**. It recommends a **condition**, and the
 farmer's own stated rule is an input that shapes it.
 
 **Evidence.** See the three rules in the context table. A date-based
-recommendation would have told Bello to do exactly what cost other farmers
-their crop that year.
+recommendation would have told one participant to do exactly what cost other
+farmers their crop that year.
 
 **Consequence.** This is the most significant change in the product, and it
 elevates soil moisture from background context to **the trigger variable**.
@@ -167,9 +170,9 @@ the trade-off rather than hiding it.
 The rules catalog holds rules from **two labelled sources**: `literature` and
 `farmer_report`. Every rule carries its source.
 
-**Evidence.** Amina and Abubakar each stated a rotation rule in their own
-words, and the two differ. The catalog already required a citation for every
-crop; the same treatment extends to rotation rules.
+**Evidence.** Two participants each stated a rotation rule in their own words,
+and the two differ. The catalog already required a citation for every crop; the
+same treatment extends to rotation rules.
 
 **Consequence.** The baseline in every comparison is the practice actually in
 the field, carrying the farmer's own provenance. This directly answers the
@@ -201,8 +204,8 @@ The tool presents a **seasonal outlook** derived from the climate record and
 the current season, explicitly framed as a risk indicator and **never as a
 forecast or a prediction**.
 
-**Evidence.** Amina asked for a 30-day forecast and called it *"tremendous"*.
-But the current PRD excludes forecasts, and a forecast is a different kind of
+**Evidence.** One participant asked for a 30-day forecast and called it
+*"tremendous"*. But the current PRD excludes forecasts, and a forecast is a different kind of
 data with a different correctness burden. A seasonal outlook built from
 POWER climatology and the current rainfall record is achievable from data
 already in hand, and it carries the same decision value: whether the season
@@ -212,19 +215,20 @@ is likely to support a long-duration crop.
 trigger logic and the crop suitability path. If a forecast source is added
 later, it slots in behind the same interface.
 
-### 10. Consent: names may be published
+### 10. Consent: participant identities are withheld
 
-Farmer names may appear in public artefacts. **Precise coordinates and
-contact details never do.** Photographs and publication consent were not
-raised in the interviews, so they remain unconfirmed and are not published.
+Participant identities are withheld in public artefacts. **Precise coordinates
+and contact details are never published.** Photographs and publication consent
+were not raised in the interviews, so they remain unconfirmed and are not
+published.
 
-**Evidence.** All three farmers gave their names on the record. Two explicitly
-consented to GPS coordinates. All are research participants in a University of
-Bayero programme.
+**Evidence.** All three participants took part on the record. The records are
+published anonymously, labelled A, B and C, so that no name, village or precise
+location appears.
 
-**Consequence.** The case studies are committed with names. The consent table
-in each case study records exactly what was given. Coordinates live in the
-database, not the repository.
+**Consequence.** The case studies are committed anonymously. The consent note
+in each case study records what was given. Coordinates live in the database,
+not the repository.
 
 ---
 

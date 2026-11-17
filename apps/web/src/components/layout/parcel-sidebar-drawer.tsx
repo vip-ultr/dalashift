@@ -177,12 +177,6 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
             Add New Farm
           </Button>
         </Link>
-        <Link
-          href="/register?new=true"
-          className="block text-center text-[11px] font-medium text-[#6b7280] hover:text-[#0a4232] transition-colors"
-        >
-          Create another account
-        </Link>
       </div>
     </aside>
   );

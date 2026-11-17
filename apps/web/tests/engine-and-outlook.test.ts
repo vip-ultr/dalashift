@@ -151,7 +151,7 @@ const sampleRules: readonly RotationRule[] = [
     accessedOn: '2026-11-14',
     appliesTo: ['sorghum', 'soybean'],
     follows: ['cowpea', 'soybean', 'maize'],
-    mechanism: 'Farmer-reported practice in Doka village.',
+    mechanism: 'Farmer-reported practice from an anonymised interview in Tofa LGA.',
   },
   {
     id: 'literature-samaru-yusuf-2009-legume-maize',
@@ -341,9 +341,7 @@ describe('qualitative engine, planting trigger, and seasonal outlook', () => {
       parcels: [
         {
           id: '00000000-0000-0000-0000-000000000088',
-          farmId: '00000000-0000-0000-0000-000000000099',
           name: 'Kudu Parcel',
-          geometry: { type: 'Point', coordinates: [8.27, 12.05] },
           areaHa: 1.5,
           locationUncertaintyM: 15,
           geometryMethod: 'gps_point',

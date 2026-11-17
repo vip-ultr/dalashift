@@ -108,8 +108,8 @@ the build.
   - Desktop `56px` vertical icon rail (`WorkspaceRail`), `288px` collapsible
     parcel and case study drawer (`ParcelSidebarDrawer`), and public header
     (`PublicNavbar`).
-  - Application pages for `/` (landing page with Doka village case studies and
-    resolution honesty comparison), `/login` and `/register` (`AuthCard`),
+  - Application pages for `/` (landing page with the validation-area case
+    studies and resolution honesty comparison), `/login` and `/register` (`AuthCard`),
     `/cases` and `/cases/[slug]` (public Tofa LGA case studies), `/farms`,
     `/farms/new` (3-step onboarding wizard with Hausa crop aliases, `"beans"`
     ambiguity guardrail, and GPS point / polygon support), `/farms/[farmId]`,
@@ -135,8 +135,7 @@ the build.
   short-lived signed URLs, and the `/api/profile` endpoint.
 - Backend API endpoints for single-farm and single-parcel CRUD
   (`/api/farms/{farmId}`, `/api/farms/{farmId}/parcels/{parcelId}`), crop
-  catalog search (`/api/catalog/crops`), published Doka case studies
-  (`/api/case-studies`, `/api/case-studies/{slug}`), parcel environmental
+  catalog search (`/api/catalog/crops`), parcel environmental
   observations (`/api/farms/{farmId}/environment`), qualitative rotation and
   suitability comparison (`/api/farms/{farmId}/compare`) and printable farm
   reports (`/api/farms/{farmId}/reports`).
@@ -151,8 +150,8 @@ the build.
 - Migrations for `recommendation_rulesets`, `analyses`, qualitative
   `recommendations`, `rotation_strategies`, `rotation_legs` and `reports` with
   Row Level Security, plus seeding for the verified research crop catalog,
-  literature rotation evidence, additional NASA/open data sources and the three
-  published Doka (Tofa LGA) case studies.
+  literature rotation evidence, additional NASA/open data sources and the
+  published anonymised Tofa LGA case studies.
 - Server-only service-role Supabase client helper, deterministic grid-cell
   geospatial utilities, and a request-coalescing read-through cache and
   observation persistence layer.

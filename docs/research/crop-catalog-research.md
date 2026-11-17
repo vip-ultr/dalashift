@@ -1,6 +1,7 @@
 # Crop Catalog Agronomy Evidence
 
-**Scope:** rain-fed catalog candidates reported in the Doka, Tofa interviews.
+**Scope:** rain-fed catalog candidates reported in anonymised interviews with
+smallholders in Tofa LGA.
 **Sources checked:** 2026-11-14.
 **Status:** research evidence only. These are not validated recommendation thresholds.
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { area } from '@turf/turf';
+import { area, centroid } from '@turf/turf';
+import type { GeoJSONGeometry } from '@dalashift/shared/types';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -23,7 +24,7 @@ import { Input } from '../../../../components/ui/input';
 import { Label } from '../../../../components/ui/label';
 import { SegmentedControl } from '../../../../components/ui/segmented-control';
 import { Textarea } from '../../../../components/ui/textarea';
-import { CATALOG_CROPS } from '../../../../features/cases/case-study-data';
+import { CATALOG_CROPS } from '../../../../features/crops/catalog';
 import { formatCropWithHausa, PLANTING_TRIGGER_TITLES } from '../../../../lib/utilities/format';
 
 const apiErrorSchema = z.object({ error: z.string() });
@@ -76,8 +77,8 @@ interface DraftParcel {
   readonly geometryMethod: 'drawn_polygon' | 'gps_point';
   readonly centerLon: number | null;
   readonly centerLat: number | null;
-  readonly widthDeg: number | null;
-  readonly heightDeg: number | null;
+  /** A real drawn polygon, captured from the map. Null until the farmer draws one. */
+  readonly geometry: GeoJSONGeometry | null;
   readonly locationUncertaintyM: number | null;
 }
 
@@ -95,25 +96,10 @@ function hasValidCoordinates(draft: DraftParcel): boolean {
 }
 
 function hasValidGeometryDraft(draft: DraftParcel): boolean {
-  if (!hasValidCoordinates(draft)) return false;
-  if (draft.geometryMethod === 'gps_point') return true;
-  if (
-    draft.widthDeg === null ||
-    draft.heightDeg === null ||
-    draft.widthDeg <= 0 ||
-    draft.widthDeg > 0.01
-  ) {
-    return false;
+  if (draft.geometryMethod === 'drawn_polygon') {
+    return draft.geometry?.type === 'Polygon' && draft.geometry.coordinates.length > 0;
   }
-
-  const halfWidth = draft.widthDeg / 2;
-  const halfHeight = draft.heightDeg / 2;
-  return (
-    draft.centerLon! - halfWidth >= -180 &&
-    draft.centerLon! + halfWidth <= 180 &&
-    draft.centerLat! - halfHeight >= -90 &&
-    draft.centerLat! + halfHeight <= 90
-  );
+  return hasValidCoordinates(draft);
 }
 
 function parseOptionalNumber(value: string): number | null {
@@ -122,36 +108,16 @@ function parseOptionalNumber(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function buildParcelGeometry(draft: DraftParcel) {
+function buildParcelGeometry(draft: DraftParcel): GeoJSONGeometry {
   if (!hasValidGeometryDraft(draft)) {
     throw new Error('Parcel location or geometry is invalid.');
   }
-  const centerLon = draft.centerLon!;
-  const centerLat = draft.centerLat!;
-  if (draft.geometryMethod === 'gps_point') {
-    return {
-      type: 'Point' as const,
-      coordinates: [centerLon, centerLat] as const,
-    };
+  if (draft.geometryMethod === 'drawn_polygon') {
+    return draft.geometry!;
   }
-  const halfW = draft.widthDeg! / 2;
-  const halfH = draft.heightDeg! / 2;
-  const minLon = Number((centerLon - halfW).toFixed(5));
-  const maxLon = Number((centerLon + halfW).toFixed(5));
-  const minLat = Number((centerLat - halfH).toFixed(5));
-  const maxLat = Number((centerLat + halfH).toFixed(5));
-
   return {
-    type: 'Polygon' as const,
-    coordinates: [
-      [
-        [minLon, maxLat],
-        [maxLon, maxLat],
-        [maxLon, minLat],
-        [minLon, minLat],
-        [minLon, maxLat],
-      ],
-    ] as const,
+    type: 'Point',
+    coordinates: [draft.centerLon!, draft.centerLat!],
   };
 }
 
@@ -203,8 +169,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       geometryMethod: 'gps_point',
       centerLon: null,
       centerLat: null,
-      widthDeg: null,
-      heightDeg: null,
+      geometry: null,
       locationUncertaintyM: null,
     },
   ]);
@@ -238,19 +203,31 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     const targetId = activeDraftParcelId || draftParcels[0]?.id;
     if (!targetId) return;
     const targetParcel = draftParcels.find((p) => p.id === targetId);
-    const widthDeg =
-      targetParcel?.geometryMethod === 'drawn_polygon' ? (targetParcel.widthDeg ?? 0.001) : null;
-    const heightDeg = widthDeg ? widthDeg * 0.85 : null;
+    if (targetParcel?.geometryMethod !== 'gps_point') return;
 
     updateParcel(targetId, {
       centerLon: lon,
       centerLat: lat,
-      widthDeg,
-      heightDeg,
-      locationUncertaintyM:
-        targetParcel?.geometryMethod === 'gps_point'
-          ? (targetParcel.locationUncertaintyM ?? 250)
-          : null,
+      locationUncertaintyM: targetParcel.locationUncertaintyM ?? 250,
+    });
+  };
+
+  const handleDrawnGeometry = (geometry: GeoJSONGeometry) => {
+    const targetId = activeDraftParcelId || draftParcels[0]?.id;
+    if (!targetId || geometry.type !== 'Polygon') return;
+    const center = centroid({
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: geometry.coordinates.map((ring) => ring.map((pt) => [pt[0], pt[1]])),
+      },
+    });
+    updateParcel(targetId, {
+      geometry,
+      centerLon: Number(Number(center.geometry.coordinates[0]).toFixed(5)),
+      centerLat: Number(Number(center.geometry.coordinates[1]).toFixed(5)),
+      locationUncertaintyM: null,
     });
   };
 
@@ -273,8 +250,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         geometryMethod: 'gps_point',
         centerLon: null,
         centerLat: null,
-        widthDeg: null,
-        heightDeg: null,
+        geometry: null,
         locationUncertaintyM: null,
       },
     ]);
@@ -507,7 +483,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   id="farm-name"
                   value={farmName}
                   onChange={(e) => setFarmName(e.target.value)}
-                  placeholder="e.g. Bello Yusuf Maitama Holding"
+                  placeholder="e.g. Riverside Rainfed Holding"
                   required
                 />
               </div>
@@ -585,16 +561,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
             <div className="space-y-2 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label htmlFor="crop-search">
-                  Search crop by English or Hausa name (try typing &ldquo;beans&rdquo; or
-                  &ldquo;wake&rdquo;)
+                  Search crop by English or Hausa name (the term &ldquo;beans&rdquo; needs
+                  clarification)
                 </Label>
-                <button
-                  type="button"
-                  onClick={() => setCropSearch('beans')}
-                  className="text-xs font-semibold text-[#ab6a43] underline"
-                >
-                  Test &ldquo;beans&rdquo; ambiguity guardrail
-                </button>
               </div>
               <Input
                 id="crop-search"
@@ -730,15 +699,15 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   [
                     {
                       rule: 'wait_for_confirmed_moisture',
-                      desc: 'Wait until cumulative rainfall and root-zone soil moisture are established (Bello Yusuf Maitama rule).',
+                      desc: 'Wait until cumulative rainfall and root-zone soil moisture are established before sowing.',
                     },
                     {
                       rule: 'plant_on_first_rains',
-                      desc: 'Sow immediately on the first rains to maximise growing season length (Amina Habibu rule).',
+                      desc: 'Sow immediately on the first sustained rains to maximise growing season length.',
                     },
                     {
                       rule: 'prepare_and_plant_quickly',
-                      desc: 'Clear and ridge plots early, then sow as soon as top-soil moisture is workable (Abubakar rule).',
+                      desc: 'Clear and ridge plots early, then sow as soon as top-soil moisture is workable.',
                     },
                   ] as const
                 ).map((item) => {
@@ -819,8 +788,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 </h2>
                 <p className="text-xs text-[#4b5563]">
                   Capture coordinates on the interactive map or enter them below. GPS points need an
-                  uncertainty radius. Polygon mode draws a rectangle based on the centre coordinate
-                  and span.
+                  uncertainty radius. Polygon mode draws the real field boundary on the map.
                 </p>
               </div>
               <Button type="button" variant="secondary" size="sm" onClick={addDraftParcel}>
@@ -866,41 +834,23 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               <HonestyMapCanvas
                 parcels={mappedDraftParcels}
-                captureMode={true}
+                captureMode={activeDraftParcel.geometryMethod === 'gps_point'}
                 capturePoint={
                   activeDraftParcel.centerLon !== null && activeDraftParcel.centerLat !== null
                     ? { lon: activeDraftParcel.centerLon, lat: activeDraftParcel.centerLat }
                     : null
                 }
                 onCoordinateCapture={handleMapCoordinateCapture}
+                interactiveDraw={activeDraftParcel.geometryMethod === 'drawn_polygon'}
+                onGeometryChange={handleDrawnGeometry}
                 heightClass="h-[300px] sm:h-[380px] lg:h-[420px]"
               />
 
-              {/* Quick Presets & Guidance */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-[#6b7280]">
-                <span className="font-semibold text-[#374151]">Quick locations:</span>
-                <button
-                  type="button"
-                  onClick={() => handleMapCoordinateCapture(8.271, 12.05)}
-                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
-                >
-                  Tofa Farmland (8.271°E, 12.050°N)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleMapCoordinateCapture(8.283, 12.046)}
-                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
-                >
-                  Doka Village (8.283°E, 12.046°N)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleMapCoordinateCapture(8.31, 12.005)}
-                  className="rounded-md border border-[#e5e7eb] bg-[#fafafb] px-2.5 py-1 text-[11px] font-medium text-[#374151] hover:border-[#00b159] hover:bg-white"
-                >
-                  South Valley (8.310°E, 12.005°N)
-                </button>
-              </div>
+              <p className="pt-1 text-xs text-[#6b7280]">
+                {activeDraftParcel.geometryMethod === 'drawn_polygon'
+                  ? 'Polygon mode: click points around the boundary on the map, then click the first point (or press Enter) to finish. The exact drawn shape is saved.'
+                  : 'Point mode: click the map or use your GPS to place a parcel centre, then enter its accuracy radius below.'}
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -937,8 +887,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           <div className="tabular text-[11px] text-[#0b4f2f]">
                             {dp.geometryMethod === 'drawn_polygon'
                               ? areaHa !== null
-                                ? `Approximate rectangle preview: ${areaHa.toFixed(2)} ha`
-                                : 'Enter centre and span to preview'
+                                ? `Drawn polygon · ${areaHa.toFixed(2)} ha`
+                                : 'Draw the boundary on the map to preview its area'
                               : dp.locationUncertaintyM !== null
                                 ? `GPS point · Uncertainty ±${dp.locationUncertaintyM} m`
                                 : 'Enter a GPS point and its uncertainty'}
@@ -952,7 +902,13 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           ariaLabel={`Geometry method for ${dp.name}`}
                           value={dp.geometryMethod}
                           onValueChange={(method) =>
-                            updateParcel(dp.id, { geometryMethod: method })
+                            updateParcel(dp.id, {
+                              geometryMethod: method,
+                              geometry: null,
+                              centerLon: null,
+                              centerLat: null,
+                              locationUncertaintyM: null,
+                            })
                           }
                           options={[
                             {
@@ -1031,22 +987,23 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         </div>
                       ) : (
                         <div>
-                          <Label>Rectangle Span (°)</Label>
-                          <Input
-                            type="number"
-                            step="0.0002"
-                            min={0.0001}
-                            max={0.01}
-                            value={dp.widthDeg ?? ''}
-                            placeholder="e.g. 0.001"
-                            onChange={(e) => {
-                              const val = parseOptionalNumber(e.target.value);
-                              updateParcel(dp.id, {
-                                widthDeg: val,
-                                heightDeg: val === null ? null : val * 0.85,
-                              });
-                            }}
-                          />
+                          <Label>Drawn boundary</Label>
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-[42px] flex-1 items-center rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs text-[#4b5563]">
+                              {dp.geometry?.type === 'Polygon'
+                                ? `${dp.geometry.coordinates[0]?.length ?? 0} boundary points`
+                                : 'Not drawn yet'}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => updateParcel(dp.id, { geometry: null })}
+                              disabled={!dp.geometry}
+                            >
+                              Clear
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>

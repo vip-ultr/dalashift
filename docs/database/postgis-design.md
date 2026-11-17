@@ -34,9 +34,8 @@ here.
 
 | Table              | Column      | Geometry type                          | Notes                             |
 | ------------------ | ----------- | -------------------------------------- | --------------------------------- |
-| `farms`            | `boundary`  | `Polygon` or `MultiPolygon`            | The farm polygon                  |
-| `farms`            | `centroid`  | `Point`                                | Generated from the boundary       |
-| `farm_plots`       | `boundary`  | `Polygon` or `MultiPolygon`            | Optional                          |
+| `farms`            | `centroid`  | `Point`                                | Maintained from parcel geometries |
+| `parcels`          | `geometry`  | `Polygon` or `MultiPolygon`            | The unit of analysis, SRID 4326   |
 | `grid_cells`       | `geometry`  | `Polygon`                              | The footprint of a coarse cell    |
 | `soil_properties`  | `geometry`  | `Polygon`                              | 250 m SoilGrids cell              |
 | `environmental_observations` | n/a | None: referenced via `cell_id` | The value carries `spatial_resolution_m` |
@@ -53,12 +52,12 @@ the area is what lets the UI draw it.
 
 ```sql
 -- ✅ CORRECT: spherical area on the real earth, returned in m²
-SELECT ST_Area(boundary::geography) AS area_m2
-FROM farms
+SELECT ST_Area(geometry::geography) AS area_m2
+FROM parcels
 WHERE id = $1;
 
 -- ❌ WRONG: returns square DEGREES on a 4326 geometry
-SELECT ST_Area(boundary) FROM farms WHERE id = $1;
+SELECT ST_Area(geometry) FROM parcels WHERE id = $1;
 ```
 
 `ST_Area` on a raw 4326 geometry returns square degrees. That number is not a
@@ -68,7 +67,7 @@ error varies with latitude. **Always cast to `geography`.**
 The generated column makes this impossible to get wrong from the client:
 
 ```sql
-area_ha numeric(10,3) GENERATED ALWAYS AS (ST_Area(boundary::geography) / 10000.0) STORED
+area_ha numeric(12,3) GENERATED ALWAYS AS (ST_Area(geometry::geography) / 10000.0) STORED
 ```
 
 `ST_Area` on `geography` (PostGIS 2.4+) computes the area on the WGS84
@@ -77,41 +76,33 @@ negligible; the difference from the square-degrees error is enormous.
 
 ### 3.2 Centroid
 
-```sql
-centroid geometry GENERATED ALWAYS AS (ST_Centroid(boundary)) STORED
-```
+The farm centroid is maintained from the parcel geometries by a database
+trigger; see [`data-model.md`](./data-model.md) § 3.4. There is no farm boundary
+to take a centroid of. `ST_Centroid` on each parcel still returns a point
+guaranteed to be inside that parcel.
 
-`ST_Centroid` on a polygon returns a point guaranteed to be inside the
-polygon. `ST_PointOnSurface` is the alternative; for a concave farm shape the
-two differ. Use `ST_Centroid`: a farm boundary drawn by a farmer is unlikely
-to be dramatically concave.
-
-### 3.3 Plot area within a farm
+### 3.3 Parcel area
 
 ```sql
-SELECT
-    fp.id,
-    fp.name,
-    ST_Area(ST_Intersection(fp.boundary, f.boundary)::geography) / 10000.0 AS overlap_ha
-FROM farm_plots fp
-JOIN farms f ON f.id = fp.farm_id
-WHERE fp.farm_id = $1;
+SELECT id, name, ST_Area(geometry::geography) / 10000.0 AS area_ha
+FROM parcels
+WHERE farm_id = $1;
 ```
 
-**The intersection, not the plot's own area**, is what matters: a plot may
-extend beyond the farm boundary as drawn.
+Each parcel's area is computed directly from its own geometry by PostGIS. A
+holding has no boundary of its own; its `area_ha` is the sum of its parcels.
 
 ### 3.4 Containment and intersection
 
 ```sql
--- Which farms fall inside this rainfall cell?
-SELECT f.id, f.name
-FROM farms f
-JOIN grid_cells c ON c.source_id = $1 AND ST_Intersects(f.boundary, c.geometry);
+-- Which parcels fall inside this rainfall cell?
+SELECT p.id, p.name
+FROM parcels p
+JOIN grid_cells c ON c.source_id = $1 AND ST_Intersects(p.geometry, c.geometry);
 
--- Which farms contain this point?
-SELECT f.id FROM farms f
-WHERE ST_Contains(f.boundary, ST_SetSRID(ST_MakePoint($lon, $lat), 4326));
+-- Which parcels contain this point?
+SELECT p.id FROM parcels p
+WHERE ST_Contains(p.geometry, ST_SetSRID(ST_MakePoint($lon, $lat), 4326));
 ```
 
 Note the explicit `ST_SetSRID(..., 4326)`: a point built without an SRID
@@ -141,15 +132,15 @@ WHERE c.source_id = $1
 ### 3.7 Validity and repair
 
 ```sql
--- Reject an invalid polygon on write
-CHECK (ST_IsValid(boundary))
+-- Reject an invalid parcel polygon on write
+CHECK (ST_IsValid(geometry))
 ```
 
 Self-intersecting polygons are a common result of a farmer dragging a vertex
 across another. The write path should normalise before inserting:
 
 ```sql
-ST_MakeValid(ST_CollectionExtract(ST_MakeValid(boundary), 3))
+ST_MakeValid(ST_CollectionExtract(ST_MakeValid(geometry), 3))
 ```
 
 `ST_MakeValid` can return a `GeometryCollection`; extracting type 3 keeps only
@@ -162,18 +153,17 @@ geometry if the resulting area is empty.
 ## 4. Indexing
 
 ```sql
-CREATE INDEX idx_farms_boundary_gist  ON farms USING GIST (boundary);
+CREATE INDEX idx_parcels_geometry_gist ON parcels USING GIST (geometry);
 CREATE INDEX idx_farms_centroid_gist  ON farms USING GIST (centroid);
-CREATE INDEX idx_plots_boundary_gist  ON farm_plots USING GIST (boundary);
 CREATE INDEX idx_cells_geometry_gist  ON grid_cells USING GIST (geometry);
 CREATE INDEX idx_soil_geometry_gist   ON soil_properties USING GIST (geometry);
 
 CREATE INDEX idx_farms_farmer_id      ON farms (farmer_id);
-CREATE INDEX idx_plots_farm_id        ON farm_plots (farm_id);
+CREATE INDEX idx_parcels_farm_id      ON parcels (farm_id);
 CREATE INDEX idx_farm_crops_farm      ON farm_crops (farm_id, status);
 CREATE INDEX idx_farm_crops_crop      ON farm_crops (crop_id);
 CREATE INDEX idx_obs_source_var_time  ON environmental_observations (source_id, variable, observed_at DESC);
-CREATE INDEX idx_obs_farm_var_time   ON environmental_observations (farm_id, variable, observed_at DESC);
+CREATE INDEX idx_obs_parcel_var_time ON environmental_observations (parcel_id, variable, observed_at DESC);
 CREATE INDEX idx_obs_analysis         ON environmental_observations (analysis_id);
 CREATE INDEX idx_analyses_farm_time   ON analyses (farm_id, created_at DESC);
 CREATE INDEX idx_recs_farm_crop       ON recommendations (farm_id, crop_id, created_at DESC);
@@ -227,7 +217,7 @@ the raster is not in PostgreSQL:
 
 ```
 reduceRegion(
-  geometry = farm_polygon,
+  geometry = parcel_geometry,
   reducer = ee.Reducer.percentile([10, 50, 90]).combine({p10, p50, p90}, mean, min, max, stdDev, count),
   scale = native_resolution,
   maxPixels = 1e13
@@ -250,10 +240,10 @@ is under cloud, the UI says so and the confidence drops. A zonal mean over
 ### 5.4 Raster products far coarser than the farm (SMAP, IMERG at 9 to 11 km)
 
 ```sql
--- The 9 km SMAP cell containing the farm
+-- The 9 km SMAP cell containing the parcel
 SELECT c.id, c.cell_key FROM grid_cells c
 WHERE c.source_id = $1
-  AND ST_Intersects(f.boundary, c.geometry);
+  AND ST_Intersects(c.geometry, (SELECT geometry FROM parcels WHERE id = $2));
 ```
 
 Sample at the centroid and **store the cell geometry** so the UI can draw
@@ -288,7 +278,7 @@ and simpler.
 drawing a 200-point polygon does not need 200 points rendered at 100 %.
 
 ```sql
-ST_Simplify(boundary, $tolerance_metres / 111320.0)
+ST_Simplify(geometry, $tolerance_metres / 111320.0)
 ```
 
 **`ST_Simplify` takes tolerance in the units of the SRID**, which for 4326 is

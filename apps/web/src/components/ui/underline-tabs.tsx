@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
@@ -22,6 +22,9 @@ export interface UnderlineTabsProps<T extends string> {
   readonly onValueChange?: (tabId: T) => void;
   readonly ariaLabel?: string;
   readonly className?: string;
+  /** Prefix for generated tab and panel ids. Consumers should put matching
+   * `id={`${panelIdPrefix}-panel-${id}`}` and `role="tabpanel"` on the panel. */
+  readonly panelIdPrefix?: string;
 }
 
 /**
@@ -36,7 +39,10 @@ export function UnderlineTabs<T extends string>({
   onValueChange,
   ariaLabel,
   className,
+  panelIdPrefix,
 }: UnderlineTabsProps<T>) {
+  const generatedPrefix = useId();
+  const idPrefix = panelIdPrefix ?? generatedPrefix;
   const current = value ?? activeTab;
   const handleSelect = (tabId: T) => {
     onSelect?.(tabId);
@@ -59,9 +65,11 @@ export function UnderlineTabs<T extends string>({
         return (
           <button
             key={tabKey}
+            id={`${idPrefix}-tab-${tabKey}`}
             type="button"
             role="tab"
             aria-selected={isActive}
+            aria-controls={`${idPrefix}-panel-${tabKey}`}
             onClick={() => handleSelect(tabKey)}
             className={cn(
               'relative inline-flex h-[42px] shrink-0 items-center gap-2 border-b-2 text-sm transition-colors cursor-pointer',

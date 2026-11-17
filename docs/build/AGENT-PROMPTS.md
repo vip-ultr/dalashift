@@ -141,8 +141,8 @@ Context you need:
 The rules that matter most in this area:
 
   A farm is a holding of parcels. The parcel is the unit of analysis.
-  All three interviewed farmers manage their land as separate pieces, and
-  one of them farms about 30 hectares in 3 hectare parcels.
+  The interviewed smallholders manage their land as separate parcels.
+  Individual holding sizes and plot counts are withheld.
 
   Capture the location honestly. A GPS point carries its accuracy radius
   in location_uncertainty_m. That is a different number from the
@@ -157,9 +157,9 @@ The rules that matter most in this area:
   caption naming its size. This is the single most effective honesty
   device in the product.
 
-  The case studies carry the farmers' names because they consented to
-  being named. Precise coordinates and contact details are never
-  published. Coordinates live in the database.
+  The case studies are anonymised. Participants are labelled, not named.
+  Precise coordinates and contact details are never published.
+  Coordinates live in the database.
 
   The farmer's local terms matter. Keep them. "Guinea corn", "white
   cowpeas" and "kalankuwa" are data, not noise.

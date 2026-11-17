@@ -107,27 +107,27 @@ set `farmer_id` to someone else's, **transferring the farm out of their
 control and into someone else's**. This is the single most common RLS
 mistake.
 
-### 4.3 `farm_plots`
+### 4.3 `parcels`
 
 ```sql
-ALTER TABLE farm_plots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE parcels ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY plots_all_own ON farm_plots
+CREATE POLICY parcels_all_own ON parcels
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM farms f
-      WHERE f.id = farm_plots.farm_id AND f.farmer_id = auth.uid()
+      WHERE f.id = parcels.farm_id AND f.farmer_id = auth.uid()
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM farms f
-      WHERE f.id = farm_plots.farm_id AND f.farmer_id = auth.uid()
+      WHERE f.id = parcels.farm_id AND f.farmer_id = auth.uid()
     )
   );
 ```
 
-`farm_plots` has no `farmer_id` of its own; ownership is inherited from the
+`parcels` has no `farmer_id` of its own; ownership is inherited from the
 parent farm. The `EXISTS` subquery is the inheritance mechanism.
 
 ### 4.4 `farm_crops`
@@ -154,7 +154,7 @@ Same inheritance pattern.
 
 ### 4.5 `farm_priorities`
 
-Same pattern as `farm_plots`.
+Same pattern as `parcels`.
 
 ### 4.6 `crops`, `data_sources`, `recommendation_rulesets`
 

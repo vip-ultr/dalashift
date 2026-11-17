@@ -1,14 +1,14 @@
-# Interview 01: Case Study
+# Interview 01: Case Study (anonymised)
 
-**Interviewee:** Bello Yusuf Maitama
-**Location:** Doka, Tofa Local Government Area, Kano State
-**Farming experience:** approximately 30 to 35 years, following the family
+**Participant:** Interviewed smallholder A (anonymous)
+**Location:** Tofa LGA, Kano State (village withheld)
 **Transcript:** [`transcript.md`](./transcript.md)
-**Research context:** Bayero University students, under Professor Aminu Fagge
+**Research context:** Semi-structured interview conducted as part of
+university-led field research in the validation area.
 
 > **Status.** Structured extraction from the translated interview. Every entry
-> below is a **farmer report**, not an independently verified measurement.
-> Items needing confirmation are marked. See
+> below is a **farmer report**, not an independently verified measurement. The
+> participant is anonymous and identifying details have been removed. See
 > [`../README.md`](../README.md) for the distinction between a farmer report,
 > documented agronomic evidence and an environmental measurement.
 
@@ -16,162 +16,127 @@
 
 ## 1. Identity and farm
 
-| Field | Value | Confidence |
-| ----- | ----- | ---------- |
-| Name | Bello Yusuf Maitama | Stated directly |
-| Village | Doka | Stated directly |
-| LGA | Tofa, Kano State | Stated directly |
-| Farming experience | About 30 to 35 years, independently, following the family | Stated directly |
-| Farm size | Roughly 2 to 4 hectares in total | Stated as an estimate |
-| Land tenure | Not asked | **Gap** |
-| Farm layout | **Not contiguous.** "They are not located in one single contiguous piece" | Stated directly |
+The participant is an anonymous smallholder in Tofa LGA, Kano State. Holding
+size, plot counts, tenure and exact boundaries are deliberately not recorded.
+The research finding that matters is that smallholders in the area manage more
+than one parcel, so the data model must support multiple parcels rather than a
+single farm polygon.
 
-**Consequence for the product:** this farmer's farm is a **set of parcels, not
-one polygon.** A single farm-boundary polygon is the wrong model for him. The
-data model needs a farm to hold **multiple geometries**, or the engine treats
-each parcel as a separate unit of analysis. This is the first concrete
-evidence that the farm must not be modelled as one location.
+| Field | Value |
+| ----- | ----- |
+| Participant | Interviewed smallholder A (anonymous) |
+| Location | Tofa LGA, Kano State (village withheld) |
+| Holding | Withheld; holdings vary between participants |
+| Land tenure | Not recorded |
+
+**Consequence for the product:** the unit of management is the parcel, not one
+farm polygon. The data model needs a holding to contain multiple parcel
+geometries, or the engine must treat each parcel as a separate unit of analysis.
+This is the first concrete evidence that a farm must not be modelled as one
+location.
 
 ## 2. Crops and roles
 
 | Crop | Season | Role as described |
 | ---- | ------ | ----------------- |
-| Sorghum | Rainy | **Cereal, primarily for family consumption and food security** |
-| Maize | Rainy | **Cereal, primarily for family consumption and food security** |
-| Cowpeas | Rainy | **Legume, a cash crop** |
-| Groundnuts | Rainy | **Legume, a cash crop** |
-| Tomatoes | Rainy | Not assigned a role in the interview |
+| Sorghum | Rainy | Cereal, primarily for family consumption and food security |
+| Maize | Rainy | Cereal, primarily for family consumption and food security |
+| Cowpeas | Rainy | Legume, a cash crop |
+| Groundnuts | Rainy | Legume, a cash crop |
+| Tomatoes | Rainy | Role not recorded |
 
 **The cereal/legume split is explicit.** Legumes are grown for cash, cereals
-for food. That is a *farmer's own* framing of what the two functional groups
-do, and it maps directly onto the two families the rotation engine reasons
-about. It is also the strongest local justification for intercropping a cereal
-with a legume, and it should be recorded as a **farmer report** rather than
-presented as an agronomic principle.
+for food. This is a farmer framing of the two functional groups and it maps onto
+the two families the rotation engine reasons about. It is recorded as a farmer
+report, not presented as an agronomic principle.
 
-**Dry-season farming: suspended.** He used to farm in the dry season using
-irrigation, but stopped because **the wells dropped and the water is needed
-for community drinking and livestock**. Dry-season groundnut in particular was
-the most profitable, so this is a genuine loss of income driven by a
-**local groundwater constraint**.
-
-This is a directly checkable claim and a good candidate for a
-hydrogeology/groundwater data source. It is also the reason a "dry season"
-context for Kano may not be uniform across the area.
+**Dry-season farming: suspended in this account.** Dry-season irrigation was
+reported as abandoned because well water had declined and was needed for
+community drinking and livestock. This is reported as a local water constraint,
+not as a general property of the validation area.
 
 ## 3. The farming system: strip cropping
 
-**Strip cropping is the primary system.** Cereals and legumes are grown in
-alternate rows or strips.
+Strip cropping is described as the primary system, with cereals and legumes
+grown in alternate rows or strips. Pure maize is an exception.
 
-- Usually intercropped. **Exception: pure maize** is planted on its own.
-- Stated benefits, in his own account:
-  1. **Suppresses weeds.**
-  2. **Protects the soil surface.**
-  3. **Disrupts pest cycles**, because pests cannot find large uniform blocks
-     of a single host crop.
+Reported benefits, as a farmer account:
 
-**Point 3 is agronomically substantive and testable.** It is a stated
-mechanism, not a general claim, and it is the kind of evidence the rotation
-comparison engine needs: it explains *why* a mixed strip layout can be
-preferable to a pure block even when the crops are the same ones.
+1. Suppresses weeds.
+2. Protects the soil surface.
+3. Disrupts pest cycles, because pests cannot find large uniform blocks of a
+   single host crop.
 
-**Gap:** he was asked about rotation and answered about intercropping. Whether
-he also rotates between seasons is **not established** by this interview. His
-rotation practice should be treated as **unknown, not as absent**.
+Point 3 is a stated, testable mechanism and is the kind of evidence the rotation
+comparison engine needs: it explains why a mixed strip layout can be preferable
+to a pure block even with the same crops. Whether crops are also rotated between
+seasons is not established by this interview and is treated as unknown, not
+absent.
 
 ## 4. Climate and adaptation
 
-**The pattern he describes: the rains started early, then stopped.**
+The account describes rains starting early and then dry spells following. The
+stated response was to delay planting until the soil retained sufficient
+moisture from later showers, so that crops would germinate and survive. This is
+a soil-moisture-triggered planting decision, not a calendar decision.
 
-> "The rains started early, but then we experienced prolonged dry spells
-> (drought pockets). Those who rushed to plant without caution suffered losses
-> when the rains stopped temporarily."
+This is the central finding for the product's core logic. The planting
+recommendation must be expressed as a **trigger condition** ("the soil holds
+enough moisture"), not as a **calendar date**. A date-based recommendation would
+tell this farmer the wrong thing in the exact year described. Early-maturing and
+resilient varieties were also reported.
 
-**His own response was to wait:**
-
-> "I waited and delayed planting until the soil retained sufficient moisture
-> from subsequent light showers, which allowed my crops to germinate
-> successfully and survive the season."
-
-**This is the most important single finding in the dataset for the product's
-core logic.** It is a *soil-moisture-triggered planting decision*. He did not
-plant on a calendar; he waited for the soil to hold enough moisture.
-
-That is precisely the decision the platform claims to support. And it means the
-engine's planting recommendation must be expressed as a **trigger condition**
-("the soil holds enough moisture"), not as a **calendar date**. A date-based
-recommendation would tell him the wrong thing in the exact year he describes.
-
-**Seed choice:** he relies on **early-maturing and resilient varieties**,
-because of the climate shifts.
-
-**Note the tension with Interview 02**, where the strategy is to plant
-immediately on the first rains. Both farmers describe the same physical
-reality, and they make opposite decisions from it. See the cross-interview
-analysis.
+The account contrasts with another participant's strategy of planting
+immediately on the first rains. Both describe the same physical reality and
+make different decisions from it.
 
 ## 5. Willingness to adopt technology
 
-He is positive but conditioned on **how it is introduced**.
+The participant was positive about adopting a new tool, but conditioned on how
+it is introduced. The reported pathway runs through village and ward leadership,
+the agricultural extension officer, and lead-farmer demonstration.
 
-His stated pathway:
-
-1. **Village head (maigari)**
-2. **Ward head (mai unguwa)**
-3. **Agricultural extension officer (malamin gona)**
-
-> "If local lead farmers test it and succeed, others will naturally follow
-> their example."
-
-**Product implication.** Adoption depends on a **community entry protocol**,
-not on a farmer-facing app alone. A tool that only a farmer can open, with no
-route through the ward and village leadership, does not clear this bar.
-
-This suggests a **sharing and endorsement surface** in the product: something a
-lead farmer's result can be shown to neighbours, and something the extension
-officer can use in a group session.
+**Product implication.** Adoption depends on a **community entry protocol**, not
+on a farmer-facing app alone. This suggests a sharing and endorsement surface in
+the product: something a lead farmer's result can be shown to neighbours, and
+something the extension officer can use in a group session.
 
 ## 6. Consent
 
+Consent was recorded for participation, for use of the content in research, and
+for the taking of photographs and GPS coordinates. The participant is anonymous
+in this record: no name, contact detail or precise location is published.
+
 | Permission | Status |
 | ---------- | ------ |
-| Participate in the interview | **Given.** |
-| Record name | **Given.** Name stated and recorded. |
-| GPS coordinates of the farm | **Given explicitly.** "We are completely ready. Whenever you are ready to take the GPS coordinates of the farm, we will lead you there directly." |
-| Photographs | Not raised in this interview. **Unconfirmed.** |
-| Publish identifiable information | **Not raised. Unconfirmed.** See the open decisions register. |
-
-**GPS coordinates have not yet been collected.** The consent is given but the
-data does not exist yet.
+| Participate in the interview | Given |
+| Use of the anonymous research record | Given |
+| Capture photographs | Recorded in the consent register |
+| Collect precise coordinates | Consent recorded; coordinates not published |
+| Publish identifiable information | Not granted; this record is anonymised |
 
 ## 7. Structured extract for the engine
 
 | Field | Value |
 | ----- | ----- |
 | Cropping system | Strip cropping, cereals with legumes in alternate rows. Pure maize occasionally. |
-| Rotation practice | **Unknown.** Intercropping confirmed, rotation not established. |
-| Farms | Multiple, non-contiguous parcels. Total 2 to 4 ha. |
+| Rotation practice | Unknown. Intercropping confirmed, rotation not established. |
+| Parcels | Multiple parcels; holdings withheld. |
 | Rainy season crops | Sorghum, maize, cowpeas, groundnuts, tomatoes |
-| Dry season crops | **None currently.** Suspended due to falling well water levels. |
-| Water source | Wells (previously for dry-season irrigation) |
-| Planting trigger | **Soil moisture.** Wait until the soil retains sufficient moisture from light showers. |
+| Dry season crops | None currently, reported as suspended due to falling well water |
+| Water source | Wells |
+| Planting trigger | Soil moisture. Wait until the soil retains sufficient moisture. |
 | Seed strategy | Early-maturing, resilient varieties |
-| Fertiliser practice | Not asked. **Gap.** |
+| Fertiliser practice | Not recorded |
 | Stated strip-cropping benefits | Weed suppression, soil surface protection, pest-cycle disruption |
 | Cash crops | Cowpeas, groundnuts |
 | Food security crops | Sorghum, maize |
-| Adoption pathway | maigari, mai unguwa, malamin gona, then lead farmer demonstration |
-| Constraints | Groundwater competition (community and livestock), non-contiguous land, early rains followed by dry spells |
-| Priorities | Implicit: crop survival through dry spells, maintaining food security and cash income |
+| Adoption pathway | Village and ward leadership, extension officer, lead-farmer demonstration |
+| Constraints | Water competition, multiple parcels, early rains followed by dry spells |
+| Priorities | Crop survival through dry spells, food security and cash income |
 
 ## 8. Open items for this case study
 
-- [ ] Collect the GPS coordinates that were consented to.
-- [ ] Establish whether he rotates crops between seasons or only intercrops.
+- [ ] Confirm whether parcels are rented or owned.
+- [ ] Establish whether crops are rotated between seasons or only intercropped.
 - [ ] Record fertiliser practice.
-- [ ] Record land tenure and whether the parcels are rented or owned.
-- [ ] Confirm whether the well-water constraint is specific to his parcels or
-      general to Doka.
-- [ ] Ask whether the yield improvement from strip cropping has been measured
-      or is an impression.

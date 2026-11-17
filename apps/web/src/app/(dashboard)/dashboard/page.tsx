@@ -14,6 +14,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
+import { DataStateBoundary } from '../../../components/dashboard/data-state-boundary';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 
@@ -40,6 +41,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
   const [farms, setFarms] = React.useState<z.infer<typeof farmListResponseSchema>['farms']>([]);
   const [userName, setUserName] = React.useState<string>('Farmer');
   const [loading, setLoading] = React.useState(true);
+  const [fetchError, setFetchError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     let active = true;
@@ -56,15 +58,41 @@ export default function DashboardOverviewPage(): React.JSX.Element {
         }
 
         const farmsRes = await fetch('/api/farms', { cache: 'no-store' });
-        if (farmsRes.ok) {
-          const farmsData: unknown = await farmsRes.json();
-          const parsedFarms = farmListResponseSchema.safeParse(farmsData);
-          if (parsedFarms.success && active) {
-            setFarms(parsedFarms.data.farms);
+        if (!farmsRes.ok) {
+          let detail = `Unable to load your farms (${farmsRes.status}).`;
+          try {
+            const body: unknown = await farmsRes.json();
+            if (
+              typeof body === 'object' &&
+              body !== null &&
+              'error' in body &&
+              typeof body.error === 'string'
+            ) {
+              detail = body.error;
+            }
+          } catch {
+            // Keep the generic message when the error body is unreadable.
           }
+          if (active) setFetchError(detail);
+          return;
+        }
+        const farmsData: unknown = await farmsRes.json();
+        const parsedFarms = farmListResponseSchema.safeParse(farmsData);
+        if (!parsedFarms.success) {
+          if (active) setFetchError('The server returned farm data in an unexpected format.');
+          return;
+        }
+        if (active) {
+          setFarms(parsedFarms.data.farms);
+          setFetchError(null);
         }
       } catch (error) {
         console.error('Failed to load dashboard data', error);
+        if (active) {
+          setFetchError(
+            error instanceof Error ? error.message : 'Unable to load your dashboard right now.',
+          );
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -197,65 +225,56 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             </Link>
           </div>
 
-          {loading ? (
-            <div className="py-8 text-center text-xs text-[#6b7280]">
-              Loading your registered holdings...
-            </div>
-          ) : farms.length > 0 ? (
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {farms.map((farm) => (
-                <div
-                  key={farm.id}
-                  className="flex flex-col justify-between rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 transition-colors hover:border-[#00b159] hover:bg-white"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-[#111315]">{farm.name}</span>
-                      <Badge variant="pass">Active</Badge>
+          <DataStateBoundary
+            className="mt-4"
+            state={
+              loading ? 'loading' : fetchError ? 'error' : farms.length === 0 ? 'empty' : 'ready'
+            }
+            emptyKind="no-data"
+            sourceName="Farm service"
+            errorMessage={fetchError ?? undefined}
+            onRetry={() => window.location.reload()}
+            onPrimaryAction={() => {
+              window.location.href = '/farms/new';
+            }}
+            primaryActionLabel="Add your first farm"
+          >
+            {farms.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {farms.map((farm) => (
+                  <div
+                    key={farm.id}
+                    className="flex flex-col justify-between rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 transition-colors hover:border-[#00b159] hover:bg-white"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-[#111315]">{farm.name}</span>
+                        <Badge variant="pass">Active</Badge>
+                      </div>
+                      <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6b7280]">
+                        <MapPin className="h-3.5 w-3.5 text-[#00b159]" aria-hidden="true" />
+                        <span>
+                          {farm.area_ha ? `${farm.area_ha.toFixed(2)} ha` : 'Area pending'}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-[#6b7280]">
+                        Farming method: {farm.farming_method || 'Rainfed'}
+                      </p>
                     </div>
-                    <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6b7280]">
-                      <MapPin className="h-3.5 w-3.5 text-[#00b159]" aria-hidden="true" />
-                      <span>{farm.area_ha ? `${farm.area_ha.toFixed(2)} ha` : 'Area pending'}</span>
+                    <div className="mt-4 border-t border-[#e5e7eb] pt-3">
+                      <Link
+                        href={`/farms/${farm.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#0a4232] hover:underline"
+                      >
+                        <span>Open holding workspace</span>
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      </Link>
                     </div>
-                    <p className="mt-1 text-[11px] text-[#6b7280]">
-                      Farming method: {farm.farming_method || 'Rainfed'}
-                    </p>
                   </div>
-
-                  <div className="mt-4 border-t border-[#e5e7eb] pt-3">
-                    <Link
-                      href={`/farms/${farm.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#0a4232] hover:underline"
-                    >
-                      <span>Open holding workspace</span>
-                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-4 rounded-[10px] border border-dashed border-[#d1d5db] bg-[#fafafb] p-8 text-center">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#ebfaef] text-[#00b159]">
-                <Sprout className="h-5 w-5" aria-hidden="true" />
+                ))}
               </div>
-              <h3 className="mt-2.5 text-sm font-semibold text-[#111315]">
-                No farms registered yet
-              </h3>
-              <p className="mt-1 text-xs text-[#6b7280]">
-                Add your farm boundary or GPS point to start receiving environmental analysis and
-                crop guidance.
-              </p>
-              <div className="mt-4 flex justify-center">
-                <Link href="/farms/new">
-                  <Button variant="primary" size="md">
-                    <Plus className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                    <span>Add Your First Farm</span>
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
+            ) : null}
+          </DataStateBoundary>
         </section>
       </div>
     </div>

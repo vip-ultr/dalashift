@@ -5,6 +5,8 @@ import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
+import { formatCropWithHausa } from '../../lib/utilities/format';
+import { usePreferredLanguage } from '../../hooks/use-preferred-language';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 
@@ -46,10 +48,42 @@ const reportResponseSchema = z.object({
 const errorResponseSchema = z.object({ error: z.string() });
 type ReportPayload = z.infer<typeof reportResponseSchema>['report']['payload'];
 
+const catalogSchema = z.object({
+  crops: z.array(z.object({ id: z.string(), code: z.string(), name: z.string() })),
+});
+
 export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): React.JSX.Element {
+  const { language } = usePreferredLanguage();
   const [report, setReport] = React.useState<ReportPayload | null>(null);
+  const [cropNames, setCropNames] = React.useState<Record<string, { name: string; code: string }>>(
+    {},
+  );
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const response = await fetch('/api/catalog/crops', { cache: 'no-store' });
+        if (!response.ok) return;
+        const payload: unknown = await response.json();
+        const parsed = catalogSchema.safeParse(payload);
+        if (parsed.success && active) {
+          setCropNames(
+            Object.fromEntries(
+              parsed.data.crops.map((crop) => [crop.id, { name: crop.name, code: crop.code }]),
+            ),
+          );
+        }
+      } catch {
+        // Crop names fall back to the identifier when the catalog is unavailable.
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const generateReport = async () => {
     setLoading(true);
@@ -160,11 +194,17 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
               <h2 className="font-semibold">Farmer-supplied crop records</h2>
               {report.crops.length > 0 ? (
                 <ul className="mt-2 space-y-1 text-sm text-[#4b5563]">
-                  {report.crops.map((crop, index) => (
-                    <li key={`${crop.cropId}-${index}`}>
-                      {crop.cropId}: {crop.status}, {crop.season} season
-                    </li>
-                  ))}
+                  {report.crops.map((crop, index) => {
+                    const catalogCrop = cropNames[crop.cropId];
+                    const label = catalogCrop
+                      ? formatCropWithHausa(catalogCrop.code, language === 'ha')
+                      : 'Uncatalogued crop';
+                    return (
+                      <li key={`${crop.cropId}-${index}`}>
+                        {label}: {crop.status}, {crop.season} season
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <p className="mt-2 text-sm text-[#4b5563]">No crop records are available.</p>

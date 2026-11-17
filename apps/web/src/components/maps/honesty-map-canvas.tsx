@@ -2,13 +2,16 @@
 
 import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
-import { Crosshair, Layers, MapPin, Navigation } from 'lucide-react';
+import { area } from '@turf/turf';
+import { AlertCircle, Crosshair, Layers, MapPin, Navigation } from 'lucide-react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TerraDraw, TerraDrawPolygonMode } from 'terra-draw';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { cn } from '../../lib/utilities/cn';
 import { formatResolutionShortBadge } from '../../lib/utilities/format';
+import { MapLibreTerraDrawAdapter } from './terra-draw-maplibre-adapter';
 
 export interface HonestyMapCanvasProps {
   readonly parcels?: readonly Parcel[];
@@ -19,6 +22,7 @@ export interface HonestyMapCanvasProps {
   readonly captureMode?: boolean;
   readonly capturePoint?: { lon: number; lat: number } | null;
   readonly initialResolutionKey?: SpatialResolutionKey;
+  /** Enable terra-draw polygon drawing and report the finished geometry. */
   readonly interactiveDraw?: boolean;
   readonly onGeometryChange?: (geometry: GeoJSONGeometry, previewAreaHa: number) => void;
   readonly heightClass?: string;
@@ -69,6 +73,39 @@ const GRID_OVERLAY_OPTIONS: readonly {
   },
 ];
 
+/** Generic regional view centre (Tofa LGA, Kano State). Used only as an initial
+ * camera position. It is never captured as a parcel location. */
+const DEFAULT_CENTER: [number, number] = [8.271, 12.05];
+
+function representativePoint(geometry: GeoJSONGeometry): [number, number] | null {
+  if (geometry.type === 'Point') {
+    const lon = geometry.coordinates[0];
+    const lat = geometry.coordinates[1];
+    return Number.isFinite(lon) && Number.isFinite(lat) ? [lon, lat] : null;
+  }
+  const ring: readonly (readonly [number, number])[] =
+    geometry.type === 'Polygon'
+      ? (geometry.coordinates[0] ?? [])
+      : (geometry.coordinates[0]?.[0] ?? []);
+  if (ring.length === 0) return null;
+  let lon = 0;
+  let lat = 0;
+  for (const point of ring) {
+    lon += point[0];
+    lat += point[1];
+  }
+  return [lon / ring.length, lat / ring.length];
+}
+
+function closeRing(coordinates: [number, number][][]): [number, number][][] {
+  if (coordinates.length === 0) return coordinates;
+  const ring = coordinates[0]!;
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (first && last && first[0] === last[0] && first[1] === last[1]) return coordinates;
+  return [[...ring, [first![0], first![1]]]];
+}
+
 export function HonestyMapCanvas({
   parcels = [],
   activeParcelId,
@@ -78,11 +115,14 @@ export function HonestyMapCanvas({
   captureMode = false,
   capturePoint,
   initialResolutionKey = 'smapSoilMoisture',
+  interactiveDraw = false,
+  onGeometryChange,
   heightClass = 'h-[500px]',
   className,
 }: HonestyMapCanvasProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<MapLibreMap | null>(null);
+  const drawRef = useRef<TerraDraw | null>(null);
 
   const [selectedGridKey, setSelectedGridKey] =
     useState<SpatialResolutionKey>(initialResolutionKey);
@@ -90,6 +130,23 @@ export function HonestyMapCanvas({
   const [basemapStyle, setBasemapStyle] = useState<'satellite' | 'street'>('satellite');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  // Callbacks are kept in refs so a new inline function from a parent never
+  // forces the MapLibre instance to be rebuilt.
+  const onSelectParcelRef = useRef(onSelectParcel);
+  const onCoordinateCaptureRef = useRef(onCoordinateCapture);
+  const onGeometryChangeRef = useRef(onGeometryChange);
+  const interactiveDrawRef = useRef(interactiveDraw);
+  onSelectParcelRef.current = onSelectParcel;
+  onCoordinateCaptureRef.current = onCoordinateCapture;
+  onGeometryChangeRef.current = onGeometryChange;
+  interactiveDrawRef.current = interactiveDraw;
+
+  const parcelsRef = useRef(parcels);
+  parcelsRef.current = parcels;
+  const capturePointRef = useRef(capturePoint);
+  capturePointRef.current = capturePoint;
 
   const effectiveParcelId = activeParcelId ?? selectedParcelId;
   const activeParcel = parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
@@ -97,38 +154,17 @@ export function HonestyMapCanvas({
   const activeGridOption =
     GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ?? GRID_OVERLAY_OPTIONS[0]!;
 
-  // Build GeoJSON features for current parcels
+  // Real GeoJSON features: polygons keep their drawn vertices; points stay points.
   const parcelFeatures = useMemo(() => {
-    return parcels.map((p) => {
-      if (p.geometry.type === 'Point') {
-        const [lng, lat] = p.geometry.coordinates;
-        const delta = 0.0006;
-        return {
-          type: 'Feature' as const,
-          properties: { id: p.id, name: p.name },
-          geometry: {
-            type: 'Polygon' as const,
-            coordinates: [
-              [
-                [lng - delta, lat - delta],
-                [lng + delta, lat - delta],
-                [lng + delta, lat + delta],
-                [lng - delta, lat + delta],
-                [lng - delta, lat - delta],
-              ],
-            ],
-          },
-        };
-      }
-      return {
-        type: 'Feature' as const,
-        properties: { id: p.id, name: p.name },
-        geometry: p.geometry,
-      };
-    });
+    return parcels.map((p) => ({
+      type: 'Feature' as const,
+      properties: { id: p.id, name: p.name },
+      geometry: p.geometry as unknown as GeoJSON.Feature['geometry'],
+    }));
   }, [parcels]);
 
-  // Client-side MapLibre initialization
+  // Initialise MapLibre once per basemap choice. Parent re-renders do not
+  // recreate the map because every dynamic value is read through a ref.
   useEffect(() => {
     let mapInstance: MapLibreMap | null = null;
     let isDisposed = false;
@@ -139,7 +175,6 @@ export function HonestyMapCanvas({
         const { Map } = await import('maplibre-gl');
         if (isDisposed || !mapContainerRef.current) return;
 
-        // ESRI World Imagery or OpenStreetMap
         const satelliteTiles =
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
         const streetTiles = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -168,79 +203,54 @@ export function HonestyMapCanvas({
           ],
         };
 
-        // All coordinates across parcels + capturePoint to compute center and bounding box
+        const currentParcels = parcelsRef.current;
+        const currentCapturePoint = capturePointRef.current;
         const allCoords: [number, number][] = [];
-        for (const p of parcels) {
-          if (p.geometry.type === 'Polygon') {
-            for (const ring of p.geometry.coordinates) {
-              for (const pt of ring) {
-                if (typeof pt[0] === 'number' && typeof pt[1] === 'number') {
-                  allCoords.push([pt[0], pt[1]]);
-                }
-              }
-            }
-          } else if (p.geometry.type === 'Point') {
-            const pt = p.geometry.coordinates;
-            if (typeof pt[0] === 'number' && typeof pt[1] === 'number') {
-              allCoords.push([pt[0], pt[1]]);
-            }
-          }
+        for (const parcel of currentParcels) {
+          const point = representativePoint(parcel.geometry);
+          if (point) allCoords.push(point);
+        }
+        if (currentCapturePoint) {
+          allCoords.push([currentCapturePoint.lon, currentCapturePoint.lat]);
         }
 
-        if (capturePoint) {
-          allCoords.push([capturePoint.lon, capturePoint.lat]);
-        }
-
-        const centerLng =
-          allCoords.length > 0
-            ? allCoords.reduce((sum, pt) => sum + pt[0], 0) / allCoords.length
-            : 8.271;
-        const centerLat =
-          allCoords.length > 0
-            ? allCoords.reduce((sum, pt) => sum + pt[1], 0) / allCoords.length
-            : 12.05;
+        const centerLng = allCoords.length
+          ? allCoords.reduce((sum, pt) => sum + pt[0], 0) / allCoords.length
+          : DEFAULT_CENTER[0];
+        const centerLat = allCoords.length
+          ? allCoords.reduce((sum, pt) => sum + pt[1], 0) / allCoords.length
+          : DEFAULT_CENTER[1];
 
         const map = new Map({
           container: mapContainerRef.current,
           style: mapStyle,
           center: [centerLng, centerLat],
-          zoom: allCoords.length > 0 ? 15.5 : 14.5,
+          zoom: allCoords.length ? 15.5 : 13.5,
           attributionControl: false,
         });
 
         mapInstance = map;
         mapInstanceRef.current = map;
 
-        // Auto-fit bounding box of parcels with padding if more than one coordinate
         const fitParcels = () => {
-          if (allCoords.length > 1) {
-            const minLng = Math.min(...allCoords.map((c) => c[0]));
-            const minLat = Math.min(...allCoords.map((c) => c[1]));
-            const maxLng = Math.max(...allCoords.map((c) => c[0]));
-            const maxLat = Math.max(...allCoords.map((c) => c[1]));
-            map.fitBounds(
-              [
-                [minLng, minLat],
-                [maxLng, maxLat],
-              ],
-              { padding: 50, maxZoom: 16.5 },
-            );
-          }
+          if (allCoords.length < 2) return;
+          const minLng = Math.min(...allCoords.map((c) => c[0]));
+          const minLat = Math.min(...allCoords.map((c) => c[1]));
+          const maxLng = Math.max(...allCoords.map((c) => c[0]));
+          const maxLat = Math.max(...allCoords.map((c) => c[1]));
+          map.fitBounds(
+            [
+              [minLng, minLat],
+              [maxLng, maxLat],
+            ],
+            { padding: 50, maxZoom: 16.5 },
+          );
         };
 
-        // Resize handling
-        const resizeObserver = new ResizeObserver(() => {
-          map.resize();
-        });
-        if (mapContainerRef.current) {
-          resizeObserver.observe(mapContainerRef.current);
-        }
+        const resizeObserver = new ResizeObserver(() => map.resize());
+        if (mapContainerRef.current) resizeObserver.observe(mapContainerRef.current);
 
-        // Staged resizes to handle tab transitions and modal animations
-        setTimeout(() => map.resize(), 100);
-        setTimeout(() => map.resize(), 500);
-
-        // Safety fallback timer so loading overlay never gets stuck
+        const resizeTimer = setTimeout(() => map.resize(), 200);
         const loadTimer = setTimeout(() => {
           if (!isDisposed) {
             setMapLoaded(true);
@@ -251,52 +261,72 @@ export function HonestyMapCanvas({
         const setupLayers = () => {
           if (isDisposed) return;
           clearTimeout(loadTimer);
+          clearTimeout(resizeTimer);
           setMapLoaded(true);
           map.resize();
           fitParcels();
 
-          // Add parcels source
           if (!map.getSource('parcels-source')) {
             map.addSource('parcels-source', {
               type: 'geojson',
-              data: {
-                type: 'FeatureCollection',
-                features: parcelFeatures as unknown as GeoJSON.Feature[],
-              },
+              data: { type: 'FeatureCollection', features: parcelFeatures },
             });
-
             map.addLayer({
               id: 'parcels-fill',
               type: 'fill',
               source: 'parcels-source',
-              paint: {
-                'fill-color': '#00b159',
-                'fill-opacity': 0.32,
-              },
+              filter: ['==', ['geometry-type'], 'Polygon'],
+              paint: { 'fill-color': '#00b159', 'fill-opacity': 0.3 },
             });
-
             map.addLayer({
               id: 'parcels-stroke',
               type: 'line',
               source: 'parcels-source',
+              filter: ['==', ['geometry-type'], 'Polygon'],
+              paint: { 'line-color': '#facc15', 'line-width': 3 },
+            });
+            map.addLayer({
+              id: 'parcels-point-halo',
+              type: 'circle',
+              source: 'parcels-source',
+              filter: ['==', ['geometry-type'], 'Point'],
               paint: {
-                'line-color': '#facc15',
-                'line-width': 3.5,
+                'circle-radius': 12,
+                'circle-color': '#facc15',
+                'circle-opacity': 0.3,
               },
             });
-
-            map.on('click', 'parcels-fill', (e: unknown) => {
-              const feature = (e as { features?: Array<{ properties?: { id?: string } }> })
-                ?.features?.[0];
-              const clickedId = feature?.properties?.id;
-              if (clickedId && onSelectParcel) {
-                onSelectParcel(clickedId);
-              }
+            map.addLayer({
+              id: 'parcels-point',
+              type: 'circle',
+              source: 'parcels-source',
+              filter: ['==', ['geometry-type'], 'Point'],
+              paint: {
+                'circle-radius': 6,
+                'circle-color': '#00b159',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff',
+              },
             });
+            map.addLayer({
+              id: 'parcels-selected-stroke',
+              type: 'line',
+              source: 'parcels-source',
+              filter: ['==', ['geometry-type'], 'Polygon'],
+              paint: { 'line-color': '#ffffff', 'line-width': 5, 'line-opacity': 0.85 },
+            });
+
+            for (const layerId of ['parcels-fill', 'parcels-point']) {
+              map.on('click', layerId, (event: unknown) => {
+                const feature = (event as { features?: Array<{ properties?: { id?: string } }> })
+                  ?.features?.[0];
+                const clickedId = feature?.properties?.id;
+                if (clickedId && onSelectParcelRef.current) onSelectParcelRef.current(clickedId);
+              });
+            }
           }
 
-          // Add capture point source if capturePoint exists
-          if (capturePoint && !map.getSource('capture-point-source')) {
+          if (currentCapturePoint && !map.getSource('capture-point-source')) {
             map.addSource('capture-point-source', {
               type: 'geojson',
               data: {
@@ -304,11 +334,10 @@ export function HonestyMapCanvas({
                 properties: {},
                 geometry: {
                   type: 'Point',
-                  coordinates: [capturePoint.lon, capturePoint.lat],
+                  coordinates: [currentCapturePoint.lon, currentCapturePoint.lat],
                 },
               },
             });
-
             map.addLayer({
               id: 'capture-circle-halo',
               type: 'circle',
@@ -321,7 +350,6 @@ export function HonestyMapCanvas({
                 'circle-stroke-color': '#ffffff',
               },
             });
-
             map.addLayer({
               id: 'capture-circle-dot',
               type: 'circle',
@@ -334,17 +362,42 @@ export function HonestyMapCanvas({
               },
             });
           }
+
+          if (!map.getSource('footprint-source')) {
+            map.addSource('footprint-source', {
+              type: 'geojson',
+              data: { type: 'FeatureCollection', features: [] },
+            });
+            map.addLayer({
+              id: 'footprint-fill',
+              type: 'fill',
+              source: 'footprint-source',
+              paint: { 'fill-color': activeGridOption.color, 'fill-opacity': 0.12 },
+              layout: { visibility: 'none' },
+            });
+            map.addLayer({
+              id: 'footprint-outline',
+              type: 'line',
+              source: 'footprint-source',
+              paint: {
+                'line-color': activeGridOption.color,
+                'line-width': 2,
+                'line-dasharray': [4, 3],
+              },
+              layout: { visibility: 'none' },
+            });
+          }
         };
 
         map.on('load', setupLayers);
 
-        // Click on map to capture coordinates
-        map.on('click', (e: unknown) => {
-          const evt = e as { lngLat?: { lng: number; lat: number } };
-          if (evt.lngLat && onCoordinateCapture) {
-            const lon = Number(evt.lngLat.lng.toFixed(5));
-            const lat = Number(evt.lngLat.lat.toFixed(5));
-            onCoordinateCapture(lon, lat);
+        // Capture clicks only when not drawing a polygon and when a parent wants them.
+        map.on('click', (event: unknown) => {
+          if (interactiveDrawRef.current) return;
+          const evt = event as { lngLat?: { lng: number; lat: number } };
+          const capture = onCoordinateCaptureRef.current;
+          if (evt.lngLat && capture) {
+            capture(Number(evt.lngLat.lng.toFixed(5)), Number(evt.lngLat.lat.toFixed(5)));
           }
         });
       } catch {
@@ -357,80 +410,184 @@ export function HonestyMapCanvas({
 
     return () => {
       isDisposed = true;
+      drawRef.current?.stop();
+      drawRef.current = null;
       if (mapInstance) {
         mapInstance.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [basemapStyle, onSelectParcel, onCoordinateCapture]);
+    // basemapStyle is the only reason to rebuild the map. Callbacks, parcels,
+    // selection and capture state are handled by dedicated effects below.
+  }, [basemapStyle]);
 
-  // Keep parcels source updated dynamically when parcels change
+  // Keep the rendered parcel geometry in sync with props.
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map || !mapLoaded) return;
-    try {
-      const source = map.getSource('parcels-source') as {
-        setData?: (data: unknown) => void;
-      } | null;
-      if (source?.setData) {
-        source.setData({
-          type: 'FeatureCollection',
-          features: parcelFeatures,
-        });
-      }
-    } catch {
-      // Ignore if source not ready
-    }
+    const source = map.getSource('parcels-source') as { setData?: (data: unknown) => void } | null;
+    source?.setData?.({ type: 'FeatureCollection', features: parcelFeatures });
   }, [parcelFeatures, mapLoaded]);
 
-  // Keep capture point updated dynamically
+  // Selected parcel changes move the camera to the real parcel geometry.
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !mapLoaded || !capturePoint) return;
-    try {
-      const source = map.getSource('capture-point-source') as {
-        setData?: (data: unknown) => void;
-      } | null;
-      if (source?.setData) {
-        source.setData({
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: [capturePoint.lon, capturePoint.lat],
-          },
-        });
+    if (!map || !mapLoaded) return;
+    const selected = parcels.find((p) => p.id === effectiveParcelId);
+    if (!selected) return;
+    const point = representativePoint(selected.geometry);
+    if (!point) return;
+
+    if (selected.geometry.type === 'Polygon') {
+      const coords = selected.geometry.coordinates[0] ?? [];
+      if (coords.length >= 2) {
+        const lngs = coords.map((c) => c[0]);
+        const lats = coords.map((c) => c[1]);
+        map.fitBounds(
+          [
+            [Math.min(...lngs), Math.min(...lats)],
+            [Math.max(...lngs), Math.max(...lats)],
+          ],
+          { padding: 70, maxZoom: 17, duration: 800 },
+        );
+        return;
       }
-    } catch {
-      // Ignore if source not ready
+    }
+    map.flyTo({ center: point, zoom: 16, duration: 800 });
+  }, [effectiveParcelId, parcels, mapLoaded]);
+
+  // Keep the capture point in sync.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('capture-point-source') as
+      { setData?: (data: unknown) => void } | undefined;
+    if (source?.setData) {
+      source.setData({
+        type: 'Feature',
+        properties: {},
+        geometry: capturePoint
+          ? { type: 'Point', coordinates: [capturePoint.lon, capturePoint.lat] }
+          : { type: 'Point', coordinates: [] },
+      });
     }
   }, [capturePoint, mapLoaded]);
 
-  // Geolocation helper
-  const handleUseCurrentLocation = () => {
-    if (typeof navigator !== 'undefined' && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lon = Number(pos.coords.longitude.toFixed(5));
-          const lat = Number(pos.coords.latitude.toFixed(5));
-          if (onCoordinateCapture) {
-            onCoordinateCapture(lon, lat);
-          }
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.flyTo({
-              center: [lon, lat],
-              zoom: 16,
-            });
-          }
-        },
-        () => {
-          // Fallback to central Northern Nigeria if location is denied
-          if (onCoordinateCapture) {
-            onCoordinateCapture(8.271, 12.05);
-          }
-        },
-      );
+  // The resolution footprint is a real cell centred on the selected parcel and
+  // sized from the selected data source's true spatial resolution.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('footprint-source') as
+      { setData?: (data: unknown) => void } | undefined;
+    if (!source?.setData) return;
+
+    const point = activeParcel ? representativePoint(activeParcel.geometry) : DEFAULT_CENTER;
+    if (!point) return;
+    const [lon, lat] = point;
+    const latDelta = activeGridOption.metres / 111_320;
+    const lonDelta =
+      activeGridOption.metres / (111_320 * Math.max(0.05, Math.cos((lat * Math.PI) / 180)));
+    const ring = [
+      [lon - lonDelta, lat - latDelta],
+      [lon + lonDelta, lat - latDelta],
+      [lon + lonDelta, lat + latDelta],
+      [lon - lonDelta, lat + latDelta],
+      [lon - lonDelta, lat - latDelta],
+    ];
+    source.setData({
+      type: 'FeatureCollection',
+      features: [
+        { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } },
+      ],
+    });
+
+    for (const layerId of ['footprint-fill', 'footprint-outline']) {
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, 'visibility', showGridOverlay ? 'visible' : 'none');
+      }
     }
+    if (map.getLayer('footprint-outline')) {
+      map.setPaintProperty('footprint-outline', 'line-color', activeGridOption.color);
+    }
+    if (map.getLayer('footprint-fill')) {
+      map.setPaintProperty('footprint-fill', 'fill-color', activeGridOption.color);
+    }
+  }, [activeParcel, activeGridOption, showGridOverlay, mapLoaded]);
+
+  // Highlight the selected parcel outline.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded || !map.getLayer('parcels-selected-stroke')) return;
+    map.setFilter('parcels-selected-stroke', [
+      'all',
+      ['==', ['geometry-type'], 'Polygon'],
+      ['==', ['get', 'id'], effectiveParcelId ?? ''],
+    ]);
+  }, [effectiveParcelId, mapLoaded]);
+
+  // terra-draw polygon mode, started only while drawing is requested.
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapLoaded) return;
+    if (!interactiveDraw) {
+      drawRef.current?.stop();
+      drawRef.current = null;
+      return;
+    }
+
+    const draw = new TerraDraw({
+      adapter: new MapLibreTerraDrawAdapter(map),
+      modes: [new TerraDrawPolygonMode()],
+    });
+    drawRef.current = draw;
+    draw.on('finish', (featureId) => {
+      const feature = draw.getSnapshotFeature(featureId);
+      if (!feature || feature.geometry.type !== 'Polygon') return;
+      const coordinates = closeRing(
+        feature.geometry.coordinates.map((ring) =>
+          ring.map((point) => [point[0], point[1]] as [number, number]),
+        ),
+      );
+      const geometry: GeoJSONGeometry = { type: 'Polygon', coordinates };
+      const sqm = area({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Polygon', coordinates },
+      });
+      onGeometryChangeRef.current?.(geometry, Number((sqm / 10_000).toFixed(2)));
+    });
+    draw.start();
+    draw.setMode('polygon');
+
+    return () => {
+      draw.stop();
+      if (drawRef.current === draw) drawRef.current = null;
+    };
+  }, [interactiveDraw, mapLoaded]);
+
+  const handleUseCurrentLocation = () => {
+    setLocationError(null);
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocationError(
+        'This device cannot provide a location. Place the parcel on the map or enter coordinates manually.',
+      );
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lon = Number(position.coords.longitude.toFixed(5));
+        const lat = Number(position.coords.latitude.toFixed(5));
+        onCoordinateCaptureRef.current?.(lon, lat);
+        mapInstanceRef.current?.flyTo({ center: [lon, lat], zoom: 16 });
+      },
+      () => {
+        // Never invent a coordinate when location access is denied.
+        setLocationError(
+          'Location access was denied or unavailable. Click the map or enter coordinates manually. No location has been captured.',
+        );
+      },
+    );
   };
 
   return (
@@ -441,51 +598,22 @@ export function HonestyMapCanvas({
         className,
       )}
     >
-      {/* MapLibre WebGL DOM Container */}
       <div
         ref={mapContainerRef}
         className={cn('absolute inset-0 size-full', captureMode && 'cursor-crosshair')}
       />
 
-      {/* Fallback when WebGL is not supported */}
       {!webglSupported ? (
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={(e) => {
-            if (onCoordinateCapture) {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const xRatio = (e.clientX - rect.left) / rect.width;
-              const yRatio = (e.clientY - rect.top) / rect.height;
-              // Map click ratio to Northern Nigeria coordinates
-              const lon = Number((8.265 + xRatio * 0.012).toFixed(5));
-              const lat = Number((12.055 - yRatio * 0.01).toFixed(5));
-              onCoordinateCapture(lon, lat);
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && onCoordinateCapture) {
-              onCoordinateCapture(8.271, 12.05);
-            }
-          }}
-          className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#0f2e22] to-[#1c3d2e] p-6 text-center text-white cursor-pointer"
-        >
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f2e22] p-6 text-center text-white">
           <MapPin className="mb-2 size-8 text-[#00b159]" />
-          <h4 className="font-display text-sm font-bold">Interactive Land Parcel Canvas</h4>
+          <h4 className="font-display text-sm font-bold">Map preview unavailable</h4>
           <p className="mt-1 max-w-sm text-xs text-white/70">
-            {captureMode
-              ? 'Click anywhere on this canvas to capture your parcel coordinates.'
-              : 'Satellite boundary viewer. Click to frame parcel.'}
+            Your browser could not start the interactive map. Enter parcel coordinates using the
+            fields below instead. No location has been captured automatically.
           </p>
-          {capturePoint ? (
-            <div className="mt-3 rounded-lg bg-black/40 px-3 py-1.5 font-mono text-xs text-[#00b159]">
-              Captured: {capturePoint.lon.toFixed(4)}°E, {capturePoint.lat.toFixed(4)}°N
-            </div>
-          ) : null}
         </div>
       ) : null}
 
-      {/* Loading state indicator */}
       {!mapLoaded && webglSupported ? (
         <div className="absolute inset-0 flex items-center justify-center bg-[#111827]/70 backdrop-blur-xs">
           <div className="flex items-center gap-2 text-xs font-medium text-white/80">
@@ -495,77 +623,58 @@ export function HonestyMapCanvas({
         </div>
       ) : null}
 
-      {/* Capture Mode Guidance Banner */}
       {captureMode ? (
-        <div className="relative z-20 m-3 flex items-center justify-between rounded-xl border border-white/20 bg-[#111827]/90 px-3.5 py-2 text-xs text-white shadow-lg backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            <Crosshair className="size-4 text-[#facc15] animate-pulse" />
-            <span className="font-semibold text-white">Click map to capture parcel location</span>
+        <div className="relative z-20 m-3 flex flex-col gap-2 rounded-xl border border-white/20 bg-[#111827]/90 px-3.5 py-2 text-xs text-white shadow-lg backdrop-blur-md">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Crosshair className="size-4 text-[#facc15]" />
+              <span className="font-semibold">
+                {interactiveDraw
+                  ? 'Draw the parcel boundary on the map'
+                  : 'Click the map to capture a parcel location'}
+              </span>
+            </div>
+            {!interactiveDraw ? (
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                className="flex items-center gap-1.5 rounded-lg bg-[#00b159] px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:bg-[#00964b] cursor-pointer"
+              >
+                <Navigation className="size-3" />
+                <span>Use My GPS</span>
+              </button>
+            ) : null}
           </div>
-          <button
-            type="button"
-            onClick={handleUseCurrentLocation}
-            className="flex items-center gap-1.5 rounded-lg bg-[#00b159] px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:bg-[#00964b] cursor-pointer"
-          >
-            <Navigation className="size-3" />
-            <span>Use My GPS</span>
-          </button>
+          {locationError ? (
+            <p role="alert" className="flex items-start gap-1.5 text-[11px] text-[#fca5a5]">
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              {locationError}
+            </p>
+          ) : null}
         </div>
       ) : null}
 
-      {/* Fallback Vector Overlay */}
-      <svg viewBox="0 0 800 500" className="pointer-events-none absolute inset-0 size-full">
-        {/* Active Satellite Resolution Honesty Footprint */}
-        {showGridOverlay ? (
-          <g className="transition-all duration-300">
-            <rect
-              x="260"
-              y="110"
-              width="280"
-              height="280"
-              rx="8"
-              fill={`${activeGridOption.color}15`}
-              stroke={activeGridOption.color}
-              strokeWidth="2.5"
-              strokeDasharray="6 4"
-            />
-            <rect x="270" y="120" width="260" height="22" rx="4" fill="rgba(17, 24, 39, 0.85)" />
-            <text
-              x="280"
-              y="135"
-              fill="#ffffff"
-              fontSize="11"
-              fontFamily="sans-serif"
-              fontWeight="600"
-            >
-              {activeGridOption.label} · {formatResolutionShortBadge(activeGridOption.metres)}
-            </text>
-          </g>
-        ) : null}
-      </svg>
-
-      {/* Floating Top Left HUD: Satellite Layer Selector */}
       <div className="relative z-10 m-2 sm:m-4 flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#111827]/85 p-1.5 text-xs text-white shadow-lg backdrop-blur-md">
           <Layers className="ml-1.5 size-4 text-[#c26e4a]" />
           <span className="hidden sm:inline text-[11px] font-medium text-white/70">
-            Satellite Layer:
+            Data layer:
           </span>
           <select
             value={selectedGridKey}
             aria-label="Satellite data layer resolution overlay"
-            onChange={(e) => setSelectedGridKey(e.target.value as SpatialResolutionKey)}
+            onChange={(event) => setSelectedGridKey(event.target.value as SpatialResolutionKey)}
             className="rounded-lg bg-white/10 px-2 py-1 text-xs font-semibold text-white outline-none cursor-pointer"
           >
-            {GRID_OVERLAY_OPTIONS.map((opt) => (
-              <option key={opt.key} value={opt.key} className="bg-[#111827] text-white">
-                {opt.label}
+            {GRID_OVERLAY_OPTIONS.map((option) => (
+              <option key={option.key} value={option.key} className="bg-[#111827] text-white">
+                {option.label}
               </option>
             ))}
           </select>
           <button
             type="button"
-            onClick={() => setShowGridOverlay(!showGridOverlay)}
+            onClick={() => setShowGridOverlay((value) => !value)}
             className={cn(
               'rounded-lg px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer',
               showGridOverlay
@@ -578,7 +687,6 @@ export function HonestyMapCanvas({
         </div>
       </div>
 
-      {/* Floating Bottom HUD: Field Context & Basemap Switcher */}
       <div className="relative z-10 m-2 sm:m-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827]/85 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
           <span className="font-semibold text-white">
@@ -600,6 +708,13 @@ export function HonestyMapCanvas({
           </span>
         </div>
 
+        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111827]/85 px-3 py-2 text-[11px] text-white/80 shadow-lg backdrop-blur-md">
+          <span className="hidden sm:inline">Cell footprint:</span>
+          <span className="font-semibold text-white">
+            {activeGridOption.source} · {formatResolutionShortBadge(activeGridOption.metres)}
+          </span>
+        </div>
+
         <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#111827]/85 p-1 text-xs text-white shadow-lg backdrop-blur-md">
           <button
             type="button"
@@ -607,7 +722,7 @@ export function HonestyMapCanvas({
             className={cn(
               'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer',
               basemapStyle === 'satellite'
-                ? 'bg-[#0a4232] text-white font-semibold'
+                ? 'bg-[#0a4232] font-semibold text-white'
                 : 'text-white/70 hover:text-white',
             )}
           >
@@ -619,7 +734,7 @@ export function HonestyMapCanvas({
             className={cn(
               'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer',
               basemapStyle === 'street'
-                ? 'bg-[#0a4232] text-white font-semibold'
+                ? 'bg-[#0a4232] font-semibold text-white'
                 : 'text-white/70 hover:text-white',
             )}
           >
