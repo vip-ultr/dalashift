@@ -142,6 +142,14 @@ export default function ProfileSettingsPage(): React.JSX.Element {
     }
   }
 
+  async function handleSignOut(): Promise<void> {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } finally {
+      window.location.href = '/login?signout=true';
+    }
+  }
+
   const languageChanged = savedLanguage !== defaultLanguage || hasUnsupportedLanguage;
 
   return (
@@ -309,11 +317,9 @@ export default function ProfileSettingsPage(): React.JSX.Element {
                 <span>Open Case Studies</span>
               </Button>
             </Link>
-            <Link href="/login">
-              <Button variant="outline" size="sm">
-                <span>Switch Account</span>
-              </Button>
-            </Link>
+            <Button type="button" variant="outline" size="sm" onClick={handleSignOut}>
+              <span>Sign out</span>
+            </Button>
           </div>
         </div>
       </div>

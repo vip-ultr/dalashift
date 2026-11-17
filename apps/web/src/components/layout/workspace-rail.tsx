@@ -70,7 +70,7 @@ export function WorkspaceRail() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
     } finally {
-      window.location.href = '/login?switch=true';
+      window.location.href = '/login?signout=true';
     }
   };
 
@@ -197,7 +197,7 @@ export function WorkspaceRail() {
                     className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-[#b42318] hover:bg-[#fdeceb] transition-colors cursor-pointer text-left"
                   >
                     <LogOut className="size-4.5" />
-                    <span>Sign out / Switch account</span>
+                    <span>Sign out</span>
                   </button>
                 </nav>
               </div>
@@ -293,13 +293,13 @@ export function WorkspaceRail() {
           <button
             type="button"
             onClick={handleSignOut}
-            title="Sign out / Switch account"
-            aria-label="Sign out / Switch account"
+            title="Sign out"
+            aria-label="Sign out"
             className="group relative flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
           >
             <LogOut className="size-5" />
             <span className="pointer-events-none absolute left-14 z-50 hidden rounded-md bg-[#111827] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white shadow-md group-hover:block">
-              Sign out / Switch account
+              Sign out
             </span>
           </button>
         </div>
