@@ -121,7 +121,7 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8 print:bg-white print:p-0">
       <div className="mx-auto max-w-4xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e5e7eb] bg-white p-4 print:hidden">
           <Link href={`/farms/${farmId}`} className="text-sm font-medium text-[#0a4232] underline">
@@ -236,6 +236,6 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
           </section>
         )}
       </div>
-    </main>
+    </div>
   );
 }

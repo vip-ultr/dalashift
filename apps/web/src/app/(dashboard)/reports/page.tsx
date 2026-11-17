@@ -1,11 +1,14 @@
 'use client';
 
-import { AlertCircle, FileText, LoaderCircle, Plus } from 'lucide-react';
+import { FileText, Plus } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
-import { DataStateBoundary } from '../../../components/dashboard/data-state-boundary';
+import {
+  DataStateBoundary,
+  type DataViewState,
+} from '../../../components/dashboard/data-state-boundary';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 
@@ -42,75 +45,101 @@ export default function ReportsHubPage(): React.JSX.Element {
   );
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [holdings, setHoldings] = React.useState<HoldingReports[]>([]);
+  const [missingSources, setMissingSources] = React.useState<string[]>([]);
+  const [online, setOnline] = React.useState(() =>
+    typeof navigator === 'undefined' ? true : navigator.onLine,
+  );
+  const activeRef = React.useRef(true);
 
   React.useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        const farmsResponse = await fetch('/api/farms', { cache: 'no-store' });
-        if (farmsResponse.status === 401) {
-          if (active) setState('unauthenticated');
-          return;
-        }
-        if (!farmsResponse.ok) throw new Error('Unable to load your holdings.');
-        const payload: unknown = await farmsResponse.json();
-        const parsed = farmListSchema.safeParse(payload);
-        if (!parsed.success)
-          throw new Error('The server returned holdings in an unexpected format.');
+    activeRef.current = true;
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
+    return () => {
+      activeRef.current = false;
+      window.removeEventListener('online', goOnline);
+      window.removeEventListener('offline', goOffline);
+    };
+  }, []);
 
-        const results = await Promise.all(
-          parsed.data.farms.map(async (farm) => {
-            try {
-              const response = await fetch(`/api/farms/${farm.id}/reports`, {
-                cache: 'no-store',
-              });
-              if (!response.ok) {
-                return {
-                  farmId: farm.id,
-                  farmName: farm.name,
-                  areaHa: farm.area_ha,
-                  reports: [],
-                  error: 'Saved reports could not be loaded for this holding.',
-                };
-              }
-              const body: unknown = await response.json();
-              const reportPayload = reportListSchema.safeParse(body);
+  const load = React.useCallback(async () => {
+    setState('loading');
+    try {
+      const farmsResponse = await fetch('/api/farms', { cache: 'no-store' });
+      if (farmsResponse.status === 401) {
+        if (activeRef.current) setState('unauthenticated');
+        return;
+      }
+      if (!farmsResponse.ok) throw new Error('Unable to load your holdings.');
+      const payload: unknown = await farmsResponse.json();
+      const parsed = farmListSchema.safeParse(payload);
+      if (!parsed.success) throw new Error('The server returned holdings in an unexpected format.');
+
+      const results = await Promise.all(
+        parsed.data.farms.map(async (farm) => {
+          const base = { farmId: farm.id, farmName: farm.name, areaHa: farm.area_ha };
+          try {
+            const response = await fetch(`/api/farms/${farm.id}/reports`, {
+              cache: 'no-store',
+            });
+            if (!response.ok) {
               return {
-                farmId: farm.id,
-                farmName: farm.name,
-                areaHa: farm.area_ha,
-                reports: reportPayload.success ? reportPayload.data.reports : [],
-                error: reportPayload.success ? null : 'Saved reports were in an unexpected format.',
-              };
-            } catch {
-              return {
-                farmId: farm.id,
-                farmName: farm.name,
-                areaHa: farm.area_ha,
+                ...base,
                 reports: [],
                 error: 'Saved reports could not be loaded for this holding.',
               };
             }
-          }),
-        );
+            const body: unknown = await response.json();
+            const reportPayload = reportListSchema.safeParse(body);
+            return {
+              ...base,
+              reports: reportPayload.success ? reportPayload.data.reports : [],
+              error: reportPayload.success ? null : 'Saved reports were in an unexpected format.',
+            };
+          } catch {
+            return {
+              ...base,
+              reports: [],
+              error: 'Saved reports could not be loaded for this holding.',
+            };
+          }
+        }),
+      );
 
-        if (active) {
-          setHoldings(results);
-          setState('ready');
-        }
-      } catch (error) {
-        if (active) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load reports.');
-          setState('error');
-        }
+      if (activeRef.current) {
+        setHoldings(results);
+        setMissingSources(
+          results.filter((holding) => holding.error !== null).map((holding) => holding.farmName),
+        );
+        setState('ready');
       }
-    })();
-    return () => {
-      active = false;
-    };
+    } catch (error) {
+      if (activeRef.current) {
+        setErrorMessage(error instanceof Error ? error.message : 'Unable to load reports.');
+        setState('error');
+      }
+    }
   }, []);
 
+  React.useEffect(() => {
+    void load();
+  }, [load]);
+
   const reportCount = holdings.reduce((sum, holding) => sum + holding.reports.length, 0);
+
+  const viewState: DataViewState = !online
+    ? 'offline'
+    : state === 'error'
+      ? holdings.length > 0
+        ? 'stale'
+        : 'error'
+      : state === 'ready' && missingSources.length > 0
+        ? 'partial'
+        : state === 'ready' && reportCount === 0
+          ? 'empty'
+          : 'ready';
 
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
@@ -149,19 +178,15 @@ export default function ReportsHubPage(): React.JSX.Element {
         ) : null}
 
         <DataStateBoundary
-          state={
-            state === 'loading'
-              ? 'loading'
-              : state === 'error'
-                ? 'error'
-                : reportCount === 0
-                  ? 'empty'
-                  : 'ready'
-          }
+          state={viewState}
           emptyKind="no-data"
           sourceName="Report service"
           errorMessage={errorMessage ?? undefined}
-          onRetry={() => window.location.reload()}
+          missingSources={missingSources}
+          offlineMessage="You are offline. Showing the reports saved on this device."
+          onRetry={() => {
+            void load();
+          }}
           onPrimaryAction={() => {
             window.location.href = '/farms';
           }}
@@ -194,13 +219,6 @@ export default function ReportsHubPage(): React.JSX.Element {
                     </Button>
                   </Link>
                 </div>
-
-                {holding.error ? (
-                  <p role="alert" className="mt-3 flex items-center gap-2 text-xs text-[#b42318]">
-                    <AlertCircle className="size-3.5" aria-hidden="true" />
-                    {holding.error}
-                  </p>
-                ) : null}
 
                 {holding.reports.length > 0 ? (
                   <ul className="mt-4 divide-y divide-[#e5e7eb]">
@@ -245,13 +263,6 @@ export default function ReportsHubPage(): React.JSX.Element {
             ))}
           </div>
         </DataStateBoundary>
-
-        {state === 'loading' ? (
-          <p className="flex items-center gap-2 text-sm text-[#4b5563]">
-            <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-            Loading your holdings and reports...
-          </p>
-        ) : null}
       </div>
     </div>
   );

@@ -8,7 +8,6 @@ import {
   formatObservationDate,
   formatSourceName,
 } from '../../lib/utilities/format';
-import { Badge } from '../ui/badge';
 
 export interface DimensionThresholdRowProps {
   readonly dimension: DimensionAssessment;
@@ -16,32 +15,30 @@ export interface DimensionThresholdRowProps {
   readonly className?: string;
 }
 
+// Status is a factual comparison of a value against a cited threshold, not a
+// grade. Each status is carried by its icon shape and its text label; colour is
+// never the only signal. Tokens are neutral so no status reads as "good/bad".
 const STATUS_META: Record<
   AssessmentStatus,
   {
     readonly label: string;
-    readonly badgeVariant: 'pass' | 'danger' | 'warning' | 'default';
     readonly Icon: typeof CheckCircle2;
   }
 > = {
   pass: {
     label: 'Within threshold',
-    badgeVariant: 'pass',
     Icon: CheckCircle2,
   },
   fail: {
     label: 'Outside threshold',
-    badgeVariant: 'danger',
     Icon: XCircle,
   },
   uncertain: {
-    label: 'Coarse / uncertain',
-    badgeVariant: 'warning',
+    label: 'Uncertain with coarse data',
     Icon: HelpCircle,
   },
   not_assessed: {
     label: 'Not assessed',
-    badgeVariant: 'default',
     Icon: MinusCircle,
   },
 };
@@ -67,14 +64,17 @@ export function DimensionThresholdRow({
 
   return (
     <div
-      className={cn('rounded-lg border border-border/80 bg-[#f4f5f6]/75 p-3 text-xs', className)}
+      className={cn(
+        'rounded-lg border border-border/80 bg-surface-subtle/75 p-3 text-xs',
+        className,
+      )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="font-semibold text-ink">{label}</span>
-        <Badge variant={meta.badgeVariant}>
-          <StatusIcon className="size-3" />
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink">
+          <StatusIcon className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
           {meta.label}
-        </Badge>
+        </span>
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2 rounded-md bg-surface-raised px-2.5 py-1.5 tabular">
@@ -82,7 +82,7 @@ export function DimensionThresholdRow({
           <span className="block text-[10px] tracking-wide text-ink-muted uppercase">
             Observed / Modelled
           </span>
-          <span className="font-semibold text-[#3d6382]">
+          <span className="font-semibold text-info">
             {dimension.value !== null
               ? `${formatMetricValue(dimension.value, 1)} ${dimension.unit ?? ''}`.trim()
               : 'n/a'}

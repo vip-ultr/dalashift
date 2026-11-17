@@ -1,5 +1,4 @@
 import { ArrowRight, Compass, Database, Droplets, Layers, ShieldCheck, Sprout } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type * as React from 'react';
 
@@ -231,34 +230,6 @@ export default function LandingPage(): React.JSX.Element {
           </div>
         </div>
       </section>
-
-      {/* Minimalist Footer */}
-      <footer className="border-t border-[#e5e7eb] bg-white py-10 text-xs text-[#6b7280]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/brand/logo-horizontal.svg"
-              alt="DalaShift"
-              width={112}
-              height={26}
-              className="h-6 w-auto"
-            />
-            <span>· Agricultural Intelligence Platform</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 text-[#4b5563]">
-            <Link href="/farms" className="hover:text-[#0a4232]">
-              Fields
-            </Link>
-            <Link href="/methodology" className="hover:text-[#0a4232]">
-              Data Sources
-            </Link>
-            <Link href="/reports" className="hover:text-[#0a4232]">
-              Reports
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

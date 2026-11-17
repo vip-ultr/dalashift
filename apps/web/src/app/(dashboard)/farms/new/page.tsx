@@ -56,6 +56,21 @@ const compareResultSchema = z.object({
 // onValueChange handlers. The rest of the wizard continues to work with ''.
 const NO_CROP_VALUE = '__none__';
 
+const WATER_SUPPLY_LABELS: Record<'rainfed' | 'irrigated' | 'mixed' | 'unknown', string> = {
+  rainfed: 'Rainfed',
+  irrigated: 'Irrigated',
+  mixed: 'Mixed Season',
+  unknown: 'Not sure',
+};
+
+interface WizardFieldErrors {
+  farmName?: string;
+  waterSupply?: string;
+  cropSearch?: string;
+  currentCrop?: string;
+  plannedCrop?: string;
+}
+
 async function requestApi<T>(url: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
   const response = await fetch(url, init);
   let payload: unknown;
@@ -166,6 +181,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [farmingMethod, setFarmingMethod] = React.useState<
     'rainfed' | 'irrigated' | 'mixed' | 'unknown'
   >('unknown');
+  const [waterSupplyChosen, setWaterSupplyChosen] = React.useState(false);
   const [irrigationMethod, setIrrigationMethod] = React.useState<string>('unknown');
   const [soilNotes, setSoilNotes] = React.useState('');
 
@@ -195,6 +211,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [submitting, setSubmitting] = React.useState(false);
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [createdFarmId, setCreatedFarmId] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<WizardFieldErrors>({});
+  const [saveFailed, setSaveFailed] = React.useState(false);
+  const [confirming, setConfirming] = React.useState(false);
 
   const activeDraftParcel =
     draftParcels.find((p) => p.id === activeDraftParcelId) ?? draftParcels[0]!;
@@ -252,6 +271,38 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const isBeansAmbiguous =
     cropSearch.trim().toLowerCase() === 'beans' || cropSearch.trim().toLowerCase() === 'bean';
 
+  const goToStep = (next: 1 | 2 | 3) => {
+    setFieldErrors({});
+    setStep(next);
+  };
+
+  const validateStep1 = (): boolean => {
+    const errors: WizardFieldErrors = {};
+    if (!farmName.trim()) {
+      errors.farmName = 'Give your farm a name before you continue.';
+    }
+    if (!waterSupplyChosen) {
+      errors.waterSupply = 'Choose how your farm gets water, or pick Not sure.';
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateStep2 = (): boolean => {
+    const errors: WizardFieldErrors = {};
+    if (isBeansAmbiguous) {
+      errors.cropSearch = 'Pick the specific bean crop you mean from the choices above.';
+    }
+    if (farmerMode === 'existing' && !currentCrop) {
+      errors.currentCrop = 'Choose the crop you grow on this farm right now.';
+    }
+    if (!plannedCrop) {
+      errors.plannedCrop = 'Choose the crop you plan to plant next.';
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
       prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal],
@@ -286,6 +337,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const handleFinish = async () => {
     setStatusMessage(null);
     setCreatedFarmId(null);
+    setSaveFailed(false);
     if (!farmName.trim()) {
       setStatusMessage('Enter the holding name before saving.');
       return;
@@ -321,6 +373,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
     setSubmitting(true);
     let farmId: string | null = null;
+    let stage = 'the farm';
     try {
       const { farm } = await requestApi(
         '/api/farms',
@@ -335,6 +388,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       farmId = farm.id;
       setCreatedFarmId(farmId);
 
+      stage = 'the crop catalog';
       const { crops } = await requestApi('/api/catalog/crops', cropCatalogSchema, {
         method: 'GET',
         cache: 'no-store',
@@ -342,6 +396,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       const cropIds = new Map(crops.map((crop) => [crop.code, crop.id]));
       const parcelIds: string[] = [];
 
+      stage = 'your fields';
       for (const draft of draftParcels) {
         const { parcel } = await requestApi(
           `/api/farms/${farmId}/parcels`,
@@ -366,6 +421,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
             ]
           : [{ code: plannedCrop, status: 'planned' as const }];
 
+      stage = 'your crops';
       for (const crop of cropEntries) {
         const cropId = cropIds.get(crop.code);
         if (!cropId) {
@@ -384,6 +440,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         );
       }
 
+      stage = 'your planting preferences';
       await requestApi(
         `/api/farms/${farmId}/priorities`,
         z.object({ priorities: z.unknown() }),
@@ -395,6 +452,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         }),
       );
 
+      stage = 'your farm guidance';
       await requestApi(
         `/api/farms/${farmId}/compare`,
         compareResultSchema,
@@ -408,15 +466,63 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unable to save the farm. Please try again.';
+      setSaveFailed(true);
       setStatusMessage(
         farmId
-          ? `${message} The holding was created, but some details may still need to be saved.`
-          : message,
+          ? `${message} Your farm was saved, but ${stage} did not save. Nothing you typed was lost. Use Retry to save the rest.`
+          : `${message} ${stage.charAt(0).toUpperCase()}${stage.slice(1)} did not save. Nothing you typed was lost. Use Retry to try again.`,
       );
     } finally {
       setSubmitting(false);
     }
   };
+
+  const waterSupplyLabel = WATER_SUPPLY_LABELS[farmingMethod];
+  const fieldSummary = draftParcels.map((draft) => draft.name.trim() || 'Unnamed field').join(', ');
+  const cropSummary = [
+    ...(farmerMode === 'existing' && previousCrop ? [previousCrop] : []),
+    ...(farmerMode === 'existing' ? [currentCrop] : []),
+    plannedCrop,
+  ]
+    .filter(Boolean)
+    .map((code) => formatCropWithHausa(code, true))
+    .join(', ');
+  const triggerLabel = plantingTriggerRule
+    ? (PLANTING_TRIGGER_TITLES[plantingTriggerRule]?.en ?? plantingTriggerRule)
+    : 'Not recorded yet';
+
+  const statusAlert = statusMessage ? (
+    <div
+      role="alert"
+      className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] p-3 text-xs font-medium text-[#b42318]"
+    >
+      <span>{statusMessage}</span>
+      {statusMessage.toLowerCase().includes('auth') ||
+      statusMessage.toLowerCase().includes('sign in') ? (
+        <Link
+          href="/login?next=/farms/new"
+          className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
+        >
+          Sign in to save holding
+        </Link>
+      ) : null}
+      {createdFarmId ? (
+        <Link href={`/farms/${createdFarmId}`} className="ml-1 underline underline-offset-2">
+          Open the saved holding.
+        </Link>
+      ) : null}
+      {saveFailed ? (
+        <button
+          type="button"
+          onClick={() => void handleFinish()}
+          disabled={submitting}
+          className="ml-2 font-bold underline underline-offset-2 cursor-pointer disabled:opacity-60"
+        >
+          Retry saving
+        </button>
+      ) : null}
+    </div>
+  ) : null;
 
   return (
     <TooltipProvider>
@@ -450,7 +556,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 <button
                   key={item.num}
                   type="button"
-                  onClick={() => setStep(item.num)}
+                  onClick={() => goToStep(item.num)}
                   className={`rounded-[8px] border px-2 sm:px-3 py-2 text-left text-xs font-semibold transition-colors ${
                     step === item.num
                       ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f]'
@@ -469,6 +575,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           {/* STEP 1: FARMER MODE & HOLDING DETAILS */}
           {step === 1 ? (
             <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+              <p className="rounded-lg bg-[#ebfaef] px-3 py-2 text-xs text-[#0b4f2f]">
+                Three quick steps: name your farm, tell us your crops, then mark your field on the
+                map.
+              </p>
               <div className="space-y-2">
                 <Label>Advisory Focus</Label>
                 <SegmentedControl
@@ -503,10 +613,19 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   <Input
                     id="farm-name"
                     value={farmName}
-                    onChange={(e) => setFarmName(e.target.value)}
+                    onChange={(e) => {
+                      setFarmName(e.target.value);
+                      if (fieldErrors.farmName) {
+                        setFieldErrors((errors) => ({ ...errors, farmName: undefined }));
+                      }
+                    }}
                     placeholder="e.g. Riverside Rainfed Holding"
+                    aria-invalid={Boolean(fieldErrors.farmName)}
                     required
                   />
+                  {fieldErrors.farmName ? (
+                    <p className="text-xs text-[#b42318]">{fieldErrors.farmName}</p>
+                  ) : null}
                 </div>
 
                 <div className="space-y-1.5">
@@ -518,6 +637,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     value={farmingMethod}
                     onValueChange={(val) => {
                       setFarmingMethod(val);
+                      setWaterSupplyChosen(true);
+                      setFieldErrors((errors) => ({ ...errors, waterSupply: undefined }));
                       if (val === 'rainfed') setIrrigationMethod('rainfed');
                       else if (irrigationMethod === 'rainfed') setIrrigationMethod('unknown');
                     }}
@@ -528,6 +649,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       { value: 'unknown', label: 'Not sure' },
                     ]}
                   />
+                  {fieldErrors.waterSupply ? (
+                    <p className="text-xs text-[#b42318]">{fieldErrors.waterSupply}</p>
+                  ) : null}
                 </div>
               </div>
 
@@ -567,7 +691,13 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               </div>
 
               <div className="flex justify-end border-t border-[#e5e7eb] pt-4">
-                <Button variant="primary" size="md" onClick={() => setStep(2)}>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => {
+                    if (validateStep1()) goToStep(2);
+                  }}
+                >
                   <span>Continue to Crops &amp; Planting Trigger</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -592,6 +722,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onChange={(e) => setCropSearch(e.target.value)}
                   placeholder="Search Dawa, Gero, Wake, Farar wake, Waken soya, Gyada, Masara..."
                 />
+                {fieldErrors.cropSearch ? (
+                  <p className="text-xs text-[#b42318]">{fieldErrors.cropSearch}</p>
+                ) : null}
 
                 {isBeansAmbiguous ? (
                   <div
@@ -670,9 +803,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       <Label htmlFor="curr-crop">Current / recent crop</Label>
                       <Select
                         value={currentCrop}
-                        onValueChange={(value) =>
-                          setCurrentCrop(value === NO_CROP_VALUE ? '' : value)
-                        }
+                        onValueChange={(value) => {
+                          setCurrentCrop(value === NO_CROP_VALUE ? '' : value);
+                          setFieldErrors((errors) => ({ ...errors, currentCrop: undefined }));
+                        }}
                       >
                         <SelectTrigger id="curr-crop">
                           <SelectValue placeholder="Choose a crop" />
@@ -686,6 +820,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           ))}
                         </SelectContent>
                       </Select>
+                      {fieldErrors.currentCrop ? (
+                        <p className="text-xs text-[#b42318]">{fieldErrors.currentCrop}</p>
+                      ) : null}
                     </div>
                   </>
                 ) : null}
@@ -694,7 +831,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   <Label htmlFor="plan-crop">Planned next crop (Candidate)</Label>
                   <Select
                     value={plannedCrop}
-                    onValueChange={(value) => setPlannedCrop(value === NO_CROP_VALUE ? '' : value)}
+                    onValueChange={(value) => {
+                      setPlannedCrop(value === NO_CROP_VALUE ? '' : value);
+                      setFieldErrors((errors) => ({ ...errors, plannedCrop: undefined }));
+                    }}
                   >
                     <SelectTrigger id="plan-crop">
                       <SelectValue placeholder="Choose a crop" />
@@ -708,6 +848,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       ))}
                     </SelectContent>
                   </Select>
+                  {fieldErrors.plannedCrop ? (
+                    <p className="text-xs text-[#b42318]">{fieldErrors.plannedCrop}</p>
+                  ) : null}
                 </div>
               </div>
 
@@ -800,11 +943,17 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               </div>
 
               <div className="flex items-center justify-between border-t border-[#e5e7eb] pt-4">
-                <Button variant="secondary" size="md" onClick={() => setStep(1)}>
+                <Button variant="secondary" size="md" onClick={() => goToStep(1)}>
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   <span>Back</span>
                 </Button>
-                <Button variant="primary" size="md" onClick={() => setStep(3)}>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => {
+                    if (validateStep2()) goToStep(3);
+                  }}
+                >
                   <span>Continue to Parcel Geometry</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -813,7 +962,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           ) : null}
 
           {/* STEP 3: MULTI-PARCEL GEOMETRY (POLYGON OR GPS POINT WITH UNCERTAINTY) */}
-          {step === 3 ? (
+          {step === 3 && !confirming ? (
             <div className="space-y-6 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -1055,44 +1204,70 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 })}
               </div>
 
-              {statusMessage ? (
-                <div
-                  role="alert"
-                  className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] p-3 text-xs font-medium text-[#b42318]"
-                >
-                  <span>{statusMessage}</span>
-                  {statusMessage.toLowerCase().includes('auth') ||
-                  statusMessage.toLowerCase().includes('sign in') ? (
-                    <Link
-                      href="/login?next=/farms/new"
-                      className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
-                    >
-                      Sign in to save holding
-                    </Link>
-                  ) : null}
-                  {createdFarmId ? (
-                    <Link
-                      href={`/farms/${createdFarmId}`}
-                      className="ml-1 underline underline-offset-2"
-                    >
-                      Open the saved holding.
-                    </Link>
-                  ) : null}
-                </div>
-              ) : null}
+              {statusAlert}
 
               <div className="flex items-center justify-between border-t border-[#e5e7eb] pt-4">
-                <Button variant="secondary" size="md" onClick={() => setStep(2)}>
+                <Button variant="secondary" size="md" onClick={() => goToStep(2)}>
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   <span>Back</span>
                 </Button>
-                <Button variant="primary" size="lg" disabled={submitting} onClick={handleFinish}>
+                <Button variant="primary" size="lg" onClick={() => setConfirming(true)}>
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                  <span>
-                    {submitting
-                      ? 'Generating Parcel Guidance...'
-                      : 'Save Holding & Run Deterministic Engine'}
-                  </span>
+                  <span>Review before saving</span>
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {step === 3 && confirming ? (
+            <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+              <div>
+                <Badge variant="Strong">Final check</Badge>
+                <h2 className="mt-2 font-display text-lg font-bold text-[#111315]">
+                  Check your farm before saving
+                </h2>
+                <p className="mt-1 text-xs text-[#4b5563]">
+                  Read through the details below. Nothing is saved until you choose the save button.
+                </p>
+              </div>
+              <dl className="grid gap-3 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-[11px] font-semibold text-[#6b7280]">Farm name</dt>
+                  <dd className="mt-0.5 text-[#111315]">{farmName || 'Not given'}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold text-[#6b7280]">Water supply</dt>
+                  <dd className="mt-0.5 text-[#111315]">{waterSupplyLabel}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold text-[#6b7280]">Fields</dt>
+                  <dd className="mt-0.5 text-[#111315]">{fieldSummary || 'None marked'}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold text-[#6b7280]">Crops</dt>
+                  <dd className="mt-0.5 text-[#111315]">{cropSummary || 'None chosen'}</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-[11px] font-semibold text-[#6b7280]">Planting trigger</dt>
+                  <dd className="mt-0.5 text-[#111315]">{triggerLabel}</dd>
+                </div>
+              </dl>
+
+              {statusAlert}
+
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e5e7eb] pt-4">
+                <Button variant="secondary" size="md" onClick={() => setConfirming(false)}>
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  <span>Back to editing</span>
+                </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  disabled={submitting}
+                  onClick={() => void handleFinish()}
+                >
+                  <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                  <span>{submitting ? 'Saving your farm...' : 'Save my farm and fields'}</span>
                 </Button>
               </div>
             </div>

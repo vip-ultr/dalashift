@@ -13,7 +13,7 @@ export default function MethodologyPage(): React.JSX.Element {
     <div className="min-h-screen bg-[#f6f4ef] text-[#111315]">
       <PublicNavbar />
 
-      <main className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         {/* Header Card */}
         <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
@@ -256,7 +256,7 @@ export default function MethodologyPage(): React.JSX.Element {
             </Link>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }
