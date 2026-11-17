@@ -134,6 +134,11 @@ settings are still in `apps/web/.env.local`, migrate only the web runtime
 values to the root file. Keep Supabase CLI credentials in the CLI's user-level
 login or its password prompts, never in the web environment.
 
+**All work goes through a pull request.** `main` is protected: never push to
+it directly. Create a branch, open a PR, let CI pass and get a review before
+merging. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) and the agent rules in
+[`AGENTS.md`](./AGENTS.md).
+
 Full instructions, including Windows setup, branch naming and the commit
 convention, are in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 

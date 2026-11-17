@@ -22,6 +22,12 @@
 - [ ] `docs/`: documentation only
 - [ ] `data/`: sample/reference data
 
+## Workflow
+
+- [ ] This PR is from a feature/fix branch, not a direct push to `main`
+- [ ] `pnpm check && pnpm test` passed locally before opening this PR
+- [ ] I did not merge this PR myself; a separate reviewer will merge it
+
 ## Checklist
 
 - [ ] `pnpm format:check` passes

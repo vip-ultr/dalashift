@@ -275,6 +275,26 @@ fails, fix the underlying file rather than skipping the check.
 
 ---
 
+## 7a. Source control rules for agents (hard)
+
+`main` is protected. Never try to work around it.
+
+1. **Never commit, push, or merge directly to `main`.** Every change goes on a
+   feature or fix branch and into a pull request against `main`.
+2. **Check your branch before you start:** `git branch --show-current`. If it
+   says `main`, create a branch first.
+3. **Never force-push** to `main` or to a branch another person is using.
+4. **Never merge your own pull request.** Open the PR, report that it is ready,
+   and wait for a human reviewer.
+5. **Never disable, skip, or weaken a CI check or branch protection** to get a
+   change through. Fix the underlying problem in your branch instead.
+6. **Finish the workflow.** Being done means the branch is pushed, the PR is
+   open, and `pnpm check` and `pnpm test` pass locally. CI must pass on the PR.
+
+See `CONTRIBUTING.md` section 3 for the workflow and branch naming.
+
+---
+
 ## 8. Security requirements
 
 1. **RLS is the access boundary.** Every table with farmer data has RLS

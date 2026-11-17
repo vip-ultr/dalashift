@@ -16,6 +16,8 @@ body:
       options:
         - label: Cloned the repository and read AGENTS.md and CONTRIBUTING.md
           required: true
+        - label: Understood that all work goes through a branch and PR; never commit or push to main
+          required: true
         - label: `pnpm install` completes without errors
           required: true
         - label: `.env.local` created from `.env.example` with real values
