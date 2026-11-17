@@ -72,10 +72,10 @@ export default function ReportsHubPage(): React.JSX.Element {
         if (activeRef.current) setState('unauthenticated');
         return;
       }
-      if (!farmsResponse.ok) throw new Error('Unable to load your holdings.');
+      if (!farmsResponse.ok) throw new Error('Unable to load your farms.');
       const payload: unknown = await farmsResponse.json();
       const parsed = farmListSchema.safeParse(payload);
-      if (!parsed.success) throw new Error('The server returned holdings in an unexpected format.');
+      if (!parsed.success) throw new Error('The server returned farms in an unexpected format.');
 
       const results = await Promise.all(
         parsed.data.farms.map(async (farm) => {
@@ -88,7 +88,7 @@ export default function ReportsHubPage(): React.JSX.Element {
               return {
                 ...base,
                 reports: [],
-                error: 'Saved reports could not be loaded for this holding.',
+                error: 'Saved reports could not be loaded for this farm.',
               };
             }
             const body: unknown = await response.json();
@@ -102,7 +102,7 @@ export default function ReportsHubPage(): React.JSX.Element {
             return {
               ...base,
               reports: [],
-              error: 'Saved reports could not be loaded for this holding.',
+              error: 'Saved reports could not be loaded for this farm.',
             };
           }
         }),
@@ -148,10 +148,10 @@ export default function ReportsHubPage(): React.JSX.Element {
           <div className="space-y-1.5">
             <Badge variant="Strong">Reports Hub</Badge>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
-              Reports across your holdings
+              Reports across your farms
             </h1>
             <p className="max-w-2xl text-xs text-[#4b5563] sm:text-sm">
-              Saved reports and field sheets for your private farms. Exact parcel coordinates are
+              Saved reports and field sheets for your private farms. Exact field coordinates are
               redacted from every generated report.
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function ReportsHubPage(): React.JSX.Element {
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>Add a Farm</span>
+                <span>Add a farm</span>
               </Button>
             </Link>
           </div>
@@ -167,7 +167,7 @@ export default function ReportsHubPage(): React.JSX.Element {
 
         {state === 'unauthenticated' ? (
           <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 text-sm text-[#4b5563]">
-            <p>Sign in to see reports for your holdings.</p>
+            <p>Sign in to see reports for your farms.</p>
             <Link
               href="/login?next=/reports"
               className="mt-3 inline-block font-medium text-[#0a4232] underline"
@@ -256,7 +256,7 @@ export default function ReportsHubPage(): React.JSX.Element {
                   </ul>
                 ) : holding.error ? null : (
                   <p className="mt-4 text-xs text-[#6b7280]">
-                    No saved reports yet. Generate one from this holding.
+                    No saved reports yet. Generate one from this farm.
                   </p>
                 )}
               </section>

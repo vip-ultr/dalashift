@@ -157,7 +157,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
       }
     } catch (error) {
       if (activeRef.current) {
-        setErrorMessage(error instanceof Error ? error.message : 'Unable to load your holdings.');
+        setErrorMessage(error instanceof Error ? error.message : 'Unable to load your farms.');
         setState('error');
       }
     }
@@ -189,22 +189,21 @@ export default function FarmsOverviewPage(): React.JSX.Element {
             <div className="flex items-center gap-2">
               <Badge variant="Strong">2026 Wet Season</Badge>
               <span className="text-xs font-medium text-[#6b7280]">
-                Private holdings from your signed-in account
+                Private farms from your signed-in account
               </span>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
-              Holdings &amp; Parcels Map Workspace
+              My fields
             </h1>
             <p className="text-xs text-[#4b5563] sm:text-sm">
-              Select a real parcel on the map or in the list to open its holding workspace and
-              reports.
+              Select a field on the map or in the list to open its farm workspace and reports.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>Add Farm or Parcel</span>
+                <span>Add a farm</span>
               </Button>
             </Link>
             <Link href="/reports">
@@ -223,7 +222,10 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                 Your registered farms
               </h2>
               <p className="mt-1 text-xs text-[#4b5563]">
-                Loaded privately from your account. No demonstration holdings are shown.
+                Loaded privately from your account. No demonstration farms are shown.
+              </p>
+              <p className="mt-1 text-xs text-[#4b5563]">
+                Choose a farm, then open one of its fields.
               </p>
             </div>
             {state === 'unauthenticated' ? (
@@ -267,7 +269,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
         <DataStateBoundary
           state={viewState}
           emptyKind="no-parcels"
-          sourceName="Farm and parcel service"
+          sourceName="Farm and field service"
           errorMessage={errorMessage ?? undefined}
           missingSources={missingSources}
           offlineMessage="You are offline. Showing the fields saved on this device."
@@ -277,7 +279,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
           onPrimaryAction={() => {
             window.location.href = '/farms/new';
           }}
-          primaryActionLabel="Add your first parcel"
+          primaryActionLabel="Add a farm"
         >
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             <div className="lg:col-span-8">
@@ -294,7 +296,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                 <div className="flex h-full flex-col justify-between rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="Strong">Selected parcel</Badge>
+                      <Badge variant="Strong">Selected field</Badge>
                       <span className="text-[11px] text-[#6b7280]">{selectedEntry.farmName}</span>
                     </div>
 
@@ -350,7 +352,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                   <div className="mt-5 flex flex-col gap-2 border-t border-[#e5e7eb] pt-4">
                     <Link href={`/farms/${selectedEntry.farmId}`}>
                       <Button variant="primary" size="md" className="w-full">
-                        <span>Open holding workspace</span>
+                        <span>Open farm workspace</span>
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </Link>

@@ -81,19 +81,19 @@ export function DataStateBoundary({
     const copy =
       emptyKind === 'no-crops'
         ? {
-            title: 'No crops added for this parcel yet',
+            title: 'No crops added for this field yet',
             body: 'Add the crops you grow now or plan to grow next season. DalaShift will compare your rotation options against your current practice.',
-            action: primaryActionLabel ?? 'Add parcel crops',
+            action: primaryActionLabel ?? 'Add field crops',
           }
         : emptyKind === 'no-parcels'
           ? {
-              title: 'No parcels added for this farm yet',
-              body: 'Add a field by dropping a pin with its accuracy radius or drawing its boundary on the map to start parcel analysis.',
-              action: primaryActionLabel ?? '+ Add parcel',
+              title: 'No fields added for this farm yet',
+              body: 'Add a field by placing a pin on the map or drawing its boundary to start your analysis.',
+              action: primaryActionLabel ?? 'Add a field',
             }
           : {
-              title: 'No saved observations for this parcel yet',
-              body: 'Open the parcel and refresh to load climate records, rainfall, and soil moisture for this location.',
+              title: 'No saved observations for this field yet',
+              body: 'Open the field and refresh to load rainfall, soil moisture and climate records for this location.',
               action: primaryActionLabel ?? 'Fetch observations',
             };
 
@@ -133,7 +133,7 @@ export function DataStateBoundary({
             </h3>
             <p className="mt-1 text-sm text-ink">
               {errorMessage ??
-                'We could not reach the service just now. Your farm and parcel records are saved and safe. Try again in a few minutes.'}
+                'We could not reach the service just now. Your farm and field records are saved and safe. Try again in a few minutes.'}
             </p>
             {onRetry ? (
               <Button variant="secondary" size="xs" onClick={onRetry} className="mt-3">

@@ -37,7 +37,7 @@ const PRIMARY_NAV_ITEMS = [
   },
   {
     href: '/farms/new',
-    label: 'Add Farm / Parcel',
+    label: 'Add a farm',
     icon: PlusCircle,
     matchPrefix: '/farms/new',
   },
@@ -216,7 +216,7 @@ export function WorkspaceRail() {
             <div className="pt-4 border-t border-[#e5e7eb]">
               <Link href="/farms/new" onClick={() => setMobileDrawerOpen(false)}>
                 <Button variant="primary" size="md" className="w-full">
-                  + Add Field
+                  Add a farm
                 </Button>
               </Link>
             </div>
