@@ -199,6 +199,7 @@ export function HonestyMapCanvas({
               type: 'raster' as const,
               tiles: [basemapStyle === 'satellite' ? satelliteTiles : streetTiles],
               tileSize: 256,
+              maxzoom: basemapStyle === 'satellite' ? 18 : 19,
               attribution:
                 basemapStyle === 'satellite'
                   ? '© Esri, Maxar, Earthstar Geographics'
@@ -210,6 +211,7 @@ export function HonestyMapCanvas({
                     type: 'raster' as const,
                     tiles: [referenceTiles],
                     tileSize: 256,
+                    maxzoom: 18,
                     attribution: '© Esri, HERE, Garmin',
                   },
                 }
@@ -221,7 +223,7 @@ export function HonestyMapCanvas({
               type: 'raster' as const,
               source: 'raster-tiles',
               minzoom: 0,
-              maxzoom: 19,
+              maxzoom: 22,
             },
             ...(basemapStyle === 'satellite'
               ? [
@@ -230,7 +232,7 @@ export function HonestyMapCanvas({
                     type: 'raster' as const,
                     source: 'reference-tiles',
                     minzoom: 0,
-                    maxzoom: 19,
+                    maxzoom: 22,
                   },
                 ]
               : []),
@@ -274,6 +276,7 @@ export function HonestyMapCanvas({
           style: mapStyle,
           center: [centerLng, centerLat],
           zoom: allCoords.length > 0 ? 15.5 : 14.5,
+          maxZoom: 18.5,
           attributionControl: false,
         });
 
@@ -417,7 +420,7 @@ export function HonestyMapCanvas({
             onCoordinateCapture(lon, lat);
             map.flyTo({
               center: [lon, lat],
-              zoom: Math.max(map.getZoom(), 16),
+              zoom: Math.min(Math.max(map.getZoom(), 16), 18),
               essential: true,
             });
           }
@@ -589,7 +592,7 @@ export function HonestyMapCanvas({
     if (!map || !mapLoaded || !capturePoint) return;
     map.flyTo({
       center: [capturePoint.lon, capturePoint.lat],
-      zoom: Math.max(map.getZoom(), 16),
+      zoom: Math.min(Math.max(map.getZoom(), 16), 18),
       essential: true,
     });
   }, [capturePoint?.lon, capturePoint?.lat, mapLoaded]);

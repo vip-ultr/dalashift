@@ -23,6 +23,7 @@ the build.
   - Added automatic camera centering and smooth fly-to animations when clicking coordinates, selecting presets, or using GPS.
   - Enhanced geolocation with high-accuracy GPS positioning and active loading states.
   - Added Esri Places and Roads reference overlay on satellite imagery for clear landmark and boundary recognition.
+  - Fixed deep zoom tiles in satellite view by configuring source maxzoom at level 18 and layer overzooming, preventing missing tile responses and "Map data not available" placeholders when zooming in close.
 
 ### Repository compliance
 
