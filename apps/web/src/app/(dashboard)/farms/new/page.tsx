@@ -1017,6 +1017,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
                 <HonestyMapCanvas
                   parcels={mappedDraftParcels}
+                  activeParcelId={activeDraftParcel.id}
+                  selectedParcelId={activeDraftParcel.id}
                   captureMode={activeDraftParcel.geometryMethod === 'gps_point'}
                   capturePoint={
                     activeDraftParcel.centerLon !== null && activeDraftParcel.centerLat !== null
@@ -1031,8 +1033,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
                 <p className="pt-1 text-xs text-[#6b7280]">
                   {activeDraftParcel.geometryMethod === 'drawn_polygon'
-                    ? 'Polygon mode: click points around the boundary on the map, then click the first point (or press Enter) to finish. The exact drawn shape is saved.'
-                    : 'Point mode: click the map or use your GPS to place a parcel centre, then enter its accuracy radius below.'}
+                    ? 'Tap every corner of your field, then press Done on the map. The exact shape is saved.'
+                    : 'Tap the map or use My location to place your field, then set how sure you are below.'}
                 </p>
               </div>
 
