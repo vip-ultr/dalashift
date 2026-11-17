@@ -1,0 +1,13 @@
+# Every pull request needs the repository owner's approval before it can merge.
+#
+# Branch protection on `main` enables "Require review from Code Owners", so this
+# single rule makes @vip-ultr the required approver for all changes. Contributors
+# open branches and PRs; the owner reviews and merges. The owner is exempt from
+# enforcement and can merge an emergency change directly, but normal work still
+# follows the PR process in CONTRIBUTING.md.
+#
+# Order matters: the last matching pattern wins. The global rule below covers
+# the entire repository. Add more specific lines above it only if ownership is
+# later delegated, and keep the global fallback as the final line.
+
+* @vip-ultr
