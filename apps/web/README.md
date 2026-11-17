@@ -4,15 +4,16 @@ The Next.js application: user-facing product surface **and** the server-side
 integration layer for NASA Earth observation data, Supabase and the agricultural
 analysis engine.
 
-**Status: Phase 1 (foundation).** Product routes are intentionally not
-implemented yet. See [`ARCHITECTURE.md`](../../ARCHITECTURE.md) for the intended
-layout and [`docs/`](../../docs) for the design that will be built.
+**Status: built.** The App Router routes, API route handlers, feature slices,
+components and integrations in this directory are the current implementation.
+See [`CHANGELOG.md`](../../CHANGELOG.md) for what landed and when, and
+[`docs/build/PAGES.md`](../../docs/build/PAGES.md) for the page inventory.
 
 ## Local development
 
 ```bash
 pnpm install
-cp .env.example apps/web/.env.local   # then fill in real values
+cp .env.example .env.local   # then fill in real values
 pnpm dev
 ```
 

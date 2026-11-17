@@ -1,6 +1,7 @@
 # User Flows
 
-**Status: Phase 1. The flows are specified; they are not implemented.**
+**Status: specified and implemented.** The screens are in `apps/web/src/app/`
+and the page inventory is in [`../../docs/build/PAGES.md`](../../docs/build/PAGES.md).
 
 Companion: [`../../PRD.md`](../../PRD.md) § 10 ·
 [`recommendation-methodology.md`](./recommendation-methodology.md)

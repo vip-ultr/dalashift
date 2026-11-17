@@ -3,11 +3,13 @@
 Framework-agnostic types, validation schemas and constants shared between the
 web application and any future server, worker or script.
 
-**Status: Phase 1 (foundation).** Contains only the scaffolding needed for the
-workspace to type-check. Entity types and Zod schemas are Phase 2 deliverables
-and are specified in [`docs/database/data-model.md`](../../docs/database/data-model.md).
+**Status: populated.** The shared package holds the live types, Zod schemas
+and constants consumed by `apps/web`. New entities land here before any
+feature code is written against them; see
+[`docs/database/data-model.md`](../../docs/database/data-model.md) for the
+canonical schema.
 
-## Intended contents
+## Contents
 
 | Directory    | Responsibility                                                        |
 | ------------ | --------------------------------------------------------------------- |
@@ -20,4 +22,4 @@ and are specified in [`docs/database/data-model.md`](../../docs/database/data-mo
 - This package must stay dependency-light and runtime-agnostic. It may import
   `zod`; it must not import Next.js, React, or Supabase client code.
 - Types shared with the database are derived from the canonical schema in
-  `docs/database/database-design.md`, not hand-duplicated.
+  `docs/database/data-model.md`, not hand-duplicated.

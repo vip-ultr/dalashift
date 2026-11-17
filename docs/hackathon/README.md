@@ -43,9 +43,9 @@ and the analysis angles it lists:
 > *"temperature, heat stress, rainfall, soil moisture, evaporation, frost risk,
 > extreme precipitation, vegetation stress, and long‑term water trends."*
 
-### What the challenge requires that our Phase 1 scope did not yet include
+### What the challenge requires that we have now built
 
-This is the single most important gap found during research. The challenge
+This was the single most important gap found during research. The challenge
 statement says:
 
 > *"**You may compare at least three rotation strategies, including the
@@ -54,20 +54,21 @@ statement says:
 > information gaps exist, and any risks that would need local review by
 > farmers or agricultural experts."*
 
-**[Proposed]** Three additions to the product:
+The three additions below were proposed during research and have since been
+implemented:
 
-| Addition                                                  | PRD reference |
-| --------------------------------------------------------- | ------------- |
-| **Crop rotation strategy comparison**: the farmer's current rotation plus at least three alternatives, each with evidence, benefits, information gaps and risks | `FR-8` (new) |
-| **Farmer priorities** as an explicit input: what the farmer wants the rotation to achieve | `FR-2.13` (new) |
-| **ECOSTRESS** (evapotranspiration), **GRACE/GRACE-FO** (groundwater), **SRTM** (elevation) added to the candidate source list | `docs/api/data-sources.md` |
+| Addition                                                  | PRD reference | Where it lives |
+| --------------------------------------------------------- | ------------- | -------------- |
+| **Crop rotation strategy comparison**: the farmer's current rotation plus alternatives, each with evidence, benefits, information gaps and risks | `FR-8` | `apps/web/src/features/recommendations/engine/`, `POST /api/farms/[farmId]/compare` |
+| **Farmer priorities** as an explicit input: what the farmer wants the rotation to achieve | `FR-2.13` | `farm_priorities` table, `PUT /api/farms/[farmId]/priorities` |
+| **ECOSTRESS** (evapotranspiration), **GRACE/GRACE-FO** (groundwater), **SRTM** (elevation) reviewed as candidate sources | `docs/api/data-sources.md` | assessed, not integrated; see that file for the decision |
 
-**[Proposed]** The comparison requirement fits our existing architecture
-almost perfectly: a rotation is a set of crops with a sequence, and our rules
-engine already scores crops against farm conditions. A rotation strategy is
-therefore a *set of crop scores* plus rotation-specific rules (e.g. a legume
-after a cereal contributes to soil nitrogen). This is an extension of the
-recommendation engine, not a new subsystem.
+The comparison requirement fits the existing architecture well: a rotation is
+a set of crops with a sequence, and the rules engine assesses crops against
+farm conditions. A rotation strategy is therefore a set of crop assessments
+plus rotation-specific rules (e.g. a legume after a cereal contributes to soil
+nitrogen). This is an extension of the recommendation engine, not a new
+subsystem.
 
 ### Alternatives considered
 
@@ -370,20 +371,24 @@ we cannot invent members. **Freeze the roster before the hackathon starts.**
 Challenge **summaries** were released 17 September 2026; **full statements**
 on 28 October 2026; **challenge Resources tabs** on 13 November 2026.
 
-**[Open: team judgement required]** This repository's Phase 1 work was
-research, product definition and architecture, **not** a working solution to
-the challenge. The distinction matters and should be stated accurately if
-asked:
+**[Confirmed] This repository's pre-event work was** research, product
+definition and architecture, **not** a working solution to the challenge.
+The distinction matters and is stated accurately at the top of the README:
 
-- We have **not** implemented the challenge solution. No functional product
-  exists.
-- We have researched data sources and NASA Space Apps rules, the same
-  research every team would do.
+- The application itself was **built during the event** (14 to 15 November
+  2026), after the challenge opened. The commits in `apps/web/`,
+  `supabase/migrations/` and `packages/shared/` are dated during the event.
+- The pre-event work (committed 13 November 2026 and earlier) was
+  data-source research with citations and verification dates, product
+  requirements, personas, user flows, the technical architecture, the
+  database and RLS design, and the repository skeleton with tooling and CI.
+  That is the same research every team would do, and it is documented as
+  research, not as a product.
 - The **idea** predates any AI assistance and is the team's own.
 
 **[Verified 2026-11-13] The timeline.** The repository was created and
 committed on **13 November 2026**, one day before the event opened on
-14 November at 09:00. That timing is materially favourable: it reads as
+**14 November at 09:00**. That timing is materially favourable: it reads as
 thorough preparation immediately before the event, not as a solution built in
 advance.
 
@@ -418,8 +423,9 @@ event.
 > built during the event."*
 
 That answer is true, and the repository supports it: `docs/api/data-sources.md`
-is source research, and `apps/web/src/app/page.tsx` is a placeholder that says
-so.
+is source research, and `apps/web/src/app/page.tsx` is the live landing page.
+The build output in `apps/web/.next/` and the commits dated during the event
+are the evidence that the application was built during it.
 
 ---
 

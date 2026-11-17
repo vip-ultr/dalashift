@@ -1,6 +1,11 @@
 # Design Direction
 
-**Status: Phase 1. Direction proposed. No brand identity is finalised.**
+**Status: implemented.** The direction is built and live in `apps/web/src`.
+The token set, typography pairing and workspace shell are in
+`apps/web/src/app/globals.css` and `apps/web/src/app/layout.tsx`; the page
+inventory is in [`../../docs/build/PAGES.md`](../../docs/build/PAGES.md).
+The brand identity (name, logo, final palette) is still not finalised and
+should not be presented as one. See [`docs/product/brand-and-naming.md`](../product/brand-and-naming.md).
 
 Companion: [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) § 3.5 ·
 [`../../PRD.md`](../../PRD.md) § 11
@@ -348,7 +353,7 @@ usability requirement here, not a style preference.
 
 ---
 
-## 14. Phase 2 implemented token set and workspace shell
+## 14. Implemented token set and workspace shell
 
 ### 14.1 Surface, semantic, and HUD tokens (`apps/web/src/app/globals.css`)
 

@@ -10,7 +10,12 @@ Visual direction and interface standards.
 
 ## Status
 
-**Phase 1: the direction is proposed; the brand identity is not finalised.**
+The direction is implemented and live in `apps/web/src`. The token set,
+typography pairing and workspace shell are in `globals.css` and
+`layout.tsx`; the page inventory is in
+[`../build/PAGES.md`](../build/PAGES.md). The brand identity (name, logo,
+final palette) is still not finalised and should not be presented as one.
+See [`../product/brand-and-naming.md`](../product/brand-and-naming.md).
 
 The token set in `apps/web/src/app/globals.css` is deliberately neutral so
 that no brand colour is asserted before the team confirms the direction. A

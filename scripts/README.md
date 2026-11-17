@@ -3,10 +3,10 @@
 Operational and analysis scripts that run **outside** the Next.js application
 process: data ingestion, geospatial processing and validation.
 
-**Status: Phase 1 (foundation).** The directories exist; the scripts that will
-populate them are Phase 2 deliverables and are specified in
+**Status: active.** The scripts in this directory are the live operational
+tooling. See [`CHANGELOG.md`](../CHANGELOG.md) for what each one does and
 [`docs/api/data-retrieval-strategy.md`](../docs/api/data-retrieval-strategy.md)
-and [`docs/database/data-model.md`](../docs/database/data-model.md).
+for the integration strategy behind them.
 
 ## Directories
 

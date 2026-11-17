@@ -291,23 +291,29 @@ and the UI can render attribution generically.
 
 ## 11. Implementation sequence for Phase 2
 
-**Progress note (2026-11-14):** the server-only NASA POWER daily point adapter
-is implemented for precipitation, mean/max/min air temperature and
-root-zone wetness. It validates the provider response, removes declared fill
-values, records the returned time standard and source metadata, and bounds
-request retries. Durable caching and persistence are not implemented yet, so
-this adapter must not be wired to an unthrottled user-facing request path.
+**Status (2026-11-16):** steps 1 to 6 are implemented. Step 7 (GEE) is skipped
+because it is optional, see `ADR-0008`. Step 8 (CHIRPS via ERDDAP) is not
+implemented because the ERDDAP endpoint is still unverified. The server-only
+NASA POWER daily point adapter fetches precipitation, mean/max/min air
+temperature, root-zone wetness, radiation, evapotranspiration and growing
+degree days, plus the climatology baseline. It validates the provider
+response, removes declared fill values, records the returned time standard
+and source metadata, and bounds request retries. Durable caching and
+persistence are live through `lib/integrations/cache.ts`, which backs reads
+with `public.external_cache` (with an explicit TTL) and persists normalised
+observations into `public.grid_cells` and `public.environmental_observations`
+with full provenance.
 
-| Step | Work                                                              | Risk |
-| ---- | ----------------------------------------------------------------- | ---- |
-| 1    | `lib/integrations/nasa-power`: daily, monthly, climatology, point only | Low |
-| 2    | `lib/cache` + `environmental_observations` + `grid_cells` tables   | Low |
-| 3    | `lib/integrations/soilgrids`: **pre-baked tile lookup**, not live   | Medium (service degraded) |
-| 4    | `lib/integrations/open-meteo`: forecast + historical              | Low |
-| 5    | `scripts/geospatial/precompute-region.ts`: bake the demo region   | Medium |
-| 6    | `lib/integrations/nasa-cmr` + AppEEARS (SMAP, MODIS)               | Medium (auth) |
-| 7    | `lib/integrations/gee`: Sentinel-2, Landsat, MODIS                | High (setup) |
-| 8    | CHIRPS via ERDDAP                                                  | Medium |
+| Step | Work                                                              | Status |
+| ---- | ----------------------------------------------------------------- | ------ |
+| 1    | `lib/integrations/nasa-power`: daily, monthly, climatology, point only | Done |
+| 2    | `lib/cache` + `environmental_observations` + `grid_cells` tables   | Done |
+| 3    | `lib/integrations/soilgrids`: **pre-baked tile lookup**, not live   | Done |
+| 4    | `lib/integrations/open-meteo`: forecast + historical              | Done |
+| 5    | `scripts/geospatial/precompute-region.ts`: bake the demo region   | Done |
+| 6    | `lib/integrations/nasa-cmr` + AppEEARS (SMAP, MODIS)               | Done |
+| 7    | `lib/integrations/gee`: Sentinel-2, Landsat, MODIS                | Skipped: GEE is optional, see `ADR-0008` |
+| 8    | CHIRPS via ERDDAP                                                  | Not started: ERDDAP endpoint unverified |
 
 **Steps 1 to 5 are the MVP path** and need no account beyond Supabase.
 Steps 6 to 8 are enhancements.
