@@ -218,30 +218,48 @@ export const farmCropInputSchema = z.object({
     .preprocess((v) => {
       if (typeof v !== 'string' || !v.trim()) return 'current';
       const clean = v.trim().toLowerCase();
-      return CROP_STATUS_ALIASES[clean] ?? ((CROP_STATUSES as readonly string[]).includes(clean) ? clean : 'current');
+      return (
+        CROP_STATUS_ALIASES[clean] ??
+        ((CROP_STATUSES as readonly string[]).includes(clean) ? clean : 'current')
+      );
     }, z.enum(CROP_STATUSES))
     .default('current'),
   plantingDate: z
-    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      calendarDate.nullable(),
+    )
     .default(null),
   expectedHarvestDate: z
-    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      calendarDate.nullable(),
+    )
     .default(null),
   harvestDate: z
-    .preprocess((v) => (typeof v === 'string' && v.trim() ? v.trim() : null), calendarDate.nullable())
+    .preprocess(
+      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+      calendarDate.nullable(),
+    )
     .default(null),
   season: z
     .preprocess((v) => {
       if (typeof v !== 'string' || !v.trim()) return 'unknown';
       const clean = v.trim().toLowerCase();
-      return SEASON_ALIASES[clean] ?? ((SEASONS as readonly string[]).includes(clean) ? clean : 'unknown');
+      return (
+        SEASON_ALIASES[clean] ??
+        ((SEASONS as readonly string[]).includes(clean) ? clean : 'unknown')
+      );
     }, z.enum(SEASONS))
     .default('unknown'),
   intendedUse: z
     .preprocess((v) => {
       if (typeof v !== 'string' || !v.trim()) return 'unknown';
       const clean = v.trim().toLowerCase();
-      return INTENDED_USE_ALIASES[clean] ?? ((INTENDED_USES as readonly string[]).includes(clean) ? clean : 'unknown');
+      return (
+        INTENDED_USE_ALIASES[clean] ??
+        ((INTENDED_USES as readonly string[]).includes(clean) ? clean : 'unknown')
+      );
     }, z.enum(INTENDED_USES))
     .default('unknown'),
   areaHa: z
@@ -329,7 +347,10 @@ export const farmerPrioritiesInputSchema = z.object({
           .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
           .map((item) => {
             const clean = item.trim().toLowerCase();
-            return GOAL_ALIASES[clean] ?? ((FARMER_GOALS as readonly string[]).includes(clean) ? clean : null);
+            return (
+              GOAL_ALIASES[clean] ??
+              ((FARMER_GOALS as readonly string[]).includes(clean) ? clean : null)
+            );
           })
           .filter((item): item is FarmerGoal => Boolean(item));
         return Array.from(new Set(normalized));

@@ -44,33 +44,29 @@ interface RouteContext {
 const farmIdSchema = z.string().uuid();
 
 const compareRequestSchema = z.object({
-  parcelId: z
-    .preprocess(
-      (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
-      z.string().uuid().nullable().optional(),
-    ),
-  kind: z
-    .preprocess((v) => {
-      if (typeof v !== 'string' || !v.trim()) return undefined;
-      const clean = v.trim().toLowerCase();
-      return (COMPARISON_KINDS as readonly string[]).includes(clean) ? clean : undefined;
-    }, z.enum(COMPARISON_KINDS).optional()),
-  startDate: z
-    .preprocess(
-      (v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined),
-      z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/)
-        .optional(),
-    ),
-  endDate: z
-    .preprocess(
-      (v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined),
-      z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/)
-        .optional(),
-    ),
+  parcelId: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() ? v.trim() : null),
+    z.string().uuid().nullable().optional(),
+  ),
+  kind: z.preprocess((v) => {
+    if (typeof v !== 'string' || !v.trim()) return undefined;
+    const clean = v.trim().toLowerCase();
+    return (COMPARISON_KINDS as readonly string[]).includes(clean) ? clean : undefined;
+  }, z.enum(COMPARISON_KINDS).optional()),
+  startDate: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined),
+    z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+  ),
+  endDate: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() ? v.trim() : undefined),
+    z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+  ),
 });
 
 /**

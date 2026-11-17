@@ -71,7 +71,9 @@ export function SegmentedControl<T extends string>({
               stackOnMobile
                 ? 'w-full sm:w-auto py-2 sm:py-0 min-h-[38px] sm:min-h-0 sm:h-[34px] text-xs sm:text-sm whitespace-normal sm:whitespace-nowrap'
                 : cn(
-                    size === 'md' ? 'h-[34px] text-xs sm:text-sm' : 'h-[26px] text-[11px] sm:text-xs',
+                    size === 'md'
+                      ? 'h-[34px] text-xs sm:text-sm'
+                      : 'h-[26px] text-[11px] sm:text-xs',
                     'whitespace-nowrap',
                   ),
               isActive

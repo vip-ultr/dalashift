@@ -955,8 +955,16 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                             updateParcel(dp.id, { geometryMethod: method })
                           }
                           options={[
-                            { value: 'drawn_polygon', label: 'Drawn Polygon', shortLabel: 'Polygon' },
-                            { value: 'gps_point', label: 'Single GPS Point', shortLabel: 'GPS Point' },
+                            {
+                              value: 'drawn_polygon',
+                              label: 'Drawn Polygon',
+                              shortLabel: 'Polygon',
+                            },
+                            {
+                              value: 'gps_point',
+                              label: 'Single GPS Point',
+                              shortLabel: 'GPS Point',
+                            },
                           ]}
                         />
                         {draftParcels.length > 1 ? (
@@ -1053,7 +1061,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 className="rounded-[8px] border border-[#f5c2c0] bg-[#fdeceb] p-3 text-xs font-medium text-[#b42318]"
               >
                 <span>{statusMessage}</span>
-                {statusMessage.toLowerCase().includes('auth') || statusMessage.toLowerCase().includes('sign in') ? (
+                {statusMessage.toLowerCase().includes('auth') ||
+                statusMessage.toLowerCase().includes('sign in') ? (
                   <Link
                     href="/login?next=/farms/new"
                     className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
