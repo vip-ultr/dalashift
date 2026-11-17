@@ -132,6 +132,7 @@ export function HonestyMapCanvas({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [webglSupported, setWebglSupported] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [tileError, setTileError] = useState(false);
 
   // Callbacks are kept in refs so a new inline function from a parent never
   // forces the MapLibre instance to be rebuilt.
@@ -169,6 +170,7 @@ export function HonestyMapCanvas({
   useEffect(() => {
     let mapInstance: MapLibreMap | null = null;
     let isDisposed = false;
+    setTileError(false);
 
     async function initMap() {
       if (!mapContainerRef.current) return;
@@ -180,6 +182,13 @@ export function HonestyMapCanvas({
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
         const streetTiles = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
+        // Both basemaps below document zoom 19 as their deepest real tile
+        // level. Declaring it on the source makes MapLibre overzoom the last
+        // real tile instead of requesting tiles that do not exist, which was
+        // leaving blank imagery at high zoom. Recheck this limit if the tile
+        // provider changes.
+        const BASEMAP_MAX_ZOOM = 19;
+
         const mapStyle = {
           version: 8 as const,
           sources: {
@@ -187,6 +196,7 @@ export function HonestyMapCanvas({
               type: 'raster' as const,
               tiles: [basemapStyle === 'satellite' ? satelliteTiles : streetTiles],
               tileSize: 256,
+              maxzoom: BASEMAP_MAX_ZOOM,
               attribution:
                 basemapStyle === 'satellite'
                   ? '© Esri, Maxar, Earthstar Geographics'
@@ -199,7 +209,7 @@ export function HonestyMapCanvas({
               type: 'raster' as const,
               source: 'raster-tiles',
               minzoom: 0,
-              maxzoom: 19,
+              maxzoom: BASEMAP_MAX_ZOOM,
             },
           ],
         };
@@ -227,11 +237,26 @@ export function HonestyMapCanvas({
           style: mapStyle,
           center: [centerLng, centerLat],
           zoom: allCoords.length ? 15.5 : 13.5,
-          attributionControl: false,
+          // Keep basemap attribution on the map at all times. The global
+          // footer carries the data attribution as well.
+          attributionControl: { compact: true },
+          // Above the provider limit MapLibre scales the last real tile.
+          maxZoom: 22,
         });
 
         mapInstance = map;
         mapInstanceRef.current = map;
+
+        map.on('error', (event: unknown) => {
+          // Only tile failures surface a note. Raw error text never reaches
+          // the screen and the farmer's polygon stays drawn underneath it.
+          const detail = event as { sourceId?: string; error?: { message?: string } };
+          const message = detail.error?.message ?? '';
+          const isTileFailure =
+            detail.sourceId === 'raster-tiles' ||
+            /tile|imagery|fetch|network|http|load/i.test(message);
+          if (isTileFailure) setTileError(true);
+        });
 
         const fitParcels = () => {
           if (allCoords.length < 2) return;
@@ -621,6 +646,17 @@ export function HonestyMapCanvas({
             <span className="size-2 animate-ping rounded-full bg-[#00b159]" />
             <span>Loading satellite land imagery...</span>
           </div>
+        </div>
+      ) : null}
+
+      {tileError && mapLoaded && webglSupported ? (
+        <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center px-3">
+          <p
+            role="status"
+            className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-center text-[11px] text-ink-muted shadow-sm"
+          >
+            Map imagery is unavailable. Your field boundary is still shown.
+          </p>
         </div>
       ) : null}
 

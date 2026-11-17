@@ -8,13 +8,27 @@ import type {
   PlantingTriggerAssessment,
 } from '@dalashift/shared/types';
 import { geometrySchema } from '@dalashift/shared/schemas';
-import { AlertCircle, LoaderCircle, MapPin, Pencil, Plus, Sprout, Trash2 } from 'lucide-react';
+import {
+  AlertCircle,
+  Clock,
+  LoaderCircle,
+  MapPin,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Sprout,
+  Trash2,
+} from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
 import { usePreferredLanguage } from '../../hooks/use-preferred-language';
-import { formatCropWithHausa, PLANTING_TRIGGER_TITLES } from '../../lib/utilities/format';
+import {
+  formatCropWithHausa,
+  formatObservationDate,
+  PLANTING_TRIGGER_TITLES,
+} from '../../lib/utilities/format';
 import { HonestyMapCanvas } from '../maps/honesty-map-canvas';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -22,6 +36,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { SegmentedControl } from '../ui/segmented-control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Skeleton } from '../ui/skeleton';
 import { PlantingTriggerCard } from './planting-trigger-card';
 import { SuitabilityShortlistCard } from './suitability-shortlist-card';
 
@@ -123,6 +138,7 @@ const comparisonResponseSchema = z.object({
         citation: z.string().nullable().optional(),
         value: z.number().nullable().optional(),
         unit: z.string().nullable().optional(),
+        observedAt: z.string().nullable().optional(),
       }),
     ),
     limitations: z.array(z.object({ statement: z.string() })),
@@ -134,6 +150,7 @@ const comparisonResponseSchema = z.object({
     framingNote: z.string(),
     limitations: z.array(z.object({ statement: z.string() })),
   }),
+  lastObservedAt: z.string().nullable().optional(),
 });
 
 const errorResponseSchema = z.object({ error: z.string() });
@@ -141,6 +158,13 @@ const errorResponseSchema = z.object({ error: z.string() });
 type FarmResponse = z.infer<typeof farmResponseSchema>;
 type ComparisonResponse = z.infer<typeof comparisonResponseSchema>;
 type CatalogCrop = z.infer<typeof catalogResponseSchema>['crops'][number];
+
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isOlderThanSevenDays(isoDate: string): boolean {
+  const parsed = Date.parse(isoDate);
+  return Number.isFinite(parsed) && Date.now() - parsed > SEVEN_DAYS_MS;
+}
 
 async function readJson<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
   let payload: unknown;
@@ -198,6 +222,9 @@ export function RegisteredFarmWorkspace({
   const [loading, setLoading] = React.useState(true);
   const [running, setRunning] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [catalogError, setCatalogError] = React.useState<string | null>(null);
+  const [isOffline, setIsOffline] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [selectedPlannedCropCode, setSelectedPlannedCropCode] = React.useState<string | null>(null);
 
@@ -236,40 +263,68 @@ export function RegisteredFarmWorkspace({
     return data;
   }, [farmId]);
 
+  const loadFarmAndCatalog = React.useCallback(async () => {
+    return Promise.allSettled([
+      fetch(`/api/farms/${farmId}`, { cache: 'no-store' }).then((response) =>
+        readJson(response, farmResponseSchema),
+      ),
+      fetch('/api/catalog/crops', { cache: 'no-store' }).then((response) =>
+        readJson(response, catalogResponseSchema),
+      ),
+    ]);
+  }, [farmId]);
+
+  const applyFarmAndCatalog = React.useCallback(
+    (results: Awaited<ReturnType<typeof loadFarmAndCatalog>>) => {
+      const [farmResult, catalogResult] = results;
+      if (farmResult.status === 'fulfilled') {
+        setFarmData(farmResult.value);
+        setSelectedParcelId(farmResult.value.parcels[0]?.id ?? null);
+        setPriorityDraft({
+          goals: farmResult.value.priorities?.goals ?? [],
+          plantingTrigger: farmResult.value.priorities?.planting_trigger ?? '',
+          riskTolerance:
+            farmResult.value.priorities?.risk_tolerance !== null &&
+            farmResult.value.priorities?.risk_tolerance !== undefined
+              ? String(farmResult.value.priorities.risk_tolerance)
+              : '',
+          notes: farmResult.value.priorities?.notes ?? '',
+        });
+        setErrorMessage(null);
+      } else {
+        setErrorMessage(
+          farmResult.reason instanceof Error
+            ? farmResult.reason.message
+            : 'Unable to load this farm right now.',
+        );
+      }
+      if (catalogResult.status === 'fulfilled') {
+        setCatalog(catalogResult.value.crops);
+        setCatalogError(null);
+      } else {
+        setCatalogError(
+          'The crop catalog could not be loaded. Your saved crops and parcels are still here, but adding a catalog crop may not work until it is available again.',
+        );
+      }
+    },
+    [],
+  );
+
+  const refreshWorkspace = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      applyFarmAndCatalog(await loadFarmAndCatalog());
+    } finally {
+      setRefreshing(false);
+    }
+  }, [loadFarmAndCatalog, applyFarmAndCatalog]);
+
   React.useEffect(() => {
     let active = true;
     void (async () => {
       try {
-        const [farmResult, catalogResult] = await Promise.allSettled([
-          fetch(`/api/farms/${farmId}`, { cache: 'no-store' }).then((response) =>
-            readJson(response, farmResponseSchema),
-          ),
-          fetch('/api/catalog/crops', { cache: 'no-store' }).then((response) =>
-            readJson(response, catalogResponseSchema),
-          ),
-        ]);
-        if (!active) return;
-        if (farmResult.status === 'fulfilled') {
-          setFarmData(farmResult.value);
-          setSelectedParcelId(farmResult.value.parcels[0]?.id ?? null);
-          setPriorityDraft({
-            goals: farmResult.value.priorities?.goals ?? [],
-            plantingTrigger: farmResult.value.priorities?.planting_trigger ?? '',
-            riskTolerance:
-              farmResult.value.priorities?.risk_tolerance !== null &&
-              farmResult.value.priorities?.risk_tolerance !== undefined
-                ? String(farmResult.value.priorities.risk_tolerance)
-                : '',
-            notes: farmResult.value.priorities?.notes ?? '',
-          });
-        } else {
-          setErrorMessage(
-            farmResult.reason instanceof Error
-              ? farmResult.reason.message
-              : 'Unable to load this farm right now.',
-          );
-        }
-        if (catalogResult.status === 'fulfilled') setCatalog(catalogResult.value.crops);
+        const results = await loadFarmAndCatalog();
+        if (active) applyFarmAndCatalog(results);
       } finally {
         if (active) setLoading(false);
       }
@@ -277,7 +332,28 @@ export function RegisteredFarmWorkspace({
     return () => {
       active = false;
     };
-  }, [farmId]);
+  }, [loadFarmAndCatalog, applyFarmAndCatalog]);
+
+  React.useEffect(() => {
+    const update = () => setIsOffline(typeof navigator !== 'undefined' && !navigator.onLine);
+    update();
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
+
+  const oldestObservationAt = React.useMemo(() => {
+    const dates: string[] = [];
+    const addDate = (value: string | null | undefined) => {
+      if (value && Number.isFinite(Date.parse(value))) dates.push(value);
+    };
+    addDate(comparison?.lastObservedAt);
+    comparison?.plantingTrigger.evidence.forEach((item) => addDate(item.observedAt));
+    return dates.sort((a, b) => Date.parse(a) - Date.parse(b))[0] ?? null;
+  }, [comparison]);
 
   const runAssessment = async () => {
     if (!farmData) return;
@@ -510,16 +586,41 @@ export function RegisteredFarmWorkspace({
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-[#4b5563]">
-        <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-        Loading your farm…
+      <div
+        aria-busy="true"
+        aria-label="Loading your farm"
+        className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto max-w-7xl space-y-6">
+          <div className="rounded-xl border border-[#e5e7eb] bg-white p-5">
+            <Skeleton className="h-5 w-24 rounded-full" />
+            <Skeleton className="mt-3 h-8 w-64" />
+            <Skeleton className="mt-2 h-4 w-48" />
+          </div>
+          <div className="grid gap-6 lg:grid-cols-12">
+            <div className="space-y-3 lg:col-span-8">
+              <Skeleton className="h-[460px] w-full rounded-xl" />
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Skeleton className="h-20 rounded-lg" />
+                <Skeleton className="h-20 rounded-lg" />
+                <Skeleton className="h-20 rounded-lg" />
+                <Skeleton className="h-20 rounded-lg" />
+              </div>
+              <Skeleton className="h-40 w-full rounded-xl" />
+            </div>
+            <div className="space-y-4 lg:col-span-4">
+              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="h-64 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!farmData) {
     return (
-      <main className="mx-auto max-w-3xl space-y-4 px-4 py-12">
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-12">
         <div role="alert" className="rounded-xl border border-[#f5c2c0] bg-white p-5 text-sm">
           <p className="font-semibold text-[#b42318]">{errorMessage}</p>
           {errorMessage?.includes('Authentication') ? (
@@ -531,7 +632,7 @@ export function RegisteredFarmWorkspace({
         <Link href="/farms" className="text-sm font-medium text-[#0a4232] underline">
           Return to farms
         </Link>
-      </main>
+      </div>
     );
   }
 
@@ -561,7 +662,7 @@ export function RegisteredFarmWorkspace({
     : null;
 
   return (
-    <main className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="flex flex-col justify-between gap-4 rounded-xl border border-[#e5e7eb] bg-white p-5 sm:flex-row sm:items-center">
           <div>
@@ -638,6 +739,41 @@ export function RegisteredFarmWorkspace({
           <p role="status" className="text-xs text-[#6b7280]">
             Saving changes…
           </p>
+        ) : null}
+
+        {isOffline ? (
+          <div
+            role="status"
+            className="flex items-start gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-sm text-[#8e5636]"
+          >
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <span>
+              You are offline. These are the farm details saved on this device. Changes may not save
+              until you are back online.
+            </span>
+          </div>
+        ) : null}
+
+        {oldestObservationAt && isOlderThanSevenDays(oldestObservationAt) ? (
+          <div
+            role="status"
+            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-sm text-[#8e5636]"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="size-4 shrink-0" aria-hidden="true" />
+              Some field information is from {formatObservationDate(oldestObservationAt)} and may be
+              out of date. {refreshing ? 'Refreshing now…' : null}
+            </span>
+            <button
+              type="button"
+              onClick={() => void refreshWorkspace()}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline cursor-pointer disabled:opacity-60"
+            >
+              <RefreshCw className="size-3.5" aria-hidden="true" />
+              Refresh
+            </button>
+          </div>
         ) : null}
 
         <div className="grid gap-6 lg:grid-cols-12">
@@ -876,6 +1012,11 @@ export function RegisteredFarmWorkspace({
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
                   Add a crop
                 </h3>
+                {catalogError ? (
+                  <p role="status" className="text-xs text-[#8a5300]">
+                    {catalogError}
+                  </p>
+                ) : null}
                 <Select
                   value={newCrop.cropId}
                   onValueChange={(value) =>
@@ -1075,6 +1216,6 @@ export function RegisteredFarmWorkspace({
           </p>
         )}
       </div>
-    </main>
+    </div>
   );
 }

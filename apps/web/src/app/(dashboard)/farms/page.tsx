@@ -7,7 +7,10 @@ import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
-import { DataStateBoundary } from '../../../components/dashboard/data-state-boundary';
+import {
+  DataStateBoundary,
+  type DataViewState,
+} from '../../../components/dashboard/data-state-boundary';
 import { ParcelVectorThumbnail } from '../../../components/farms/parcel-vector-thumbnail';
 import { HonestyMapCanvas } from '../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../components/ui/badge';
@@ -70,79 +73,113 @@ async function readJson<T>(response: Response, schema: z.ZodType<T>): Promise<T>
 export default function FarmsOverviewPage(): React.JSX.Element {
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
   const [entries, setEntries] = React.useState<FarmParcelEntry[]>([]);
+  const [missingSources, setMissingSources] = React.useState<string[]>([]);
   const [selectedParcelId, setSelectedParcelId] = React.useState<string | null>(null);
   const [state, setState] = React.useState<'loading' | 'ready' | 'error' | 'unauthenticated'>(
     'loading',
   );
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [online, setOnline] = React.useState(() =>
+    typeof navigator === 'undefined' ? true : navigator.onLine,
+  );
+  const activeRef = React.useRef(true);
 
   React.useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        const farmsResponse = await fetch('/api/farms', { cache: 'no-store' });
-        if (farmsResponse.status === 401) {
-          if (active) setState('unauthenticated');
-          return;
-        }
-        const farmList = await readJson(farmsResponse, farmListSchema);
-
-        const details = await Promise.all(
-          farmList.farms.map(async (farm) => {
-            try {
-              const response = await fetch(`/api/farms/${farm.id}`, { cache: 'no-store' });
-              if (!response.ok) return null;
-              return { farm, detail: await readJson(response, farmDetailSchema) };
-            } catch {
-              return null;
-            }
-          }),
-        );
-
-        const collected: FarmParcelEntry[] = [];
-        for (const item of details) {
-          if (!item) continue;
-          for (const parcel of item.detail.parcels) {
-            const geometry: GeoJSONGeometry | null =
-              parcel.geometry_geojson ?? parcel.centroid_geojson ?? null;
-            if (!geometry) continue;
-            collected.push({
-              farmId: item.farm.id,
-              farmName: item.farm.name,
-              plantingTrigger: item.detail.priorities?.planting_trigger ?? null,
-              parcel: {
-                id: parcel.id,
-                farmId: item.farm.id,
-                name: parcel.name,
-                geometry,
-                areaHa: parcel.area_ha ?? 0,
-                locationUncertaintyM: parcel.location_uncertainty_m,
-                geometryMethod:
-                  parcel.geometry_method === 'drawn_polygon' ? 'drawn_polygon' : 'gps_point',
-              },
-            });
-          }
-        }
-
-        if (active) {
-          setFarms(farmList.farms);
-          setEntries(collected);
-          setSelectedParcelId(collected[0]?.parcel.id ?? null);
-          setState('ready');
-        }
-      } catch (error) {
-        if (active) {
-          setErrorMessage(error instanceof Error ? error.message : 'Unable to load your holdings.');
-          setState('error');
-        }
-      }
-    })();
+    activeRef.current = true;
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
     return () => {
-      active = false;
+      activeRef.current = false;
+      window.removeEventListener('online', goOnline);
+      window.removeEventListener('offline', goOffline);
     };
   }, []);
 
+  const load = React.useCallback(async () => {
+    setState('loading');
+    try {
+      const farmsResponse = await fetch('/api/farms', { cache: 'no-store' });
+      if (farmsResponse.status === 401) {
+        if (activeRef.current) setState('unauthenticated');
+        return;
+      }
+      const farmList = await readJson(farmsResponse, farmListSchema);
+
+      const details = await Promise.all(
+        farmList.farms.map(async (farm) => {
+          try {
+            const response = await fetch(`/api/farms/${farm.id}`, { cache: 'no-store' });
+            if (!response.ok) return { farm, detail: null };
+            return { farm, detail: await readJson(response, farmDetailSchema) };
+          } catch {
+            return { farm, detail: null };
+          }
+        }),
+      );
+
+      const collected: FarmParcelEntry[] = [];
+      const failedFarmNames: string[] = [];
+      for (const item of details) {
+        if (!item.detail) {
+          failedFarmNames.push(item.farm.name);
+          continue;
+        }
+        for (const parcel of item.detail.parcels) {
+          const geometry: GeoJSONGeometry | null =
+            parcel.geometry_geojson ?? parcel.centroid_geojson ?? null;
+          if (!geometry) continue;
+          collected.push({
+            farmId: item.farm.id,
+            farmName: item.farm.name,
+            plantingTrigger: item.detail.priorities?.planting_trigger ?? null,
+            parcel: {
+              id: parcel.id,
+              farmId: item.farm.id,
+              name: parcel.name,
+              geometry,
+              areaHa: parcel.area_ha ?? 0,
+              locationUncertaintyM: parcel.location_uncertainty_m,
+              geometryMethod:
+                parcel.geometry_method === 'drawn_polygon' ? 'drawn_polygon' : 'gps_point',
+            },
+          });
+        }
+      }
+
+      if (activeRef.current) {
+        setFarms(farmList.farms);
+        setEntries(collected);
+        setMissingSources(failedFarmNames);
+        setSelectedParcelId(collected[0]?.parcel.id ?? null);
+        setState('ready');
+      }
+    } catch (error) {
+      if (activeRef.current) {
+        setErrorMessage(error instanceof Error ? error.message : 'Unable to load your holdings.');
+        setState('error');
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    void load();
+  }, [load]);
+
   const selectedEntry = entries.find((entry) => entry.parcel.id === selectedParcelId) ?? null;
+
+  const viewState: DataViewState = !online
+    ? 'offline'
+    : state === 'error'
+      ? entries.length > 0
+        ? 'stale'
+        : 'error'
+      : state === 'ready' && missingSources.length > 0
+        ? 'partial'
+        : state === 'ready' && entries.length === 0
+          ? 'empty'
+          : 'ready';
 
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
@@ -228,19 +265,15 @@ export default function FarmsOverviewPage(): React.JSX.Element {
         </section>
 
         <DataStateBoundary
-          state={
-            state === 'loading'
-              ? 'loading'
-              : state === 'error'
-                ? 'error'
-                : state === 'ready' && entries.length === 0
-                  ? 'empty'
-                  : 'ready'
-          }
+          state={viewState}
           emptyKind="no-parcels"
           sourceName="Farm and parcel service"
           errorMessage={errorMessage ?? undefined}
-          onRetry={() => window.location.reload()}
+          missingSources={missingSources}
+          offlineMessage="You are offline. Showing the fields saved on this device."
+          onRetry={() => {
+            void load();
+          }}
           onPrimaryAction={() => {
             window.location.href = '/farms/new';
           }}

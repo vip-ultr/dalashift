@@ -1,11 +1,10 @@
 'use client';
 
 import type { ComparisonResult, RotationStrategy } from '@dalashift/shared/types';
-import { Check, Info, Scale, Sprout } from 'lucide-react';
+import { Check, Info, List, ListOrdered, Scale, Sprout } from 'lucide-react';
 
 import { cn } from '../../lib/utilities/cn';
 import { HAUSA_CROP_NAMES } from '../../lib/utilities/format';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { DimensionThresholdRow } from './dimension-threshold-row';
 
@@ -32,14 +31,31 @@ export function SuitabilityShortlistCard({
 }: SuitabilityShortlistCardProps) {
   const hasTies = comparison.strategies.some((s) => s.rank === 'tied');
 
-  const renderRankLabel = (strategy: RotationStrategy, idx: number) => {
+  // Rank is an ordinal position, not a grade. Keep it as plain, neutral text so
+  // the interface never implies a score or breaks a tie for presentation.
+  const renderRankLabel = (strategy: RotationStrategy) => {
     if (strategy.rank === 'first') {
-      return <Badge variant="pass">Top candidate</Badge>;
+      return (
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+          <ListOrdered className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
+          Best match on the information we have
+        </span>
+      );
     }
     if (strategy.rank === 'tied') {
-      return <Badge variant="warning">Tied on available data</Badge>;
+      return (
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+          <Scale className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
+          These options are tied on the information we have
+        </span>
+      );
     }
-    return <Badge variant="default">Option {idx + 1}</Badge>;
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+        <List className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
+        Another option
+      </span>
+    );
   };
 
   return (
@@ -83,6 +99,17 @@ export function SuitabilityShortlistCard({
           const hausaInfo = HAUSA_CROP_NAMES[cropCode];
           const isSelected = selectedPlannedCropCode === cropCode;
 
+          // The engine's reason already leads with the strength word and a
+          // connector (because / based on). Strip that lead so the line reads
+          // "Evidence: strong, because ..." without repeating "strong".
+          const evidenceReason = strategy.evidenceStrengthReason;
+          const evidencePrefix = `${strategy.evidenceStrength} evidence `;
+          const evidenceDetail = evidenceReason
+            .toLowerCase()
+            .startsWith(evidencePrefix.toLowerCase())
+            ? evidenceReason.slice(evidencePrefix.length)
+            : evidenceReason.charAt(0).toLowerCase() + evidenceReason.slice(1);
+
           return (
             <div
               key={`${cropCode}-${idx}`}
@@ -92,20 +119,14 @@ export function SuitabilityShortlistCard({
               )}
             >
               <div>
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  {renderRankLabel(strategy, idx)}
-                  <Badge
-                    variant={
-                      strategy.evidenceStrength === 'strong'
-                        ? 'pass'
-                        : strategy.evidenceStrength === 'moderate'
-                          ? 'warning'
-                          : 'danger'
-                    }
-                  >
+                {renderRankLabel(strategy)}
+
+                <p className="mt-1.5 text-xs leading-relaxed text-ink-muted">
+                  <span className="font-semibold text-ink">
                     Evidence: {strategy.evidenceStrength}
-                  </Badge>
-                </div>
+                  </span>
+                  {evidenceDetail ? `, ${evidenceDetail}` : '.'}
+                </p>
 
                 <div className="mt-3 flex items-baseline gap-2">
                   <h4 className="text-lg font-semibold text-ink">{cropName}</h4>

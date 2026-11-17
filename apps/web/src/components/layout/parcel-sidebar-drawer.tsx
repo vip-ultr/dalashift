@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 const farmListSchema = z.object({
@@ -29,22 +30,29 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   const [collapsed, setCollapsed] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
-  const [_loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [isOffline, setIsOffline] = React.useState(false);
+  const [reloadKey, setReloadKey] = React.useState(0);
 
   React.useEffect(() => {
     let active = true;
     async function loadFarms() {
+      setLoading(true);
+      setLoadError(null);
       try {
         const res = await fetch('/api/farms', { cache: 'no-store' });
-        if (res.ok) {
-          const payload: unknown = await res.json();
-          const parsed = farmListSchema.safeParse(payload);
-          if (parsed.success && active) {
-            setFarms(parsed.data.farms);
-          }
+        if (!res.ok) throw new Error('Your farms could not be loaded right now.');
+        const payload: unknown = await res.json();
+        const parsed = farmListSchema.safeParse(payload);
+        if (!parsed.success) throw new Error('Your farms could not be read right now.');
+        if (active) setFarms(parsed.data.farms);
+      } catch (error) {
+        if (active) {
+          setLoadError(
+            error instanceof Error ? error.message : 'Your farms could not be loaded right now.',
+          );
         }
-      } catch {
-        // Silently handle if not signed in
       } finally {
         if (active) setLoading(false);
       }
@@ -52,6 +60,17 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
     void loadFarms();
     return () => {
       active = false;
+    };
+  }, [reloadKey]);
+
+  React.useEffect(() => {
+    const update = () => setIsOffline(typeof navigator !== 'undefined' && !navigator.onLine);
+    update();
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
     };
   }, []);
 
@@ -118,7 +137,39 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
             </Tooltip>
           </div>
 
-          {farms.length > 0 ? (
+          {isOffline ? (
+            <div
+              role="status"
+              className="mt-3 rounded-md border border-[#b9770e]/30 bg-[#fdf6e5] px-2.5 py-2 text-[11px] text-[#8e5636]"
+            >
+              You are offline. Showing the farms saved on this device. New changes may not appear
+              until you are online.
+            </div>
+          ) : null}
+
+          {loading ? (
+            <div className="mt-3 space-y-2" role="status" aria-label="Loading your farms">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-full" />
+            </div>
+          ) : loadError ? (
+            <div
+              role="alert"
+              className="mt-3 rounded-lg border border-[#f5c2c0] bg-[#fdeceb] p-3 text-[11px] text-[#b42318]"
+            >
+              <p className="font-semibold">{loadError}</p>
+              <p className="mt-1">Your other farm details are safe.</p>
+              <button
+                type="button"
+                onClick={() => setReloadKey((key) => key + 1)}
+                className="mt-2 font-semibold underline underline-offset-2 cursor-pointer"
+              >
+                Try again
+              </button>
+            </div>
+          ) : farms.length > 0 ? (
             <>
               {/* Inline Search Box */}
               <div className="relative mt-3">

@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Clock, Inbox, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Clock, Inbox, RefreshCw, WifiOff } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
@@ -8,7 +8,8 @@ import { formatObservationDate } from '../../lib/utilities/format';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
 
-export type DataViewState = 'ready' | 'loading' | 'empty' | 'error' | 'stale';
+export type DataViewState =
+  'ready' | 'loading' | 'empty' | 'error' | 'stale' | 'partial' | 'offline';
 
 export interface DataStateBoundaryProps {
   readonly state: DataViewState;
@@ -21,13 +22,23 @@ export interface DataStateBoundaryProps {
   readonly primaryActionLabel?: string;
   readonly children?: ReactNode;
   readonly className?: string;
+  readonly missingSources?: readonly string[];
+  readonly offlineMessage?: string;
 }
 
 /**
- * Cross-cutting data state wrapper implementing the four required states from
- * docs/product/user-flows.md section 7: Loading (skeleton), Empty (distinguishing
- * no-crops vs no-data), Error (upstream unavailable), and Stale (observation age
- * + refresh button).
+ * Cross-cutting data state wrapper for every data view in the dashboard.
+ *
+ * States:
+ * - loading: skeleton while the first fetch is in flight
+ * - empty: no stored data, split by no-crops / no-parcels / no-data
+ * - error: the upstream service could not be reached
+ * - stale: saved data shown because the latest refresh failed
+ * - partial: saved data shown, but one or more named sources did not load
+ * - offline: the device has no connection, saved data kept visible
+ * - ready: current data, shown with no banner
+ *
+ * Retry callbacks are supplied by each page and perform a real refetch.
  */
 export function DataStateBoundary({
   state,
@@ -40,6 +51,8 @@ export function DataStateBoundary({
   primaryActionLabel,
   children,
   className,
+  missingSources,
+  offlineMessage,
 }: DataStateBoundaryProps) {
   if (state === 'loading') {
     return (
@@ -68,24 +81,25 @@ export function DataStateBoundary({
     const copy =
       emptyKind === 'no-crops'
         ? {
-            title: 'No crops recorded on this parcel yet',
-            body: 'Add the crops you currently grow, grew last season, or plan to plant so DalaShift can compare rotation strategies against your baseline.',
+            title: 'No crops added for this parcel yet',
+            body: 'Add the crops you grow now or plan to grow next season. DalaShift will compare your rotation options against your current practice.',
             action: primaryActionLabel ?? 'Add parcel crops',
           }
         : emptyKind === 'no-parcels'
           ? {
-              title: 'No parcels added to this farm yet',
-              body: 'Capture a GPS point with accuracy radius or draw your field boundary on the map to begin parcel-level analysis.',
+              title: 'No parcels added for this farm yet',
+              body: 'Add a field by dropping a pin with its accuracy radius or drawing its boundary on the map to start parcel analysis.',
               action: primaryActionLabel ?? '+ Add parcel',
             }
           : {
-              title: 'No environmental observations cached for this parcel yet',
-              body: 'Open the parcel and refresh to retrieve NASA POWER climate records, CHIRPS rainfall, and SMAP soil moisture for this location.',
+              title: 'No saved observations for this parcel yet',
+              body: 'Open the parcel and refresh to load climate records, rainfall, and soil moisture for this location.',
               action: primaryActionLabel ?? 'Fetch observations',
             };
 
     return (
       <div
+        role="status"
         className={cn(
           'flex flex-col items-center justify-center rounded-xl border border-border bg-[#f4f5f6] px-6 py-10 text-center',
           className,
@@ -115,11 +129,11 @@ export function DataStateBoundary({
           <AlertTriangle className="mt-0.5 size-5 shrink-0 text-[#c0392b]" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-[#c0392b]">
-              {sourceName} is temporarily unavailable
+              We cannot reach {sourceName} right now
             </h3>
             <p className="mt-1 text-sm text-ink">
               {errorMessage ??
-                `${sourceName} could not be reached right now. Your farm, parcel geometry, and crop records are saved safely. Try again in a few minutes.`}
+                'We could not reach the service just now. Your farm and parcel records are saved and safe. Try again in a few minutes.'}
             </p>
             {onRetry ? (
               <Button variant="secondary" size="xs" onClick={onRetry} className="mt-3">
@@ -133,27 +147,82 @@ export function DataStateBoundary({
     );
   }
 
+  let banner: ReactNode = null;
+
+  if (state === 'stale') {
+    banner = (
+      <div
+        role="status"
+        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-xs text-[#8e5636]"
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <Clock className="size-3.5 shrink-0" />
+          Showing saved observations from {formatObservationDate(lastObservedAt)}. Connect to the
+          internet and refresh to check for newer data.
+        </span>
+        {onRetry ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
+          >
+            <RefreshCw className="size-3" />
+            Refresh now
+          </button>
+        ) : null}
+      </div>
+    );
+  } else if (state === 'partial') {
+    const missing = missingSources?.length ? missingSources.join(', ') : 'some sources';
+    banner = (
+      <div
+        role="status"
+        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-xs text-[#8e5636]"
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <AlertTriangle className="size-3.5 shrink-0" />
+          We could not load details for: {missing}. Everything else is shown below.
+        </span>
+        {onRetry ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
+          >
+            <RefreshCw className="size-3" />
+            Try again
+          </button>
+        ) : null}
+      </div>
+    );
+  } else if (state === 'offline') {
+    banner = (
+      <div
+        role="status"
+        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-subtle px-3.5 py-2 text-xs text-ink-muted"
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <WifiOff className="size-3.5 shrink-0" />
+          {offlineMessage ??
+            'You are offline. We are showing the data saved on this device. Reconnect to load the latest information.'}
+        </span>
+        {onRetry ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
+          >
+            <RefreshCw className="size-3" />
+            Try again
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={cn('space-y-3', className)}>
-      {state === 'stale' ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-xs text-[#8e5636]">
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="size-3.5 shrink-0" />
-            Cached observation from {formatObservationDate(lastObservedAt)}. Refresh when connected
-            to check for newer satellite passes.
-          </span>
-          {onRetry ? (
-            <button
-              type="button"
-              onClick={onRetry}
-              className="inline-flex items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline cursor-pointer"
-            >
-              <RefreshCw className="size-3" />
-              Refresh now
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+      {banner}
       {children}
     </div>
   );

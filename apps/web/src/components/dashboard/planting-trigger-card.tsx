@@ -66,9 +66,9 @@ export function PlantingTriggerCard({
       </div>
 
       {/* Recommended Condition Callout */}
-      <div className="mt-4 rounded-xl border-l-4 border-l-[#00b159] bg-[#f4f5f6] p-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-[#0a4232] uppercase">
-          <Sprout className="size-4 text-[#00b159]" />
+      <div className="mt-4 rounded-xl border-l-4 border-l-brand-primary bg-[#f4f5f6] p-4">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-brand-primary uppercase">
+          <Sprout className="size-4 text-brand-primary" />
           <span>Active Trigger Condition</span>
           {farmerStated === activeRecommended ? (
             <span className="rounded bg-[#fdf6e5] px-2 py-0.5 text-[11px] font-medium normal-case text-[#8e5636]">
@@ -122,11 +122,11 @@ export function PlantingTriggerCard({
                 className={cn(
                   'flex flex-col justify-between rounded-xl border p-4 transition-all',
                   isRecommended
-                    ? 'border-2 border-[#00b159] bg-surface-raised shadow-xs'
+                    ? 'border-2 border-brand-primary bg-surface-raised shadow-xs'
                     : isFarmerRule
                       ? 'border-2 border-[#ab6a43] bg-[#fdf6e5]/40'
                       : 'border-border bg-[#f4f5f6]/70',
-                  onSelectTrigger && 'cursor-pointer hover:border-[#00b159]',
+                  onSelectTrigger && 'cursor-pointer hover:border-brand-primary',
                 )}
               >
                 <div>
@@ -171,7 +171,7 @@ export function PlantingTriggerCard({
                   {item.kind === 'farmer_report' ? (
                     <Compass className="mt-0.5 size-3.5 shrink-0 text-[#8e5636]" />
                   ) : (
-                    <CloudRain className="mt-0.5 size-3.5 shrink-0 text-[#3d6382]" />
+                    <CloudRain className="mt-0.5 size-3.5 shrink-0 text-info" />
                   )}
                   <span className="text-ink">{item.statement}</span>
                 </div>
