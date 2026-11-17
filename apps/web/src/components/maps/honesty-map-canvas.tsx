@@ -680,7 +680,10 @@ export function HonestyMapCanvas({
 
     const draw = new TerraDraw({
       adapter: new MapLibreTerraDrawAdapter(map),
-      modes: [new TerraDrawPolygonMode()],
+      // Coordinate points put a real vertex marker at every placed corner, not
+      // just the two closing handles. The adapter paints them as warm-white
+      // dots with a green ring so the growing shape is legible on imagery.
+      modes: [new TerraDrawPolygonMode({ showCoordinatePoints: true })],
     });
     drawRef.current = draw;
     draw.on('finish', (featureId) => {

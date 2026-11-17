@@ -6,6 +6,13 @@ import { DEFAULT_RULESET_VERSION } from '../recommendations/engine/build-crop-in
 const MANDATORY_FRAMING_NOTE =
   'This seasonal risk outlook is derived from the historical climate record and season-to-date observations for the regional grid cell. It is a risk indicator, never a weather forecast or a prediction of future rain.';
 
+type Language = 'en' | 'ha';
+
+/** Locale-aware number formatting so Hausa mode uses ha-NG (brief section 9.1). */
+function formatNumber(value: number, language: Language): string {
+  return value.toLocaleString(language === 'ha' ? 'ha-NG' : 'en-US');
+}
+
 /**
  * Compute the seasonal risk outlook for a parcel from season-to-date daily
  * precipitation and multi-year climatology (Decision D-07).
@@ -13,12 +20,15 @@ const MANDATORY_FRAMING_NOTE =
  * Explicitly framed as a seasonal risk indicator and never as a weather
  * forecast.
  */
-export function assessSeasonalOutlook(input: {
-  readonly parcelId: string | null;
-  readonly dailyObservations: readonly ProvenancedValue[];
-  readonly climatologyObservations: readonly ProvenancedValue[];
-  readonly rulesetVersion?: string;
-}): SeasonalOutlook {
+export function assessSeasonalOutlook(
+  input: {
+    readonly parcelId: string | null;
+    readonly dailyObservations: readonly ProvenancedValue[];
+    readonly climatologyObservations: readonly ProvenancedValue[];
+    readonly rulesetVersion?: string;
+  },
+  language: Language = 'en',
+): SeasonalOutlook {
   const rulesetVersion = input.rulesetVersion ?? DEFAULT_RULESET_VERSION;
   const limitations: Limitation[] = [];
 
@@ -68,22 +78,22 @@ export function assessSeasonalOutlook(input: {
     const resolutionKm = Math.round(dailyPrecip[0]!.spatialResolutionM / 1000);
     limitations.push({
       kind: 'coarse_resolution',
-      statement: `Rainfall and climatology figures come from a ${resolutionKm} km regional grid cell and describe regional climate context rather than a rain gauge on the parcel.`,
+      statement: `Rainfall and climatology figures come from a ${formatNumber(resolutionKm, language)} km regional grid cell and describe regional climate context rather than a rain gauge on the parcel.`,
     });
 
     if (normalMm > 0) {
       const deltaMm = Number((totalToDateMm - normalMm).toFixed(1));
       if (totalToDateMm < normalMm * 0.8) {
         riskStatements.push(
-          `Season-to-date rainfall (${totalToDateMm} mm) is below the long-term regional normal (${normalMm} mm by ${Math.abs(deltaMm)} mm), indicating elevated dry-spell and short-season risk for long-duration varieties.`,
+          `Season-to-date rainfall (${formatNumber(totalToDateMm, language)} mm) is below the long-term regional normal (${formatNumber(normalMm, language)} mm by ${formatNumber(Math.abs(deltaMm), language)} mm), indicating elevated dry-spell and short-season risk for long-duration varieties.`,
         );
       } else if (totalToDateMm > normalMm * 1.2) {
         riskStatements.push(
-          `Season-to-date rainfall (${totalToDateMm} mm) is above the long-term regional normal (${normalMm} mm), indicating adequate regional moisture accumulation so far.`,
+          `Season-to-date rainfall (${formatNumber(totalToDateMm, language)} mm) is above the long-term regional normal (${formatNumber(normalMm, language)} mm), indicating adequate regional moisture accumulation so far.`,
         );
       } else {
         riskStatements.push(
-          `Season-to-date rainfall (${totalToDateMm} mm) is tracking near the long-term regional normal (${normalMm} mm).`,
+          `Season-to-date rainfall (${formatNumber(totalToDateMm, language)} mm) is tracking near the long-term regional normal (${formatNumber(normalMm, language)} mm).`,
         );
       }
     } else {
@@ -93,7 +103,7 @@ export function assessSeasonalOutlook(input: {
           'Long-term climatology baseline was not available for the observed months; showing season-to-date accumulation only.',
       });
       riskStatements.push(
-        `Recorded season-to-date precipitation is ${totalToDateMm} mm across ${dailyPrecip.length} observed days.`,
+        `Recorded season-to-date precipitation is ${formatNumber(totalToDateMm, language)} mm across ${formatNumber(dailyPrecip.length, language)} observed days.`,
       );
     }
 

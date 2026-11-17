@@ -16,34 +16,36 @@ import {
   X,
 } from 'lucide-react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { signOut } from '../../lib/auth/sign-out';
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
+import { LanguageSwitcher } from '../ui/language-switcher';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 const PRIMARY_NAV_ITEMS = [
   {
     href: '/dashboard',
-    label: 'Dashboard',
+    labelId: 'nav.overview',
     icon: LayoutDashboard,
     matchPrefix: '/dashboard',
   },
   {
     href: '/farms',
-    label: 'Farms',
+    labelId: 'nav.myFields',
     icon: Tractor,
     matchPrefix: '/farms',
     exactExclude: '/farms/new',
   },
   {
     href: '/farms/new',
-    label: 'Add a farm',
+    labelId: 'nav.addFarm',
     icon: PlusCircle,
     matchPrefix: '/farms/new',
   },
   {
     href: '/reports',
-    label: 'Advisory Reports',
+    labelId: 'nav.reports',
     icon: FileText,
     matchPrefix: '/reports',
   },
@@ -52,13 +54,13 @@ const PRIMARY_NAV_ITEMS = [
 const SECONDARY_NAV_ITEMS = [
   {
     href: '/methodology',
-    label: 'Data & Methodology',
+    labelId: 'nav.methodology',
     icon: BookOpen,
     matchPrefix: '/methodology',
   },
   {
     href: '/profile',
-    label: 'Settings',
+    labelId: 'nav.settings',
     icon: UserCircle2,
     matchPrefix: '/profile',
   },
@@ -66,6 +68,7 @@ const SECONDARY_NAV_ITEMS = [
 
 export function WorkspaceRail() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
 
@@ -103,6 +106,7 @@ export function WorkspaceRail() {
             className="h-6 w-auto"
           />
         </Link>
+        <LanguageSwitcher compact />
         <button
           type="button"
           onClick={() => setMobileDrawerOpen(true)}
@@ -164,7 +168,7 @@ export function WorkspaceRail() {
                         )}
                       >
                         <Icon className="size-4.5" />
-                        <span>{item.label}</span>
+                        <span>{t(item.labelId)}</span>
                       </Link>
                     );
                   })}
@@ -192,17 +196,20 @@ export function WorkspaceRail() {
                         )}
                       >
                         <Icon className="size-4.5" />
-                        <span>{item.label}</span>
+                        <span>{t(item.labelId)}</span>
                       </Link>
                     );
                   })}
+                  <div className="px-1 pb-1 pt-2">
+                    <LanguageSwitcher className="w-full" />
+                  </div>
                   <button
                     type="button"
                     onClick={handleSignOut}
                     className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-[#b42318] hover:bg-[#fdeceb] transition-colors cursor-pointer text-left"
                   >
                     <LogOut className="size-4.5" />
-                    <span>Sign out</span>
+                    <span>{t('nav.signOut')}</span>
                   </button>
                   {signOutError && (
                     <p role="alert" className="mt-1 px-3 text-xs text-[#b42318]">
@@ -216,7 +223,7 @@ export function WorkspaceRail() {
             <div className="pt-4 border-t border-[#e5e7eb]">
               <Link href="/farms/new" onClick={() => setMobileDrawerOpen(false)}>
                 <Button variant="primary" size="md" className="w-full">
-                  Add a farm
+                  {t('nav.addFarm')}
                 </Button>
               </Link>
             </div>
@@ -260,7 +267,7 @@ export function WorkspaceRail() {
                 <TooltipTrigger asChild>
                   <Link
                     href={item.href}
-                    aria-label={item.label}
+                    aria-label={t(item.labelId)}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'flex size-10 items-center justify-center rounded-xl transition-all',
@@ -272,7 +279,7 @@ export function WorkspaceRail() {
                     <Icon className="size-5" />
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>{item.label}</TooltipContent>
+                <TooltipContent>{t(item.labelId)}</TooltipContent>
               </Tooltip>
             );
           })}
@@ -287,7 +294,7 @@ export function WorkspaceRail() {
                 <TooltipTrigger asChild>
                   <Link
                     href={item.href}
-                    aria-label={item.label}
+                    aria-label={t(item.labelId)}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'flex size-10 items-center justify-center rounded-xl transition-all',
@@ -299,10 +306,14 @@ export function WorkspaceRail() {
                     <Icon className="size-5" />
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>{item.label}</TooltipContent>
+                <TooltipContent>{t(item.labelId)}</TooltipContent>
               </Tooltip>
             );
           })}
+
+          <div className="w-full px-1 pt-1">
+            <LanguageSwitcher compact className="w-full flex-col !h-auto gap-1" />
+          </div>
 
           <div className="relative">
             <Tooltip>
@@ -310,13 +321,13 @@ export function WorkspaceRail() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  aria-label="Sign out"
+                  aria-label={t('nav.signOut')}
                   className="flex size-10 items-center justify-center rounded-xl text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318] transition-all cursor-pointer"
                 >
                   <LogOut className="size-5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Sign out</TooltipContent>
+              <TooltipContent>{t('nav.signOut')}</TooltipContent>
             </Tooltip>
             {signOutError && (
               <p

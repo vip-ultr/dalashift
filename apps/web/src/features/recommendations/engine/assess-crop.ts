@@ -3,6 +3,7 @@ import type {
   EvidenceStrength,
   LimitationKind,
 } from '@dalashift/shared/constants';
+import { messages } from '@dalashift/shared/i18n';
 import type { CropAssessment, DimensionAssessment, Limitation } from '@dalashift/shared/types';
 
 export interface DimensionRule {
@@ -36,10 +37,24 @@ export interface AssessCropInput {
   readonly observations: readonly AssessmentObservation[];
 }
 
+type Language = 'en' | 'ha';
+
+/** Look up a keyed message without importing any web/React language state. */
+function t(id: string, fallback: string, language: Language): string {
+  return messages[id]?.[language] ?? messages[id]?.en ?? fallback;
+}
+
 const STRENGTH_ORDER: Record<EvidenceStrength, number> = {
   strong: 0,
   moderate: 1,
   weak: 2,
+};
+
+const VERDICT_MESSAGE_IDS: Record<CropAssessment['verdict'], string> = {
+  suitable: 'verdict.suitable',
+  conditional: 'verdict.conditional',
+  insufficient_information: 'verdict.notEnoughInformation',
+  not_suitable: 'verdict.notSuitable',
 };
 
 const DIMENSION_LABELS: Record<AssessmentDimension, string> = {
@@ -54,7 +69,7 @@ const DIMENSION_LABELS: Record<AssessmentDimension, string> = {
 };
 
 /** Compare supplied evidence to supplied, cited rules without generating scores. */
-export function assessCrop(input: AssessCropInput): CropAssessment {
+export function assessCrop(input: AssessCropInput, language: Language = 'en'): CropAssessment {
   if (input.rulesetVersion.trim().length === 0) {
     throw new Error('A ruleset version is required.');
   }
@@ -173,7 +188,7 @@ export function assessCrop(input: AssessCropInput): CropAssessment {
   );
   const evidenceStrength = determineEvidenceStrength(usedObservations);
   const evidenceStrengthReason = explainEvidenceStrength(usedObservations, evidenceStrength);
-  const rationale = buildRationale(dimensions, verdict);
+  const rationale = buildRationale(dimensions, verdict, language);
 
   return {
     cropId: input.cropId,
@@ -232,6 +247,7 @@ function explainEvidenceStrength(
 function buildRationale(
   dimensions: CropAssessment['dimensions'],
   verdict: CropAssessment['verdict'],
+  language: Language,
 ): string {
   if (
     dimensions.length === 0 ||
@@ -243,7 +259,8 @@ function buildRationale(
     const label = DIMENSION_LABELS[dimension.dimension];
     return `${label}: ${dimension.explanation}`;
   });
-  return `${verdict.replaceAll('_', ' ')}. ${summary.join(' ')}`;
+  const verdictLabel = t(VERDICT_MESSAGE_IDS[verdict], verdict.replaceAll('_', ' '), language);
+  return `${verdictLabel}. ${summary.join(' ')}`;
 }
 
 function formatRange(min: number | null, max: number | null, unit: string): string {

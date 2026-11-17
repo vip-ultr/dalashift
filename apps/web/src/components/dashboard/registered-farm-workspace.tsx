@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { z } from 'zod';
 
-import { usePreferredLanguage } from '../../hooks/use-preferred-language';
+import { useLanguage } from '../../i18n/language-provider';
 import {
   formatCropWithHausa,
   formatObservationDate,
@@ -247,7 +247,7 @@ export function RegisteredFarmWorkspace({
 }: {
   readonly farmId: string;
 }): React.JSX.Element {
-  const { language } = usePreferredLanguage();
+  const { language, t } = useLanguage();
   const router = useRouter();
   const [farmData, setFarmData] = React.useState<FarmResponse | null>(null);
   const [catalog, setCatalog] = React.useState<CatalogCrop[]>([]);
@@ -713,7 +713,7 @@ export function RegisteredFarmWorkspace({
     return (
       <div
         aria-busy="true"
-        aria-label="Loading your farm"
+        aria-label={t('state.loading')}
         className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8"
       >
         <div className="mx-auto max-w-7xl space-y-6">
@@ -778,7 +778,6 @@ export function RegisteredFarmWorkspace({
     ];
   });
   const selectedParcel = farmData.parcels.find((parcel) => parcel.id === selectedParcelId);
-  const languagePrefix = 'registered-farm-language';
   const sectionPrefix = 'farm-workspace-section';
   const triggerAssessment = comparison
     ? (comparison.plantingTrigger as unknown as PlantingTriggerAssessment)
@@ -804,23 +803,6 @@ export function RegisteredFarmWorkspace({
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div>
-              <p className="mb-1 text-[11px] font-semibold text-[#6b7280]">Crop terminology</p>
-              <SegmentedControl
-                size="sm"
-                ariaLabel="Crop terminology mode"
-                panelIdPrefix={languagePrefix}
-                value={language}
-                onValueChange={() => {
-                  // The saved preference is read from /api/profile. This control
-                  // reflects that value; changing it is done on the profile page.
-                }}
-                options={[
-                  { value: 'en', label: 'English Only', shortLabel: 'English' },
-                  { value: 'ha', label: 'English + Hausa', shortLabel: 'Hausa' },
-                ]}
-              />
-            </div>
             <div className="self-end">
               <Button type="button" onClick={runAssessment} disabled={running || !selectedParcelId}>
                 {running ? (
@@ -828,7 +810,7 @@ export function RegisteredFarmWorkspace({
                 ) : (
                   <Sprout className="size-4" aria-hidden="true" />
                 )}
-                {running ? 'Assessing parcel…' : 'Run parcel assessment'}
+                {running ? 'Assessing parcel…' : t('workspace.runAssessment')}
               </Button>
             </div>
             <div className="self-end">
@@ -849,7 +831,7 @@ export function RegisteredFarmWorkspace({
           <div className="flex flex-wrap items-center gap-2">
             <Button type="button" variant="secondary" size="sm" onClick={openEditFarm}>
               <Pencil className="size-3.5" aria-hidden="true" />
-              Edit farm
+              {t('workspace.editFarm')}
             </Button>
             <Button
               type="button"
@@ -858,20 +840,10 @@ export function RegisteredFarmWorkspace({
               onClick={() => setDeleteFarmOpen(true)}
             >
               <Trash2 className="size-3.5" aria-hidden="true" />
-              Delete farm
+              {t('workspace.deleteFarm')}
             </Button>
           </div>
         </section>
-
-        <div
-          id={`${languagePrefix}-panel-${language}`}
-          role="tabpanel"
-          aria-labelledby={`${languagePrefix}-tab-${language}`}
-        >
-          <span className="sr-only">
-            Crop names are shown {language === 'ha' ? 'with Hausa terms' : 'in English only'}.
-          </span>
-        </div>
 
         {errorMessage ? (
           <div
@@ -879,6 +851,7 @@ export function RegisteredFarmWorkspace({
             className="flex items-start gap-2 rounded-lg bg-[#fdeceb] p-3 text-sm text-[#b42318]"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <span className="font-semibold">{t('state.error')}</span>
             {errorMessage}
           </div>
         ) : null}
@@ -895,10 +868,7 @@ export function RegisteredFarmWorkspace({
             className="flex items-start gap-2 rounded-lg border border-[#b9770e]/30 bg-[#fdf6e5] px-3.5 py-2 text-sm text-[#8e5636]"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            <span>
-              You are offline. These are the farm details saved on this device. Changes may not save
-              until you are back online.
-            </span>
+            <span>{t('state.offline')}</span>
           </div>
         ) : null}
 
@@ -919,7 +889,7 @@ export function RegisteredFarmWorkspace({
               className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline cursor-pointer disabled:opacity-60"
             >
               <RefreshCw className="size-3.5" aria-hidden="true" />
-              Refresh
+              {t('state.refresh')}
             </button>
           </div>
         ) : null}
@@ -932,14 +902,14 @@ export function RegisteredFarmWorkspace({
             value={activeSection}
             onValueChange={setActiveSection}
             options={[
-              { value: 'fields', label: 'Fields' },
-              { value: 'crops', label: 'Crops' },
-              { value: 'priorities', label: 'Priorities' },
-              { value: 'advice', label: 'Advice' },
+              { value: 'fields', label: t('workspace.fields') },
+              { value: 'crops', label: t('workspace.crops') },
+              { value: 'priorities', label: t('workspace.priorities') },
+              { value: 'advice', label: t('workspace.advice') },
             ]}
           />
           <p className="text-sm text-[#4b5563]">
-            Working on:{' '}
+            {t('workspace.workingOn')}:{' '}
             <span className="font-semibold text-[#111315]">
               {selectedParcel?.name ?? 'no field selected'}
             </span>
@@ -1026,7 +996,7 @@ export function RegisteredFarmWorkspace({
                             disabled={busy}
                             onClick={() => void handleSaveParcelEdit()}
                           >
-                            Save
+                            {t('workspace.save')}
                           </Button>
                           <Button
                             type="button"
@@ -1034,7 +1004,7 @@ export function RegisteredFarmWorkspace({
                             variant="secondary"
                             onClick={() => setEditingParcel(null)}
                           >
-                            Cancel
+                            {t('workspace.cancel')}
                           </Button>
                         </div>
                       ) : (
@@ -1055,7 +1025,7 @@ export function RegisteredFarmWorkspace({
                             className="inline-flex items-center gap-1 rounded p-1 text-xs text-[#374151] hover:bg-[#f4f5f6]"
                           >
                             <Pencil className="size-3.5" aria-hidden="true" />
-                            Edit
+                            {t('workspace.edit')}
                           </button>
                           <button
                             type="button"
@@ -1063,7 +1033,7 @@ export function RegisteredFarmWorkspace({
                             className="inline-flex items-center gap-1 rounded p-1 text-xs text-[#b42318] hover:bg-[#fdeceb]"
                           >
                             <Trash2 className="size-3.5" aria-hidden="true" />
-                            Delete
+                            {t('workspace.delete')}
                           </button>
                         </div>
                       )}
@@ -1075,7 +1045,7 @@ export function RegisteredFarmWorkspace({
               <div className="rounded-xl border border-dashed border-[#d1d5db] bg-white p-6 text-center">
                 <MapPin className="mx-auto size-8 text-[#00b159]" />
                 <h3 className="mt-2 text-sm font-semibold text-[#111315]">
-                  No parcel geometry captured yet
+                  {t('state.emptyFields')}
                 </h3>
                 <p className="mt-1 text-xs text-[#6b7280]">
                   Add a GPS point or draw a boundary below to start receiving satellite
@@ -1085,7 +1055,7 @@ export function RegisteredFarmWorkspace({
             )}
 
             <section className="rounded-xl border border-[#e5e7eb] bg-white p-5">
-              <h2 className="font-semibold">Add a parcel</h2>
+              <h2 className="font-semibold">{t('workspace.addField')}</h2>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <Label>Parcel name</Label>
@@ -1153,7 +1123,7 @@ export function RegisteredFarmWorkspace({
                 ) : null}
                 <Button type="button" size="sm" onClick={() => void handleAddParcel()}>
                   <Plus className="size-3.5" aria-hidden="true" />
-                  Add parcel
+                  {t('workspace.addField')}
                 </Button>
               </div>
             </section>
@@ -1224,7 +1194,7 @@ export function RegisteredFarmWorkspace({
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-[#6b7280]">No crop history has been recorded.</p>
+              <p className="mt-2 text-sm text-[#6b7280]">{t('state.emptyCrops')}</p>
             )}
 
             <div className="mt-4 space-y-2 border-t border-[#e5e7eb] pt-3">
@@ -1460,7 +1430,7 @@ export function RegisteredFarmWorkspace({
         <Dialog open={editFarmOpen} onOpenChange={setEditFarmOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit farm details</DialogTitle>
+              <DialogTitle>{t('workspace.editFarm')}</DialogTitle>
               <DialogDescription>Update the details you recorded for this farm.</DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
@@ -1528,10 +1498,10 @@ export function RegisteredFarmWorkspace({
                 size="sm"
                 onClick={() => setEditFarmOpen(false)}
               >
-                Cancel
+                {t('workspace.cancel')}
               </Button>
               <Button type="button" size="sm" disabled={busy} onClick={() => void handleSaveFarm()}>
-                Save changes
+                {t('workspace.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1540,7 +1510,7 @@ export function RegisteredFarmWorkspace({
         <Dialog open={deleteFarmOpen} onOpenChange={setDeleteFarmOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete farm</DialogTitle>
+              <DialogTitle>{t('workspace.deleteFarm')}</DialogTitle>
               <DialogDescription>
                 Delete this farm and all its fields? This cannot be undone.
               </DialogDescription>
@@ -1552,7 +1522,7 @@ export function RegisteredFarmWorkspace({
                 size="sm"
                 onClick={() => setDeleteFarmOpen(false)}
               >
-                Cancel
+                {t('workspace.cancel')}
               </Button>
               <Button
                 type="button"
@@ -1561,7 +1531,7 @@ export function RegisteredFarmWorkspace({
                 disabled={busy}
                 onClick={() => void handleDeleteFarm()}
               >
-                Delete farm
+                {t('workspace.deleteFarm')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1587,7 +1557,7 @@ export function RegisteredFarmWorkspace({
                 size="sm"
                 onClick={() => setPendingDeleteParcelId(null)}
               >
-                Cancel
+                {t('workspace.cancel')}
               </Button>
               <Button
                 type="button"
@@ -1600,7 +1570,7 @@ export function RegisteredFarmWorkspace({
                   if (parcelId) void handleDeleteParcel(parcelId);
                 }}
               >
-                Delete field
+                {t('workspace.delete')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1624,7 +1594,7 @@ export function RegisteredFarmWorkspace({
                 size="sm"
                 onClick={() => setPendingDeleteCropId(null)}
               >
-                Cancel
+                {t('workspace.cancel')}
               </Button>
               <Button
                 type="button"
@@ -1637,7 +1607,7 @@ export function RegisteredFarmWorkspace({
                   if (cropId) void handleDeleteCrop(cropId);
                 }}
               >
-                Delete record
+                {t('workspace.delete')}
               </Button>
             </DialogFooter>
           </DialogContent>

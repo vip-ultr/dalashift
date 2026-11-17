@@ -1,13 +1,14 @@
 'use client';
 
-import { AlertCircle, CheckCircle2, Lock, LoaderCircle, UserCircle2 } from 'lucide-react';
+import { AlertCircle, Lock, UserCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
-import { SegmentedControl } from '../../../components/ui/segmented-control';
+import { LanguageSwitcher } from '../../../components/ui/language-switcher';
+import { useLanguage } from '../../../i18n/language-provider';
 import { signOut } from '../../../lib/auth/sign-out';
 
 const profileResponseSchema = z.object({
@@ -18,13 +19,6 @@ const profileResponseSchema = z.object({
 });
 
 const apiErrorSchema = z.object({ error: z.string() });
-
-type Language = 'ha' | 'en';
-type LanguageSelection = Language | 'unset';
-
-function parseLanguage(value: string | null | undefined): Language | null {
-  return value === 'ha' || value === 'en' ? value : null;
-}
 
 async function readJson(response: Response): Promise<unknown> {
   try {
@@ -40,15 +34,9 @@ function getApiError(payload: unknown, fallback: string): string {
 }
 
 export default function ProfileSettingsPage(): React.JSX.Element {
-  const [defaultLanguage, setDefaultLanguage] = React.useState<LanguageSelection>('unset');
-  const [savedLanguage, setSavedLanguage] = React.useState<Language | null>(null);
-  const [hasUnsupportedLanguage, setHasUnsupportedLanguage] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
-  const [profileLoaded, setProfileLoaded] = React.useState(false);
+  const { t } = useLanguage();
   const [authenticationRequired, setAuthenticationRequired] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     let active = true;
@@ -74,24 +62,12 @@ export default function ProfileSettingsPage(): React.JSX.Element {
         if (!parsed.success) {
           throw new Error('The profile response was invalid.');
         }
-
-        const storedLanguage = parsed.data.profile.preferred_language;
-        const language = parseLanguage(storedLanguage);
-
-        if (active) {
-          setDefaultLanguage(language ?? 'unset');
-          setSavedLanguage(language);
-          setHasUnsupportedLanguage(Boolean(storedLanguage && !language));
-          setProfileLoaded(true);
-        }
       } catch (error) {
         if (active) {
           setErrorMessage(
             error instanceof Error ? error.message : 'Unable to load profile preferences.',
           );
         }
-      } finally {
-        if (active) setLoading(false);
       }
     }
 
@@ -100,48 +76,6 @@ export default function ProfileSettingsPage(): React.JSX.Element {
       active = false;
     };
   }, []);
-
-  async function saveLanguage(): Promise<void> {
-    if (defaultLanguage === 'unset') return;
-
-    setSaving(true);
-    setErrorMessage(null);
-    setStatusMessage(null);
-
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferredLanguage: defaultLanguage }),
-      });
-      const payload = await readJson(response);
-
-      if (response.status === 401) {
-        setAuthenticationRequired(true);
-        setErrorMessage(getApiError(payload, 'Sign in to save profile preferences.'));
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(getApiError(payload, 'Unable to save the language preference.'));
-      }
-
-      const parsed = profileResponseSchema.safeParse(payload);
-      if (!parsed.success || parsed.data.profile.preferred_language !== defaultLanguage) {
-        throw new Error('The saved language preference could not be confirmed.');
-      }
-
-      setSavedLanguage(defaultLanguage);
-      setHasUnsupportedLanguage(false);
-      setStatusMessage('Language preference saved to your profile.');
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to save the language preference.',
-      );
-    } finally {
-      setSaving(false);
-    }
-  }
 
   async function handleSignOut(): Promise<void> {
     setErrorMessage(null);
@@ -153,20 +87,18 @@ export default function ProfileSettingsPage(): React.JSX.Element {
     window.location.assign('/login');
   }
 
-  const languageChanged = savedLanguage !== defaultLanguage || hasUnsupportedLanguage;
-
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-6">
-        <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+        <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ebfaef] text-[#00b159]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf2ee] text-[#0a4232]">
               <UserCircle2 className="h-7 w-7" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-[#111315]">Profile Preferences</h1>
-              <p className="text-xs text-[#6b7280]">
-                Save your preferred language and review coordinate privacy settings.
+              <h1 className="font-display text-xl font-bold text-[#111315]">{t('nav.settings')}</h1>
+              <p className="text-sm text-[#6b7280]">
+                Choose your language and review coordinate privacy settings.
               </p>
             </div>
           </div>
@@ -179,98 +111,10 @@ export default function ProfileSettingsPage(): React.JSX.Element {
                     Preferred Language
                   </h2>
                   <p className="text-xs text-[#6b7280]">
-                    Saved to your profile for screens that support this language preference.
+                    Your choice is saved to your profile and applies across the app right away.
                   </p>
                 </div>
-                <fieldset
-                  disabled={loading || saving || !profileLoaded || authenticationRequired}
-                  className="m-0 border-0 p-0"
-                >
-                  <SegmentedControl
-                    size="sm"
-                    ariaLabel="Preferred language"
-                    value={defaultLanguage}
-                    onValueChange={(language) => {
-                      setDefaultLanguage(language);
-                      setErrorMessage(null);
-                      setStatusMessage(null);
-                    }}
-                    options={
-                      defaultLanguage === 'unset'
-                        ? [
-                            { value: 'unset', label: 'Not set' },
-                            { value: 'ha', label: 'English + Hausa' },
-                            { value: 'en', label: 'English Only' },
-                          ]
-                        : [
-                            { value: 'ha', label: 'English + Hausa' },
-                            { value: 'en', label: 'English Only' },
-                          ]
-                    }
-                  />
-                </fieldset>
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                {loading ? (
-                  <p
-                    role="status"
-                    className="inline-flex items-center gap-2 text-xs text-[#6b7280]"
-                  >
-                    <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
-                    Loading profile preferences...
-                  </p>
-                ) : (
-                  <>
-                    <Button
-                      type="button"
-                      size="sm"
-                      disabled={
-                        !profileLoaded ||
-                        saving ||
-                        authenticationRequired ||
-                        defaultLanguage === 'unset' ||
-                        !languageChanged
-                      }
-                      onClick={() => void saveLanguage()}
-                    >
-                      {saving ? 'Saving...' : 'Save language preference'}
-                    </Button>
-                    {defaultLanguage !== 'unset' &&
-                      savedLanguage === defaultLanguage &&
-                      !hasUnsupportedLanguage && (
-                        <p className="text-xs text-[#6b7280]">
-                          This preference is saved to your profile.
-                        </p>
-                      )}
-                    {defaultLanguage === 'unset' && !hasUnsupportedLanguage && profileLoaded && (
-                      <p className="text-xs text-[#6b7280]">
-                        No language preference is saved. Choose a language to save one.
-                      </p>
-                    )}
-                    {defaultLanguage === 'unset' && hasUnsupportedLanguage && (
-                      <p className="text-xs text-[#6b7280]">
-                        The saved language is not supported here. Choose a language to replace it.
-                      </p>
-                    )}
-                    {defaultLanguage !== 'unset' && !savedLanguage && (
-                      <p className="text-xs text-[#6b7280]">
-                        {hasUnsupportedLanguage
-                          ? 'The saved language is not supported here. Save this choice to replace it.'
-                          : 'No language preference is saved yet.'}
-                      </p>
-                    )}
-                    {statusMessage && (
-                      <p
-                        role="status"
-                        className="inline-flex items-center gap-1.5 text-xs text-[#0b4f2f]"
-                      >
-                        <CheckCircle2 className="h-4 w-4 text-[#00b159]" aria-hidden="true" />
-                        {statusMessage}
-                      </p>
-                    )}
-                  </>
-                )}
+                <LanguageSwitcher />
               </div>
             </section>
 
@@ -284,7 +128,7 @@ export default function ProfileSettingsPage(): React.JSX.Element {
                     id="coordinate-privacy-heading"
                     className="flex items-center gap-1.5 text-sm font-semibold text-[#111315]"
                   >
-                    <Lock className="h-4 w-4 text-[#00b159]" aria-hidden="true" />
+                    <Lock className="h-4 w-4 text-[#0a4232]" aria-hidden="true" />
                     Coordinate Redaction in Printable Reports
                   </h2>
                   <p className="text-xs text-[#6b7280]">
@@ -299,14 +143,14 @@ export default function ProfileSettingsPage(): React.JSX.Element {
             {errorMessage && (
               <div
                 role="alert"
-                className="flex items-start gap-2 border-t border-[#f3f4f6] pt-4 text-sm text-red-700"
+                className="flex items-start gap-2 border-t border-[#f3f4f6] pt-4 text-sm text-[#b42318]"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                 <div>
                   <p>{errorMessage}</p>
                   {authenticationRequired && (
                     <Link href="/login" className="mt-1 inline-block underline">
-                      Sign in to manage profile preferences
+                      {t('nav.signIn')}
                     </Link>
                   )}
                 </div>
@@ -316,7 +160,7 @@ export default function ProfileSettingsPage(): React.JSX.Element {
 
           <div className="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-[#e5e7eb] pt-4">
             <Button type="button" variant="outline" size="sm" onClick={handleSignOut}>
-              <span>Sign out</span>
+              <span>{t('nav.signOut')}</span>
             </Button>
           </div>
         </div>

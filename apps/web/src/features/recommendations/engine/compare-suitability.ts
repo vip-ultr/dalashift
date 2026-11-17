@@ -32,6 +32,8 @@ const STATUS_ORDER = {
   fail: 2,
 } as const;
 
+type Language = 'en' | 'ha';
+
 const GOAL_DIMENSIONS: Partial<Record<FarmerGoal, readonly AssessmentDimension[]>> = {
   improve_soil_fertility: ['rotation_fit', 'soil_match'],
   conserve_water: ['water_availability', 'climate_rainfall'],
@@ -47,15 +49,18 @@ const GOAL_DIMENSIONS: Partial<Record<FarmerGoal, readonly AssessmentDimension[]
  * sequence has been established, producing an ordinal shortlist with explicit
  * `'tied'` ranks whenever the available evidence cannot separate candidates.
  */
-export function compareProspectiveSuitability(input: {
-  readonly farmId: string;
-  readonly parcelId: string | null;
-  readonly parcelAreaHa: number | null;
-  readonly catalogCrops: readonly CatalogCropRecord[];
-  readonly observations: readonly ProvenancedValue[];
-  readonly goals: readonly FarmerGoal[];
-  readonly rulesetVersion?: string;
-}): ComparisonResult {
+export function compareProspectiveSuitability(
+  input: {
+    readonly farmId: string;
+    readonly parcelId: string | null;
+    readonly parcelAreaHa: number | null;
+    readonly catalogCrops: readonly CatalogCropRecord[];
+    readonly observations: readonly ProvenancedValue[];
+    readonly goals: readonly FarmerGoal[];
+    readonly rulesetVersion?: string;
+  },
+  language: Language = 'en',
+): ComparisonResult {
   const rulesetVersion = input.rulesetVersion ?? DEFAULT_RULESET_VERSION;
   if (input.catalogCrops.length === 0) {
     throw new Error('At least one candidate crop is required for a suitability comparison.');
@@ -66,12 +71,15 @@ export function compareProspectiveSuitability(input: {
   ];
 
   const unrankedStrategies: RotationStrategy[] = input.catalogCrops.map((crop) => {
-    const assessment = evaluateCatalogCropForParcel({
-      crop,
-      observations: input.observations,
-      parcelAreaHa: input.parcelAreaHa,
-      rulesetVersion,
-    });
+    const assessment = evaluateCatalogCropForParcel(
+      {
+        crop,
+        observations: input.observations,
+        parcelAreaHa: input.parcelAreaHa,
+        rulesetVersion,
+      },
+      language,
+    );
 
     const isLegume = crop.rotationTraits?.nitrogenContribution === 'fixes';
 

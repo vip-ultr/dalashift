@@ -24,6 +24,8 @@ export interface FarmerCropHistoryEntry {
   readonly areaHa: number | null;
 }
 
+type Language = 'en' | 'ha';
+
 /**
  * Construct and compare the farmer's existing rotation strategy against at
  * least two evidence-backed alternatives (Decision D-11 & FR-8).
@@ -32,17 +34,20 @@ export interface FarmerCropHistoryEntry {
  * and includes mandatory transfer-limit and local-review statements on every
  * strategy.
  */
-export function buildAndCompareRotationStrategies(input: {
-  readonly farmId: string;
-  readonly parcelId: string | null;
-  readonly parcelAreaHa: number | null;
-  readonly catalogCrops: readonly CatalogCropRecord[];
-  readonly rotationRules: readonly RotationRule[];
-  readonly farmerCropHistory: readonly FarmerCropHistoryEntry[];
-  readonly observations: readonly ProvenancedValue[];
-  readonly goals: readonly FarmerGoal[];
-  readonly rulesetVersion?: string;
-}): ComparisonResult {
+export function buildAndCompareRotationStrategies(
+  input: {
+    readonly farmId: string;
+    readonly parcelId: string | null;
+    readonly parcelAreaHa: number | null;
+    readonly catalogCrops: readonly CatalogCropRecord[];
+    readonly rotationRules: readonly RotationRule[];
+    readonly farmerCropHistory: readonly FarmerCropHistoryEntry[];
+    readonly observations: readonly ProvenancedValue[];
+    readonly goals: readonly FarmerGoal[];
+    readonly rulesetVersion?: string;
+  },
+  language: Language = 'en',
+): ComparisonResult {
   const rulesetVersion = input.rulesetVersion ?? DEFAULT_RULESET_VERSION;
   const cropsByCode = new Map<string, CatalogCropRecord>(
     input.catalogCrops.map((crop) => [crop.code, crop]),
@@ -51,12 +56,15 @@ export function buildAndCompareRotationStrategies(input: {
   const assessmentsByCode = new Map(
     input.catalogCrops.map((crop) => [
       crop.code,
-      evaluateCatalogCropForParcel({
-        crop,
-        observations: input.observations,
-        parcelAreaHa: input.parcelAreaHa,
-        rulesetVersion,
-      }),
+      evaluateCatalogCropForParcel(
+        {
+          crop,
+          observations: input.observations,
+          parcelAreaHa: input.parcelAreaHa,
+          rulesetVersion,
+        },
+        language,
+      ),
     ]),
   );
 
@@ -215,14 +223,17 @@ export function buildAndCompareRotationStrategies(input: {
     },
   ];
 
-  return compareRotations({
-    farmId: input.farmId,
-    parcelId: input.parcelId,
-    strategies: [existingStrategy, alternativeOne, alternativeTwo],
-    goals: input.goals,
-    limitations: sharedLimitations,
-    rulesetVersion,
-  });
+  return compareRotations(
+    {
+      farmId: input.farmId,
+      parcelId: input.parcelId,
+      strategies: [existingStrategy, alternativeOne, alternativeTwo],
+      goals: input.goals,
+      limitations: sharedLimitations,
+      rulesetVersion,
+    },
+    language,
+  );
 }
 
 function deriveExistingSequenceCodes(

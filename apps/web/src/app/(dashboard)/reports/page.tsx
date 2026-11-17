@@ -9,8 +9,8 @@ import {
   DataStateBoundary,
   type DataViewState,
 } from '../../../components/dashboard/data-state-boundary';
-import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { useLanguage } from '../../../i18n/language-provider';
 
 const numericValue = z.union([z.number(), z.string().transform(Number)]).nullable();
 
@@ -40,6 +40,7 @@ interface HoldingReports {
 }
 
 export default function ReportsHubPage(): React.JSX.Element {
+  const { t } = useLanguage();
   const [state, setState] = React.useState<'loading' | 'ready' | 'error' | 'unauthenticated'>(
     'loading',
   );
@@ -144,13 +145,12 @@ export default function ReportsHubPage(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-6 sm:flex-row sm:items-center">
           <div className="space-y-1.5">
-            <Badge variant="Strong">Reports Hub</Badge>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
-              Reports across your farms
+              {t('reports.title')}
             </h1>
-            <p className="max-w-2xl text-xs text-[#4b5563] sm:text-sm">
+            <p className="max-w-2xl text-sm text-[#4b5563]">
               Saved reports and field sheets for your private farms. Exact field coordinates are
               redacted from every generated report.
             </p>
@@ -159,7 +159,7 @@ export default function ReportsHubPage(): React.JSX.Element {
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>Add a farm</span>
+                <span>{t('farms.addFarm')}</span>
               </Button>
             </Link>
           </div>
@@ -172,7 +172,7 @@ export default function ReportsHubPage(): React.JSX.Element {
               href="/login?next=/reports"
               className="mt-3 inline-block font-medium text-[#0a4232] underline"
             >
-              Sign in
+              {t('nav.signIn')}
             </Link>
           </div>
         ) : null}
@@ -183,29 +183,29 @@ export default function ReportsHubPage(): React.JSX.Element {
           sourceName="Report service"
           errorMessage={errorMessage ?? undefined}
           missingSources={missingSources}
-          offlineMessage="You are offline. Showing the reports saved on this device."
+          offlineMessage={t('state.offline')}
           onRetry={() => {
             void load();
           }}
           onPrimaryAction={() => {
             window.location.href = '/farms';
           }}
-          primaryActionLabel="Open your farms"
+          primaryActionLabel={t('nav.myFields')}
         >
           <div className="space-y-4">
             {holdings.map((holding) => (
               <section
                 key={holding.farmId}
-                className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs"
+                className="rounded-[12px] border border-[#e5e7eb] bg-white p-5"
               >
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#f3f4f6] pb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e7eb] pb-4">
                   <div>
                     <h2 className="font-display text-lg font-bold text-[#111315]">
                       {holding.farmName}
                     </h2>
                     <p className="mt-1 text-xs text-[#6b7280]">
                       {holding.areaHa === null
-                        ? 'Area unavailable'
+                        ? t('dashboard.notAvailable')
                         : `${holding.areaHa.toFixed(2)} ha`}
                       {' · '}
                       {holding.reports.length} saved{' '}
@@ -215,7 +215,7 @@ export default function ReportsHubPage(): React.JSX.Element {
                   <Link href={`/farms/${holding.farmId}/reports`}>
                     <Button variant="secondary" size="sm">
                       <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>Generate a report</span>
+                      <span>{t('reports.generate')}</span>
                     </Button>
                   </Link>
                 </div>
@@ -246,17 +246,17 @@ export default function ReportsHubPage(): React.JSX.Element {
                             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0a4232] hover:underline"
                           >
                             <FileText className="size-3.5" aria-hidden="true" />
-                            Open PDF
+                            {t('reports.openPdf')}
                           </a>
                         ) : (
-                          <span className="text-xs text-[#9ca3af]">PDF not available</span>
+                          <span className="text-xs text-[#9ca3af]">{t('reports.noPdf')}</span>
                         )}
                       </li>
                     ))}
                   </ul>
                 ) : holding.error ? null : (
                   <p className="mt-4 text-xs text-[#6b7280]">
-                    No saved reports yet. Generate one from this farm.
+                    {t('reports.noReports')} {t('reports.generate')}.
                   </p>
                 )}
               </section>

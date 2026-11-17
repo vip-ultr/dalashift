@@ -1,7 +1,10 @@
+'use client';
+
 import { ASSESSMENT_DIMENSION_LABELS, type AssessmentStatus } from '@dalashift/shared/constants';
 import type { DimensionAssessment } from '@dalashift/shared/types';
 import { BookOpen, CheckCircle2, HelpCircle, MinusCircle, XCircle } from 'lucide-react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import {
   formatMetricValue,
@@ -21,26 +24,14 @@ export interface DimensionThresholdRowProps {
 const STATUS_META: Record<
   AssessmentStatus,
   {
-    readonly label: string;
+    readonly messageId: string;
     readonly Icon: typeof CheckCircle2;
   }
 > = {
-  pass: {
-    label: 'Within threshold',
-    Icon: CheckCircle2,
-  },
-  fail: {
-    label: 'Outside threshold',
-    Icon: XCircle,
-  },
-  uncertain: {
-    label: 'Uncertain with coarse data',
-    Icon: HelpCircle,
-  },
-  not_assessed: {
-    label: 'Not assessed',
-    Icon: MinusCircle,
-  },
+  pass: { messageId: 'verdict.pass', Icon: CheckCircle2 },
+  fail: { messageId: 'verdict.fail', Icon: XCircle },
+  uncertain: { messageId: 'verdict.uncertain', Icon: HelpCircle },
+  not_assessed: { messageId: 'verdict.notAssessed', Icon: MinusCircle },
 };
 
 /**
@@ -53,8 +44,10 @@ export function DimensionThresholdRow({
   showCitations = true,
   className,
 }: DimensionThresholdRowProps) {
+  const { t } = useLanguage();
   const label = ASSESSMENT_DIMENSION_LABELS[dimension.dimension] ?? dimension.dimension;
   const meta = STATUS_META[dimension.status];
+  const statusLabel = t(meta.messageId);
   const StatusIcon = meta.Icon;
 
   const hasRange = dimension.threshold.min !== null || dimension.threshold.max !== null;
@@ -73,7 +66,7 @@ export function DimensionThresholdRow({
         <span className="font-semibold text-ink">{label}</span>
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink">
           <StatusIcon className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-          {meta.label}
+          {statusLabel}
         </span>
       </div>
 

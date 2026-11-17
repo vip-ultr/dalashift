@@ -10,7 +10,8 @@
     ".": "./types/index.ts",
     "./types": "./types/index.ts",
     "./schemas": "./schemas/index.ts",
-    "./constants": "./constants/index.ts"
+    "./constants": "./constants/index.ts",
+    "./i18n": "./i18n/messages.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

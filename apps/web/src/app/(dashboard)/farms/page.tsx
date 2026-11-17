@@ -15,6 +15,7 @@ import { ParcelVectorThumbnail } from '../../../components/farms/parcel-vector-t
 import { HonestyMapCanvas } from '../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { useLanguage } from '../../../i18n/language-provider';
 import { PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
 
 const numericValue = z.union([z.number(), z.string().transform(Number)]).nullable();
@@ -71,6 +72,7 @@ async function readJson<T>(response: Response, schema: z.ZodType<T>): Promise<T>
 }
 
 export default function FarmsOverviewPage(): React.JSX.Element {
+  const { t } = useLanguage();
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
   const [entries, setEntries] = React.useState<FarmParcelEntry[]>([]);
   const [missingSources, setMissingSources] = React.useState<string[]>([]);
@@ -184,54 +186,47 @@ export default function FarmsOverviewPage(): React.JSX.Element {
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-[#e5e7eb] bg-white p-5 sm:flex-row sm:items-center">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Badge variant="Strong">2026 Wet Season</Badge>
-              <span className="text-xs font-medium text-[#6b7280]">
-                Private farms from your signed-in account
-              </span>
-            </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
-              My fields
+              {t('nav.myFields')}
             </h1>
-            <p className="text-xs text-[#4b5563] sm:text-sm">
+            <p className="text-sm text-[#4b5563]">
               Select a field on the map or in the list to open its farm workspace and reports.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
+            <Badge variant="Strong">2026 Wet Season</Badge>
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                <span>Add a farm</span>
+                <span>{t('farms.addFarm')}</span>
               </Button>
             </Link>
             <Link href="/reports">
               <Button variant="secondary" size="md">
                 <FileText className="h-4 w-4" aria-hidden="true" />
-                <span>Reports Hub</span>
+                <span>{t('nav.reports')}</span>
               </Button>
             </Link>
           </div>
         </div>
 
-        <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
+        <section className="rounded-[12px] border border-[#e5e7eb] bg-white p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="font-display text-lg font-bold text-[#111315]">
-                Your registered farms
-              </h2>
-              <p className="mt-1 text-xs text-[#4b5563]">
+              <h2 className="font-display text-lg font-bold text-[#111315]">{t('farms.title')}</h2>
+              <p className="mt-1 text-sm text-[#4b5563]">
                 Loaded privately from your account. No demonstration farms are shown.
               </p>
-              <p className="mt-1 text-xs text-[#4b5563]">
+              <p className="mt-1 text-sm text-[#4b5563]">
                 Choose a farm, then open one of its fields.
               </p>
             </div>
             {state === 'unauthenticated' ? (
               <Link href="/login">
                 <Button variant="secondary" size="sm">
-                  Sign in to view your farms
+                  {t('nav.signIn')}
                 </Button>
               </Link>
             ) : null}
@@ -244,7 +239,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
           ) : null}
           {state === 'ready' && farms.length === 0 ? (
             <p className="mt-3 text-sm text-[#6b7280]">
-              You have not registered any farms yet. Add one to see it here.
+              {t('dashboard.noFarms')} {t('farms.addFarm')}.
             </p>
           ) : null}
           {farms.length > 0 ? (
@@ -258,7 +253,9 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                     {farm.name}
                   </Link>
                   <p className="mt-1 text-xs text-[#6b7280]">
-                    {farm.area_ha === null ? 'Area unavailable' : `${farm.area_ha.toFixed(2)} ha`}
+                    {farm.area_ha === null
+                      ? t('dashboard.notAvailable')
+                      : `${farm.area_ha.toFixed(2)} ha`}
                   </p>
                 </li>
               ))}
@@ -272,14 +269,14 @@ export default function FarmsOverviewPage(): React.JSX.Element {
           sourceName="Farm and field service"
           errorMessage={errorMessage ?? undefined}
           missingSources={missingSources}
-          offlineMessage="You are offline. Showing the fields saved on this device."
+          offlineMessage={t('state.offline')}
           onRetry={() => {
             void load();
           }}
           onPrimaryAction={() => {
             window.location.href = '/farms/new';
           }}
-          primaryActionLabel="Add a farm"
+          primaryActionLabel={t('farms.addFarm')}
         >
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             <div className="lg:col-span-8">
@@ -293,11 +290,13 @@ export default function FarmsOverviewPage(): React.JSX.Element {
 
             <div className="lg:col-span-4">
               {selectedEntry ? (
-                <div className="flex h-full flex-col justify-between rounded-[12px] border border-[#e5e7eb] bg-white p-5 shadow-xs">
+                <div className="flex h-full flex-col justify-between rounded-[12px] border border-[#e5e7eb] bg-white p-5">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="Strong">Selected field</Badge>
-                      <span className="text-[11px] text-[#6b7280]">{selectedEntry.farmName}</span>
+                      <span className="text-sm font-medium text-[#4b5563]">
+                        {t('farms.selectField')}
+                      </span>
+                      <span className="text-xs text-[#6b7280]">{selectedEntry.farmName}</span>
                     </div>
 
                     <div className="space-y-2">
@@ -310,7 +309,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                             onClick={() => setSelectedParcelId(entry.parcel.id)}
                             className={`flex w-full items-center gap-3 rounded-[10px] border p-2.5 text-left transition-colors ${
                               active
-                                ? 'border-[#00b159] bg-[#ebfaef]/70'
+                                ? 'border-[#0a4232] bg-[#eaf2ee]'
                                 : 'border-[#e5e7eb] bg-[#fafafb] hover:bg-white'
                             }`}
                           >
@@ -320,10 +319,10 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                               active={active}
                             />
                             <div className="min-w-0 flex-1">
-                              <div className="truncate text-xs font-semibold text-[#111315]">
+                              <div className="truncate text-sm font-semibold text-[#111315]">
                                 {entry.parcel.name}
                               </div>
-                              <div className="tabular text-[11px] text-[#6b7280]">
+                              <div className="tabular text-xs text-[#6b7280]">
                                 {entry.parcel.geometryMethod === 'drawn_polygon'
                                   ? `${entry.parcel.areaHa.toFixed(2)} ha · drawn polygon`
                                   : `GPS point (±${entry.parcel.locationUncertaintyM ?? 500} m)`}
@@ -334,8 +333,10 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                       })}
                     </div>
 
-                    <div className="rounded-[10px] bg-[#f4f5f6] p-3 text-xs">
-                      <div className="font-semibold text-[#111315]">Planting trigger rule:</div>
+                    <div className="rounded-[10px] bg-[#f4f5f6] p-3 text-sm">
+                      <div className="font-semibold text-[#111315]">
+                        {t('dashboard.plantingTrigger')}:
+                      </div>
                       <p className="mt-0.5 text-[#4b5563]">
                         {selectedEntry.plantingTrigger &&
                         PLANTING_TRIGGER_TITLES[
@@ -352,7 +353,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                   <div className="mt-5 flex flex-col gap-2 border-t border-[#e5e7eb] pt-4">
                     <Link href={`/farms/${selectedEntry.farmId}`}>
                       <Button variant="primary" size="md" className="w-full">
-                        <span>Open farm workspace</span>
+                        <span>{t('farms.openWorkspace')}</span>
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </Link>
