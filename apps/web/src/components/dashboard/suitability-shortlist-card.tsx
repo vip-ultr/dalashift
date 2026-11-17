@@ -123,7 +123,7 @@ export function SuitabilityShortlistCard({
               key={`${cropCode}-${idx}`}
               className={cn(
                 'flex flex-col justify-between rounded-2xl border bg-surface-raised p-5 transition-all',
-                isSelected ? 'border-2 border-[#00b159] ring-2 ring-[#00b159]/15' : 'border-border',
+                isSelected ? 'border-2 border-[#0a4232] ring-2 ring-[#0a4232]/15' : 'border-border',
               )}
             >
               <div>
@@ -182,7 +182,7 @@ export function SuitabilityShortlistCard({
                       </>
                     ) : (
                       <>
-                        <Sprout className="size-4 text-[#00b159]" />
+                        <Sprout className="size-4 text-[#0a4232]" />
                         Choose {cropName} as planned crop
                       </>
                     )}

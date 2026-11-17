@@ -37,7 +37,7 @@ export function ParcelVectorThumbnail({
             strokeWidth="1.25"
             strokeDasharray="2.5 2"
           />
-          <circle cx="20" cy="20" r="3.2" fill="#00b159" stroke="#ffffff" strokeWidth="1.5" />
+          <circle cx="20" cy="20" r="3.2" fill="#0a4232" stroke="#ffffff" strokeWidth="1.5" />
         </>
       );
     }
@@ -88,7 +88,7 @@ export function ParcelVectorThumbnail({
       <polygon
         points={points}
         fill={active ? 'rgba(0, 177, 89, 0.28)' : 'rgba(255, 255, 255, 0.14)'}
-        stroke={active ? '#00b159' : '#ffffff'}
+        stroke={active ? '#0a4232' : '#ffffff'}
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
@@ -100,7 +100,7 @@ export function ParcelVectorThumbnail({
       style={{ width: size, height: size }}
       className={cn(
         'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#334155] bg-[#0f172a] shadow-2xs transition-transform',
-        active && 'ring-2 ring-[#00b159] border-[#00b159]',
+        active && 'ring-2 ring-[#0a4232] border-[#0a4232]',
         className,
       )}
       aria-hidden="true"
