@@ -75,13 +75,33 @@ The web launcher loads the repository-root `.env.local` before starting Next.js.
 It is optional in CI and on Vercel, where injected environment variables take
 precedence. The root file is gitignored. **Never commit real values.**
 
-If your local settings are still in `apps/web/.env.local`, copy only the web
-runtime entries into the root `.env.local`, then remove the old app-level file
-after verifying the new setup. When a variable exists in both locations, the
-root value wins because it is loaded first. Do not copy CLI credentials such as
-`SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_PASSWORD`: the web launcher removes
-those names before starting Next.js. Keep Supabase CLI authentication in the
-CLI's user-level login, and enter database passwords only when the CLI prompts.
+There is **one canonical local env file: the repository-root `.env.local`**.
+The old `apps/web/.env.local` is removed and must not be recreated. A variable
+in two locations is a source of drift, so keep all web runtime values in the
+root file only. Do not copy CLI credentials such as `SUPABASE_ACCESS_TOKEN` or
+`SUPABASE_DB_PASSWORD`: the web launcher removes those names before starting
+Next.js. Keep Supabase CLI authentication in the CLI's user-level login, and
+enter database passwords only when the CLI prompts.
+
+### Handling secrets locally
+
+Several values in `.env.local` are powerful. `SUPABASE_SERVICE_ROLE_KEY`
+bypasses row level security and `SUPABASE_JWT_SECRET` signs database access
+tokens. Store them with care:
+
+- Never commit, paste, screenshot or share a real value. Only `.env.example`
+  with blank placeholders is tracked. GitHub's secret scan job rejects a commit
+  that contains a credential.
+- Only keep secrets in the root `.env.local` and never in a `NEXT_PUBLIC_*`
+  variable, because those are bundled into the browser.
+- Do not leave env files on shared or unattended machines. Lock the screen and
+  avoid placing secret values in issues, pull requests or chat messages.
+- Each developer obtains their own values from the service owner. There is no
+  shared env file in the repository. If you need access, ask in the team
+  channel rather than copying someone else's file.
+- If a secret may have been exposed, tell the repo owner immediately so it can
+  be rotated in the Supabase or provider dashboard. Rotation is a manual step
+  in the external service, not a Git change.
 
 ### Environment variables
 
