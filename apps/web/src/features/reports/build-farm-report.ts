@@ -141,16 +141,15 @@ export function buildFarmReportPayload(input: {
     input.parcels.reduce((sum, parcel) => sum + parcel.areaHa, 0).toFixed(3),
   );
 
+  // Only sources behind observations we actually consumed may be attributed.
+  // A seasonal outlook can carry a placeholder source id when no observation
+  // was used, so it is never added here on its own. When no observation was
+  // used the report carries no source entries rather than claiming a source
+  // it did not consume.
   const usedSourceIds = new Set<string>();
   for (const obs of input.observations) {
     usedSourceIds.add(obs.sourceId);
   }
-  if (input.seasonalOutlook) {
-    usedSourceIds.add(input.seasonalOutlook.rainfallToDate.sourceId);
-  }
-  // Never fabricate an attribution. When no environmental observation was used,
-  // the report carries no source entries rather than claiming a source it did
-  // not consume.
 
   const attributions: SourceAttributionRecord[] = [];
   for (const sourceId of usedSourceIds) {

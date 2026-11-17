@@ -89,13 +89,13 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
               <button
                 type="button"
                 onClick={() => setCollapsed(false)}
-                aria-label="Expand parcel drawer"
+                aria-label="Expand farms drawer"
                 className="flex size-8 items-center justify-center rounded-md text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827] cursor-pointer"
               >
                 <ChevronRight className="size-4" />
               </button>
             </TooltipTrigger>
-            <TooltipContent>Expand parcel drawer</TooltipContent>
+            <TooltipContent>Expand farms drawer</TooltipContent>
           </Tooltip>
         </div>
       </TooltipProvider>
@@ -105,7 +105,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   return (
     <TooltipProvider>
       <aside
-        aria-label="Parcels drawer"
+        aria-label="Farms drawer"
         className={cn(
           'sticky top-0 hidden h-screen w-[270px] shrink-0 flex-col justify-between border-r border-[#e5e7eb] bg-white xl:flex print:hidden',
           className,
@@ -115,11 +115,11 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           {/* Drawer Header */}
           <div className="flex items-start justify-between gap-2 border-b border-[#f3f4f6] pb-3">
             <div>
-              <h2 className="text-sm font-bold text-[#111827]">Your Farm Parcels</h2>
+              <h2 className="text-sm font-bold text-[#111827]">Your farms</h2>
               <p className="text-xs text-[#6b7280]">
                 {farms.length > 0
-                  ? `${farms.length} holdings · ${totalArea.toFixed(1)} ha`
-                  : 'No parcels registered'}
+                  ? `${farms.length} farms · ${totalArea.toFixed(1)} ha`
+                  : 'No fields yet'}
               </p>
             </div>
             <Tooltip>
@@ -178,13 +178,13 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search parcels..."
-                  aria-label="Search parcels"
+                  placeholder="Search farms..."
+                  aria-label="Search farms"
                   className="h-8 w-full rounded-md border border-[#e5e7eb] bg-[#fafafb] pr-3 pl-8 text-xs text-[#111827] placeholder:text-[#9ca3af] outline-none focus:border-[#0a4232]"
                 />
               </div>
 
-              {/* Farm Parcels List */}
+              {/* Farms list */}
               <ul className="mt-3 space-y-1">
                 {filteredFarms.map((farm) => {
                   const href = `/farms/${farm.id}`;
@@ -219,14 +219,14 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
               <div className="mx-auto flex size-8 items-center justify-center rounded-full bg-[#eaf2ee] text-[#0a4232]">
                 <FolderPlus className="size-4" />
               </div>
-              <h3 className="mt-2 text-xs font-semibold text-[#111827]">No parcels added yet</h3>
+              <h3 className="mt-2 text-xs font-semibold text-[#111827]">No fields yet</h3>
               <p className="mt-1 text-[11px] text-[#6b7280]">
                 Register your land coordinates to view personalized moisture guidance.
               </p>
               <Link href="/farms/new" className="mt-3 inline-block">
                 <Button variant="primary" size="sm" className="h-7 text-xs">
                   <Plus className="mr-1 size-3" />
-                  Add Parcel
+                  Add a farm
                 </Button>
               </Link>
             </div>
