@@ -4,6 +4,9 @@ import { useId, type ReactNode } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a4232] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
 export interface SegmentedOption<T extends string> {
   readonly value: T;
   readonly label: string;
@@ -74,9 +77,10 @@ export function SegmentedControl<T extends string>({
             aria-selected={isActive}
             aria-controls={`${idPrefix}-panel-${opt.value}`}
             aria-label={opt.label}
+            data-state={isActive ? 'active' : 'inactive'}
             onClick={() => handleChange(opt.value)}
             className={cn(
-              'inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 sm:px-3 transition-all cursor-pointer text-center',
+              'inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 sm:px-3 transition-colors duration-150 motion-reduce:transition-none cursor-pointer text-center',
               stackOnMobile
                 ? 'w-full sm:w-auto py-2 sm:py-0 min-h-[38px] sm:min-h-0 sm:h-[34px] text-xs sm:text-sm whitespace-normal sm:whitespace-nowrap'
                 : cn(
@@ -85,9 +89,9 @@ export function SegmentedControl<T extends string>({
                       : 'h-[26px] text-[11px] sm:text-xs',
                     'whitespace-nowrap',
                   ),
-              isActive
-                ? 'bg-surface-raised font-medium text-ink shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
-                : 'font-normal text-[#5c6066] hover:text-ink',
+              'data-[state=active]:bg-surface-raised data-[state=active]:font-medium data-[state=active]:text-brand-primary',
+              'data-[state=inactive]:font-normal data-[state=inactive]:text-[#5c6066] data-[state=inactive]:hover:text-ink',
+              focusRing,
             )}
           >
             {opt.icon}

@@ -21,10 +21,13 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { SegmentedControl } from '../ui/segmented-control';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { PlantingTriggerCard } from './planting-trigger-card';
 import { SuitabilityShortlistCard } from './suitability-shortlist-card';
 
 const numericValueSchema = z.union([z.number(), z.string().transform(Number)]).nullable();
+
+const NO_SELECTION_VALUE = '__none__';
 
 const farmResponseSchema = z.object({
   farm: z.object({
@@ -829,32 +832,38 @@ export function RegisteredFarmWorkspace({
                         </button>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <select
-                          aria-label={`Status for ${cropName(record.crop)}`}
+                        <Select
                           value={record.status}
-                          onChange={(event) =>
-                            void handleUpdateCrop(record.id, { status: event.target.value })
+                          onValueChange={(value) =>
+                            void handleUpdateCrop(record.id, { status: value })
                           }
-                          className="h-7 rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-xs"
                         >
-                          <option value="previous">Previous</option>
-                          <option value="current">Current</option>
-                          <option value="planned">Planned</option>
-                        </select>
-                        <select
-                          aria-label={`Season for ${cropName(record.crop)}`}
+                          <SelectTrigger aria-label={`Status for ${cropName(record.crop)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="previous">Previous</SelectItem>
+                            <SelectItem value="current">Current</SelectItem>
+                            <SelectItem value="planned">Planned</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select
                           value={record.season}
-                          onChange={(event) =>
-                            void handleUpdateCrop(record.id, { season: event.target.value })
+                          onValueChange={(value) =>
+                            void handleUpdateCrop(record.id, { season: value })
                           }
-                          className="h-7 rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-xs"
                         >
-                          <option value="rainy">Rainy</option>
-                          <option value="dry">Dry</option>
-                          <option value="harmattan">Harmattan</option>
-                          <option value="year_round">Year round</option>
-                          <option value="unknown">Unknown</option>
-                        </select>
+                          <SelectTrigger aria-label={`Season for ${cropName(record.crop)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rainy">Rainy</SelectItem>
+                            <SelectItem value="dry">Dry</SelectItem>
+                            <SelectItem value="harmattan">Harmattan</SelectItem>
+                            <SelectItem value="year_round">Year round</SelectItem>
+                            <SelectItem value="unknown">Unknown</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </li>
                   ))}
@@ -867,40 +876,51 @@ export function RegisteredFarmWorkspace({
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
                   Add a crop
                 </h3>
-                <select
-                  aria-label="Crop to add"
+                <Select
                   value={newCrop.cropId}
-                  onChange={(event) => setNewCrop({ ...newCrop, cropId: event.target.value })}
-                  className="h-9 w-full rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-sm"
+                  onValueChange={(value) =>
+                    setNewCrop({ ...newCrop, cropId: value === NO_SELECTION_VALUE ? '' : value })
+                  }
                 >
-                  <option value="">Choose a catalog crop</option>
-                  {catalog.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {formatCropWithHausa(item.code, language === 'ha')}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger aria-label="Crop to add">
+                    <SelectValue placeholder="Choose a catalog crop" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_SELECTION_VALUE}>Choose a catalog crop</SelectItem>
+                    {catalog.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {formatCropWithHausa(item.code, language === 'ha')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div className="flex gap-2">
-                  <select
-                    aria-label="Crop status"
+                  <Select
                     value={newCrop.status}
-                    onChange={(event) => setNewCrop({ ...newCrop, status: event.target.value })}
-                    className="h-9 flex-1 rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-sm"
+                    onValueChange={(value) => setNewCrop({ ...newCrop, status: value })}
                   >
-                    <option value="previous">Previous</option>
-                    <option value="current">Current</option>
-                    <option value="planned">Planned</option>
-                  </select>
-                  <select
-                    aria-label="Crop season"
+                    <SelectTrigger aria-label="Crop status">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="previous">Previous</SelectItem>
+                      <SelectItem value="current">Current</SelectItem>
+                      <SelectItem value="planned">Planned</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
                     value={newCrop.season}
-                    onChange={(event) => setNewCrop({ ...newCrop, season: event.target.value })}
-                    className="h-9 flex-1 rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-sm"
+                    onValueChange={(value) => setNewCrop({ ...newCrop, season: value })}
                   >
-                    <option value="rainy">Rainy</option>
-                    <option value="dry">Dry</option>
-                    <option value="unknown">Unknown</option>
-                  </select>
+                    <SelectTrigger aria-label="Crop season">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rainy">Rainy</SelectItem>
+                      <SelectItem value="dry">Dry</SelectItem>
+                      <SelectItem value="unknown">Unknown</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button type="button" size="sm" onClick={() => void handleAddCrop()}>
                   <Plus className="size-3.5" aria-hidden="true" />
@@ -948,20 +968,27 @@ export function RegisteredFarmWorkspace({
                 </div>
                 <div>
                   <Label>Planting trigger</Label>
-                  <select
+                  <Select
                     value={priorityDraft.plantingTrigger}
-                    onChange={(event) =>
-                      setPriorityDraft({ ...priorityDraft, plantingTrigger: event.target.value })
+                    onValueChange={(value) =>
+                      setPriorityDraft({
+                        ...priorityDraft,
+                        plantingTrigger: value === NO_SELECTION_VALUE ? '' : value,
+                      })
                     }
-                    className="h-9 w-full rounded border border-[#e5e7eb] bg-[#fafafb] px-2 text-sm"
                   >
-                    <option value="">Not recorded</option>
-                    {PLANTING_TRIGGERS.map((trigger) => (
-                      <option key={trigger} value={trigger}>
-                        {PLANTING_TRIGGER_TITLES[trigger].en}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger aria-label="Planting trigger">
+                      <SelectValue placeholder="Not recorded" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NO_SELECTION_VALUE}>Not recorded</SelectItem>
+                      {PLANTING_TRIGGERS.map((trigger) => (
+                        <SelectItem key={trigger} value={trigger}>
+                          {PLANTING_TRIGGER_TITLES[trigger].en}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="risk-tolerance">Risk tolerance (0 to 1)</Label>

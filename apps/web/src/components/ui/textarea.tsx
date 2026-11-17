@@ -2,6 +2,9 @@ import type { TextareaHTMLAttributes } from 'react';
 
 import { cn } from '../../lib/utilities/cn';
 
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a4232] focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   readonly hasError?: boolean;
 }
@@ -9,12 +12,14 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 export function Textarea({ className, hasError = false, ...props }: TextareaProps) {
   return (
     <textarea
+      aria-invalid={hasError || undefined}
       className={cn(
-        'min-h-[96px] w-full rounded-lg border-2 bg-surface-raised px-[13px] py-[10px] text-[16px] leading-6 text-ink placeholder:text-[#a5b2bc] transition-colors outline-none',
+        'min-h-24 w-full rounded-[10px] border bg-surface-raised px-3 py-2.5 text-[16px] leading-6 text-ink placeholder:text-ink-faint transition-colors duration-150 motion-reduce:transition-none',
         hasError
-          ? 'border-[#c0392b] focus:border-[#c0392b]'
-          : 'border-[#a5b2bc]/35 hover:border-[#a5b2bc]/55 focus:border-[#00b159]',
-        'disabled:cursor-not-allowed disabled:bg-[#f5f7f9] disabled:text-[#8e959e]',
+          ? 'border-[#b91c1c] hover:border-[#991b1b]'
+          : 'border-border hover:border-[#d1d5db]',
+        focusRing,
+        'disabled:cursor-not-allowed disabled:bg-surface-subtle disabled:text-ink-muted',
         className,
       )}
       {...props}
