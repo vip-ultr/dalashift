@@ -13,7 +13,7 @@ const alertVariants = cva(
         info: 'border-brand-primary/20 bg-brand-primary-tint text-brand-primary',
         warning: 'border-[#b45309]/25 bg-[#fef9ee] text-[#7c4a03]',
         danger: 'border-[#b91c1c]/25 bg-[#fef2f2] text-[#991b1b]',
-        success: 'border-[#00b159]/30 bg-[#e6f7ee] text-[#007a3d]',
+        success: 'border-[#0a4232]/30 bg-[#eaf2ee] text-[#0a4232]',
       },
     },
     defaultVariants: {

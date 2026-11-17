@@ -135,12 +135,6 @@ function hasValidGeometryDraft(draft: DraftParcel): boolean {
   return hasValidCoordinates(draft);
 }
 
-function parseOptionalNumber(value: string): number | null {
-  if (!value.trim()) return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
 function buildParcelGeometry(draft: DraftParcel): GeoJSONGeometry {
   if (!hasValidGeometryDraft(draft)) {
     throw new Error('Parcel location or geometry is invalid.');
@@ -199,7 +193,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [draftParcels, setDraftParcels] = React.useState<DraftParcel[]>([
     {
       id: 'draft-parcel-1',
-      name: 'Parcel 1',
+      name: 'Field 1',
       geometryMethod: 'gps_point',
       centerLon: null,
       centerLat: null,
@@ -240,12 +234,14 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     const targetId = activeDraftParcelId || draftParcels[0]?.id;
     if (!targetId) return;
     const targetParcel = draftParcels.find((p) => p.id === targetId);
-    if (targetParcel?.geometryMethod !== 'gps_point') return;
 
+    // The map's Location tool is the single source of truth for the method.
     updateParcel(targetId, {
+      geometryMethod: 'gps_point',
+      geometry: null,
       centerLon: lon,
       centerLat: lat,
-      locationUncertaintyM: targetParcel.locationUncertaintyM ?? 250,
+      locationUncertaintyM: targetParcel?.locationUncertaintyM ?? 250,
     });
   };
 
@@ -260,7 +256,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         coordinates: geometry.coordinates.map((ring) => ring.map((pt) => [pt[0], pt[1]])),
       },
     });
+    // The map's Draw tool is the single source of truth for the method.
     updateParcel(targetId, {
+      geometryMethod: 'drawn_polygon',
       geometry,
       centerLon: Number(Number(center.geometry.coordinates[0]).toFixed(5)),
       centerLat: Number(Number(center.geometry.coordinates[1]).toFixed(5)),
@@ -315,7 +313,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       ...prev,
       {
         id: `draft-parcel-${Date.now()}`,
-        name: `Parcel ${nextIndex}`,
+        name: `Field ${nextIndex}`,
         geometryMethod: 'gps_point',
         centerLon: null,
         centerLat: null,
@@ -339,7 +337,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     setCreatedFarmId(null);
     setSaveFailed(false);
     if (!farmName.trim()) {
-      setStatusMessage('Enter the holding name before saving.');
+      setStatusMessage('Enter a farm name before saving.');
       return;
     }
     if (isBeansAmbiguous) {
@@ -349,8 +347,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     if (farmerMode === 'existing' ? !currentCrop || !plannedCrop : !plannedCrop) {
       setStatusMessage(
         farmerMode === 'existing'
-          ? 'Choose the current and planned crops, or change to prospective farmer mode.'
-          : 'Choose the planned crop before saving.',
+          ? "Choose the crop you grow now and the one you plan next, or change to 'I am planning what to grow'."
+          : 'Choose the crop you plan to grow before saving.',
       );
       return;
     }
@@ -366,7 +364,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       )
     ) {
       setStatusMessage(
-        'Enter each parcel name and a valid location. GPS points also need an uncertainty radius from 1 to 5,000 metres.',
+        'Give each field a name and mark it on the map. Pinned fields also need an accuracy value between 1 and 5,000 metres.',
       );
       return;
     }
@@ -489,7 +487,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     .join(', ');
   const triggerLabel = plantingTriggerRule
     ? (PLANTING_TRIGGER_TITLES[plantingTriggerRule]?.en ?? plantingTriggerRule)
-    : 'Not recorded yet';
+    : 'Not sure yet';
 
   const statusAlert = statusMessage ? (
     <div
@@ -503,12 +501,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           href="/login?next=/farms/new"
           className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
         >
-          Sign in to save holding
+          Sign in to save
         </Link>
       ) : null}
       {createdFarmId ? (
         <Link href={`/farms/${createdFarmId}`} className="ml-1 underline underline-offset-2">
-          Open the saved holding.
+          Open your saved farm.
         </Link>
       ) : null}
       {saveFailed ? (
@@ -529,39 +527,38 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Wizard Header & 3-Step Indicator */}
-          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+          <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <Badge variant="Strong">Parcel Registration</Badge>
+              <div className="min-w-0">
+                <Badge variant="Strong">Add a farm</Badge>
                 <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-[#111315]">
-                  Register Farm Holding &amp; Parcels
+                  Add your farm
                 </h1>
-                <p className="text-xs text-[#4b5563] sm:text-sm">
-                  Supports multi-parcel holdings, drawn polygons, and GPS points with explicit
-                  location uncertainty radius.
+                <p className="mt-1 text-xs leading-snug text-[#4b5563] sm:text-sm">
+                  First tell us about your farm. Next add your crops. Then mark your fields on the
+                  map.
                 </p>
               </div>
-              <div className="text-right text-xs font-semibold text-[#0b4f2f]">
-                Step {step} of 3
-              </div>
+              <div className="text-xs font-semibold text-[#072f24]">Step {step} of 3</div>
             </div>
 
-            {/* Stepper Bar */}
+            {/* Stepper Bar: short labels and large tap targets on small screens. */}
             <div className="mt-5 grid grid-cols-3 gap-1.5 sm:gap-2">
               {[
-                { num: 1 as const, title: '1. Holding & Advisory Focus', short: '1. Holding' },
-                { num: 2 as const, title: '2. Crops (Hausa) & Trigger', short: '2. Crops' },
-                { num: 3 as const, title: '3. Parcel Map / GPS Points', short: '3. Parcels' },
+                { num: 1 as const, title: '1. Your farm', short: 'Farm' },
+                { num: 2 as const, title: '2. Your crops', short: 'Crops' },
+                { num: 3 as const, title: '3. Your fields', short: 'Fields' },
               ].map((item) => (
                 <button
                   key={item.num}
                   type="button"
                   onClick={() => goToStep(item.num)}
-                  className={`rounded-[8px] border px-2 sm:px-3 py-2 text-left text-xs font-semibold transition-colors ${
+                  aria-current={step === item.num ? 'step' : undefined}
+                  className={`flex min-h-11 items-center justify-center rounded-[8px] border px-1 py-2 text-center text-xs font-semibold leading-tight whitespace-normal transition-colors sm:px-3 sm:text-sm ${
                     step === item.num
-                      ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f]'
+                      ? 'border-[#0a4232] bg-[#eaf2ee] text-[#072f24]'
                       : step > item.num
-                        ? 'border-[#b7ebc9] bg-white text-[#111315]'
+                        ? 'border-[#eaf2ee] bg-white text-[#111315]'
                         : 'border-[#e5e7eb] bg-[#f4f5f6] text-[#6b7280]'
                   }`}
                 >
@@ -574,42 +571,34 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
           {/* STEP 1: FARMER MODE & HOLDING DETAILS */}
           {step === 1 ? (
-            <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
-              <p className="rounded-lg bg-[#ebfaef] px-3 py-2 text-xs text-[#0b4f2f]">
-                Three quick steps: name your farm, tell us your crops, then mark your field on the
-                map.
+            <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
+              <p className="rounded-lg bg-[#eaf2ee] px-3 py-2 text-xs leading-snug text-[#072f24]">
+                Name your farm, add your crops, then mark your fields on the map.
               </p>
               <div className="space-y-2">
-                <Label>Advisory Focus</Label>
+                <Label>Which describes you?</Label>
                 <SegmentedControl
                   fullWidth
                   stackOnMobile
-                  ariaLabel="Advisory focus"
+                  className="[&_button]:min-h-11"
+                  ariaLabel="Which describes you?"
                   value={farmerMode}
                   onValueChange={setFarmerMode}
                   options={[
-                    {
-                      value: 'existing',
-                      label: 'Existing Farm (Rotation & Moisture Trigger)',
-                      shortLabel: 'Existing Farm (Rotation & Moisture)',
-                    },
-                    {
-                      value: 'prospective',
-                      label: 'Prospective Land (Crop Suitability Screening)',
-                      shortLabel: 'Prospective Land (Suitability)',
-                    },
+                    { value: 'existing', label: 'I already farm this land' },
+                    { value: 'prospective', label: 'I am planning what to grow' },
                   ]}
                 />
-                <p className="text-xs text-[#6b7280]">
+                <p className="text-xs leading-snug text-[#6b7280]">
                   {farmerMode === 'existing'
-                    ? 'Compares your current crop sequence against 2 evidence-supported rotation alternatives and evaluates your moisture-conditioned planting trigger.'
-                    : 'Evaluates all 6 catalog crops against your parcel soil pH, rainfall climatology, and management priorities to produce a ranked shortlist.'}
+                    ? 'We will suggest crops that rotate well with what you already grow.'
+                    : 'We will suggest crops that suit your land.'}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="farm-name">Holding name</Label>
+                  <Label htmlFor="farm-name">Farm name</Label>
                   <Input
                     id="farm-name"
                     value={farmName}
@@ -619,7 +608,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         setFieldErrors((errors) => ({ ...errors, farmName: undefined }));
                       }
                     }}
-                    placeholder="e.g. Riverside Rainfed Holding"
+                    placeholder="e.g. my farm by the river"
                     aria-invalid={Boolean(fieldErrors.farmName)}
                     required
                   />
@@ -629,11 +618,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Water supply regime</Label>
+                  <Label>Where does your water come from?</Label>
                   <SegmentedControl
                     fullWidth
-                    size="sm"
-                    ariaLabel="Farming water supply regime"
+                    stackOnMobile
+                    className="[&_button]:min-h-11"
+                    ariaLabel="Where does your water come from?"
                     value={farmingMethod}
                     onValueChange={(val) => {
                       setFarmingMethod(val);
@@ -643,9 +633,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       else if (irrigationMethod === 'rainfed') setIrrigationMethod('unknown');
                     }}
                     options={[
-                      { value: 'rainfed', label: 'Rainfed' },
-                      { value: 'mixed', label: 'Mixed Season', shortLabel: 'Mixed' },
-                      { value: 'irrigated', label: 'Irrigated' },
+                      { value: 'rainfed', label: 'Only rain' },
+                      { value: 'mixed', label: 'Rain and irrigation', shortLabel: 'Both' },
+                      { value: 'irrigated', label: 'Irrigation' },
                       { value: 'unknown', label: 'Not sure' },
                     ]}
                   />
@@ -657,7 +647,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {farmingMethod === 'mixed' || farmingMethod === 'irrigated' ? (
                 <div className="space-y-1.5">
-                  <Label htmlFor="irrigation-method">Water source</Label>
+                  <Label htmlFor="irrigation-method">Tell us more about your water source</Label>
                   <Select value={irrigationMethod} onValueChange={setIrrigationMethod}>
                     <SelectTrigger id="irrigation-method">
                       <SelectValue />
@@ -679,9 +669,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               ) : null}
 
               <div className="space-y-1.5">
-                <Label htmlFor="soil-notes">
-                  Farmer observations on soil &amp; fertility (optional ground truth)
-                </Label>
+                <Label htmlFor="soil-notes">Anything you know about your soil? (optional)</Label>
                 <Textarea
                   id="soil-notes"
                   value={soilNotes}
@@ -690,15 +678,16 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 />
               </div>
 
-              <div className="flex justify-end border-t border-[#e5e7eb] pt-4">
+              <div className="flex border-t border-[#e5e7eb] pt-4">
                 <Button
                   variant="primary"
                   size="md"
+                  className="w-full min-h-11 sm:ml-auto sm:w-auto"
                   onClick={() => {
                     if (validateStep1()) goToStep(2);
                   }}
                 >
-                  <span>Continue to Crops &amp; Planting Trigger</span>
+                  <span>Next: your crops</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
@@ -707,14 +696,11 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
           {/* STEP 2: CROPS (WITH HAUSA ALIASES + BEANS GUARDRAIL) & PLANTING TRIGGER */}
           {step === 2 ? (
-            <div className="space-y-6 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+            <div className="space-y-6 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
               {/* Crop Alias Search & Unresolved "Beans" Disambiguation Guardrail */}
               <div className="space-y-2 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Label htmlFor="crop-search">
-                    Search crop by English or Hausa name (the term &ldquo;beans&rdquo; needs
-                    clarification)
-                  </Label>
+                  <Label htmlFor="crop-search">Which crop? Search by English or Hausa name</Label>
                 </div>
                 <Input
                   id="crop-search"
@@ -736,36 +722,35 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       aria-hidden="true"
                     />
                     <div className="space-y-2">
-                      <div className="font-semibold">
-                        Clarification required: Which legume do you mean by &ldquo;beans&rdquo;?
-                      </div>
+                      <div className="font-semibold">Which bean do you mean?</div>
                       <p>
-                        In Kano State field interviews, English translations often render three
-                        distinct crops as &ldquo;beans&rdquo;. Please select the specific crop below
-                        so nitrogen fixation and water thresholds are accurate:
+                        People use the word &ldquo;beans&rdquo; for a few different crops. Pick the
+                        one you mean so we can give you the right advice:
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row">
                         <Button
                           type="button"
-                          size="sm"
+                          size="md"
                           variant="secondary"
+                          className="w-full min-h-11 sm:w-auto"
                           onClick={() => {
                             setPlannedCrop('cowpea');
                             setCropSearch('Cowpea (Wake / Farar wake)');
                           }}
                         >
-                          Select Cowpea / White Cowpea (Wake / Farar wake)
+                          Cowpea (Wake / Farar wake)
                         </Button>
                         <Button
                           type="button"
-                          size="sm"
+                          size="md"
                           variant="secondary"
+                          className="w-full min-h-11 sm:w-auto"
                           onClick={() => {
                             setPlannedCrop('soybean');
                             setCropSearch('Soybean (Waken soya)');
                           }}
                         >
-                          Select Soybean (Waken soya)
+                          Soybean (Waken soya)
                         </Button>
                       </div>
                     </div>
@@ -778,7 +763,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 {farmerMode === 'existing' ? (
                   <>
                     <div className="space-y-1.5">
-                      <Label htmlFor="prev-crop">Last season crop (Previous)</Label>
+                      <Label htmlFor="prev-crop">What did you grow last season?</Label>
                       <Select
                         value={previousCrop}
                         onValueChange={(value) =>
@@ -800,7 +785,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="curr-crop">Current / recent crop</Label>
+                      <Label htmlFor="curr-crop">What are you growing now?</Label>
                       <Select
                         value={currentCrop}
                         onValueChange={(value) => {
@@ -828,7 +813,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 ) : null}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="plan-crop">Planned next crop (Candidate)</Label>
+                  <Label htmlFor="plan-crop">Planned next crop</Label>
                   <Select
                     value={plannedCrop}
                     onValueChange={(value) => {
@@ -856,35 +841,35 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {/* Planting Trigger Rule */}
               <div className="space-y-2">
-                <Label>Your stated planting trigger rule (Moisture-conditioned)</Label>
+                <Label>When will you plant?</Label>
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
                   <button
                     type="button"
                     onClick={() => setPlantingTriggerRule(null)}
                     className={`rounded-[10px] border p-3 text-left transition-all ${
                       plantingTriggerRule === null
-                        ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f]'
+                        ? 'border-[#0a4232] bg-[#eaf2ee] text-[#072f24]'
                         : 'border-[#e5e7eb] bg-[#fafafb] text-[#374151] hover:bg-white'
                     }`}
                   >
-                    <div className="text-xs font-bold">Not recorded yet</div>
-                    <p className="mt-1 text-[11px] leading-snug text-[#4b5563]">
-                      Leave this blank if the farmer has not stated a planting rule.
+                    <div className="text-xs font-bold">Not sure yet</div>
+                    <p className="mt-1 text-xs leading-snug text-[#4b5563]">
+                      Skip this if you do not know yet.
                     </p>
                   </button>
                   {(
                     [
                       {
                         rule: 'wait_for_confirmed_moisture',
-                        desc: 'Wait until cumulative rainfall and root-zone soil moisture are established before sowing.',
+                        desc: 'Wait until the soil is properly wet before sowing.',
                       },
                       {
                         rule: 'plant_on_first_rains',
-                        desc: 'Sow immediately on the first sustained rains to maximise growing season length.',
+                        desc: 'Sow as soon as the rains really start.',
                       },
                       {
                         rule: 'prepare_and_plant_quickly',
-                        desc: 'Clear and ridge plots early, then sow as soon as top-soil moisture is workable.',
+                        desc: 'Prepare the land early and sow as soon as the soil is workable.',
                       },
                     ] as const
                   ).map((item) => {
@@ -896,14 +881,14 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         onClick={() => setPlantingTriggerRule(item.rule)}
                         className={`rounded-[10px] border p-3 text-left transition-all ${
                           active
-                            ? 'border-[#00b159] bg-[#ebfaef] text-[#0b4f2f]'
+                            ? 'border-[#0a4232] bg-[#eaf2ee] text-[#072f24]'
                             : 'border-[#e5e7eb] bg-[#fafafb] text-[#374151] hover:bg-white'
                         }`}
                       >
                         <div className="text-xs font-bold">
                           {PLANTING_TRIGGER_TITLES[item.rule]?.en ?? item.rule}
                         </div>
-                        <p className="mt-1 text-[11px] leading-snug text-[#4b5563]">{item.desc}</p>
+                        <p className="mt-1 text-xs leading-snug text-[#4b5563]">{item.desc}</p>
                       </button>
                     );
                   })}
@@ -912,16 +897,16 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {/* Farmer Goals */}
               <div className="space-y-2">
-                <Label>Management priorities</Label>
+                <Label>What matters most to you?</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: 'improve_soil_fertility', label: 'Restore Soil Fertility (Legume N)' },
-                    { id: 'maturity_reliability', label: 'Reliable Harvest Before Rains End' },
-                    { id: 'increase_income', label: 'Market Value & Cash Return' },
-                    { id: 'reduce_risk', label: 'Dry-Spell Tolerance & Risk Reduction' },
-                    { id: 'conserve_water', label: 'Conserve Soil Moisture & Water' },
-                    { id: 'food_security', label: 'Household Food Security' },
-                    { id: 'less_work', label: 'Lower Fertiliser & Labour Outlay' },
+                    { id: 'improve_soil_fertility', label: 'Make the soil more fertile' },
+                    { id: 'maturity_reliability', label: 'Harvest before the rains stop' },
+                    { id: 'increase_income', label: 'Earn more money' },
+                    { id: 'reduce_risk', label: 'Cope with dry spells' },
+                    { id: 'conserve_water', label: 'Save water in the soil' },
+                    { id: 'food_security', label: 'Feed my household' },
+                    { id: 'less_work', label: 'Spend less on fertiliser and labour' },
                   ].map((goal) => {
                     const checked = selectedGoals.includes(goal.id);
                     return (
@@ -929,9 +914,9 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         key={goal.id}
                         type="button"
                         onClick={() => toggleGoal(goal.id)}
-                        className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        className={`inline-flex min-h-11 items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                           checked
-                            ? 'border-[#00b159] bg-[#00b159] text-white'
+                            ? 'border-[#0a4232] bg-[#0a4232] text-white'
                             : 'border-[#e5e7eb] bg-[#f4f5f6] text-[#374151] hover:bg-white'
                         }`}
                       >
@@ -942,19 +927,25 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-[#e5e7eb] pt-4">
-                <Button variant="secondary" size="md" onClick={() => goToStep(1)}>
+              <div className="flex flex-col-reverse gap-3 border-t border-[#e5e7eb] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="w-full min-h-11 sm:w-auto"
+                  onClick={() => goToStep(1)}
+                >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   <span>Back</span>
                 </Button>
                 <Button
                   variant="primary"
                   size="md"
+                  className="w-full min-h-11 sm:w-auto"
                   onClick={() => {
                     if (validateStep2()) goToStep(3);
                   }}
                 >
-                  <span>Continue to Parcel Geometry</span>
+                  <span>Next: your fields</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
@@ -963,50 +954,59 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
           {/* STEP 3: MULTI-PARCEL GEOMETRY (POLYGON OR GPS POINT WITH UNCERTAINTY) */}
           {step === 3 && !confirming ? (
-            <div className="space-y-6 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
+            <div className="space-y-6 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <h2 className="font-display text-lg font-bold text-[#111315]">
-                    Parcels{farmName.trim() ? ` in ${farmName}` : ''} ({draftParcels.length})
+                    Your fields ({draftParcels.length})
                   </h2>
-                  <p className="text-xs text-[#4b5563]">
-                    Capture coordinates on the interactive map or enter them below. GPS points need
-                    an uncertainty radius. Polygon mode draws the real field boundary on the map.
+                  <p className="mt-0.5 text-xs leading-snug text-[#4b5563]">
+                    Use the map below to mark each field. Draw its outline, or drop a pin for its
+                    centre.
                   </p>
                 </div>
-                <Button type="button" variant="secondary" size="sm" onClick={addDraftParcel}>
-                  <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Add Another Parcel</span>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  className="w-full min-h-11 sm:w-auto"
+                  onClick={addDraftParcel}
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  <span>Add another field</span>
                 </Button>
               </div>
 
               {/* Live Interactive Map for Boundary Capture */}
               <div className="space-y-3 rounded-[12px] border border-[#e5e7eb] bg-white p-4">
-                <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <Crosshair className="h-4 w-4 text-[#00b159]" />
+                      <Crosshair className="h-4 w-4 shrink-0 text-[#0a4232]" />
                       <h3 className="font-display text-sm font-bold text-[#111315]">
-                        Capture Land Parcel on Map · {activeDraftParcel.name}
+                        Mark your field on the map
                       </h3>
                     </div>
-                    <p className="mt-0.5 text-xs text-[#4b5563]">
-                      Click anywhere on the satellite map to position this parcel. The coordinates
-                      will sync automatically.
+                    <p className="mt-0.5 text-xs leading-snug text-[#4b5563]">
+                      Editing {activeDraftParcel.name || 'your field'}. Use the map buttons to draw
+                      its outline or drop a pin. It saves automatically.
                     </p>
                   </div>
 
                   {draftParcels.length > 1 ? (
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-semibold text-[#6b7280]">Target:</span>
+                    <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center">
+                      <span className="text-xs font-semibold text-[#6b7280]">Editing:</span>
                       <Select value={activeDraftParcelId} onValueChange={setActiveDraftParcelId}>
-                        <SelectTrigger aria-label="Select active parcel for map capture">
+                        <SelectTrigger
+                          aria-label="Choose which field to edit on the map"
+                          className="w-full min-h-11 sm:w-[180px]"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {draftParcels.map((dp, i) => (
                             <SelectItem key={dp.id} value={dp.id}>
-                              {dp.name || `Parcel ${i + 1}`}
+                              {dp.name || `Field ${i + 1}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1015,26 +1015,32 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   ) : null}
                 </div>
 
+                {/*
+                 * The map toolbar owns the Select / Draw / Location mode. These
+                 * flags only enable those tools and seed the initial mode; they
+                 * must not be derived from geometryMethod, because the map sets
+                 * that value back here and a changing prop would yank the map
+                 * out of the tool the farmer is currently using.
+                 */}
                 <HonestyMapCanvas
                   parcels={mappedDraftParcels}
                   activeParcelId={activeDraftParcel.id}
                   selectedParcelId={activeDraftParcel.id}
-                  captureMode={activeDraftParcel.geometryMethod === 'gps_point'}
+                  captureMode
                   capturePoint={
                     activeDraftParcel.centerLon !== null && activeDraftParcel.centerLat !== null
                       ? { lon: activeDraftParcel.centerLon, lat: activeDraftParcel.centerLat }
                       : null
                   }
                   onCoordinateCapture={handleMapCoordinateCapture}
-                  interactiveDraw={activeDraftParcel.geometryMethod === 'drawn_polygon'}
+                  interactiveDraw
                   onGeometryChange={handleDrawnGeometry}
                   heightClass="h-[300px] sm:h-[380px] lg:h-[420px]"
                 />
 
-                <p className="pt-1 text-xs text-[#6b7280]">
-                  {activeDraftParcel.geometryMethod === 'drawn_polygon'
-                    ? 'Tap every corner of your field, then press Done on the map. The exact shape is saved.'
-                    : 'Tap the map or use My location to place your field, then set how sure you are below.'}
+                <p className="pt-1 text-xs leading-snug text-[#6b7280]">
+                  Use Draw on the map to trace your field, or Location to drop a pin. Changes save
+                  automatically.
                 </p>
               </div>
 
@@ -1049,157 +1055,93 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       onClick={() => setActiveDraftParcelId(dp.id)}
                       className={`rounded-[12px] border p-4 transition-colors ${
                         dp.id === activeDraftParcelId
-                          ? 'border-[#00b159] bg-[#ebfaef]/40 ring-1 ring-[#00b159]'
+                          ? 'border-[#0a4232] bg-[#eaf2ee]/40 ring-1 ring-[#0a4232]'
                           : 'border-[#e5e7eb] bg-[#fafafb] hover:bg-white'
                       }`}
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
                           {geom ? (
                             <ParcelVectorThumbnail geometry={geom} size={44} active />
                           ) : (
                             <div
                               aria-hidden="true"
-                              className="flex size-11 items-center justify-center rounded-lg border border-dashed border-[#d1d5db] text-xs text-[#6b7280]"
+                              className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-dashed border-[#d1d5db] text-xs text-[#6b7280]"
                             >
                               Map
                             </div>
                           )}
-                          <div>
+                          <div className="min-w-0">
                             <div className="text-xs font-bold text-[#111315]">
-                              Parcel {idx + 1}: {dp.name}
+                              Field {idx + 1}: {dp.name || 'Unnamed field'}
                             </div>
-                            <div className="tabular text-[11px] text-[#0b4f2f]">
+                            <div className="tabular text-xs leading-snug text-[#072f24]">
                               {dp.geometryMethod === 'drawn_polygon'
                                 ? areaHa !== null
-                                  ? `Drawn polygon · ${areaHa.toFixed(2)} ha`
-                                  : 'Draw the boundary on the map to preview its area'
+                                  ? `Outline drawn · ${areaHa.toFixed(2)} ha`
+                                  : 'Draw your field on the map to see its size'
                                 : dp.locationUncertaintyM !== null
-                                  ? `GPS point · Uncertainty ±${dp.locationUncertaintyM} m`
-                                  : 'Enter a GPS point and its uncertainty'}
+                                  ? `Pin placed · about ${dp.locationUncertaintyM} m off`
+                                  : 'Drop a pin on the map to mark this field'}
                             </div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <SegmentedControl
-                            size="sm"
-                            ariaLabel={`Geometry method for ${dp.name}`}
-                            value={dp.geometryMethod}
-                            onValueChange={(method) =>
-                              updateParcel(dp.id, {
-                                geometryMethod: method,
-                                geometry: null,
-                                centerLon: null,
-                                centerLat: null,
-                                locationUncertaintyM: null,
-                              })
-                            }
-                            options={[
-                              {
-                                value: 'drawn_polygon',
-                                label: 'Drawn Polygon',
-                                shortLabel: 'Polygon',
-                              },
-                              {
-                                value: 'gps_point',
-                                label: 'Single GPS Point',
-                                shortLabel: 'GPS Point',
-                              },
-                            ]}
-                          />
-                          {draftParcels.length > 1 ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  type="button"
-                                  onClick={() => removeParcel(dp.id)}
-                                  className="rounded p-1.5 text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318]"
-                                  aria-label="Remove parcel"
-                                >
-                                  <Trash2 className="h-4 w-4" aria-hidden="true" />
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipContent>Remove parcel</TooltipContent>
-                            </Tooltip>
-                          ) : null}
-                        </div>
+                        {draftParcels.length > 1 ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  removeParcel(dp.id);
+                                  if (activeDraftParcelId === dp.id) {
+                                    const nextActive = draftParcels.find((p) => p.id !== dp.id);
+                                    if (nextActive) setActiveDraftParcelId(nextActive.id);
+                                  }
+                                }}
+                                className="flex min-h-11 min-w-11 items-center justify-center rounded p-1.5 text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318]"
+                                aria-label={`Remove field ${idx + 1}`}
+                              >
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Remove field</TooltipContent>
+                          </Tooltip>
+                        ) : null}
                       </div>
 
-                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
-                          <Label>Parcel name</Label>
+                          <Label htmlFor={`field-name-${idx}`}>Field name</Label>
                           <Input
+                            id={`field-name-${idx}`}
                             value={dp.name}
                             onChange={(e) => updateParcel(dp.id, { name: e.target.value })}
                           />
                         </div>
-                        <div>
-                          <Label>Longitude (°E)</Label>
-                          <Input
-                            type="number"
-                            step="0.001"
-                            min={-180}
-                            max={180}
-                            value={dp.centerLon ?? ''}
-                            onChange={(e) =>
-                              updateParcel(dp.id, {
-                                centerLon: parseOptionalNumber(e.target.value),
-                              })
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label>Latitude (°N)</Label>
-                          <Input
-                            type="number"
-                            step="0.001"
-                            min={-90}
-                            max={90}
-                            value={dp.centerLat ?? ''}
-                            onChange={(e) =>
-                              updateParcel(dp.id, {
-                                centerLat: parseOptionalNumber(e.target.value),
-                              })
-                            }
-                          />
-                        </div>
                         {dp.geometryMethod === 'gps_point' ? (
                           <div>
-                            <Label>GPS Uncertainty Radius (m)</Label>
-                            <Input
-                              type="number"
-                              min={1}
-                              max={5000}
-                              value={dp.locationUncertaintyM ?? ''}
-                              onChange={(e) =>
-                                updateParcel(dp.id, {
-                                  locationUncertaintyM: parseOptionalNumber(e.target.value),
-                                })
+                            <Label>How sure are you about this spot?</Label>
+                            <SegmentedControl
+                              fullWidth
+                              className="[&_button]:min-h-11"
+                              ariaLabel="How sure are you about this spot?"
+                              value={String(dp.locationUncertaintyM ?? 250)}
+                              onValueChange={(value) =>
+                                updateParcel(dp.id, { locationUncertaintyM: Number(value) })
                               }
+                              options={[
+                                { value: '50', label: 'Small', shortLabel: 'Small' },
+                                { value: '250', label: 'Medium', shortLabel: 'Medium' },
+                                { value: '1000', label: 'Large', shortLabel: 'Large' },
+                              ]}
                             />
+                            <p className="mt-1 text-xs leading-snug text-[#6b7280]">
+                              Small is about 50 m, medium about 250 m, large about 1,000 m.
+                            </p>
                           </div>
-                        ) : (
-                          <div>
-                            <Label>Drawn boundary</Label>
-                            <div className="flex items-center gap-2">
-                              <span className="flex h-[42px] flex-1 items-center rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] px-3 text-xs text-[#4b5563]">
-                                {dp.geometry?.type === 'Polygon'
-                                  ? `${dp.geometry.coordinates[0]?.length ?? 0} boundary points`
-                                  : 'Not drawn yet'}
-                              </span>
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => updateParcel(dp.id, { geometry: null })}
-                                disabled={!dp.geometry}
-                              >
-                                Clear
-                              </Button>
-                            </div>
-                          </div>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   );
@@ -1208,12 +1150,22 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {statusAlert}
 
-              <div className="flex items-center justify-between border-t border-[#e5e7eb] pt-4">
-                <Button variant="secondary" size="md" onClick={() => goToStep(2)}>
+              <div className="flex flex-col-reverse gap-3 border-t border-[#e5e7eb] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="w-full min-h-11 sm:w-auto"
+                  onClick={() => goToStep(2)}
+                >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   <span>Back</span>
                 </Button>
-                <Button variant="primary" size="lg" onClick={() => setConfirming(true)}>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full min-h-11 sm:w-auto"
+                  onClick={() => setConfirming(true)}
+                >
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   <span>Review before saving</span>
                 </Button>
@@ -1222,49 +1174,55 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           ) : null}
 
           {step === 3 && confirming ? (
-            <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-6 shadow-xs">
+            <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
               <div>
                 <Badge variant="Strong">Final check</Badge>
                 <h2 className="mt-2 font-display text-lg font-bold text-[#111315]">
                   Check your farm before saving
                 </h2>
-                <p className="mt-1 text-xs text-[#4b5563]">
-                  Read through the details below. Nothing is saved until you choose the save button.
+                <p className="mt-1 text-xs leading-snug text-[#4b5563]">
+                  Take a look. Nothing is saved until you tap save.
                 </p>
               </div>
               <dl className="grid gap-3 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-[11px] font-semibold text-[#6b7280]">Farm name</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">Farm name</dt>
                   <dd className="mt-0.5 text-[#111315]">{farmName || 'Not given'}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold text-[#6b7280]">Water supply</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">Water supply</dt>
                   <dd className="mt-0.5 text-[#111315]">{waterSupplyLabel}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold text-[#6b7280]">Fields</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">Fields</dt>
                   <dd className="mt-0.5 text-[#111315]">{fieldSummary || 'None marked'}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold text-[#6b7280]">Crops</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">Crops</dt>
                   <dd className="mt-0.5 text-[#111315]">{cropSummary || 'None chosen'}</dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-[11px] font-semibold text-[#6b7280]">Planting trigger</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">Planting trigger</dt>
                   <dd className="mt-0.5 text-[#111315]">{triggerLabel}</dd>
                 </div>
               </dl>
 
               {statusAlert}
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e5e7eb] pt-4">
-                <Button variant="secondary" size="md" onClick={() => setConfirming(false)}>
+              <div className="flex flex-col-reverse gap-3 border-t border-[#e5e7eb] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="w-full min-h-11 sm:w-auto"
+                  onClick={() => setConfirming(false)}
+                >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   <span>Back to editing</span>
                 </Button>
                 <Button
                   variant="primary"
                   size="lg"
+                  className="w-full min-h-11 sm:w-auto"
                   disabled={submitting}
                   onClick={() => void handleFinish()}
                 >

@@ -374,7 +374,7 @@ export function HonestyMapCanvas({
               type: 'fill',
               source: 'parcels-source',
               filter: ['==', ['geometry-type'], 'Polygon'],
-              paint: { 'fill-color': '#00b159', 'fill-opacity': 0.3 },
+              paint: { 'fill-color': '#0a4232', 'fill-opacity': 0.3 },
             });
             map.addLayer({
               id: 'parcels-stroke',
@@ -401,7 +401,7 @@ export function HonestyMapCanvas({
               filter: ['==', ['geometry-type'], 'Point'],
               paint: {
                 'circle-radius': 6,
-                'circle-color': '#00b159',
+                'circle-color': '#0a4232',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#ffffff',
               },
@@ -477,7 +477,7 @@ export function HonestyMapCanvas({
               source: 'capture-point-source',
               paint: {
                 'circle-radius': 6.5,
-                'circle-color': '#00b159',
+                'circle-color': '#0a4232',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#ffffff',
               },
@@ -830,7 +830,7 @@ export function HonestyMapCanvas({
 
       {!webglSupported ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f2e22] p-6 text-center text-white">
-          <MapPin className="mb-2 size-8 text-[#00b159]" />
+          <MapPin className="mb-2 size-8 text-[#0a4232]" />
           <h4 className="font-display text-sm font-bold">Map preview unavailable</h4>
           <p className="mt-1 max-w-sm text-xs text-white/70">
             Your browser could not start the interactive map. Enter parcel coordinates using the
@@ -842,7 +842,7 @@ export function HonestyMapCanvas({
       {!mapLoaded && webglSupported ? (
         <div className="absolute inset-0 flex items-center justify-center bg-[#111827]/70 backdrop-blur-xs">
           <div className="flex items-center gap-2 text-xs font-medium text-white/80">
-            <span className="size-2 animate-ping rounded-full bg-[#00b159]" />
+            <span className="size-2 animate-ping rounded-full bg-[#0a4232]" />
             <span>Loading satellite land imagery...</span>
           </div>
         </div>

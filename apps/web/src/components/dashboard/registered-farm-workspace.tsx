@@ -945,7 +945,7 @@ export function RegisteredFarmWorkspace({
                       key={parcel.id}
                       className={`flex flex-col gap-2 rounded-lg border p-3 text-sm ${
                         parcel.id === selectedParcelId
-                          ? 'border-[#00b159] bg-[#ebfaef]'
+                          ? 'border-[#0a4232] bg-[#eaf2ee]'
                           : 'border-[#e5e7eb] bg-white'
                       }`}
                     >
@@ -1043,7 +1043,7 @@ export function RegisteredFarmWorkspace({
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-[#d1d5db] bg-white p-6 text-center">
-                <MapPin className="mx-auto size-8 text-[#00b159]" />
+                <MapPin className="mx-auto size-8 text-[#0a4232]" />
                 <h3 className="mt-2 text-sm font-semibold text-[#111315]">
                   {t('state.emptyFields')}
                 </h3>
@@ -1300,7 +1300,7 @@ export function RegisteredFarmWorkspace({
                       }
                       className={`rounded-full border px-2.5 py-1 text-[11px] ${
                         checked
-                          ? 'border-[#00b159] bg-[#00b159] text-white'
+                          ? 'border-[#0a4232] bg-[#0a4232] text-white'
                           : 'border-[#e5e7eb] bg-[#f4f5f6] text-[#374151]'
                       }`}
                     >
