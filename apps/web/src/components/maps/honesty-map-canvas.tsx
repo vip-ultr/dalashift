@@ -247,7 +247,13 @@ export function HonestyMapCanvas({
     async function initMap() {
       if (!mapContainerRef.current) return;
       try {
-        const { Map } = await import('maplibre-gl');
+        const { Map, setWorkerUrl } = await import('maplibre-gl');
+        // MapLibre v6 uses a dedicated worker to parse and render vector and
+        // GeoJSON sources, including the field polygons drawn with terra-draw.
+        // With webpack/Next the default worker URL cannot be resolved, so the
+        // worker fails to load and drawn geometry never appears on screen. Point
+        // it at the self-contained worker copied into public/ at build time.
+        setWorkerUrl('/maplibre-gl-worker.mjs');
         if (isDisposed || !mapContainerRef.current) return;
 
         const satelliteTiles =
