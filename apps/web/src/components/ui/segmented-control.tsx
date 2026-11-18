@@ -31,8 +31,8 @@ export interface SegmentedControlProps<T extends string> {
 }
 
 /**
- * Segmented toggle bar modeled on OneSoil's `.form-tooglebox` (`#e9ecef` track
- * with a flat `#ffffff` active pill).
+ * Brand-compliant segmented toggle bar: a subtle, hairline-bordered track with
+ * a solid brand-primary active pill and quiet ink-muted inactive labels.
  */
 export function SegmentedControl<T extends string>({
   options,
@@ -58,7 +58,7 @@ export function SegmentedControl<T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        'rounded-lg bg-[#e9ecef] p-1',
+        'rounded-lg border border-border bg-surface-subtle p-1',
         fullWidth && 'w-full',
         stackOnMobile
           ? 'flex flex-col sm:flex-row gap-1 sm:gap-0 sm:items-center sm:h-[42px]'
@@ -89,8 +89,8 @@ export function SegmentedControl<T extends string>({
                       : 'h-[26px] text-[11px] sm:text-xs',
                     'whitespace-nowrap',
                   ),
-              'data-[state=active]:bg-surface-raised data-[state=active]:font-medium data-[state=active]:text-brand-primary',
-              'data-[state=inactive]:font-normal data-[state=inactive]:text-[#5c6066] data-[state=inactive]:hover:text-ink',
+              'data-[state=active]:bg-brand-primary data-[state=active]:font-semibold data-[state=active]:text-white data-[state=active]:ring-1 data-[state=active]:ring-brand-primary/20',
+              'data-[state=inactive]:font-normal data-[state=inactive]:text-ink-muted data-[state=inactive]:hover:text-brand-primary',
               focusRing,
             )}
           >

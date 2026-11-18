@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 import { ServiceWorkerRegistrar } from '../components/layout/service-worker-registrar';
-import { SiteFooter } from '../components/layout/site-footer';
 import { LanguageProvider } from '../i18n/language-provider';
 
 /**
@@ -86,7 +85,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             Skip to main content
           </a>
           <main id="main-content">{children}</main>
-          <SiteFooter />
           <ServiceWorkerRegistrar />
         </LanguageProvider>
       </body>

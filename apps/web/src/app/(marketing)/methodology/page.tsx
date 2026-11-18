@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type * as React from 'react';
 
 import { PublicNavbar } from '../../../components/layout/public-navbar';
+import { SiteFooter } from '../../../components/layout/site-footer';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { CATALOG_CROPS } from '../../../features/crops/catalog';
@@ -277,6 +278,8 @@ export default function MethodologyPage(): React.JSX.Element {
           </div>
         </section>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

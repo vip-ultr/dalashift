@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type * as React from 'react';
 
 import { PublicNavbar } from '../components/layout/public-navbar';
+import { SiteFooter } from '../components/layout/site-footer';
 import { Button } from '../components/ui/button';
 import { useLanguage } from '../i18n/language-provider';
 
@@ -134,6 +135,8 @@ export default function LandingPage(): React.JSX.Element {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

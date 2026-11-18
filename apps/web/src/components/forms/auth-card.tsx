@@ -16,6 +16,22 @@ export interface AuthCardProps {
   readonly initialMode: 'login' | 'register';
 }
 
+/**
+ * Resolve a `next` value to a same-origin local path. Anything absolute,
+ * protocol-relative, backslash-prefixed, or pointing back at an auth screen is
+ * rejected so a successful sign-in never triggers an open redirect or a loop.
+ */
+function safeNextPath(raw: string | null): string | null {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//') || raw.includes('\\')) {
+    return null;
+  }
+  const pathname = raw.split(/[?#]/, 1)[0];
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+  return raw;
+}
+
 export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
   const router = useRouter();
   const { t } = useLanguage();
@@ -94,11 +110,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
           ? new URLSearchParams(window.location.search).get('next')
           : null;
       const destination =
-        nextUrl && nextUrl.startsWith('/') && !nextUrl.startsWith('//')
-          ? nextUrl
-          : mode === 'register'
-            ? '/farms/new'
-            : '/dashboard';
+        safeNextPath(nextUrl) ?? (mode === 'register' ? '/farms/new' : '/dashboard');
       router.push(destination);
     } catch {
       setErrorMessage('Unable to connect to the account service. Please try again.');
