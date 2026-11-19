@@ -125,3 +125,28 @@ textarea:focus-visible,
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* MapLibre writes the third-party attribution straight onto the imagery. Keep
+   it readable but quiet: translucent dark glass instead of a solid white bar. */
+.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  background-color: rgb(17 24 39 / 70%) !important;
+  color: #f9fafb !important;
+  border-radius: 6px 0 0 0 !important;
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib a:hover {
+  color: #f9fafb !important;
+}
+
+.maplibregl-ctrl-attrib-button {
+  background-color: rgb(17 24 39 / 70%) !important;
+  border-radius: 4px !important;
+  filter: invert(1);
+}
