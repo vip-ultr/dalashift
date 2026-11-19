@@ -38,7 +38,8 @@ import {
   TooltipTrigger,
 } from '../../../../components/ui/tooltip';
 import { CATALOG_CROPS } from '../../../../features/crops/catalog';
-import { formatCropWithHausa, PLANTING_TRIGGER_TITLES } from '../../../../lib/utilities/format';
+import { useLanguage } from '../../../../i18n/language-provider';
+import { formatCropWithHausa, plantingTriggerTitle } from '../../../../lib/utilities/format';
 
 const apiErrorSchema = z.object({ error: z.string() });
 const createdFarmSchema = z.object({ farm: z.object({ id: z.string().uuid() }) });
@@ -51,17 +52,24 @@ const compareResultSchema = z.object({
   comparison: z.unknown(),
 });
 
+type Translator = (id: string, vars?: Record<string, string | number>) => string;
+
 // Radix Select items cannot use an empty string as a value, so the "no crop
 // selected" option uses this sentinel and is translated back to '' in the
 // onValueChange handlers. The rest of the wizard continues to work with ''.
 const NO_CROP_VALUE = '__none__';
 
-const WATER_SUPPLY_LABELS: Record<'rainfed' | 'irrigated' | 'mixed' | 'unknown', string> = {
-  rainfed: 'Rainfed',
-  irrigated: 'Irrigated',
-  mixed: 'Mixed Season',
-  unknown: 'Not sure',
-};
+type WaterSupplyMethod = 'rainfed' | 'irrigated' | 'mixed' | 'unknown';
+
+function getWaterSupplyLabel(method: WaterSupplyMethod, t: Translator): string {
+  const labels: Record<WaterSupplyMethod, string> = {
+    rainfed: t('farms.rainfed'),
+    irrigated: t('farms.irrigated'),
+    mixed: t('wizard.mixedSeason'),
+    unknown: t('farms.notSure'),
+  };
+  return labels[method];
+}
 
 interface WizardFieldErrors {
   farmName?: string;
@@ -71,26 +79,33 @@ interface WizardFieldErrors {
   plannedCrop?: string;
 }
 
-async function requestApi<T>(url: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
+async function requestApi<T>(
+  url: string,
+  schema: z.ZodType<T>,
+  t: Translator,
+  init?: RequestInit,
+): Promise<T> {
   const response = await fetch(url, init);
   let payload: unknown;
 
   try {
     payload = await response.json();
   } catch {
-    throw new Error('The server returned an invalid response.');
+    throw new Error(t('state.invalidResponse'));
   }
 
   if (!response.ok) {
     const parsedError = apiErrorSchema.safeParse(payload);
     throw new Error(
-      parsedError.success ? parsedError.data.error : `Request failed (${response.status}).`,
+      parsedError.success
+        ? parsedError.data.error
+        : t('state.requestFailed', { status: response.status }),
     );
   }
 
   const parsed = schema.safeParse(payload);
   if (!parsed.success) {
-    throw new Error('The server returned incomplete farm data.');
+    throw new Error(t('wizard.incompleteFarmData'));
   }
 
   return parsed.data;
@@ -107,6 +122,8 @@ function jsonRequest(method: 'POST' | 'PUT', body: unknown): RequestInit {
 interface DraftParcel {
   readonly id: string;
   readonly name: string;
+  /** True while the name is still the generated "Field N" default. */
+  readonly autoNamed?: boolean;
   readonly geometryMethod: 'drawn_polygon' | 'gps_point';
   readonly centerLon: number | null;
   readonly centerLat: number | null;
@@ -135,9 +152,9 @@ function hasValidGeometryDraft(draft: DraftParcel): boolean {
   return hasValidCoordinates(draft);
 }
 
-function buildParcelGeometry(draft: DraftParcel): GeoJSONGeometry {
+function buildParcelGeometry(draft: DraftParcel, t: Translator): GeoJSONGeometry {
   if (!hasValidGeometryDraft(draft)) {
-    throw new Error('Parcel location or geometry is invalid.');
+    throw new Error(t('wizard.invalidGeometry'));
   }
   if (draft.geometryMethod === 'drawn_polygon') {
     return draft.geometry!;
@@ -148,9 +165,9 @@ function buildParcelGeometry(draft: DraftParcel): GeoJSONGeometry {
   };
 }
 
-function computePolygonHa(draft: DraftParcel): number | null {
+function computePolygonHa(draft: DraftParcel, t: Translator): number | null {
   if (!hasValidGeometryDraft(draft)) return null;
-  const geom = buildParcelGeometry(draft);
+  const geom = buildParcelGeometry(draft, t);
   if (geom.type === 'Point') {
     return null;
   }
@@ -167,6 +184,7 @@ function computePolygonHa(draft: DraftParcel): number | null {
 
 export default function NewFarmWizardPage(): React.JSX.Element {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [step, setStep] = React.useState<1 | 2 | 3>(1);
 
   // Step 1 State
@@ -193,7 +211,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [draftParcels, setDraftParcels] = React.useState<DraftParcel[]>([
     {
       id: 'draft-parcel-1',
-      name: 'Field 1',
+      name: t('wizard.fieldN', { index: 1 }),
+      autoNamed: true,
       geometryMethod: 'gps_point',
       centerLon: null,
       centerLat: null,
@@ -209,26 +228,36 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const [saveFailed, setSaveFailed] = React.useState(false);
   const [confirming, setConfirming] = React.useState(false);
 
+  // Generated field names follow the interface language. Names the farmer
+  // typed are left alone, even when the language changes later.
+  React.useEffect(() => {
+    setDraftParcels((prev) =>
+      prev.map((parcel, index) =>
+        parcel.autoNamed ? { ...parcel, name: t('wizard.fieldN', { index: index + 1 }) } : parcel,
+      ),
+    );
+  }, [t]);
+
   const activeDraftParcel =
     draftParcels.find((p) => p.id === activeDraftParcelId) ?? draftParcels[0]!;
 
   const mappedDraftParcels = React.useMemo(() => {
     return draftParcels.flatMap((dp) => {
       if (!hasValidGeometryDraft(dp)) return [];
-      const geom = buildParcelGeometry(dp);
+      const geom = buildParcelGeometry(dp, t);
       return [
         {
           id: dp.id,
           farmId: 'draft-farm',
           name: dp.name,
           geometry: geom,
-          areaHa: computePolygonHa(dp) ?? 0,
+          areaHa: computePolygonHa(dp, t) ?? 0,
           locationUncertaintyM: dp.locationUncertaintyM,
           geometryMethod: dp.geometryMethod,
         },
       ];
     });
-  }, [draftParcels]);
+  }, [draftParcels, t]);
 
   const handleMapCoordinateCapture = (lon: number, lat: number) => {
     const targetId = activeDraftParcelId || draftParcels[0]?.id;
@@ -277,10 +306,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const validateStep1 = (): boolean => {
     const errors: WizardFieldErrors = {};
     if (!farmName.trim()) {
-      errors.farmName = 'Give your farm a name before you continue.';
+      errors.farmName = t('wizard.errFarmName');
     }
     if (!waterSupplyChosen) {
-      errors.waterSupply = 'Choose how your farm gets water, or pick Not sure.';
+      errors.waterSupply = t('wizard.errWaterSupply');
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -289,13 +318,13 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   const validateStep2 = (): boolean => {
     const errors: WizardFieldErrors = {};
     if (isBeansAmbiguous) {
-      errors.cropSearch = 'Pick the specific bean crop you mean from the choices above.';
+      errors.cropSearch = t('wizard.errCropSearch');
     }
     if (farmerMode === 'existing' && !currentCrop) {
-      errors.currentCrop = 'Choose the crop you grow on this farm right now.';
+      errors.currentCrop = t('wizard.errCurrentCrop');
     }
     if (!plannedCrop) {
-      errors.plannedCrop = 'Choose the crop you plan to plant next.';
+      errors.plannedCrop = t('wizard.errPlannedCrop');
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -313,7 +342,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       ...prev,
       {
         id: `draft-parcel-${Date.now()}`,
-        name: `Field ${nextIndex}`,
+        name: t('wizard.fieldN', { index: nextIndex }),
+        autoNamed: true,
         geometryMethod: 'gps_point',
         centerLon: null,
         centerLat: null,
@@ -324,7 +354,13 @@ export default function NewFarmWizardPage(): React.JSX.Element {
   };
 
   const updateParcel = (id: string, patch: Partial<DraftParcel>) => {
-    setDraftParcels((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    setDraftParcels((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? { ...p, ...patch, ...(patch.name === undefined ? {} : { autoNamed: false }) }
+          : p,
+      ),
+    );
   };
 
   const removeParcel = (id: string) => {
@@ -337,18 +373,18 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     setCreatedFarmId(null);
     setSaveFailed(false);
     if (!farmName.trim()) {
-      setStatusMessage('Enter a farm name before saving.');
+      setStatusMessage(t('wizard.errEnterFarmName'));
       return;
     }
     if (isBeansAmbiguous) {
-      setStatusMessage('Choose a specific crop instead of the unresolved name “beans”.');
+      setStatusMessage(t('wizard.errBeans'));
       return;
     }
     if (farmerMode === 'existing' ? !currentCrop || !plannedCrop : !plannedCrop) {
       setStatusMessage(
         farmerMode === 'existing'
-          ? "Choose the crop you grow now and the one you plan next, or change to 'I am planning what to grow'."
-          : 'Choose the crop you plan to grow before saving.',
+          ? t('wizard.errChooseCropsExisting')
+          : t('wizard.errChooseCropNext'),
       );
       return;
     }
@@ -363,19 +399,18 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               draft.locationUncertaintyM > 5000)),
       )
     ) {
-      setStatusMessage(
-        'Give each field a name and mark it on the map. Pinned fields also need an accuracy value between 1 and 5,000 metres.',
-      );
+      setStatusMessage(t('wizard.errFieldDetails'));
       return;
     }
 
     setSubmitting(true);
     let farmId: string | null = null;
-    let stage = 'the farm';
+    let stage = t('wizard.stageFarm');
     try {
       const { farm } = await requestApi(
         '/api/farms',
         createdFarmSchema,
+        t,
         jsonRequest('POST', {
           name: farmName,
           farmingMethod,
@@ -386,22 +421,23 @@ export default function NewFarmWizardPage(): React.JSX.Element {
       farmId = farm.id;
       setCreatedFarmId(farmId);
 
-      stage = 'the crop catalog';
-      const { crops } = await requestApi('/api/catalog/crops', cropCatalogSchema, {
+      stage = t('wizard.stageCatalog');
+      const { crops } = await requestApi('/api/catalog/crops', cropCatalogSchema, t, {
         method: 'GET',
         cache: 'no-store',
       });
       const cropIds = new Map(crops.map((crop) => [crop.code, crop.id]));
       const parcelIds: string[] = [];
 
-      stage = 'your fields';
+      stage = t('wizard.stageFields');
       for (const draft of draftParcels) {
         const { parcel } = await requestApi(
           `/api/farms/${farmId}/parcels`,
           createdParcelSchema,
+          t,
           jsonRequest('POST', {
             name: draft.name,
-            geometry: buildParcelGeometry(draft),
+            geometry: buildParcelGeometry(draft, t),
             geometryMethod: draft.geometryMethod,
             locationUncertaintyM:
               draft.geometryMethod === 'gps_point' ? draft.locationUncertaintyM : null,
@@ -419,16 +455,17 @@ export default function NewFarmWizardPage(): React.JSX.Element {
             ]
           : [{ code: plannedCrop, status: 'planned' as const }];
 
-      stage = 'your crops';
+      stage = t('wizard.stageCrops');
       for (const crop of cropEntries) {
         const cropId = cropIds.get(crop.code);
         if (!cropId) {
-          throw new Error(`The crop catalog does not contain ${crop.code}.`);
+          throw new Error(t('wizard.cropNotInCatalog', { code: crop.code }));
         }
 
         await requestApi(
           `/api/farms/${farmId}/crops`,
           z.object({ crop: z.object({ id: z.string().uuid() }) }),
+          t,
           jsonRequest('POST', {
             parcelId: parcelIds[0] ?? null,
             cropId,
@@ -438,10 +475,11 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         );
       }
 
-      stage = 'your planting preferences';
+      stage = t('wizard.stagePriorities');
       await requestApi(
         `/api/farms/${farmId}/priorities`,
         z.object({ priorities: z.unknown() }),
+        t,
         jsonRequest('PUT', {
           goals: selectedGoals,
           plantingTrigger: plantingTriggerRule,
@@ -450,10 +488,11 @@ export default function NewFarmWizardPage(): React.JSX.Element {
         }),
       );
 
-      stage = 'your farm guidance';
+      stage = t('wizard.stageGuidance');
       await requestApi(
         `/api/farms/${farmId}/compare`,
         compareResultSchema,
+        t,
         jsonRequest('POST', {
           parcelId: parcelIds[0] ?? null,
           kind: farmerMode === 'existing' ? 'rotation' : 'suitability',
@@ -462,21 +501,25 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
       router.push(`/farms/${farmId}`);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unable to save the farm. Please try again.';
+      const message = error instanceof Error ? error.message : t('wizard.saveGenericError');
       setSaveFailed(true);
       setStatusMessage(
         farmId
-          ? `${message} Your farm was saved, but ${stage} did not save. Nothing you typed was lost. Use Retry to save the rest.`
-          : `${message} ${stage.charAt(0).toUpperCase()}${stage.slice(1)} did not save. Nothing you typed was lost. Use Retry to try again.`,
+          ? t('wizard.savePartial', { message, stage })
+          : t('wizard.saveFirstFail', {
+              message,
+              stage: stage.charAt(0).toUpperCase() + stage.slice(1),
+            }),
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  const waterSupplyLabel = WATER_SUPPLY_LABELS[farmingMethod];
-  const fieldSummary = draftParcels.map((draft) => draft.name.trim() || 'Unnamed field').join(', ');
+  const waterSupplyLabel = getWaterSupplyLabel(farmingMethod, t);
+  const fieldSummary = draftParcels
+    .map((draft) => draft.name.trim() || t('wizard.unnamedField'))
+    .join(', ');
   const cropSummary = [
     ...(farmerMode === 'existing' && previousCrop ? [previousCrop] : []),
     ...(farmerMode === 'existing' ? [currentCrop] : []),
@@ -485,9 +528,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
     .filter(Boolean)
     .map((code) => formatCropWithHausa(code, true))
     .join(', ');
-  const triggerLabel = plantingTriggerRule
-    ? (PLANTING_TRIGGER_TITLES[plantingTriggerRule]?.en ?? plantingTriggerRule)
-    : 'Not sure yet';
+  const triggerLabel = plantingTriggerTitle(plantingTriggerRule, language, t('wizard.notSureYet'));
 
   const statusAlert = statusMessage ? (
     <div
@@ -501,12 +542,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           href="/login?next=/farms/new"
           className="ml-2 font-bold underline underline-offset-2 text-[#0a4232]"
         >
-          Sign in to save
+          {t('wizard.signinToSave')}
         </Link>
       ) : null}
       {createdFarmId ? (
         <Link href={`/farms/${createdFarmId}`} className="ml-1 underline underline-offset-2">
-          Open your saved farm.
+          {t('wizard.openSavedFarm')}
         </Link>
       ) : null}
       {saveFailed ? (
@@ -516,7 +557,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           disabled={submitting}
           className="ml-2 font-bold underline underline-offset-2 cursor-pointer disabled:opacity-60"
         >
-          Retry saving
+          {t('wizard.retrySaving')}
         </button>
       ) : null}
     </div>
@@ -530,24 +571,25 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           <div className="rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
-                <Badge variant="Strong">Add a farm</Badge>
+                <Badge variant="Strong">{t('nav.addFarm')}</Badge>
                 <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-[#111315]">
-                  Add your farm
+                  {t('wizard.title')}
                 </h1>
                 <p className="mt-1 text-xs leading-snug text-[#4b5563] sm:text-sm">
-                  First tell us about your farm. Next add your crops. Then mark your fields on the
-                  map.
+                  {t('wizard.subtitle')}
                 </p>
               </div>
-              <div className="text-xs font-semibold text-[#072f24]">Step {step} of 3</div>
+              <div className="text-xs font-semibold text-[#072f24]">
+                {t('wizard.stepOf', { current: step })}
+              </div>
             </div>
 
             {/* Stepper Bar: short labels and large tap targets on small screens. */}
             <div className="mt-5 grid grid-cols-3 gap-1.5 sm:gap-2">
               {[
-                { num: 1 as const, title: '1. Your farm', short: 'Farm' },
-                { num: 2 as const, title: '2. Your crops', short: 'Crops' },
-                { num: 3 as const, title: '3. Your fields', short: 'Fields' },
+                { num: 1 as const, title: t('wizard.step1Label'), short: t('wizard.farmShort') },
+                { num: 2 as const, title: t('wizard.step2Label'), short: t('workspace.crops') },
+                { num: 3 as const, title: t('wizard.step3Label'), short: t('workspace.fields') },
               ].map((item) => (
                 <button
                   key={item.num}
@@ -573,32 +615,32 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           {step === 1 ? (
             <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
               <p className="rounded-lg bg-[#eaf2ee] px-3 py-2 text-xs leading-snug text-[#072f24]">
-                Name your farm, add your crops, then mark your fields on the map.
+                {t('wizard.step1Hint')}
               </p>
               <div className="space-y-2">
-                <Label>Which describes you?</Label>
+                <Label>{t('wizard.whoDescribesYou')}</Label>
                 <SegmentedControl
                   fullWidth
                   stackOnMobile
                   className="[&_button]:min-h-11"
-                  ariaLabel="Which describes you?"
+                  ariaLabel={t('wizard.whoDescribesYou')}
                   value={farmerMode}
                   onValueChange={setFarmerMode}
                   options={[
-                    { value: 'existing', label: 'I already farm this land' },
-                    { value: 'prospective', label: 'I am planning what to grow' },
+                    { value: 'existing', label: t('wizard.modeExisting') },
+                    { value: 'prospective', label: t('wizard.modeProspective') },
                   ]}
                 />
                 <p className="text-xs leading-snug text-[#6b7280]">
                   {farmerMode === 'existing'
-                    ? 'We will suggest crops that rotate well with what you already grow.'
-                    : 'We will suggest crops that suit your land.'}
+                    ? t('wizard.modeExistingHint')
+                    : t('wizard.modeProspectiveHint')}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="farm-name">Farm name</Label>
+                  <Label htmlFor="farm-name">{t('wizard.farmNameLabel')}</Label>
                   <Input
                     id="farm-name"
                     value={farmName}
@@ -608,7 +650,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         setFieldErrors((errors) => ({ ...errors, farmName: undefined }));
                       }
                     }}
-                    placeholder="e.g. my farm by the river"
+                    placeholder={t('wizard.farmNamePlaceholder')}
                     aria-invalid={Boolean(fieldErrors.farmName)}
                     required
                   />
@@ -618,12 +660,12 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Where does your water come from?</Label>
+                  <Label>{t('wizard.waterQuestion')}</Label>
                   <SegmentedControl
                     fullWidth
                     stackOnMobile
                     className="[&_button]:min-h-11"
-                    ariaLabel="Where does your water come from?"
+                    ariaLabel={t('wizard.waterQuestion')}
                     value={farmingMethod}
                     onValueChange={(val) => {
                       setFarmingMethod(val);
@@ -633,10 +675,14 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       else if (irrigationMethod === 'rainfed') setIrrigationMethod('unknown');
                     }}
                     options={[
-                      { value: 'rainfed', label: 'Only rain' },
-                      { value: 'mixed', label: 'Rain and irrigation', shortLabel: 'Both' },
-                      { value: 'irrigated', label: 'Irrigation' },
-                      { value: 'unknown', label: 'Not sure' },
+                      { value: 'rainfed', label: t('wizard.waterOnlyRain') },
+                      {
+                        value: 'mixed',
+                        label: t('wizard.waterRainIrr'),
+                        shortLabel: t('wizard.waterBoth'),
+                      },
+                      { value: 'irrigated', label: t('wizard.waterIrrigation') },
+                      { value: 'unknown', label: t('farms.notSure') },
                     ]}
                   />
                   {fieldErrors.waterSupply ? (
@@ -647,29 +693,29 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {farmingMethod === 'mixed' || farmingMethod === 'irrigated' ? (
                 <div className="space-y-1.5">
-                  <Label htmlFor="irrigation-method">Tell us more about your water source</Label>
+                  <Label htmlFor="irrigation-method">{t('wizard.irrigationQuestion')}</Label>
                   <Select value={irrigationMethod} onValueChange={setIrrigationMethod}>
                     <SelectTrigger id="irrigation-method">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="unknown">Not sure</SelectItem>
-                      <SelectItem value="well">Borehole / Tube Well</SelectItem>
-                      <SelectItem value="river">River / Stream</SelectItem>
-                      <SelectItem value="furrow">Canal / Furrow</SelectItem>
-                      <SelectItem value="drip">Drip Irrigation</SelectItem>
-                      <SelectItem value="sprinkler">Sprinkler</SelectItem>
-                      <SelectItem value="hand_irrigation">Hand Irrigation (Buckets)</SelectItem>
-                      <SelectItem value="borehole">Borehole</SelectItem>
-                      <SelectItem value="canal">Canal</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="unknown">{t('farms.notSure')}</SelectItem>
+                      <SelectItem value="well">{t('wizard.irrBorehole')}</SelectItem>
+                      <SelectItem value="river">{t('wizard.irrRiver')}</SelectItem>
+                      <SelectItem value="furrow">{t('wizard.irrCanalFurrow')}</SelectItem>
+                      <SelectItem value="drip">{t('wizard.irrDrip')}</SelectItem>
+                      <SelectItem value="sprinkler">{t('wizard.irrSprinkler')}</SelectItem>
+                      <SelectItem value="hand_irrigation">{t('wizard.irrHand')}</SelectItem>
+                      <SelectItem value="borehole">{t('wizard.irrBoreholePlain')}</SelectItem>
+                      <SelectItem value="canal">{t('wizard.irrCanalPlain')}</SelectItem>
+                      <SelectItem value="other">{t('wizard.irrOther')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               ) : null}
 
               <div className="space-y-1.5">
-                <Label htmlFor="soil-notes">Anything you know about your soil? (optional)</Label>
+                <Label htmlFor="soil-notes">{t('wizard.soilNotesPrompt')}</Label>
                 <Textarea
                   id="soil-notes"
                   value={soilNotes}
@@ -687,7 +733,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     if (validateStep1()) goToStep(2);
                   }}
                 >
-                  <span>Next: your crops</span>
+                  <span>{t('wizard.nextCrops')}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
@@ -700,13 +746,13 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               {/* Crop Alias Search & Unresolved "Beans" Disambiguation Guardrail */}
               <div className="space-y-2 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Label htmlFor="crop-search">Which crop? Search by English or Hausa name</Label>
+                  <Label htmlFor="crop-search">{t('wizard.cropSearchLabel')}</Label>
                 </div>
                 <Input
                   id="crop-search"
                   value={cropSearch}
                   onChange={(e) => setCropSearch(e.target.value)}
-                  placeholder="Search Dawa, Gero, Wake, Farar wake, Waken soya, Gyada, Masara..."
+                  placeholder={t('wizard.cropSearchPlaceholder')}
                 />
                 {fieldErrors.cropSearch ? (
                   <p className="text-xs text-[#b42318]">{fieldErrors.cropSearch}</p>
@@ -722,11 +768,8 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                       aria-hidden="true"
                     />
                     <div className="space-y-2">
-                      <div className="font-semibold">Which bean do you mean?</div>
-                      <p>
-                        People use the word &ldquo;beans&rdquo; for a few different crops. Pick the
-                        one you mean so we can give you the right advice:
-                      </p>
+                      <div className="font-semibold">{t('wizard.whichBean')}</div>
+                      <p>{t('wizard.beansBody')}</p>
                       <div className="flex flex-col gap-2 sm:flex-row">
                         <Button
                           type="button"
@@ -735,10 +778,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           className="w-full min-h-11 sm:w-auto"
                           onClick={() => {
                             setPlannedCrop('cowpea');
-                            setCropSearch('Cowpea (Wake / Farar wake)');
+                            setCropSearch(t('wizard.cowpeaOption'));
                           }}
                         >
-                          Cowpea (Wake / Farar wake)
+                          {t('wizard.cowpeaOption')}
                         </Button>
                         <Button
                           type="button"
@@ -747,10 +790,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           className="w-full min-h-11 sm:w-auto"
                           onClick={() => {
                             setPlannedCrop('soybean');
-                            setCropSearch('Soybean (Waken soya)');
+                            setCropSearch(t('wizard.soybeanOption'));
                           }}
                         >
-                          Soybean (Waken soya)
+                          {t('wizard.soybeanOption')}
                         </Button>
                       </div>
                     </div>
@@ -763,7 +806,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 {farmerMode === 'existing' ? (
                   <>
                     <div className="space-y-1.5">
-                      <Label htmlFor="prev-crop">What did you grow last season?</Label>
+                      <Label htmlFor="prev-crop">{t('wizard.prevCropLabel')}</Label>
                       <Select
                         value={previousCrop}
                         onValueChange={(value) =>
@@ -771,10 +814,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         }
                       >
                         <SelectTrigger id="prev-crop">
-                          <SelectValue placeholder="Not recorded" />
+                          <SelectValue placeholder={t('farms.notRecorded')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NO_CROP_VALUE}>Not recorded</SelectItem>
+                          <SelectItem value={NO_CROP_VALUE}>{t('farms.notRecorded')}</SelectItem>
                           {CATALOG_CROPS.map((c) => (
                             <SelectItem key={c.code} value={c.code}>
                               {formatCropWithHausa(c.code, true)}
@@ -785,7 +828,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="curr-crop">What are you growing now?</Label>
+                      <Label htmlFor="curr-crop">{t('wizard.currCropLabel')}</Label>
                       <Select
                         value={currentCrop}
                         onValueChange={(value) => {
@@ -794,10 +837,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         }}
                       >
                         <SelectTrigger id="curr-crop">
-                          <SelectValue placeholder="Choose a crop" />
+                          <SelectValue placeholder={t('wizard.chooseCrop')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NO_CROP_VALUE}>Choose a crop</SelectItem>
+                          <SelectItem value={NO_CROP_VALUE}>{t('wizard.chooseCrop')}</SelectItem>
                           {CATALOG_CROPS.map((c) => (
                             <SelectItem key={c.code} value={c.code}>
                               {formatCropWithHausa(c.code, true)}
@@ -813,7 +856,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 ) : null}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="plan-crop">Planned next crop</Label>
+                  <Label htmlFor="plan-crop">{t('wizard.plannedCropLabel')}</Label>
                   <Select
                     value={plannedCrop}
                     onValueChange={(value) => {
@@ -822,10 +865,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     }}
                   >
                     <SelectTrigger id="plan-crop">
-                      <SelectValue placeholder="Choose a crop" />
+                      <SelectValue placeholder={t('wizard.chooseCrop')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NO_CROP_VALUE}>Choose a crop</SelectItem>
+                      <SelectItem value={NO_CROP_VALUE}>{t('wizard.chooseCrop')}</SelectItem>
                       {CATALOG_CROPS.map((c) => (
                         <SelectItem key={c.code} value={c.code}>
                           {formatCropWithHausa(c.code, true)}
@@ -841,7 +884,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {/* Planting Trigger Rule */}
               <div className="space-y-2">
-                <Label>When will you plant?</Label>
+                <Label>{t('wizard.whenPlantLabel')}</Label>
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
                   <button
                     type="button"
@@ -852,24 +895,24 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         : 'border-[#e5e7eb] bg-[#fafafb] text-[#374151] hover:bg-white'
                     }`}
                   >
-                    <div className="text-xs font-bold">Not sure yet</div>
+                    <div className="text-xs font-bold">{t('wizard.notSureYet')}</div>
                     <p className="mt-1 text-xs leading-snug text-[#4b5563]">
-                      Skip this if you do not know yet.
+                      {t('wizard.skipIfUnknown')}
                     </p>
                   </button>
                   {(
                     [
                       {
                         rule: 'wait_for_confirmed_moisture',
-                        desc: 'Wait until the soil is properly wet before sowing.',
+                        desc: t('wizard.triggerWaitDesc'),
                       },
                       {
                         rule: 'plant_on_first_rains',
-                        desc: 'Sow as soon as the rains really start.',
+                        desc: t('wizard.triggerRainsDesc'),
                       },
                       {
                         rule: 'prepare_and_plant_quickly',
-                        desc: 'Prepare the land early and sow as soon as the soil is workable.',
+                        desc: t('wizard.triggerPrepareDesc'),
                       },
                     ] as const
                   ).map((item) => {
@@ -886,7 +929,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         }`}
                       >
                         <div className="text-xs font-bold">
-                          {PLANTING_TRIGGER_TITLES[item.rule]?.en ?? item.rule}
+                          {plantingTriggerTitle(item.rule, language, item.rule)}
                         </div>
                         <p className="mt-1 text-xs leading-snug text-[#4b5563]">{item.desc}</p>
                       </button>
@@ -897,16 +940,16 @@ export default function NewFarmWizardPage(): React.JSX.Element {
 
               {/* Farmer Goals */}
               <div className="space-y-2">
-                <Label>What matters most to you?</Label>
+                <Label>{t('wizard.goalsLabel')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: 'improve_soil_fertility', label: 'Make the soil more fertile' },
-                    { id: 'maturity_reliability', label: 'Harvest before the rains stop' },
-                    { id: 'increase_income', label: 'Earn more money' },
-                    { id: 'reduce_risk', label: 'Cope with dry spells' },
-                    { id: 'conserve_water', label: 'Save water in the soil' },
-                    { id: 'food_security', label: 'Feed my household' },
-                    { id: 'less_work', label: 'Spend less on fertiliser and labour' },
+                    { id: 'improve_soil_fertility', label: t('wizard.goalSoil') },
+                    { id: 'maturity_reliability', label: t('wizard.goalHarvest') },
+                    { id: 'increase_income', label: t('wizard.goalIncome') },
+                    { id: 'reduce_risk', label: t('wizard.goalDrySpells') },
+                    { id: 'conserve_water', label: t('wizard.goalSaveWater') },
+                    { id: 'food_security', label: t('wizard.goalFeed') },
+                    { id: 'less_work', label: t('wizard.goalLessWork') },
                   ].map((goal) => {
                     const checked = selectedGoals.includes(goal.id);
                     return (
@@ -935,7 +978,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={() => goToStep(1)}
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                  <span>Back</span>
+                  <span>{t('wizard.back')}</span>
                 </Button>
                 <Button
                   variant="primary"
@@ -945,7 +988,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     if (validateStep2()) goToStep(3);
                   }}
                 >
-                  <span>Next: your fields</span>
+                  <span>{t('wizard.nextFields')}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
@@ -958,11 +1001,10 @@ export default function NewFarmWizardPage(): React.JSX.Element {
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <h2 className="font-display text-lg font-bold text-[#111315]">
-                    Your fields ({draftParcels.length})
+                    {t('wizard.fieldsCount', { count: draftParcels.length })}
                   </h2>
                   <p className="mt-0.5 text-xs leading-snug text-[#4b5563]">
-                    Use the map below to mark each field. Draw its outline, or drop a pin for its
-                    centre.
+                    {t('wizard.markFieldHint')}
                   </p>
                 </div>
                 <Button
@@ -973,7 +1015,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={addDraftParcel}
                 >
                   <Plus className="h-4 w-4" aria-hidden="true" />
-                  <span>Add another field</span>
+                  <span>{t('wizard.addAnotherField')}</span>
                 </Button>
               </div>
 
@@ -984,21 +1026,24 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                     <div className="flex items-center gap-2">
                       <Crosshair className="h-4 w-4 shrink-0 text-[#0a4232]" />
                       <h3 className="font-display text-sm font-bold text-[#111315]">
-                        Mark your field on the map
+                        {t('wizard.markOnMap')}
                       </h3>
                     </div>
                     <p className="mt-0.5 text-xs leading-snug text-[#4b5563]">
-                      Editing {activeDraftParcel.name || 'your field'}. Use the map buttons to draw
-                      its outline or drop a pin. It saves automatically.
+                      {t('wizard.editingField', {
+                        name: activeDraftParcel.name || t('wizard.yourField'),
+                      })}
                     </p>
                   </div>
 
                   {draftParcels.length > 1 ? (
                     <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:items-center">
-                      <span className="text-xs font-semibold text-[#6b7280]">Editing:</span>
+                      <span className="text-xs font-semibold text-[#6b7280]">
+                        {t('wizard.editingLabel')}
+                      </span>
                       <Select value={activeDraftParcelId} onValueChange={setActiveDraftParcelId}>
                         <SelectTrigger
-                          aria-label="Choose which field to edit on the map"
+                          aria-label={t('wizard.chooseFieldToEdit')}
                           className="w-full min-h-11 sm:w-[180px]"
                         >
                           <SelectValue />
@@ -1006,7 +1051,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         <SelectContent>
                           {draftParcels.map((dp, i) => (
                             <SelectItem key={dp.id} value={dp.id}>
-                              {dp.name || `Field ${i + 1}`}
+                              {dp.name || t('wizard.fieldN', { index: i + 1 })}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1039,15 +1084,14 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 />
 
                 <p className="pt-1 text-xs leading-snug text-[#6b7280]">
-                  Use Draw on the map to trace your field, or Location to drop a pin. Changes save
-                  automatically.
+                  {t('wizard.drawOrLocationHint')}
                 </p>
               </div>
 
               <div className="space-y-4">
                 {draftParcels.map((dp, idx) => {
-                  const geom = hasValidGeometryDraft(dp) ? buildParcelGeometry(dp) : null;
-                  const areaHa = computePolygonHa(dp);
+                  const geom = hasValidGeometryDraft(dp) ? buildParcelGeometry(dp, t) : null;
+                  const areaHa = computePolygonHa(dp, t);
 
                   return (
                     <div
@@ -1073,16 +1117,17 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                           )}
                           <div className="min-w-0">
                             <div className="text-xs font-bold text-[#111315]">
-                              Field {idx + 1}: {dp.name || 'Unnamed field'}
+                              {t('wizard.fieldN', { index: idx + 1 })}:{' '}
+                              {dp.name || t('wizard.unnamedField')}
                             </div>
                             <div className="tabular text-xs leading-snug text-[#072f24]">
                               {dp.geometryMethod === 'drawn_polygon'
                                 ? areaHa !== null
-                                  ? `Outline drawn · ${areaHa.toFixed(2)} ha`
-                                  : 'Draw your field on the map to see its size'
+                                  ? t('wizard.outlineDrawn', { area: areaHa.toFixed(2) })
+                                  : t('wizard.drawToSeeSize')
                                 : dp.locationUncertaintyM !== null
-                                  ? `Pin placed · about ${dp.locationUncertaintyM} m off`
-                                  : 'Drop a pin on the map to mark this field'}
+                                  ? t('wizard.pinPlaced', { uncertainty: dp.locationUncertaintyM })
+                                  : t('wizard.dropPinHint')}
                             </div>
                           </div>
                         </div>
@@ -1101,19 +1146,19 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                                   }
                                 }}
                                 className="flex min-h-11 min-w-11 items-center justify-center rounded p-1.5 text-[#6b7280] hover:bg-[#fdeceb] hover:text-[#b42318]"
-                                aria-label={`Remove field ${idx + 1}`}
+                                aria-label={t('wizard.removeFieldAria', { index: idx + 1 })}
                               >
                                 <Trash2 className="h-4 w-4" aria-hidden="true" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>Remove field</TooltipContent>
+                            <TooltipContent>{t('wizard.removeField')}</TooltipContent>
                           </Tooltip>
                         ) : null}
                       </div>
 
                       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
-                          <Label htmlFor={`field-name-${idx}`}>Field name</Label>
+                          <Label htmlFor={`field-name-${idx}`}>{t('wizard.fieldNameLabel')}</Label>
                           <Input
                             id={`field-name-${idx}`}
                             value={dp.name}
@@ -1122,23 +1167,35 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                         </div>
                         {dp.geometryMethod === 'gps_point' ? (
                           <div>
-                            <Label>How sure are you about this spot?</Label>
+                            <Label>{t('wizard.uncertaintyQuestion')}</Label>
                             <SegmentedControl
                               fullWidth
                               className="[&_button]:min-h-11"
-                              ariaLabel="How sure are you about this spot?"
+                              ariaLabel={t('wizard.uncertaintyQuestion')}
                               value={String(dp.locationUncertaintyM ?? 250)}
                               onValueChange={(value) =>
                                 updateParcel(dp.id, { locationUncertaintyM: Number(value) })
                               }
                               options={[
-                                { value: '50', label: 'Small', shortLabel: 'Small' },
-                                { value: '250', label: 'Medium', shortLabel: 'Medium' },
-                                { value: '1000', label: 'Large', shortLabel: 'Large' },
+                                {
+                                  value: '50',
+                                  label: t('wizard.sizeSmall'),
+                                  shortLabel: t('wizard.sizeSmall'),
+                                },
+                                {
+                                  value: '250',
+                                  label: t('wizard.sizeMedium'),
+                                  shortLabel: t('wizard.sizeMedium'),
+                                },
+                                {
+                                  value: '1000',
+                                  label: t('wizard.sizeLarge'),
+                                  shortLabel: t('wizard.sizeLarge'),
+                                },
                               ]}
                             />
                             <p className="mt-1 text-xs leading-snug text-[#6b7280]">
-                              Small is about 50 m, medium about 250 m, large about 1,000 m.
+                              {t('wizard.sizeHelp')}
                             </p>
                           </div>
                         ) : null}
@@ -1158,7 +1215,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={() => goToStep(2)}
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                  <span>Back</span>
+                  <span>{t('wizard.back')}</span>
                 </Button>
                 <Button
                   variant="primary"
@@ -1167,7 +1224,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={() => setConfirming(true)}
                 >
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                  <span>Review before saving</span>
+                  <span>{t('wizard.reviewBeforeSave')}</span>
                 </Button>
               </div>
             </div>
@@ -1176,33 +1233,39 @@ export default function NewFarmWizardPage(): React.JSX.Element {
           {step === 3 && confirming ? (
             <div className="space-y-5 rounded-[12px] border border-[#e5e7eb] bg-white p-4 shadow-xs sm:p-6">
               <div>
-                <Badge variant="Strong">Final check</Badge>
+                <Badge variant="Strong">{t('wizard.finalCheck')}</Badge>
                 <h2 className="mt-2 font-display text-lg font-bold text-[#111315]">
-                  Check your farm before saving
+                  {t('wizard.checkBeforeSaving')}
                 </h2>
-                <p className="mt-1 text-xs leading-snug text-[#4b5563]">
-                  Take a look. Nothing is saved until you tap save.
-                </p>
+                <p className="mt-1 text-xs leading-snug text-[#4b5563]">{t('wizard.takeALook')}</p>
               </div>
               <dl className="grid gap-3 rounded-[10px] border border-[#e5e7eb] bg-[#fafafb] p-4 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-xs font-semibold text-[#6b7280]">Farm name</dt>
-                  <dd className="mt-0.5 text-[#111315]">{farmName || 'Not given'}</dd>
+                  <dt className="text-xs font-semibold text-[#6b7280]">
+                    {t('wizard.farmNameLabel')}
+                  </dt>
+                  <dd className="mt-0.5 text-[#111315]">{farmName || t('wizard.notGiven')}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-semibold text-[#6b7280]">Water supply</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">
+                    {t('wizard.waterSupplyReview')}
+                  </dt>
                   <dd className="mt-0.5 text-[#111315]">{waterSupplyLabel}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-semibold text-[#6b7280]">Fields</dt>
-                  <dd className="mt-0.5 text-[#111315]">{fieldSummary || 'None marked'}</dd>
+                  <dt className="text-xs font-semibold text-[#6b7280]">{t('workspace.fields')}</dt>
+                  <dd className="mt-0.5 text-[#111315]">
+                    {fieldSummary || t('wizard.noneMarked')}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-xs font-semibold text-[#6b7280]">Crops</dt>
-                  <dd className="mt-0.5 text-[#111315]">{cropSummary || 'None chosen'}</dd>
+                  <dt className="text-xs font-semibold text-[#6b7280]">{t('workspace.crops')}</dt>
+                  <dd className="mt-0.5 text-[#111315]">{cropSummary || t('wizard.noneChosen')}</dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-xs font-semibold text-[#6b7280]">Planting trigger</dt>
+                  <dt className="text-xs font-semibold text-[#6b7280]">
+                    {t('wizard.plantingTriggerLabel')}
+                  </dt>
                   <dd className="mt-0.5 text-[#111315]">{triggerLabel}</dd>
                 </div>
               </dl>
@@ -1217,7 +1280,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={() => setConfirming(false)}
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                  <span>Back to editing</span>
+                  <span>{t('wizard.backToEditing')}</span>
                 </Button>
                 <Button
                   variant="primary"
@@ -1227,7 +1290,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onClick={() => void handleFinish()}
                 >
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                  <span>{submitting ? 'Saving your farm...' : 'Save my farm and fields'}</span>
+                  <span>{submitting ? t('wizard.savingFarm') : t('wizard.saveMyFarm')}</span>
                 </Button>
               </div>
             </div>

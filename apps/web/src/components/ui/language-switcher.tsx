@@ -18,11 +18,11 @@ export function LanguageSwitcher({
   compact?: boolean;
   className?: string;
 }): React.JSX.Element {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <SegmentedControl<PreferredLanguage>
-      ariaLabel="Interface language"
+      ariaLabel={t('nav.interfaceLanguage')}
       size={compact ? 'sm' : 'md'}
       value={language}
       onValueChange={setLanguage}

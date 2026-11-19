@@ -1,8 +1,14 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { useLanguage } from '../../i18n/language-provider';
+
 /** Global footer. Quiet, informational, and safe to render on every route. */
 export function SiteFooter() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-surface-border bg-surface-card">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-6 lg:px-8">
@@ -11,24 +17,20 @@ export function SiteFooter() {
             <Image
               src="/brand/logo-horizontal.svg"
               alt="DalaShift"
-              width={117}
-              height={30}
+              width={391}
+              height={100}
               className="h-6 w-auto"
             />
-            <span className="text-sm text-text-primary">
-              Climate-informed crop rotation decisions for rain-fed farmers.
-            </span>
+            <span className="text-sm text-text-primary">{t('footer.taglineShort')}</span>
           </div>
           <Link
             href="/methodology"
             className="text-sm font-medium text-brand-primary hover:underline"
           >
-            Methodology and data sources
+            {t('footer.methodologyLink')}
           </Link>
         </div>
-        <p className="text-xs leading-relaxed text-text-secondary">
-          DalaShift uses public NASA data. It is not endorsed by or affiliated with NASA.
-        </p>
+        <p className="text-xs leading-relaxed text-text-secondary">{t('footer.nasaNotice')}</p>
       </div>
     </footer>
   );
