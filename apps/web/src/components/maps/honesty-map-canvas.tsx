@@ -5,7 +5,6 @@ import { searchKanoPlaces } from '@dalashift/shared/geo';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
 import { area, length } from '@turf/turf';
 import {
-  ChevronDown,
   Layers3,
   LocateFixed,
   MapPin,
@@ -882,7 +881,7 @@ export function HonestyMapCanvas({
   return (
     <div
       className={cn(
-        'relative flex w-full flex-col justify-between overflow-hidden rounded-2xl border border-[#e5e7eb] bg-[#111827] shadow-sm select-none',
+        'relative left-1/2 flex w-screen -translate-x-1/2 flex-col justify-between overflow-hidden border-x-0 border-[#e5e7eb] bg-[#111827] shadow-sm select-none sm:left-0 sm:w-full sm:translate-x-0 sm:rounded-2xl sm:border-x',
         heightClass,
         className,
       )}
@@ -936,7 +935,6 @@ export function HonestyMapCanvas({
                 {activeParcel.areaHa.toFixed(2)} ha
               </span>
             ) : null}
-            <ChevronDown className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
           </div>
         </div>
       ) : null}

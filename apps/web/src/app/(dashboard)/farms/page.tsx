@@ -286,7 +286,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                 parcels={entries.map((entry) => entry.parcel)}
                 selectedParcelId={selectedParcelId}
                 onSelectParcel={setSelectedParcelId}
-                heightClass="h-[460px]"
+                heightClass="h-[62vh] min-h-[420px] max-h-[560px] sm:h-[460px] sm:min-h-0 sm:max-h-none"
               />
             </div>
 
