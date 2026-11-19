@@ -150,3 +150,12 @@ textarea:focus-visible,
   border-radius: 4px !important;
   filter: invert(1);
 }
+
+/* The attribution always starts collapsed. Tapping the info button is an
+   explicit opt-in and reveals it for that session. */
+.maplibregl-ctrl-attrib-inner {
+  display: none;
+}
+.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {
+  display: block;
+}

@@ -947,7 +947,7 @@ export function RegisteredFarmWorkspace({
                     setDrawnGeometry(geometry);
                     setIsDrawing(false);
                   }}
-                  heightClass="h-[320px] sm:h-[420px] lg:h-[460px]"
+                  heightClass="h-[62vh] min-h-[420px] max-h-[560px] sm:h-[420px] sm:min-h-0 sm:max-h-none lg:h-[460px]"
                 />
                 <div className="flex flex-wrap gap-2">
                   {farmData.parcels.map((parcel) => (

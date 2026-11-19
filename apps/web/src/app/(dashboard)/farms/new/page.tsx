@@ -1080,7 +1080,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                   onCoordinateCapture={handleMapCoordinateCapture}
                   interactiveDraw
                   onGeometryChange={handleDrawnGeometry}
-                  heightClass="h-[300px] sm:h-[380px] lg:h-[420px]"
+                  heightClass="h-[62vh] min-h-[420px] max-h-[560px] sm:h-[420px] sm:min-h-0 sm:max-h-none lg:h-[480px]"
                 />
 
                 <p className="pt-1 text-xs leading-snug text-[#6b7280]">
