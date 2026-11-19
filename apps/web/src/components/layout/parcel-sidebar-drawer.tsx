@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { z } from 'zod';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
@@ -25,13 +26,22 @@ export interface ParcelSidebarDrawerProps {
   readonly className?: string;
 }
 
+type LoadErrorKey = 'drawer.loadFarmsError' | 'drawer.readFarmsError';
+
+class DrawerLoadError extends Error {
+  constructor(readonly key: LoadErrorKey) {
+    super(key);
+  }
+}
+
 export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [collapsed, setCollapsed] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
   const [loading, setLoading] = React.useState(true);
-  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [loadErrorKey, setLoadErrorKey] = React.useState<LoadErrorKey | null>(null);
   const [isOffline, setIsOffline] = React.useState(false);
   const [reloadKey, setReloadKey] = React.useState(0);
 
@@ -39,19 +49,17 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
     let active = true;
     async function loadFarms() {
       setLoading(true);
-      setLoadError(null);
+      setLoadErrorKey(null);
       try {
         const res = await fetch('/api/farms', { cache: 'no-store' });
-        if (!res.ok) throw new Error('Your farms could not be loaded right now.');
+        if (!res.ok) throw new DrawerLoadError('drawer.loadFarmsError');
         const payload: unknown = await res.json();
         const parsed = farmListSchema.safeParse(payload);
-        if (!parsed.success) throw new Error('Your farms could not be read right now.');
+        if (!parsed.success) throw new DrawerLoadError('drawer.readFarmsError');
         if (active) setFarms(parsed.data.farms);
       } catch (error) {
         if (active) {
-          setLoadError(
-            error instanceof Error ? error.message : 'Your farms could not be loaded right now.',
-          );
+          setLoadErrorKey(error instanceof DrawerLoadError ? error.key : 'drawer.loadFarmsError');
         }
       } finally {
         if (active) setLoading(false);
@@ -89,13 +97,13 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
               <button
                 type="button"
                 onClick={() => setCollapsed(false)}
-                aria-label="Expand farms drawer"
+                aria-label={t('drawer.expand')}
                 className="flex size-8 items-center justify-center rounded-md text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827] cursor-pointer"
               >
                 <ChevronRight className="size-4" />
               </button>
             </TooltipTrigger>
-            <TooltipContent>Expand farms drawer</TooltipContent>
+            <TooltipContent>{t('drawer.expand')}</TooltipContent>
           </Tooltip>
         </div>
       </TooltipProvider>
@@ -105,7 +113,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
   return (
     <TooltipProvider>
       <aside
-        aria-label="Farms drawer"
+        aria-label={t('drawer.label')}
         className={cn(
           'sticky top-0 hidden h-screen w-[270px] shrink-0 flex-col justify-between border-r border-[#e5e7eb] bg-white xl:flex print:hidden',
           className,
@@ -115,11 +123,11 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           {/* Drawer Header */}
           <div className="flex items-start justify-between gap-2 border-b border-[#f3f4f6] pb-3">
             <div>
-              <h2 className="text-sm font-bold text-[#111827]">Your farms</h2>
+              <h2 className="text-sm font-bold text-[#111827]">{t('drawer.title')}</h2>
               <p className="text-xs text-[#6b7280]">
                 {farms.length > 0
-                  ? `${farms.length} farms · ${totalArea.toFixed(1)} ha`
-                  : 'No fields yet'}
+                  ? t('drawer.farmCount', { count: farms.length, area: totalArea.toFixed(1) })
+                  : t('drawer.noFieldsYet')}
               </p>
             </div>
             <Tooltip>
@@ -127,46 +135,45 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                 <button
                   type="button"
                   onClick={() => setCollapsed(true)}
-                  aria-label="Collapse drawer"
+                  aria-label={t('drawer.collapse')}
                   className="flex size-7 items-center justify-center rounded-md text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#111827] cursor-pointer"
                 >
                   <ChevronLeft className="size-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Collapse drawer</TooltipContent>
+              <TooltipContent>{t('drawer.collapse')}</TooltipContent>
             </Tooltip>
           </div>
 
           {isOffline ? (
             <div
               role="status"
-              className="mt-3 rounded-md border border-[#b9770e]/30 bg-[#fdf6e5] px-2.5 py-2 text-[11px] text-[#8e5636]"
+              className="mt-3 rounded-md border border-[#b9770e]/30 bg-[#fdf6e5] px-2.5 py-2 text-xs text-[#8e5636]"
             >
-              You are offline. Showing the farms saved on this device. New changes may not appear
-              until you are online.
+              {t('drawer.offline')}
             </div>
           ) : null}
 
           {loading ? (
-            <div className="mt-3 space-y-2" role="status" aria-label="Loading your farms">
+            <div className="mt-3 space-y-2" role="status" aria-label={t('drawer.loadingAria')}>
               <Skeleton className="h-8 w-full" />
               <Skeleton className="h-9 w-full" />
               <Skeleton className="h-9 w-full" />
               <Skeleton className="h-9 w-full" />
             </div>
-          ) : loadError ? (
+          ) : loadErrorKey ? (
             <div
               role="alert"
-              className="mt-3 rounded-lg border border-[#f5c2c0] bg-[#fdeceb] p-3 text-[11px] text-[#b42318]"
+              className="mt-3 rounded-lg border border-[#f5c2c0] bg-[#fdeceb] p-3 text-xs text-[#b42318]"
             >
-              <p className="font-semibold">{loadError}</p>
-              <p className="mt-1">Your other farm details are safe.</p>
+              <p className="font-semibold">{t(loadErrorKey)}</p>
+              <p className="mt-1">{t('drawer.otherFarmsSafe')}</p>
               <button
                 type="button"
                 onClick={() => setReloadKey((key) => key + 1)}
                 className="mt-2 font-semibold underline underline-offset-2 cursor-pointer"
               >
-                Try again
+                {t('state.retry')}
               </button>
             </div>
           ) : farms.length > 0 ? (
@@ -178,8 +185,8 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search farms..."
-                  aria-label="Search farms"
+                  placeholder={t('drawer.searchPlaceholder')}
+                  aria-label={t('drawer.searchFarms')}
                   className="h-8 w-full rounded-md border border-[#e5e7eb] bg-[#fafafb] pr-3 pl-8 text-xs text-[#111827] placeholder:text-[#9ca3af] outline-none focus:border-[#0a4232]"
                 />
               </div>
@@ -203,7 +210,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
                         <MapPin className="size-3.5 shrink-0 text-[#0a4232]" />
                         <span className="truncate">{farm.name}</span>
                         {farm.area_ha && (
-                          <span className="ml-auto text-[10px] text-[#6b7280]">
+                          <span className="ml-auto text-xs text-[#6b7280]">
                             {farm.area_ha.toFixed(1)} ha
                           </span>
                         )}
@@ -219,14 +226,14 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
               <div className="mx-auto flex size-8 items-center justify-center rounded-full bg-[#eaf2ee] text-[#0a4232]">
                 <FolderPlus className="size-4" />
               </div>
-              <h3 className="mt-2 text-xs font-semibold text-[#111827]">No fields yet</h3>
-              <p className="mt-1 text-[11px] text-[#6b7280]">
-                Register your land coordinates to view personalized moisture guidance.
-              </p>
+              <h3 className="mt-2 text-xs font-semibold text-[#111827]">
+                {t('drawer.noFieldsYet')}
+              </h3>
+              <p className="mt-1 text-xs text-[#6b7280]">{t('drawer.emptyBody')}</p>
               <Link href="/farms/new" className="mt-3 inline-block">
                 <Button variant="primary" size="sm" className="h-7 text-xs">
                   <Plus className="mr-1 size-3" />
-                  Add a farm
+                  {t('farms.addFarm')}
                 </Button>
               </Link>
             </div>
@@ -237,7 +244,7 @@ export function ParcelSidebarDrawer({ className }: ParcelSidebarDrawerProps) {
           <Link href="/farms/new">
             <Button variant="outline" size="sm" className="w-full text-xs">
               <Plus className="mr-1 size-3.5" />
-              Add New Farm
+              {t('drawer.addNewFarm')}
             </Button>
           </Link>
         </div>

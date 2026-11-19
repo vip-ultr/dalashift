@@ -22,7 +22,7 @@ export const SelectTrigger = forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-11 w-full items-center justify-between gap-2 rounded-[10px] border border-border bg-surface-raised px-3 text-[16px] leading-5 text-ink',
+      'flex h-10 w-full items-center justify-between gap-2 rounded-[10px] border border-border bg-surface-raised px-2.5 text-sm leading-5 text-ink sm:h-11 sm:px-3 sm:text-[16px]',
       'transition-colors duration-150 motion-reduce:transition-none hover:border-[#d1d5db] data-[state=open]:border-[#0a4232]',
       'data-[placeholder]:text-ink-faint disabled:cursor-not-allowed disabled:opacity-50',
       focusRing,
@@ -47,7 +47,7 @@ export const SelectContent = forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-50 max-h-[min(24rem,var(--radix-select-content-available-height))] min-w-[8rem] overflow-hidden rounded-[10px] border border-border bg-surface-raised text-ink',
+        'relative z-50 max-h-[min(18rem,var(--radix-select-content-available-height))] min-w-[8rem] overflow-hidden rounded-[10px] border border-border bg-surface-raised text-ink sm:max-h-[min(24rem,var(--radix-select-content-available-height))]',
         overlayShadow,
         position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]',
         className,
@@ -57,7 +57,7 @@ export const SelectContent = forwardRef<
       <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center text-ink-muted">
         <ChevronUp className="size-4" aria-hidden="true" />
       </SelectPrimitive.ScrollUpButton>
-      <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
+      <SelectPrimitive.Viewport className="p-0.5 sm:p-1">{children}</SelectPrimitive.Viewport>
       <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center text-ink-muted">
         <ChevronDown className="size-4" aria-hidden="true" />
       </SelectPrimitive.ScrollDownButton>
@@ -73,7 +73,7 @@ export const SelectItem = forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex min-h-11 w-full cursor-pointer select-none items-center rounded-md py-2 pl-8 pr-2 text-[16px] leading-5 text-ink',
+      'relative flex min-h-10 w-full cursor-pointer select-none items-center rounded-md py-1.5 pl-8 pr-2 text-sm leading-5 text-ink sm:min-h-11 sm:py-2 sm:text-[16px]',
       'outline-none data-[highlighted]:bg-brand-primary-tint data-[highlighted]:text-brand-primary',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,

@@ -152,3 +152,18 @@ export const PLANTING_TRIGGER_TITLES: Readonly<
     ha: 'Gyara gona da shuka da wuri bayan ruwan farko ya jiqa kasa',
   },
 };
+
+/**
+ * Planting-trigger title in the active interface language. The dictionary
+ * above carries both wordings, so callers must not reach into `.en`
+ * themselves or the title would stay English after switching to Hausa.
+ */
+export function plantingTriggerTitle(
+  rule: string | null | undefined,
+  language: 'en' | 'ha',
+  fallback: string,
+): string {
+  if (!rule) return fallback;
+  const entry = PLANTING_TRIGGER_TITLES[rule as PlantingTrigger];
+  return entry ? entry[language] : fallback;
+}

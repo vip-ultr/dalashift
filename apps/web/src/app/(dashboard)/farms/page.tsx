@@ -16,7 +16,7 @@ import { HonestyMapCanvas } from '../../../components/maps/honesty-map-canvas';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { useLanguage } from '../../../i18n/language-provider';
-import { PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
+import { plantingTriggerTitle } from '../../../lib/utilities/format';
 
 const numericValue = z.union([z.number(), z.string().transform(Number)]).nullable();
 
@@ -55,24 +55,31 @@ interface FarmParcelEntry {
   readonly parcel: Parcel;
 }
 
-async function readJson<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
+type Translate = (id: string, vars?: Record<string, string | number>) => string;
+
+async function readJson<T>(t: Translate, response: Response, schema: z.ZodType<T>): Promise<T> {
   let payload: unknown;
   try {
     payload = await response.json();
   } catch {
-    throw new Error('The server returned an invalid response.');
+    throw new Error(t('state.invalidResponse'));
   }
   if (!response.ok) {
     const parsed = errorSchema.safeParse(payload);
-    throw new Error(parsed.success ? parsed.data.error : `Request failed (${response.status}).`);
+    throw new Error(
+      parsed.success ? parsed.data.error : t('state.requestFailed', { status: response.status }),
+    );
   }
   const parsed = schema.safeParse(payload);
-  if (!parsed.success) throw new Error('The server returned data in an unexpected format.');
+  if (!parsed.success) throw new Error(t('farms.unexpectedData'));
   return parsed.data;
 }
 
 export default function FarmsOverviewPage(): React.JSX.Element {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tRef = React.useRef(t);
+  tRef.current = t;
+  const tr = React.useCallback<Translate>((id, vars) => tRef.current(id, vars), []);
   const [farms, setFarms] = React.useState<z.infer<typeof farmListSchema>['farms']>([]);
   const [entries, setEntries] = React.useState<FarmParcelEntry[]>([]);
   const [missingSources, setMissingSources] = React.useState<string[]>([]);
@@ -81,13 +88,12 @@ export default function FarmsOverviewPage(): React.JSX.Element {
     'loading',
   );
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [online, setOnline] = React.useState(() =>
-    typeof navigator === 'undefined' ? true : navigator.onLine,
-  );
+  const [online, setOnline] = React.useState(true);
   const activeRef = React.useRef(true);
 
   React.useEffect(() => {
     activeRef.current = true;
+    setOnline(typeof navigator === 'undefined' || navigator.onLine);
     const goOnline = () => setOnline(true);
     const goOffline = () => setOnline(false);
     window.addEventListener('online', goOnline);
@@ -107,14 +113,14 @@ export default function FarmsOverviewPage(): React.JSX.Element {
         if (activeRef.current) setState('unauthenticated');
         return;
       }
-      const farmList = await readJson(farmsResponse, farmListSchema);
+      const farmList = await readJson(tr, farmsResponse, farmListSchema);
 
       const details = await Promise.all(
         farmList.farms.map(async (farm) => {
           try {
             const response = await fetch(`/api/farms/${farm.id}`, { cache: 'no-store' });
             if (!response.ok) return { farm, detail: null };
-            return { farm, detail: await readJson(response, farmDetailSchema) };
+            return { farm, detail: await readJson(tr, response, farmDetailSchema) };
           } catch {
             return { farm, detail: null };
           }
@@ -159,11 +165,11 @@ export default function FarmsOverviewPage(): React.JSX.Element {
       }
     } catch (error) {
       if (activeRef.current) {
-        setErrorMessage(error instanceof Error ? error.message : 'Unable to load your farms.');
+        setErrorMessage(error instanceof Error ? error.message : tr('farms.loadError'));
         setState('error');
       }
     }
-  }, []);
+  }, [tr]);
 
   React.useEffect(() => {
     void load();
@@ -173,15 +179,17 @@ export default function FarmsOverviewPage(): React.JSX.Element {
 
   const viewState: DataViewState = !online
     ? 'offline'
-    : state === 'error'
-      ? entries.length > 0
-        ? 'stale'
-        : 'error'
-      : state === 'ready' && missingSources.length > 0
-        ? 'partial'
-        : state === 'ready' && entries.length === 0
-          ? 'empty'
-          : 'ready';
+    : state === 'loading'
+      ? 'loading'
+      : state === 'error'
+        ? entries.length > 0
+          ? 'stale'
+          : 'error'
+        : state === 'ready' && missingSources.length > 0
+          ? 'partial'
+          : state === 'ready' && entries.length === 0
+            ? 'empty'
+            : 'ready';
 
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
@@ -191,12 +199,10 @@ export default function FarmsOverviewPage(): React.JSX.Element {
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
               {t('nav.myFields')}
             </h1>
-            <p className="text-sm text-[#4b5563]">
-              Select a field on the map or in the list to open its farm workspace and reports.
-            </p>
+            <p className="text-sm text-[#4b5563]">{t('farms.selectFieldHint')}</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
-            <Badge variant="Strong">2026 Wet Season</Badge>
+            <Badge variant="Strong">{t('farms.wetSeason')}</Badge>
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
@@ -216,12 +222,8 @@ export default function FarmsOverviewPage(): React.JSX.Element {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-display text-lg font-bold text-[#111315]">{t('farms.title')}</h2>
-              <p className="mt-1 text-sm text-[#4b5563]">
-                Loaded privately from your account. No demonstration farms are shown.
-              </p>
-              <p className="mt-1 text-sm text-[#4b5563]">
-                Choose a farm, then open one of its fields.
-              </p>
+              <p className="mt-1 text-sm text-[#4b5563]">{t('farms.loadedPrivately')}</p>
+              <p className="mt-1 text-sm text-[#4b5563]">{t('farms.chooseFarmThenField')}</p>
             </div>
             {state === 'unauthenticated' ? (
               <Link href="/login">
@@ -324,8 +326,10 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                               </div>
                               <div className="tabular text-xs text-[#6b7280]">
                                 {entry.parcel.geometryMethod === 'drawn_polygon'
-                                  ? `${entry.parcel.areaHa.toFixed(2)} ha · drawn polygon`
-                                  : `GPS point (±${entry.parcel.locationUncertaintyM ?? 500} m)`}
+                                  ? t('farms.parcelDrawn', { area: entry.parcel.areaHa.toFixed(2) })
+                                  : t('farms.parcelGps', {
+                                      uncertainty: entry.parcel.locationUncertaintyM ?? 500,
+                                    })}
                               </div>
                             </div>
                           </button>
@@ -338,14 +342,11 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                         {t('dashboard.plantingTrigger')}:
                       </div>
                       <p className="mt-0.5 text-[#4b5563]">
-                        {selectedEntry.plantingTrigger &&
-                        PLANTING_TRIGGER_TITLES[
-                          selectedEntry.plantingTrigger as keyof typeof PLANTING_TRIGGER_TITLES
-                        ]
-                          ? PLANTING_TRIGGER_TITLES[
-                              selectedEntry.plantingTrigger as keyof typeof PLANTING_TRIGGER_TITLES
-                            ].en
-                          : 'Not recorded'}
+                        {plantingTriggerTitle(
+                          selectedEntry.plantingTrigger,
+                          language,
+                          t('farms.notRecorded'),
+                        )}
                       </p>
                     </div>
                   </div>
@@ -360,7 +361,7 @@ export default function FarmsOverviewPage(): React.JSX.Element {
                     <Link href={`/farms/${selectedEntry.farmId}/reports`}>
                       <Button variant="secondary" size="sm" className="w-full">
                         <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>Open field report</span>
+                        <span>{t('farms.openFieldReport')}</span>
                       </Button>
                     </Link>
                   </div>

@@ -6,8 +6,8 @@ import Link from 'next/link';
 import * as React from 'react';
 import { z } from 'zod';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { formatCropWithHausa } from '../../lib/utilities/format';
-import { usePreferredLanguage } from '../../hooks/use-preferred-language';
 import { Button } from '../ui/button';
 
 const limitationSchema = z.object({ statement: z.string() });
@@ -72,48 +72,58 @@ const catalogSchema = z.object({
   crops: z.array(z.object({ id: z.string(), code: z.string(), name: z.string() })),
 });
 
-const KIND_LABELS: Readonly<Record<string, string>> = {
-  farm_summary: 'Farm summary',
-  seasonal: 'Seasonal outlook',
-  rotation_plan: 'Rotation plan',
-};
+type Translator = (id: string, vars?: Record<string, string | number>) => string;
 
-const CROP_STATUS_LABELS: Readonly<Record<string, string>> = {
-  current: 'Current',
-  previous: 'Previous',
-  planned: 'Planned',
-};
+function kindLabels(t: Translator): Readonly<Record<string, string>> {
+  return {
+    farm_summary: t('report.kindFarmSummary'),
+    seasonal: t('report.kindSeasonal'),
+    rotation_plan: t('report.kindRotationPlan'),
+  };
+}
 
-const SEASON_LABELS: Readonly<Record<string, string>> = {
-  rainy: 'Rainy',
-  dry: 'Dry',
-  harmattan: 'Harmattan',
-  year_round: 'Year round',
-  unknown: 'Not recorded',
-};
+function cropStatusLabels(t: Translator): Readonly<Record<string, string>> {
+  return {
+    current: t('workspace.statusCurrent'),
+    previous: t('workspace.statusPrevious'),
+    planned: t('workspace.statusPlanned'),
+  };
+}
 
-const METHOD_LABELS: Readonly<Record<string, string>> = {
-  gps_point: 'GPS point',
-  drawn_polygon: 'Drawn boundary',
-};
+function seasonLabels(t: Translator): Readonly<Record<string, string>> {
+  return {
+    rainy: t('workspace.seasonRainy'),
+    dry: t('workspace.seasonDry'),
+    harmattan: t('workspace.seasonHarmattan'),
+    year_round: t('workspace.seasonYearRound'),
+    unknown: t('farms.notRecorded'),
+  };
+}
+
+function methodLabels(t: Translator): Readonly<Record<string, string>> {
+  return {
+    gps_point: t('report.methodGpsPoint'),
+    drawn_polygon: t('report.methodDrawnBoundary'),
+  };
+}
 
 function formatGeneratedDate(iso: string): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? iso.slice(0, 10) : date.toLocaleDateString();
 }
 
-function goalLabels(report: ReportPayload): string[] {
+function goalLabels(report: ReportPayload, t: Translator): string[] {
   return (report.priorities?.goals ?? []).map(
-    (goal) => FARMER_GOAL_LABELS[goal as keyof typeof FARMER_GOAL_LABELS] ?? 'A stated goal',
+    (goal) => FARMER_GOAL_LABELS[goal as keyof typeof FARMER_GOAL_LABELS] ?? t('report.statedGoal'),
   );
 }
 
-function fieldAssessmentNotes(parcelId: string, report: ReportPayload): string[] {
+function fieldAssessmentNotes(parcelId: string, report: ReportPayload, t: Translator): string[] {
   const notes: string[] = [];
   const trigger = report.plantingTrigger;
   if (trigger && (trigger.parcelId === null || trigger.parcelId === parcelId)) {
-    notes.push(`When to sow: ${trigger.condition}`);
-    notes.push(`What this means: ${trigger.riskProfile}`);
+    notes.push(t('report.whenToSow', { condition: trigger.condition }));
+    notes.push(t('report.whatThisMeans', { detail: trigger.riskProfile }));
   }
   const outlook = report.seasonalOutlook;
   if (outlook && (outlook.parcelId === null || outlook.parcelId === parcelId)) {
@@ -143,7 +153,7 @@ function collectLimitations(report: ReportPayload | null): string[] {
 }
 
 export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): React.JSX.Element {
-  const { language } = usePreferredLanguage();
+  const { language, t } = useLanguage();
   const [report, setReport] = React.useState<ReportPayload | null>(null);
   const [cropNames, setCropNames] = React.useState<Record<string, { name: string; code: string }>>(
     {},
@@ -188,23 +198,23 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
       try {
         payload = await response.json();
       } catch {
-        throw new Error('The server returned an invalid response.');
+        throw new Error(t('state.invalidResponse'));
       }
 
       if (!response.ok) {
         const parsedError = errorResponseSchema.safeParse(payload);
         throw new Error(
-          parsedError.success ? parsedError.data.error : `Request failed (${response.status}).`,
+          parsedError.success
+            ? parsedError.data.error
+            : t('state.requestFailed', { status: response.status }),
         );
       }
 
       const parsed = reportResponseSchema.safeParse(payload);
-      if (!parsed.success) throw new Error('The server returned an incomplete report.');
+      if (!parsed.success) throw new Error(t('report.errIncomplete'));
       setReport(parsed.data.report.payload);
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to generate this report right now.',
-      );
+      setErrorMessage(error instanceof Error ? error.message : t('report.errGenerate'));
     } finally {
       setLoading(false);
     }
@@ -217,17 +227,17 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
       <div className="mx-auto max-w-4xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e5e7eb] bg-white p-4 print:hidden">
           <Link href={`/farms/${farmId}`} className="text-sm font-medium text-[#0a4232] underline">
-            Back to farm
+            {t('report.backToFarm')}
           </Link>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={generateReport} disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : null}
-              {loading ? 'Generating…' : 'Generate report'}
+              {loading ? t('report.generating') : t('reports.generate')}
             </Button>
             {report ? (
               <Button type="button" onClick={() => window.print()}>
                 <Printer className="size-4" aria-hidden="true" />
-                Print / Save PDF
+                {t('report.printSave')}
               </Button>
             ) : null}
           </div>
@@ -243,7 +253,7 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
               {errorMessage}{' '}
               {errorMessage.includes('Authentication') ? (
                 <Link href="/login" className="font-medium underline">
-                  Sign in
+                  {t('nav.signIn')}
                 </Link>
               ) : null}
             </span>
@@ -258,30 +268,34 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
                   DalaShift
                 </span>
                 <span className="text-xs text-[#6b7280]">
-                  {KIND_LABELS[report.kind] ?? 'Field report'}
+                  {kindLabels(t)[report.kind] ?? t('report.kindFieldReport')}
                 </span>
               </div>
               <h1 className="mt-3 font-display text-2xl font-bold">{report.farm.name}</h1>
               <p className="mt-1 text-sm text-[#4b5563]">
-                {report.farm.totalAreaHa.toFixed(2)} ha total · Generated{' '}
-                {formatGeneratedDate(report.generatedAt)}
+                {t('report.headerLine', {
+                  area: report.farm.totalAreaHa.toFixed(2),
+                  date: formatGeneratedDate(report.generatedAt),
+                })}
               </p>
               <p className="mt-1 text-xs text-[#6b7280]">
-                Period: {report.periodStart ?? 'Not specified'} to{' '}
-                {report.periodEnd ?? 'Not specified'}
+                {t('report.periodLine', {
+                  start: report.periodStart ?? t('report.notSpecified'),
+                  end: report.periodEnd ?? t('report.notSpecified'),
+                })}
               </p>
-              {goalLabels(report).length > 0 ? (
+              {goalLabels(report, t).length > 0 ? (
                 <p className="mt-1 text-xs text-[#6b7280]">
-                  What matters here: {goalLabels(report).join(', ')}
+                  {t('report.whatMatters', { goals: goalLabels(report, t).join(', ') })}
                 </p>
               ) : null}
             </header>
 
             <section>
-              <h2 className="font-semibold">Fields</h2>
+              <h2 className="font-semibold">{t('workspace.fields')}</h2>
               <ul className="mt-2 divide-y divide-[#e5e7eb]">
                 {report.parcels.map((parcel) => {
-                  const notes = fieldAssessmentNotes(parcel.id, report);
+                  const notes = fieldAssessmentNotes(parcel.id, report, t);
                   return (
                     <li key={parcel.id} className="break-inside-avoid py-3 text-sm">
                       <div className="flex flex-wrap justify-between gap-2">
@@ -289,12 +303,15 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
                         <span className="text-[#4b5563]">
                           {parcel.areaHa > 0
                             ? `${parcel.areaHa.toFixed(2)} ha`
-                            : `GPS point, ±${parcel.locationUncertaintyM ?? 500} m`}
-                          {' · Coordinates redacted'}
+                            : t('workspace.gpsPointChip', {
+                                uncertainty: parcel.locationUncertaintyM ?? 500,
+                              })}
+                          {' · '}
+                          {t('report.coordinatesRedacted')}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-[#6b7280]">
-                        {METHOD_LABELS[parcel.geometryMethod] ?? 'Location recorded'}
+                        {methodLabels(t)[parcel.geometryMethod] ?? t('report.locationRecorded')}
                       </p>
                       {notes.length > 0 ? (
                         <ul className="mt-2 list-disc space-y-1 pl-5 text-[#4b5563]">
@@ -303,10 +320,7 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
                           ))}
                         </ul>
                       ) : (
-                        <p className="mt-2 text-[#4b5563]">
-                          No field assessment was prepared. Review this field with the farmer before
-                          deciding.
-                        </p>
+                        <p className="mt-2 text-[#4b5563]">{t('report.noFieldAssessment')}</p>
                       )}
                     </li>
                   );
@@ -315,30 +329,30 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
             </section>
 
             <section>
-              <h2 className="font-semibold">Farmer-supplied crop records</h2>
+              <h2 className="font-semibold">{t('report.cropRecordsTitle')}</h2>
               {report.crops.length > 0 ? (
                 <ul className="mt-2 space-y-1 text-sm text-[#4b5563]">
                   {report.crops.map((crop, index) => {
                     const catalogCrop = cropNames[crop.cropId];
                     const label = catalogCrop
                       ? formatCropWithHausa(catalogCrop.code, language === 'ha')
-                      : 'Uncatalogued crop';
-                    const status = CROP_STATUS_LABELS[crop.status] ?? 'Recorded';
-                    const season = SEASON_LABELS[crop.season] ?? 'Not recorded';
+                      : t('report.uncataloguedCrop');
+                    const status = cropStatusLabels(t)[crop.status] ?? t('report.recorded');
+                    const season = seasonLabels(t)[crop.season] ?? t('farms.notRecorded');
                     return (
                       <li key={`${crop.cropId}-${index}`}>
-                        {label}: {status}, {season} season
+                        {t('report.cropLine', { label, status, season })}
                       </li>
                     );
                   })}
                 </ul>
               ) : (
-                <p className="mt-2 text-sm text-[#4b5563]">No crop records are available.</p>
+                <p className="mt-2 text-sm text-[#4b5563]">{t('report.noCropRecords')}</p>
               )}
             </section>
 
             <section>
-              <h2 className="font-semibold">What the data cannot tell us</h2>
+              <h2 className="font-semibold">{t('workspace.dataLimits')}</h2>
               {limitations.length > 0 ? (
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[#4b5563]">
                   {limitations.map((statement, index) => (
@@ -346,15 +360,12 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
                   ))}
                 </ul>
               ) : (
-                <p className="mt-2 text-sm text-[#4b5563]">
-                  No specific gaps were recorded for this report. Check local conditions with the
-                  farmer before deciding.
-                </p>
+                <p className="mt-2 text-sm text-[#4b5563]">{t('report.noGaps')}</p>
               )}
             </section>
 
             <footer className="border-t-2 border-[#111315] pt-4 text-xs leading-relaxed text-[#4b5563]">
-              <p className="font-semibold text-[#111315]">Sources used in this report</p>
+              <p className="font-semibold text-[#111315]">{t('report.sourcesTitle')}</p>
               {report.attributions.length > 0 ? (
                 <ul className="mt-2 space-y-3">
                   {report.attributions.map((source) => (
@@ -367,15 +378,14 @@ export function RegisteredFarmReport({ farmId }: { readonly farmId: string }): R
                   ))}
                 </ul>
               ) : (
-                <p className="mt-2">No external data source was used in this report.</p>
+                <p className="mt-2">{t('report.noSources')}</p>
               )}
               <p className="mt-4 border-t border-[#e5e7eb] pt-3">{report.disclaimer}</p>
             </footer>
           </article>
         ) : (
           <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 text-sm text-[#4b5563]">
-            Generate a report to load this farm&apos;s saved information and data-source
-            attributions. Exact parcel coordinates are excluded.
+            {t('report.emptyNote')}
           </section>
         )}
       </div>

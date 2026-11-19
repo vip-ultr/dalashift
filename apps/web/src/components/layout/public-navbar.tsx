@@ -30,8 +30,8 @@ export function PublicNavbar() {
           <Image
             src="/brand/logo-horizontal.svg"
             alt="DalaShift"
-            width={140}
-            height={32}
+            width={391}
+            height={100}
             priority
             className="h-8 w-auto"
           />
@@ -77,7 +77,7 @@ export function PublicNavbar() {
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             className="flex size-10 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#111827] transition-colors hover:bg-[#f9fafb] active:bg-[#f3f4f6] cursor-pointer"
-            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-label={mobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}

@@ -51,9 +51,21 @@ export function DimensionThresholdRow({
   const StatusIcon = meta.Icon;
 
   const hasRange = dimension.threshold.min !== null || dimension.threshold.max !== null;
+  const minText =
+    dimension.threshold.min !== null
+      ? formatMetricValue(dimension.threshold.min, 1)
+      : t('threshold.any');
+  const maxText =
+    dimension.threshold.max !== null
+      ? formatMetricValue(dimension.threshold.max, 1)
+      : t('threshold.any');
   const rangeText = hasRange
-    ? `${dimension.threshold.min !== null ? formatMetricValue(dimension.threshold.min, 1) : 'any'} to ${dimension.threshold.max !== null ? formatMetricValue(dimension.threshold.max, 1) : 'any'} ${dimension.unit ?? ''}`.trim()
-    : 'Qualitative check';
+    ? t('threshold.rangeTemplate', {
+        min: minText,
+        max: maxText,
+        unit: (dimension.unit ?? '').trim(),
+      }).trim()
+    : t('threshold.qualitative');
 
   return (
     <div
@@ -72,18 +84,18 @@ export function DimensionThresholdRow({
 
       <div className="mt-2 grid grid-cols-2 gap-2 rounded-md bg-surface-raised px-2.5 py-1.5 tabular">
         <div>
-          <span className="block text-[10px] tracking-wide text-ink-muted uppercase">
-            Observed / Modelled
+          <span className="block text-xs tracking-wide text-ink-muted uppercase">
+            {t('threshold.observed')}
           </span>
           <span className="font-semibold text-info">
             {dimension.value !== null
               ? `${formatMetricValue(dimension.value, 1)} ${dimension.unit ?? ''}`.trim()
-              : 'n/a'}
+              : t('state.na')}
           </span>
         </div>
         <div>
-          <span className="block text-[10px] tracking-wide text-ink-muted uppercase">
-            Cited Requirement
+          <span className="block text-xs tracking-wide text-ink-muted uppercase">
+            {t('threshold.cited')}
           </span>
           <span className="font-semibold text-ink">{rangeText}</span>
         </div>
@@ -92,7 +104,7 @@ export function DimensionThresholdRow({
       <p className="mt-2 leading-relaxed text-ink-muted">{dimension.explanation}</p>
 
       {showCitations ? (
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-[11px] text-ink-faint">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-xs text-ink-faint">
           <span className="inline-flex items-center gap-1">
             <BookOpen className="size-3 shrink-0" />
             {dimension.threshold.citation}

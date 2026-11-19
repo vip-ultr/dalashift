@@ -70,56 +70,58 @@ export default function LandingPage(): React.JSX.Element {
           <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white">
             <div className="border-b border-[#e5e7eb] bg-[#fafafa] px-5 py-4">
               <div className="text-sm font-semibold text-[#111827]">
-                Example field report layout
+                {t('landing.reportExampleTitle')}
               </div>
-              <div className="mt-0.5 text-xs text-[#4b5563]">Illustration only. Not live data.</div>
+              <div className="mt-0.5 text-xs text-[#4b5563]">{t('landing.illustrationOnly')}</div>
             </div>
 
             <p className="bg-[#f4f5f6] px-5 py-2.5 text-xs text-[#4b5563]">
-              The values below are sample figures used to illustrate the report layout. They are not
-              live observations from any real farm.
+              {t('landing.sampleFiguresNote')}
             </p>
 
             {/* Sample figures with a quiet provenance line beneath each */}
             <div className="grid grid-cols-2 divide-x divide-y divide-[#e5e7eb] text-xs">
               <div className="p-4">
-                <span className="text-[#4b5563]">Rainfall (14-day)</span>
+                <span className="text-[#4b5563]">{t('landing.rainfallLabel')}</span>
                 <div className="tabular mt-1 text-lg font-bold text-[#111827]">44.5 mm</div>
-                <span className="mt-1 block text-xs text-[#4b5563]">CHIRPS 5.5 km satellite</span>
+                <span className="mt-1 block text-xs text-[#4b5563]">
+                  {t('landing.sourceChirps')}
+                </span>
               </div>
               <div className="p-4">
-                <span className="text-[#4b5563]">Root-zone soil wetness</span>
+                <span className="text-[#4b5563]">{t('landing.rootZoneWetness')}</span>
                 <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.21 m³/m³</div>
-                <span className="mt-1 block text-xs text-[#4b5563]">NASA SMAP 9 km grid</span>
+                <span className="mt-1 block text-xs text-[#4b5563]">{t('landing.sourceSmap')}</span>
               </div>
               <div className="p-4">
-                <span className="text-[#4b5563]">Topsoil pH</span>
+                <span className="text-[#4b5563]">{t('landing.topsoilPh')}</span>
                 <div className="tabular mt-1 text-lg font-bold text-[#111827]">6.1 pH</div>
-                <span className="mt-1 block text-xs text-[#4b5563]">SoilGrids 250 m cell</span>
+                <span className="mt-1 block text-xs text-[#4b5563]">
+                  {t('landing.sourceSoilGrids')}
+                </span>
               </div>
               <div className="p-4">
-                <span className="text-[#4b5563]">Canopy greenness</span>
+                <span className="text-[#4b5563]">{t('landing.canopyGreenness')}</span>
                 <div className="tabular mt-1 text-lg font-bold text-[#111827]">0.48 NDVI</div>
-                <span className="mt-1 block text-xs text-[#4b5563]">MODIS 250 m composite</span>
+                <span className="mt-1 block text-xs text-[#4b5563]">
+                  {t('landing.sourceModis')}
+                </span>
               </div>
             </div>
 
             <div className="space-y-3 bg-[#fafafa] p-5">
               <div className="rounded-lg border border-[#e5e7eb] p-3.5">
                 <div className="text-xs font-semibold text-[#0a4232]">
-                  Moisture planting trigger: conditions met
+                  {t('landing.triggerMet')}
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-[#111827]">
-                  Soil moisture reached the 0.18 m³/m³ threshold across three rain events. Workable
-                  for sowing.
+                  {t('landing.triggerMetBody')}
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-                <span className="text-[#4b5563]">Tested rotation sequence:</span>
-                <span className="font-semibold text-[#111827]">
-                  Sorghum (Dawa) to Cowpea (Wake)
-                </span>
+                <span className="text-[#4b5563]">{t('landing.rotationLabel')}</span>
+                <span className="font-semibold text-[#111827]">{t('landing.rotationSample')}</span>
               </div>
             </div>
 
@@ -128,7 +130,7 @@ export default function LandingPage(): React.JSX.Element {
                 href="/farms"
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0a4232] hover:underline"
               >
-                <span>View all registered farms on the map</span>
+                <span>{t('landing.viewAllFarms')}</span>
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </div>

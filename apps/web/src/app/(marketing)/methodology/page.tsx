@@ -1,7 +1,10 @@
+'use client';
+
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type * as React from 'react';
 
+import { useLanguage } from '../../../i18n/language-provider';
 import { PublicNavbar } from '../../../components/layout/public-navbar';
 import { SiteFooter } from '../../../components/layout/site-footer';
 import { Badge } from '../../../components/ui/badge';
@@ -79,6 +82,8 @@ const DATASETS: readonly Dataset[] = [
  * Widths checked in source: 390, 768, 1440.
  */
 export default function MethodologyPage(): React.JSX.Element {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#111827]">
       <PublicNavbar />
@@ -87,38 +92,36 @@ export default function MethodologyPage(): React.JSX.Element {
         {/* Header: a plain statement, no eyebrow pills, no icon squares */}
         <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 sm:p-8">
           <h1 className="font-display text-2xl font-bold tracking-tight text-[#111827] sm:text-3xl">
-            Recommendation methodology and data sources
+            {t('method.title')}
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#4b5563]">
-            DalaShift does not use a large language model, arbitrary weights, or composite
-            percentage scores to recommend crops. Every conclusion is a measured or modelled
-            environmental value compared against a cited agronomic threshold, an ordinal rank
-            position with a stated basis, and a qualitative evidence strength rating.
+            {t('method.intro')}
           </p>
 
           {/* The three principles as a calm, content-led list */}
           <div className="mt-6 divide-y divide-[#e5e7eb] border-t border-[#e5e7eb]">
             <div className="py-4">
-              <h2 className="text-sm font-semibold text-[#111827]">No composite scores</h2>
+              <h2 className="text-sm font-semibold text-[#111827]">
+                {t('method.noCompositeScores')}
+              </h2>
               <p className="mt-1 text-sm leading-relaxed text-[#4b5563]">
-                Soil pH, rainfall, temperature, and nitrogen balance cannot be averaged together. A
-                failure on a hard biological constraint cannot be hidden by a high score elsewhere.
+                {t('method.noCompositeBody')}
               </p>
             </div>
             <div className="py-4">
-              <h2 className="text-sm font-semibold text-[#111827]">Resolution honesty</h2>
+              <h2 className="text-sm font-semibold text-[#111827]">
+                {t('method.resolutionHonesty')}
+              </h2>
               <p className="mt-1 text-sm leading-relaxed text-[#4b5563]">
-                Coarse grids (about 9 km SMAP and about 55 km POWER) are labelled as regional
-                climate indicators. Sub-field SoilGrids (250 m) is labelled as a modelled baseline
-                requiring local verification.
+                {t('method.resolutionBody')}
               </p>
             </div>
             <div className="py-4">
-              <h2 className="text-sm font-semibold text-[#111827]">Distinct sources</h2>
+              <h2 className="text-sm font-semibold text-[#111827]">
+                {t('method.distinctSources')}
+              </h2>
               <p className="mt-1 text-sm leading-relaxed text-[#4b5563]">
-                Published literature rules such as Yusuf et al. 2009 and Brouwer and Heibloem 1986
-                are kept distinct from anonymised smallholder practices reported in Tofa LGA, Kano
-                State, so each source is cited honestly.
+                {t('method.distinctBody')}
               </p>
             </div>
           </div>
@@ -127,11 +130,9 @@ export default function MethodologyPage(): React.JSX.Element {
         {/* Earth observation datasets. Stacked cards on mobile, table from md. */}
         <section className="rounded-xl border border-[#e5e7eb] bg-white p-6">
           <h2 className="font-display text-xl font-bold text-[#111827]">
-            Earth observation and soil datasets
+            {t('method.datasetsTitle')}
           </h2>
-          <p className="mt-1 text-xs text-[#4b5563]">
-            All external calls run server-side and cache with full provenance in Supabase PostGIS.
-          </p>
+          <p className="mt-1 text-xs text-[#4b5563]">{t('method.datasetsNote')}</p>
 
           <div className="mt-4 space-y-3 md:hidden">
             {DATASETS.map((item) => (
@@ -142,25 +143,25 @@ export default function MethodologyPage(): React.JSX.Element {
                 <div className="text-sm font-semibold text-[#111827]">{item.dataset}</div>
                 <dl className="mt-3 space-y-2.5 text-xs">
                   <div>
-                    <dt className="text-[#4b5563]">Variables</dt>
+                    <dt className="text-[#4b5563]">{t('method.colVariables')}</dt>
                     <dd className="mt-0.5 text-[#111827]">{item.variables}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#4b5563]">Spatial resolution</dt>
+                    <dt className="text-[#4b5563]">{t('method.colResolution')}</dt>
                     <dd className="tabular mt-0.5 text-[#111827]">{item.resolution}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#4b5563]">Cadence</dt>
+                    <dt className="text-[#4b5563]">{t('method.colCadence')}</dt>
                     <dd className="mt-0.5 text-[#111827]">{item.cadence}</dd>
                   </div>
                   <div>
-                    <dt className="text-[#4b5563]">Nature</dt>
+                    <dt className="text-[#4b5563]">{t('method.colNature')}</dt>
                     <dd className="mt-1">
                       <Badge variant={item.natureVariant}>{item.nature}</Badge>
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[#4b5563]">Role in engine</dt>
+                    <dt className="text-[#4b5563]">{t('method.colRole')}</dt>
                     <dd className="mt-0.5 text-[#4b5563]">{item.role}</dd>
                   </div>
                 </dl>
@@ -168,19 +169,17 @@ export default function MethodologyPage(): React.JSX.Element {
             ))}
           </div>
 
-          <p className="mt-4 hidden text-xs text-[#4b5563] md:block">
-            Scroll sideways to see every column.
-          </p>
+          <p className="mt-4 hidden text-xs text-[#4b5563] md:block">{t('method.scrollHint')}</p>
           <div className="mt-2 hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-[#e5e7eb] bg-[#f4f5f6] text-xs font-semibold text-[#374151]">
-                  <th className="px-3 py-2.5">Dataset</th>
-                  <th className="px-3 py-2.5">Variables</th>
-                  <th className="px-3 py-2.5">Spatial resolution</th>
-                  <th className="px-3 py-2.5">Cadence</th>
-                  <th className="px-3 py-2.5">Nature</th>
-                  <th className="px-3 py-2.5">Role in engine</th>
+                  <th className="px-3 py-2.5">{t('method.colDataset')}</th>
+                  <th className="px-3 py-2.5">{t('method.colVariables')}</th>
+                  <th className="px-3 py-2.5">{t('method.colResolution')}</th>
+                  <th className="px-3 py-2.5">{t('method.colCadence')}</th>
+                  <th className="px-3 py-2.5">{t('method.colNature')}</th>
+                  <th className="px-3 py-2.5">{t('method.colRole')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e5e7eb]">
@@ -204,12 +203,9 @@ export default function MethodologyPage(): React.JSX.Element {
         {/* Cited crop catalog thresholds. Data cards, not decorative icons. */}
         <section className="rounded-xl border border-[#e5e7eb] bg-white p-6">
           <h2 className="font-display text-xl font-bold text-[#111827]">
-            Crop reference catalog and cited thresholds
+            {t('method.catalogTitle')}
           </h2>
-          <p className="mt-1 text-xs text-[#4b5563]">
-            Indicative seasonal water need ranges from Brouwer and Heibloem (1986) are rough
-            reference bands, never hard pass or fail cutoffs.
-          </p>
+          <p className="mt-1 text-xs text-[#4b5563]">{t('method.catalogNote')}</p>
 
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {CATALOG_CROPS.map((crop) => (
@@ -227,33 +223,46 @@ export default function MethodologyPage(): React.JSX.Element {
                     }
                   >
                     {crop.rotationTraits?.nitrogenContribution === 'fixes'
-                      ? 'Fixes biological N'
-                      : 'Consumes soil N'}
+                      ? t('method.fixesNitrogen')
+                      : t('method.consumesNitrogen')}
                   </Badge>
                 </div>
 
                 <div className="tabular mt-3 grid grid-cols-3 gap-2 rounded-lg bg-white p-2.5 text-xs">
                   <div>
-                    <div className="text-[#4b5563]">Water need</div>
+                    <div className="text-[#4b5563]">{t('method.waterNeed')}</div>
                     <div className="font-semibold text-[#111827]">
                       {crop.agronomicRequirements.indicativeCropWaterNeedMmPerSeason
-                        ? `${crop.agronomicRequirements.indicativeCropWaterNeedMmPerSeason.min} to ${crop.agronomicRequirements.indicativeCropWaterNeedMmPerSeason.max} mm`
+                        ? t('method.rangeMm', {
+                            min:
+                              crop.agronomicRequirements.indicativeCropWaterNeedMmPerSeason.min ??
+                              'n/a',
+                            max:
+                              crop.agronomicRequirements.indicativeCropWaterNeedMmPerSeason.max ??
+                              'n/a',
+                          })
                         : 'n/a'}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[#4b5563]">Temp range</div>
+                    <div className="text-[#4b5563]">{t('method.tempRange')}</div>
                     <div className="font-semibold text-[#111827]">
                       {crop.agronomicRequirements.temperatureC
-                        ? `${crop.agronomicRequirements.temperatureC.min} to ${crop.agronomicRequirements.temperatureC.max} °C`
+                        ? t('method.rangeC', {
+                            min: crop.agronomicRequirements.temperatureC.min ?? 'n/a',
+                            max: crop.agronomicRequirements.temperatureC.max ?? 'n/a',
+                          })
                         : 'n/a'}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[#4b5563]">Soil pH</div>
+                    <div className="text-[#4b5563]">{t('method.soilPh')}</div>
                     <div className="font-semibold text-[#111827]">
                       {crop.agronomicRequirements.soilPh
-                        ? `${crop.agronomicRequirements.soilPh.min} to ${crop.agronomicRequirements.soilPh.max}`
+                        ? t('method.rangePlain', {
+                            min: crop.agronomicRequirements.soilPh.min ?? 'n/a',
+                            max: crop.agronomicRequirements.soilPh.max ?? 'n/a',
+                          })
                         : 'n/a'}
                     </div>
                   </div>
@@ -271,7 +280,7 @@ export default function MethodologyPage(): React.JSX.Element {
           <div className="mt-6 flex justify-end border-t border-[#e5e7eb] pt-4">
             <Link href="/farms/new">
               <Button variant="primary" size="md">
-                <span>Apply this methodology to your fields</span>
+                <span>{t('method.applyCta')}</span>
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>

@@ -101,17 +101,16 @@ export function WorkspaceRail() {
           <Image
             src="/brand/logo-horizontal.svg"
             alt="DalaShift"
-            width={112}
-            height={26}
+            width={391}
+            height={100}
             className="h-6 w-auto"
           />
         </Link>
-        <LanguageSwitcher compact />
         <button
           type="button"
           onClick={() => setMobileDrawerOpen(true)}
           className="flex size-9 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#4b5563] hover:bg-[#f3f4f6]"
-          aria-label="Open sidebar menu"
+          aria-label={t('rail.openMenu')}
         >
           <Menu className="size-5" />
         </button>
@@ -133,23 +132,23 @@ export function WorkspaceRail() {
                 <Image
                   src="/brand/logo-horizontal.svg"
                   alt="DalaShift"
-                  width={120}
-                  height={28}
+                  width={391}
+                  height={100}
                   className="h-7 w-auto"
                 />
                 <button
                   type="button"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="flex size-8 items-center justify-center rounded-md text-[#4b5563] hover:bg-[#f3f4f6]"
-                  aria-label="Close menu"
+                  aria-label={t('rail.closeMenu')}
                 >
                   <X className="size-4" />
                 </button>
               </div>
 
               <div className="mt-4">
-                <span className="text-[11px] font-semibold tracking-wider text-[#9ca3af] uppercase">
-                  Workspace
+                <span className="text-xs font-semibold tracking-wider text-[#9ca3af] uppercase">
+                  {t('rail.workspace')}
                 </span>
                 <nav className="mt-2 flex flex-col gap-1">
                   {PRIMARY_NAV_ITEMS.map((item) => {
@@ -176,8 +175,8 @@ export function WorkspaceRail() {
               </div>
 
               <div className="mt-6">
-                <span className="text-[11px] font-semibold tracking-wider text-[#9ca3af] uppercase">
-                  Preferences
+                <span className="text-xs font-semibold tracking-wider text-[#9ca3af] uppercase">
+                  {t('rail.preferences')}
                 </span>
                 <nav className="mt-2 flex flex-col gap-1">
                   {SECONDARY_NAV_ITEMS.map((item) => {
@@ -233,7 +232,7 @@ export function WorkspaceRail() {
 
       {/* Desktop 64px Vertical Icon Rail */}
       <aside
-        aria-label="Workspace navigation rail"
+        aria-label={t('rail.labelAria')}
         className="sticky top-0 hidden h-screen w-16 shrink-0 flex-col items-center justify-between border-r border-[#e5e7eb] bg-white py-4 lg:flex print:hidden"
       >
         <div className="flex flex-col items-center gap-3">
@@ -241,7 +240,7 @@ export function WorkspaceRail() {
             <TooltipTrigger asChild>
               <Link
                 href="/"
-                aria-label="DalaShift Home"
+                aria-label={t('rail.home')}
                 className="flex size-10 items-center justify-center rounded-xl transition-transform hover:scale-105"
               >
                 <Image
@@ -254,7 +253,7 @@ export function WorkspaceRail() {
                 />
               </Link>
             </TooltipTrigger>
-            <TooltipContent>DalaShift Home</TooltipContent>
+            <TooltipContent>{t('rail.home')}</TooltipContent>
           </Tooltip>
 
           <div className="my-1 h-px w-8 bg-[#e5e7eb]" />

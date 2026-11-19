@@ -61,7 +61,7 @@ export function SegmentedControl<T extends string>({
         'rounded-lg border border-border bg-surface-subtle p-1',
         fullWidth && 'w-full',
         stackOnMobile
-          ? 'flex flex-col sm:flex-row gap-1 sm:gap-0 sm:items-center sm:h-[42px]'
+          ? 'flex min-w-0 flex-col gap-1 lg:h-[42px] lg:flex-row lg:items-center lg:gap-0'
           : cn('inline-flex items-center', size === 'md' ? 'h-[42px]' : 'h-[34px]'),
         className,
       )}
@@ -80,14 +80,12 @@ export function SegmentedControl<T extends string>({
             data-state={isActive ? 'active' : 'inactive'}
             onClick={() => handleChange(opt.value)}
             className={cn(
-              'inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 sm:px-3 transition-colors duration-150 motion-reduce:transition-none cursor-pointer text-center',
+              'inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-1.5 sm:px-3 transition-colors duration-150 motion-reduce:transition-none cursor-pointer text-center',
               stackOnMobile
-                ? 'w-full sm:w-auto py-2 sm:py-0 min-h-[38px] sm:min-h-0 sm:h-[34px] text-xs sm:text-sm whitespace-normal sm:whitespace-nowrap'
+                ? 'w-full min-w-0 py-2 lg:w-auto lg:py-0 min-h-[38px] lg:min-h-0 lg:h-[34px] text-xs lg:text-sm whitespace-normal lg:whitespace-nowrap'
                 : cn(
-                    size === 'md'
-                      ? 'h-[34px] text-xs sm:text-sm'
-                      : 'h-[26px] text-[11px] sm:text-xs',
-                    'whitespace-nowrap',
+                    size === 'md' ? 'h-[34px] text-xs sm:text-sm' : 'h-[26px] text-xs',
+                    'whitespace-normal sm:whitespace-nowrap',
                   ),
               'data-[state=active]:bg-brand-primary data-[state=active]:font-semibold data-[state=active]:text-white data-[state=active]:ring-1 data-[state=active]:ring-brand-primary/20',
               'data-[state=inactive]:font-normal data-[state=inactive]:text-ink-muted data-[state=inactive]:hover:text-brand-primary',

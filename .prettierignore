@@ -9,3 +9,5 @@ pnpm-lock.yaml
 data/processed
 data/raw
 *.md
+# Vendored third-party worker from maplibre-gl; minified, not hand-edited.
+apps/web/public/maplibre-gl-worker.mjs

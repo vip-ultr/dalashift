@@ -1,28 +1,33 @@
 'use client';
 
 import { SPATIAL_RESOLUTION_METRES, type SpatialResolutionKey } from '@dalashift/shared/constants';
+import { searchKanoPlaces } from '@dalashift/shared/geo';
 import type { GeoJSONGeometry, Parcel } from '@dalashift/shared/types';
-import { area } from '@turf/turf';
+import { area, length } from '@turf/turf';
 import {
-  AlertCircle,
-  Crosshair,
-  LocateFixed,
+  ChevronDown,
   Layers3,
+  LocateFixed,
   MapPin,
-  MousePointer2,
+  Minus,
   Navigation,
   PenLine,
-  Trash2,
-  Undo2,
+  Plus,
+  Search,
   X,
 } from 'lucide-react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { TerraDraw, TerraDrawPolygonMode, type GeoJSONStoreFeatures } from 'terra-draw';
+import {
+  TerraDraw,
+  TerraDrawModeUndoRedo,
+  TerraDrawPolygonMode,
+  type GeoJSONStoreFeatures,
+} from 'terra-draw';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
-import { formatResolutionShortBadge } from '../../lib/utilities/format';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { MapLibreTerraDrawAdapter } from './terra-draw-maplibre-adapter';
@@ -43,49 +48,55 @@ export interface HonestyMapCanvasProps {
   readonly className?: string;
 }
 
-const GRID_OVERLAY_OPTIONS: readonly {
+type GridOverlayOption = {
   readonly key: SpatialResolutionKey;
   readonly label: string;
   readonly source: string;
   readonly metres: number;
   readonly color: string;
-}[] = [
-  {
-    key: 'smapSoilMoisture',
-    label: 'SMAP Soil Moisture (9 km cell)',
-    source: 'NASA SMAP L3',
-    metres: SPATIAL_RESOLUTION_METRES.smapSoilMoisture,
-    color: '#76a1c2',
-  },
-  {
-    key: 'chirps',
-    label: 'CHIRPS Rainfall (5.5 km cell)',
-    source: 'CHIRPS v3',
-    metres: SPATIAL_RESOLUTION_METRES.chirps,
-    color: '#2c5282',
-  },
-  {
-    key: 'soilGrids',
-    label: 'ISRIC SoilGrids (250 m cell)',
-    source: 'SoilGrids 2.0',
-    metres: SPATIAL_RESOLUTION_METRES.soilGrids,
-    color: '#c26e4a',
-  },
-  {
-    key: 'landsat',
-    label: 'Landsat Reflectance (30 m pixel)',
-    source: 'NASA/USGS Landsat C2',
-    metres: SPATIAL_RESOLUTION_METRES.landsat,
-    color: '#0a4232',
-  },
-  {
-    key: 'powerLatitude',
-    label: 'NASA POWER Climate (~55 km cell)',
-    source: 'NASA POWER',
-    metres: SPATIAL_RESOLUTION_METRES.powerLatitude,
-    color: '#b45309',
-  },
-];
+};
+
+function getGridOverlayOptions(
+  t: (id: string, vars?: Record<string, string | number>) => string,
+): readonly GridOverlayOption[] {
+  return [
+    {
+      key: 'smapSoilMoisture',
+      label: t('map.gridSmap'),
+      source: 'NASA SMAP L3',
+      metres: SPATIAL_RESOLUTION_METRES.smapSoilMoisture,
+      color: '#76a1c2',
+    },
+    {
+      key: 'chirps',
+      label: t('map.gridChirps'),
+      source: 'CHIRPS v3',
+      metres: SPATIAL_RESOLUTION_METRES.chirps,
+      color: '#2c5282',
+    },
+    {
+      key: 'soilGrids',
+      label: t('map.gridSoilGrids'),
+      source: 'SoilGrids 2.0',
+      metres: SPATIAL_RESOLUTION_METRES.soilGrids,
+      color: '#c26e4a',
+    },
+    {
+      key: 'landsat',
+      label: t('map.gridLandsat'),
+      source: 'NASA/USGS Landsat C2',
+      metres: SPATIAL_RESOLUTION_METRES.landsat,
+      color: '#0a4232',
+    },
+    {
+      key: 'powerLatitude',
+      label: t('map.gridPower'),
+      source: 'NASA POWER',
+      metres: SPATIAL_RESOLUTION_METRES.powerLatitude,
+      color: '#b45309',
+    },
+  ];
+}
 
 /** Generic regional view centre (Tofa LGA, Kano State). Used only as an initial
  * camera position. It is never captured as a parcel location. */
@@ -147,6 +158,31 @@ function polygonAreaHa(feature: GeoJSONStoreFeatures): number | null {
   }
 }
 
+/** Perimeter of a terra-draw feature in metres, or null until it is a real
+ * polygon. Used only for the live measurement pill shown while drawing. */
+function polygonPerimeterM(feature: GeoJSONStoreFeatures): number | null {
+  if (feature.geometry.type !== 'Polygon') return null;
+  const ring = feature.geometry.coordinates[0];
+  if (!ring || ring.length < 2) return null;
+  const coords = ring
+    .filter((c) => Array.isArray(c) && Number.isFinite(c[0]) && Number.isFinite(c[1]))
+    .map((c) => [c[0]!, c[1]!] as [number, number]);
+  if (coords.length < 2) return null;
+  try {
+    const closed = closeRing([coords])[0]!;
+    // Turf returns length in kilometres; the measurement chip shows metres.
+    const kilometres = length({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: closed },
+    });
+    const metres = kilometres * 1000;
+    return Number.isFinite(metres) && metres > 0 ? metres : null;
+  } catch {
+    return null;
+  }
+}
+
 export function HonestyMapCanvas({
   parcels = [],
   activeParcelId,
@@ -161,6 +197,8 @@ export function HonestyMapCanvas({
   heightClass = 'h-[500px]',
   className,
 }: HonestyMapCanvasProps) {
+  const { t } = useLanguage();
+
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<MapLibreMap | null>(null);
   const drawRef = useRef<TerraDraw | null>(null);
@@ -182,7 +220,19 @@ export function HonestyMapCanvas({
     captureMode ? 'capture' : interactiveDraw ? 'draw' : 'select',
   );
   const [layersOpen, setLayersOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchResults = useMemo(() => {
+    const seen = new Set<string>();
+    return searchKanoPlaces(searchQuery, 8).filter((place) => {
+      const key = place.name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [searchQuery]);
   const [previewAreaHa, setPreviewAreaHa] = useState<number | null>(null);
+  const [previewPerimeterM, setPreviewPerimeterM] = useState<number | null>(null);
   const [chooser, setChooser] = useState<{
     x: number;
     y: number;
@@ -225,8 +275,9 @@ export function HonestyMapCanvas({
   effectiveParcelIdRef.current = effectiveParcelId;
   const activeParcel = parcels.find((p) => p.id === effectiveParcelId) ?? parcels[0] ?? null;
 
+  const gridOverlayOptions = useMemo(() => getGridOverlayOptions(t), [t]);
   const activeGridOption =
-    GRID_OVERLAY_OPTIONS.find((opt) => opt.key === selectedGridKey) ?? GRID_OVERLAY_OPTIONS[0]!;
+    gridOverlayOptions.find((opt) => opt.key === selectedGridKey) ?? gridOverlayOptions[0]!;
 
   // Real GeoJSON features: polygons keep their drawn vertices; points stay points.
   const parcelFeatures = useMemo(() => {
@@ -430,7 +481,7 @@ export function HonestyMapCanvas({
                 const matches = (clickEvent.features ?? [])
                   .map((feature) => ({
                     id: feature.properties?.id,
-                    name: feature.properties?.name ?? 'Field',
+                    name: feature.properties?.name ?? t('map.unnamedField'),
                   }))
                   .filter((item): item is { id: string; name: string } => Boolean(item.id));
                 const unique = matches.filter(
@@ -681,8 +732,18 @@ export function HonestyMapCanvas({
       drawRef.current?.stop();
       drawRef.current = null;
       setPreviewAreaHa(null);
+      setPreviewPerimeterM(null);
       return;
     }
+
+    // The adapter paints the outline terracotta by default. Override it on the
+    // live draw layer so the field reads clearly over dark satellite imagery.
+    // The vertex dots are already painted white with a green ring by the adapter.
+    const paintDrawWhite = () => {
+      if (map.getLayer('terra-draw-polygon-outline')) {
+        map.setPaintProperty('terra-draw-polygon-outline', 'line-color', '#ffffff');
+      }
+    };
 
     const draw = new TerraDraw({
       adapter: new MapLibreTerraDrawAdapter(map),
@@ -690,6 +751,9 @@ export function HonestyMapCanvas({
       // just the two closing handles. The adapter paints them as warm-white
       // dots with a green ring so the growing shape is legible on imagery.
       modes: [new TerraDrawPolygonMode({ showCoordinatePoints: true })],
+      // Without a mode-level history stack, draw.undo() is a no-op and the
+      // Undo button silently fails while a polygon is being drawn.
+      undoRedo: { modeLevel: new TerraDrawModeUndoRedo() },
     });
     drawRef.current = draw;
     draw.on('finish', (featureId) => {
@@ -707,8 +771,15 @@ export function HonestyMapCanvas({
         geometry: { type: 'Polygon', coordinates },
       });
       onGeometryChangeRef.current?.(geometry, Number((sqm / 10_000).toFixed(2)));
+      // Leave draw mode once the shape is saved. Otherwise the dark drawing
+      // bar stays on screen and Done appears to do nothing, and a second
+      // tap on the map starts another polygon unexpectedly. The finished
+      // outline is rendered from the parcels prop, not from TerraDraw.
+      draw.setMode('static');
+      setMode('select');
     });
     draw.on('change', () => {
+      paintDrawWhite();
       const snapshot = draw.getSnapshot();
       const inProgress =
         snapshot.find(
@@ -716,61 +787,49 @@ export function HonestyMapCanvas({
             feature.geometry.type === 'Polygon' && feature.properties?.currentlyDrawing === true,
         ) ?? snapshot.find((feature) => feature.geometry.type === 'Polygon');
       setPreviewAreaHa(inProgress ? polygonAreaHa(inProgress) : null);
+      setPreviewPerimeterM(inProgress ? polygonPerimeterM(inProgress) : null);
     });
     draw.start();
     draw.setMode('polygon');
+    paintDrawWhite();
 
     return () => {
       draw.stop();
       if (drawRef.current === draw) drawRef.current = null;
       setPreviewAreaHa(null);
+      setPreviewPerimeterM(null);
     };
   }, [drawActive, mapLoaded]);
 
   /**
-   * Finish the in-progress polygon from the big Done button.
-   *
-   * terra-draw 1.39 exposes no public `finish()` / `close()`: polygon mode's
-   * `close()` is private and the only public triggers are clicking the closing
-   * vertex or pressing Enter, both unsuitable for a phone. The sanctioned
-   * public fallback is to reproduce the real closing click. We read the
-   * in-progress feature from `getSnapshot()`, project its first vertex to
-   * screen coordinates, and dispatch a left `click` on the MapLibre canvas.
-   * The adapter forwards it to polygon mode, which sees a click on its closing
-   * point and calls `close()`, so the normal 'finish' event fires and the
-   * geometry is reported through onGeometryChange. `bubbles: false` keeps the
-   * synthetic click away from MapLibre's own parcel/capture handlers.
+   * Finish the in-progress polygon from the Done control. Polygon mode closes
+   * the shape on its configured finish key, so replay that key on the map
+   * canvas: the same public path a farmer gets from pressing Enter, which
+   * fires the normal 'finish' event and reports geometry through
+   * onGeometryChange. A synthetic click on the first vertex was unreliable
+   * because the adapter's drag threshold and closing hit area can swallow it.
    */
   const handleDoneDrawing = () => {
-    const draw = drawRef.current;
     const map = mapInstanceRef.current;
-    if (!draw || !map) return;
+    const draw = drawRef.current;
+    if (!map || !draw) return;
     const inProgress = draw
       .getSnapshot()
       .find(
         (feature) =>
           feature.geometry.type === 'Polygon' && feature.properties?.currentlyDrawing === true,
       );
-    if (!inProgress || inProgress.geometry.type !== 'Polygon') return;
-    const ring = inProgress.geometry.coordinates[0];
-    const first = ring?.[0];
-    // Polygon mode only closes a shape with at least three real corners. With
-    // fewer, close() is a no-op, so leave the farmer in drawing mode.
-    if (!first || !ring || ring.length < 5) return;
-
-    const canvas = map.getCanvas();
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
-    const projected = map.project([first[0]!, first[1]!]);
-    canvas.dispatchEvent(
-      new MouseEvent('click', {
-        bubbles: false,
-        cancelable: false,
-        button: 0,
-        clientX: rect.left + projected.x,
-        clientY: rect.top + projected.y,
-      }),
-    );
+    // close() needs at least three placed corners; keep drawing until then.
+    if (
+      !inProgress ||
+      inProgress.geometry.type !== 'Polygon' ||
+      (inProgress.geometry.coordinates[0]?.length ?? 0) < 5
+    ) {
+      return;
+    }
+    map
+      .getCanvas()
+      .dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true, cancelable: true }));
   };
 
   const handleUndoDrawing = () => {
@@ -786,14 +845,13 @@ export function HonestyMapCanvas({
     draw.setMode('polygon');
     draw.clear();
     setPreviewAreaHa(null);
+    setPreviewPerimeterM(null);
   };
 
   const handleUseCurrentLocation = () => {
     setLocationError(null);
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      setLocationError(
-        'This device cannot provide a location. Tap the map or enter coordinates manually.',
-      );
+      setLocationError(t('map.locationUnsupported'));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -805,9 +863,7 @@ export function HonestyMapCanvas({
       },
       () => {
         // Never invent a coordinate when location access is denied.
-        setLocationError(
-          'Location access was denied or unavailable. Tap the map or enter coordinates manually. No location has been captured.',
-        );
+        setLocationError(t('map.locationDenied'));
       },
     );
   };
@@ -816,10 +872,12 @@ export function HonestyMapCanvas({
     setMode('select');
   };
 
-  const toolBase =
-    'pointer-events-auto flex min-h-14 min-w-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl border px-1 py-2 text-[12px] font-medium leading-none transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer';
-  const activeTool = 'border-brand-primary bg-brand-primary text-white ring-2 ring-white';
-  const inactiveTool = 'border-border bg-surface-card text-ink';
+  const pillBase =
+    'inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-card/70 px-2.5 text-[13px] font-medium leading-none text-ink shadow-sm backdrop-blur-sm transition-colors duration-150 motion-reduce:transition-none touch-manipulation sm:h-10';
+  const roundControl =
+    'flex size-11 items-center justify-center rounded-full border border-border bg-surface-card/70 text-ink shadow-sm backdrop-blur-sm transition-colors duration-150 motion-reduce:transition-none hover:bg-surface-card/90 touch-manipulation';
+  const statusAction =
+    'min-h-7 rounded-md border border-white/20 bg-white/10 px-2 text-xs font-medium leading-none text-white transition-colors duration-150 motion-reduce:transition-none hover:bg-white/20 touch-manipulation cursor-pointer';
 
   return (
     <div
@@ -836,126 +894,251 @@ export function HonestyMapCanvas({
 
       {!webglSupported ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f2e22] p-6 text-center text-white">
-          <MapPin className="mb-2 size-8 text-[#0a4232]" />
-          <h4 className="font-display text-sm font-bold">Map preview unavailable</h4>
-          <p className="mt-1 max-w-sm text-xs text-white/70">
-            Your browser could not start the interactive map. Enter parcel coordinates using the
-            fields below instead. No location has been captured automatically.
-          </p>
+          <MapPin className="mb-2 size-5 text-[#0a4232]" />
+          <h4 className="font-display text-sm font-bold">{t('map.previewUnavailable')}</h4>
+          <p className="mt-1 max-w-sm text-xs text-white/70">{t('map.previewUnavailableBody')}</p>
         </div>
       ) : null}
 
       {!mapLoaded && webglSupported ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#111827]/70 backdrop-blur-xs">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#111827]/60 backdrop-blur-xs">
           <div className="flex items-center gap-2 text-xs font-medium text-white/80">
             <span className="size-2 animate-ping rounded-full bg-[#0a4232]" />
-            <span>Loading satellite land imagery...</span>
+            <span>{t('map.loadingImagery')}</span>
           </div>
         </div>
       ) : null}
 
-      {tileError && mapLoaded && webglSupported && showMapDetails ? (
-        <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex justify-center px-3">
+      {tileError && mapLoaded && webglSupported && showMapDetails && mode === 'select' ? (
+        <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex justify-center px-3">
           <p
             role="status"
-            className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-center text-[11px] text-ink-muted shadow-sm"
+            className="max-w-[62%] rounded-lg border border-surface-border bg-surface-card/70 px-3 py-1.5 text-center text-xs leading-snug text-ink-muted shadow-sm backdrop-blur-sm"
           >
-            Map imagery is unavailable. Your field boundary is still shown.
+            {t('map.imageryUnavailable')}
           </p>
         </div>
       ) : null}
 
+      {/* Top-left field pill: name and area only, no solid card. */}
       {showMapDetails && mode === 'select' ? (
         <div className="pointer-events-none absolute left-2 top-2 z-10 max-w-[62%] sm:left-3 sm:top-3">
-          <div className="rounded-xl border border-border bg-surface-card/95 px-3 py-2 text-[13px] leading-snug text-ink shadow-sm">
-            <span className="block font-semibold">
+          <div className={pillBase}>
+            <span className="min-w-0 max-w-[120px] truncate font-semibold sm:max-w-[180px]">
               {capturePoint
                 ? `${capturePoint.lon.toFixed(4)}°E, ${capturePoint.lat.toFixed(4)}°N`
                 : activeParcel
                   ? activeParcel.name
-                  : 'Interactive Field Map'}
+                  : t('map.fieldMap')}
             </span>
-            <span className="text-ink-muted">
-              {activeParcel?.areaHa
-                ? `${activeParcel.areaHa.toFixed(2)} ha`
-                : activeParcel?.geometry.type === 'Point'
-                  ? 'GPS Point'
-                  : 'Mapped Parcel'}
-              {' · '}
-              {activeGridOption.source} · {formatResolutionShortBadge(activeGridOption.metres)}
-            </span>
+            {activeParcel?.areaHa ? (
+              <span className="shrink-0 font-normal text-ink-muted">
+                {activeParcel.areaHa.toFixed(2)} ha
+              </span>
+            ) : null}
+            <ChevronDown className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
           </div>
         </div>
       ) : null}
 
-      {/* Top status stack: one plain-language instruction plus the live area chip. */}
-      {(mode === 'draw' || mode === 'capture') && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col items-center gap-2 p-2 sm:p-3">
-          <div className="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-2xl border border-border bg-surface-card p-3 text-ink shadow-sm">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-primary-tint text-brand-primary">
+      {/* Top-right controls: offline Kano place search and map layers. */}
+      <div className="pointer-events-none absolute right-2 top-2 z-20 flex items-start gap-1.5 sm:right-3 sm:top-3">
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {
+              setLayersOpen(false);
+              setSearchOpen((open) => !open);
+            }}
+            aria-label={t('map.searchAria')}
+            title={t('map.searchAria')}
+            aria-expanded={searchOpen}
+            aria-controls="map-place-search"
+            className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
+          >
+            <Search className="size-[18px]" aria-hidden="true" />
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setSearchOpen(false);
+            setLayersOpen((open) => !open);
+          }}
+          aria-label={t('map.layersTitle')}
+          title={t('map.layersTitle')}
+          aria-pressed={layersOpen}
+          className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
+        >
+          <Layers3 className="size-[18px]" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('map.layers')}</span>
+        </button>
+      </div>
+
+      {/* The panel is a sibling of the controls so its width follows the map,
+          not the viewport. On phones the map is narrower than the screen. */}
+      {searchOpen ? (
+        <div
+          id="map-place-search"
+          className="pointer-events-auto absolute inset-x-2 top-12 z-40 rounded-lg border border-border bg-surface-card/85 p-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:right-3 sm:w-80"
+        >
+          <input
+            type="search"
+            autoFocus
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={t('map.searchPlaceholder')}
+            aria-label={t('map.searchAria')}
+            className="w-full rounded-md border border-border bg-surface-card/70 px-2 py-1.5 text-xs text-ink placeholder:text-ink-muted/70 placeholder:opacity-80 focus:border-brand-primary focus:outline-none"
+          />
+          <p className="mt-1 px-1 text-xs leading-snug text-ink-muted">{t('map.searchHint')}</p>
+          <ul className="mt-1 max-h-40 overflow-y-auto">
+            {searchResults.map((place) => (
+              <li key={`${place.kind}-${place.name}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    mapInstanceRef.current?.flyTo({
+                      center: [place.lon, place.lat],
+                      zoom: 13,
+                      duration: 1200,
+                    });
+                    setSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className="flex min-h-9 w-full items-center rounded-md px-2 text-left text-xs text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
+                >
+                  {place.name}
+                </button>
+              </li>
+            ))}
+            {searchQuery.trim().length >= 2 && searchResults.length === 0 ? (
+              <li className="px-2 py-1.5 text-xs leading-snug text-ink-muted">
+                {t('map.searchNoResults')}
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* Right-edge map controls: zoom, zoom out, my location. */}
+      <div className="pointer-events-none absolute right-2 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-1.5 sm:right-3">
+        <button
+          type="button"
+          onClick={() => mapInstanceRef.current?.zoomIn()}
+          aria-label={t('map.zoomIn')}
+          title={t('map.zoomIn')}
+          className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
+        >
+          <Plus className="size-5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={() => mapInstanceRef.current?.zoomOut()}
+          aria-label={t('map.zoomOut')}
+          title={t('map.zoomOut')}
+          className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
+        >
+          <Minus className="size-5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={handleUseCurrentLocation}
+          aria-label={t('map.myLocation')}
+          title={t('map.myLocation')}
+          className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
+        >
+          <LocateFixed className="size-5" aria-hidden="true" />
+        </button>
+      </div>
+
+      {/* Compact draw entry so the map keeps its Select / Draw / Location tools
+          without a wide bottom toolbar. Props still seed the starting mode. */}
+      {mode !== 'draw' ? (
+        <div className="pointer-events-none absolute bottom-2 left-2 z-20 sm:bottom-3 sm:left-3">
+          <button
+            type="button"
+            onClick={() => setMode('draw')}
+            aria-label={t('map.drawBoundary')}
+            title={t('map.drawField')}
+            className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
+          >
+            <PenLine className="size-[18px]" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('map.drawField')}</span>
+          </button>
+        </div>
+      ) : null}
+
+      {/* Compact status line while drawing or capturing. */}
+      {(mode === 'draw' || mode === 'capture') && !searchOpen && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col items-center p-1.5 sm:p-2">
+          <div className="pointer-events-auto flex w-full max-w-sm flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded-md border border-white/10 bg-[#111827]/70 px-2 py-1 text-white shadow-sm backdrop-blur-sm">
+            <p className="text-xs font-medium leading-tight">
+              {mode === 'draw' ? t('map.tapEachCorner') : t('map.tapToPlaceField')}
+            </p>
+            <div className="flex items-center gap-1.5">
               {mode === 'draw' ? (
-                <PenLine className="size-5" aria-hidden="true" />
+                <>
+                  <button type="button" onClick={handleDoneDrawing} className={statusAction}>
+                    {t('map.done')}
+                  </button>
+                  <button type="button" onClick={handleUndoDrawing} className={statusAction}>
+                    {t('map.undo')}
+                  </button>
+                  <button type="button" onClick={handleClearDrawing} className={statusAction}>
+                    {t('map.clear')}
+                  </button>
+                </>
               ) : (
-                <Crosshair className="size-5" aria-hidden="true" />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[14px] font-medium leading-snug text-ink">
-                {mode === 'draw'
-                  ? 'Tap every corner of your field, then press Done.'
-                  : 'Tap the map or use your location to place your field.'}
-              </p>
-              {mode === 'capture' ? (
                 <button
                   type="button"
                   onClick={handleUseCurrentLocation}
-                  className="mt-2 inline-flex min-h-12 items-center gap-1.5 rounded-[10px] bg-brand-primary px-3 text-[14px] font-semibold text-white transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer"
+                  className={cn(statusAction, 'inline-flex items-center gap-1.5')}
                 >
-                  <Navigation className="size-4" aria-hidden="true" />
-                  <span>Use My GPS</span>
+                  <Navigation className="size-3.5" aria-hidden="true" />
+                  {t('map.useGps')}
                 </button>
-              ) : null}
-              {locationError ? (
-                <p
-                  role="alert"
-                  className="mt-2 flex items-start gap-1.5 text-[13px] leading-snug text-[#b45309]"
-                >
-                  <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                  <span>{locationError}</span>
-                </p>
-              ) : null}
-            </div>
-            <button
-              type="button"
-              onClick={exitMode}
-              aria-label="Cancel drawing or capture"
-              className="flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface-card px-2 text-[13px] font-medium text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
-            >
-              <X className="size-4" aria-hidden="true" />
-              <span className="ml-1">Cancel</span>
-            </button>
-          </div>
-
-          {mode === 'draw' ? (
-            <div
-              role="status"
-              aria-live="polite"
-              className={cn(
-                'rounded-full border bg-surface-card px-3 py-1.5 text-[13px] font-medium text-ink shadow-sm',
-                previewAreaHa != null && previewAreaHa < 0.01
-                  ? 'border-[#b45309]'
-                  : 'border-border',
               )}
-            >
-              {previewAreaHa == null
-                ? 'Keep tapping corners'
-                : previewAreaHa < 0.01
-                  ? 'Area looks too small. Keep tapping corners.'
-                  : `About ${previewAreaHa.toFixed(2)} hectares`}
+              <button
+                type="button"
+                onClick={exitMode}
+                aria-label={t('map.cancelAria')}
+                className="min-h-7 rounded-md px-1 text-xs font-medium leading-none text-white/80 transition-colors duration-150 motion-reduce:transition-none hover:text-white touch-manipulation cursor-pointer"
+              >
+                {t('map.cancel')}
+              </button>
             </div>
+          </div>
+          {locationError ? (
+            <p
+              role="alert"
+              className="mt-1.5 max-w-md rounded-lg border border-white/10 bg-[#111827]/70 px-2.5 py-1.5 text-center text-xs leading-snug text-white/90 backdrop-blur-sm"
+            >
+              {locationError}
+            </p>
           ) : null}
         </div>
       )}
+
+      {/* Bottom-centre live measurement, only while drawing. */}
+      {mode === 'draw' && !layersOpen ? (
+        <div className="pointer-events-none absolute inset-x-0 bottom-10 z-20 flex justify-center px-3 sm:bottom-3">
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-full border border-white/10 bg-[#111827]/70 px-3 py-1.5 text-[13px] font-medium tabular-nums text-white shadow-sm backdrop-blur-sm"
+          >
+            {previewAreaHa != null && previewPerimeterM != null
+              ? t('map.areaPerimeter', {
+                  area: previewAreaHa.toFixed(2),
+                  perimeter: Math.round(previewPerimeterM),
+                })
+              : previewAreaHa != null
+                ? t('map.areaOnly', { area: previewAreaHa.toFixed(2) })
+                : t('map.tapCornersMeasure')}
+          </div>
+        </div>
+      ) : null}
 
       {/* Overlapping-field chooser. */}
       {chooser ? (
@@ -963,8 +1146,8 @@ export function HonestyMapCanvas({
           className="absolute z-40"
           style={{ left: chooser.x, top: chooser.y, transform: 'translate(-50%, -110%)' }}
         >
-          <div className="w-max max-w-[220px] rounded-xl border border-border bg-surface-card p-1 shadow-sm">
-            <p className="px-2 py-1 text-[11px] text-ink-muted">Which field?</p>
+          <div className="w-max max-w-[220px] rounded-lg border border-border bg-surface-card/80 p-1 shadow-sm backdrop-blur-sm">
+            <p className="px-2 py-1 text-xs text-ink-muted">{t('map.whichField')}</p>
             {chooser.options.map((option) => (
               <button
                 key={option.id}
@@ -973,7 +1156,7 @@ export function HonestyMapCanvas({
                   onSelectParcelRef.current?.(option.id);
                   setChooser(null);
                 }}
-                className="block min-h-12 w-full rounded-lg px-2 py-2 text-left text-[13px] text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
+                className="block min-h-11 w-full rounded-lg px-2 py-2 text-left text-[13px] text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
               >
                 {option.name}
               </button>
@@ -982,27 +1165,24 @@ export function HonestyMapCanvas({
         </div>
       ) : null}
 
-      {/* Layers bottom sheet, above the toolbar. */}
+      {/* Layers bottom sheet. It may be wider than the edge pills only while open. */}
       {layersOpen ? (
-        <div className="pointer-events-auto absolute inset-x-0 bottom-[96px] z-30 px-2 sm:px-3">
-          <div className="mx-auto w-full max-w-md rounded-2xl border border-border bg-surface-card p-4 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[15px] font-semibold text-ink">Map layers</h3>
+        <div className="pointer-events-auto absolute inset-x-0 bottom-2 z-40 px-2 sm:bottom-3 sm:px-3">
+          <div className="mx-auto max-h-[70%] w-full max-w-sm overflow-y-auto rounded-lg border border-border bg-surface-card/80 p-2.5 shadow-sm backdrop-blur-sm sm:max-h-[calc(100%-1rem)] sm:p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-ink">{t('map.layersTitle')}</h3>
               <button
                 type="button"
                 onClick={() => setLayersOpen(false)}
-                aria-label="Close layers"
-                className="flex min-h-12 min-w-12 items-center justify-center rounded-[10px] text-ink-muted transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint hover:text-brand-primary touch-manipulation cursor-pointer"
+                aria-label={t('map.closeLayers')}
+                className="flex size-8 items-center justify-center rounded-md text-ink-muted transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint hover:text-brand-primary touch-manipulation cursor-pointer"
               >
-                <X className="size-5" aria-hidden="true" />
+                <X className="size-4" aria-hidden="true" />
               </button>
             </div>
 
-            <label
-              htmlFor="map-data-layer"
-              className="block text-[13px] font-medium text-ink-muted"
-            >
-              Satellite data layer
+            <label htmlFor="map-data-layer" className="block text-xs font-medium text-ink-muted">
+              {t('map.dataLayer')}
             </label>
             <Select
               value={selectedGridKey}
@@ -1010,13 +1190,13 @@ export function HonestyMapCanvas({
             >
               <SelectTrigger
                 id="map-data-layer"
-                aria-label="Satellite data layer resolution overlay"
+                aria-label={t('map.dataLayerAria')}
                 className="mt-1"
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {GRID_OVERLAY_OPTIONS.map((option) => (
+                {gridOverlayOptions.map((option) => (
                   <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
@@ -1026,151 +1206,63 @@ export function HonestyMapCanvas({
 
             <label
               htmlFor="map-cell-footprint"
-              className="mt-2 flex min-h-12 cursor-pointer items-center justify-between gap-3 touch-manipulation"
+              className="mt-1 flex min-h-9 cursor-pointer items-center justify-between gap-2 touch-manipulation"
             >
-              <span className="text-[14px] text-ink">Show cell footprint</span>
+              <span className="text-xs text-ink">{t('map.showFootprint')}</span>
               <Switch
                 id="map-cell-footprint"
                 checked={showGridOverlay}
                 onCheckedChange={setShowGridOverlay}
-                aria-label="Show cell footprint"
+                aria-label={t('map.showFootprint')}
               />
             </label>
             <label
               htmlFor="map-hide-details"
-              className="flex min-h-12 cursor-pointer items-center justify-between gap-3 touch-manipulation"
+              className="flex min-h-9 cursor-pointer items-center justify-between gap-2 touch-manipulation"
             >
-              <span className="text-[14px] text-ink">Hide map details</span>
+              <span className="text-xs text-ink">{t('map.hideDetails')}</span>
               <Switch
                 id="map-hide-details"
                 checked={!showMapDetails}
                 onCheckedChange={(checked) => setShowMapDetails(!checked)}
-                aria-label="Hide map details"
+                aria-label={t('map.hideDetails')}
               />
             </label>
 
-            <div className="mt-2">
-              <span className="text-[13px] font-medium text-ink-muted">Basemap</span>
-              <div className="mt-1 flex gap-2">
+            <div className="mt-1.5">
+              <span className="text-xs font-medium text-ink-muted">{t('map.basemap')}</span>
+              <div className="mt-1 flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setBasemapStyle('satellite')}
                   aria-pressed={basemapStyle === 'satellite'}
                   className={cn(
-                    'min-h-12 flex-1 rounded-[10px] border text-[14px] font-medium transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer',
+                    'min-h-9 flex-1 rounded-md border text-xs font-medium transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer',
                     basemapStyle === 'satellite'
-                      ? 'border-brand-primary bg-brand-primary text-white'
-                      : 'border-border bg-surface-card text-ink',
+                      ? 'border-brand-primary bg-brand-primary/85 text-white'
+                      : 'border-border bg-surface-card/70 text-ink',
                   )}
                 >
-                  Satellite
+                  {t('map.satellite')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setBasemapStyle('street')}
                   aria-pressed={basemapStyle === 'street'}
                   className={cn(
-                    'min-h-12 flex-1 rounded-[10px] border text-[14px] font-medium transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer',
+                    'min-h-9 flex-1 rounded-md border text-xs font-medium transition-colors duration-150 motion-reduce:transition-none touch-manipulation cursor-pointer',
                     basemapStyle === 'street'
-                      ? 'border-brand-primary bg-brand-primary text-white'
-                      : 'border-border bg-surface-card text-ink',
+                      ? 'border-brand-primary bg-brand-primary/85 text-white'
+                      : 'border-border bg-surface-card/70 text-ink',
                   )}
                 >
-                  Streets
+                  {t('map.streets')}
                 </button>
               </div>
             </div>
           </div>
         </div>
       ) : null}
-
-      {/* Persistent bottom toolbar. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 p-2 sm:p-3">
-        <div className="pointer-events-auto mx-auto w-full max-w-md space-y-2">
-          {drawActive ? (
-            <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-card p-2 shadow-sm">
-              <button
-                type="button"
-                onClick={handleDoneDrawing}
-                className="min-h-12 flex-[2] rounded-xl bg-brand-primary text-[15px] font-semibold text-white ring-2 ring-white transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-hover touch-manipulation cursor-pointer"
-              >
-                Done
-              </button>
-              <button
-                type="button"
-                onClick={handleUndoDrawing}
-                className="flex min-h-12 flex-1 items-center justify-center gap-1 rounded-xl border border-border bg-surface-card text-[14px] font-medium text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
-              >
-                <Undo2 className="size-4" aria-hidden="true" />
-                <span>Undo</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleClearDrawing}
-                className="flex min-h-12 flex-1 items-center justify-center gap-1 rounded-xl border border-border bg-surface-card text-[14px] font-medium text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
-              >
-                <Trash2 className="size-4" aria-hidden="true" />
-                <span>Clear</span>
-              </button>
-            </div>
-          ) : null}
-
-          <div className="flex items-stretch justify-around gap-1 rounded-2xl border border-border bg-surface-card p-2 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setMode('select')}
-              aria-pressed={mode === 'select'}
-              aria-label="Select field"
-              className={cn(toolBase, mode === 'select' ? activeTool : inactiveTool)}
-            >
-              <MousePointer2
-                className={cn('size-5', mode === 'select' ? 'text-white' : 'text-ink-muted')}
-                aria-hidden="true"
-              />
-              <span>Select</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode(drawActive ? 'select' : 'draw')}
-              aria-pressed={drawActive}
-              aria-label="Draw field"
-              className={cn(toolBase, drawActive ? activeTool : inactiveTool)}
-            >
-              <PenLine
-                className={cn('size-5', drawActive ? 'text-white' : 'text-ink-muted')}
-                aria-hidden="true"
-              />
-              <span>Draw</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode(mode === 'capture' ? 'select' : 'capture')}
-              aria-pressed={mode === 'capture'}
-              aria-label="My location"
-              className={cn(toolBase, mode === 'capture' ? activeTool : inactiveTool)}
-            >
-              <LocateFixed
-                className={cn('size-5', mode === 'capture' ? 'text-white' : 'text-ink-muted')}
-                aria-hidden="true"
-              />
-              <span>Location</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setLayersOpen((open) => !open)}
-              aria-pressed={layersOpen}
-              aria-label="Layers"
-              className={cn(toolBase, layersOpen ? activeTool : inactiveTool)}
-            >
-              <Layers3
-                className={cn('size-5', layersOpen ? 'text-white' : 'text-ink-muted')}
-                aria-hidden="true"
-              />
-              <span>Layers</span>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
