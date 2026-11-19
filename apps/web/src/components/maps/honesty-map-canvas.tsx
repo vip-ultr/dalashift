@@ -951,54 +951,13 @@ export function HonestyMapCanvas({
               setSearchOpen((open) => !open);
             }}
             aria-label={t('map.searchAria')}
+            title={t('map.searchAria')}
             aria-expanded={searchOpen}
             aria-controls="map-place-search"
             className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
           >
             <Search className="size-[18px]" aria-hidden="true" />
           </button>
-          {searchOpen ? (
-            <div
-              id="map-place-search"
-              className="pointer-events-auto absolute right-0 top-full mt-1.5 w-[min(17rem,calc(100vw-3rem))] rounded-lg border border-border bg-surface-card/85 p-2 shadow-sm backdrop-blur-sm"
-            >
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder={t('map.searchPlaceholder')}
-                aria-label={t('map.searchAria')}
-                className="w-full rounded-md border border-border bg-surface-card/70 px-2 py-1.5 text-xs text-ink placeholder:text-ink-muted focus:border-brand-primary focus:outline-none"
-              />
-              <p className="mt-1 px-1 text-xs leading-snug text-ink-muted">{t('map.searchHint')}</p>
-              <ul className="mt-1 max-h-40 overflow-y-auto">
-                {searchResults.map((place) => (
-                  <li key={`${place.kind}-${place.name}`}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        mapInstanceRef.current?.flyTo({
-                          center: [place.lon, place.lat],
-                          zoom: 13,
-                          duration: 1200,
-                        });
-                        setSearchOpen(false);
-                        setSearchQuery('');
-                      }}
-                      className="flex min-h-9 w-full items-center rounded-md px-2 text-left text-xs text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
-                    >
-                      {place.name}
-                    </button>
-                  </li>
-                ))}
-                {searchQuery.trim().length >= 2 && searchResults.length === 0 ? (
-                  <li className="px-2 py-1.5 text-xs leading-snug text-ink-muted">
-                    {t('map.searchNoResults')}
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ) : null}
         </div>
         <button
           type="button"
@@ -1007,6 +966,7 @@ export function HonestyMapCanvas({
             setLayersOpen((open) => !open);
           }}
           aria-label={t('map.layersTitle')}
+          title={t('map.layersTitle')}
           aria-pressed={layersOpen}
           className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
         >
@@ -1015,12 +975,59 @@ export function HonestyMapCanvas({
         </button>
       </div>
 
+      {/* The panel is a sibling of the controls so its width follows the map,
+          not the viewport. On phones the map is narrower than the screen. */}
+      {searchOpen ? (
+        <div
+          id="map-place-search"
+          className="pointer-events-auto absolute inset-x-2 top-12 z-40 rounded-lg border border-border bg-surface-card/85 p-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:right-3 sm:w-80"
+        >
+          <input
+            type="search"
+            autoFocus
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={t('map.searchPlaceholder')}
+            aria-label={t('map.searchAria')}
+            className="w-full rounded-md border border-border bg-surface-card/70 px-2 py-1.5 text-xs text-ink placeholder:text-ink-muted/70 placeholder:opacity-80 focus:border-brand-primary focus:outline-none"
+          />
+          <p className="mt-1 px-1 text-xs leading-snug text-ink-muted">{t('map.searchHint')}</p>
+          <ul className="mt-1 max-h-40 overflow-y-auto">
+            {searchResults.map((place) => (
+              <li key={`${place.kind}-${place.name}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    mapInstanceRef.current?.flyTo({
+                      center: [place.lon, place.lat],
+                      zoom: 13,
+                      duration: 1200,
+                    });
+                    setSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className="flex min-h-9 w-full items-center rounded-md px-2 text-left text-xs text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-brand-primary-tint touch-manipulation cursor-pointer"
+                >
+                  {place.name}
+                </button>
+              </li>
+            ))}
+            {searchQuery.trim().length >= 2 && searchResults.length === 0 ? (
+              <li className="px-2 py-1.5 text-xs leading-snug text-ink-muted">
+                {t('map.searchNoResults')}
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      ) : null}
+
       {/* Right-edge map controls: zoom, zoom out, my location. */}
       <div className="pointer-events-none absolute right-2 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-1.5 sm:right-3">
         <button
           type="button"
           onClick={() => mapInstanceRef.current?.zoomIn()}
           aria-label={t('map.zoomIn')}
+          title={t('map.zoomIn')}
           className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
         >
           <Plus className="size-5" aria-hidden="true" />
@@ -1029,6 +1036,7 @@ export function HonestyMapCanvas({
           type="button"
           onClick={() => mapInstanceRef.current?.zoomOut()}
           aria-label={t('map.zoomOut')}
+          title={t('map.zoomOut')}
           className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
         >
           <Minus className="size-5" aria-hidden="true" />
@@ -1037,6 +1045,7 @@ export function HonestyMapCanvas({
           type="button"
           onClick={handleUseCurrentLocation}
           aria-label={t('map.myLocation')}
+          title={t('map.myLocation')}
           className={cn(roundControl, 'pointer-events-auto cursor-pointer')}
         >
           <LocateFixed className="size-5" aria-hidden="true" />
@@ -1051,6 +1060,7 @@ export function HonestyMapCanvas({
             type="button"
             onClick={() => setMode('draw')}
             aria-label={t('map.drawBoundary')}
+            title={t('map.drawField')}
             className={cn(pillBase, 'pointer-events-auto cursor-pointer')}
           >
             <PenLine className="size-[18px]" aria-hidden="true" />
@@ -1060,7 +1070,7 @@ export function HonestyMapCanvas({
       ) : null}
 
       {/* Compact status line while drawing or capturing. */}
-      {(mode === 'draw' || mode === 'capture') && (
+      {(mode === 'draw' || mode === 'capture') && !searchOpen && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col items-center p-1.5 sm:p-2">
           <div className="pointer-events-auto flex w-full max-w-sm flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded-md border border-white/10 bg-[#111827]/70 px-2 py-1 text-white shadow-sm backdrop-blur-sm">
             <p className="text-xs font-medium leading-tight">

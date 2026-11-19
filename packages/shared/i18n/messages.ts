@@ -262,10 +262,7 @@ export const messages: Readonly<Record<string, Readonly<{ en: string; ha: string
   'map.streets': { en: 'Streets', ha: 'Tituna' },
   'map.search': { en: 'Find a place', ha: 'Nemi wuri' },
   'map.searchAria': { en: 'Search places in Kano', ha: 'Nemi wurare a Kano' },
-  'map.searchPlaceholder': {
-    en: 'Search Kano towns and LGAs',
-    ha: 'Nemi garuruwa da kananan hukumomi a Kano',
-  },
+  'map.searchPlaceholder': { en: 'Search places in Kano', ha: 'Nemi wuri a Kano' },
   'map.searchNoResults': {
     en: 'No place found. Try a shorter name.',
     ha: 'Ba a sami wuri ba. Gwada suna mafi guntu.',

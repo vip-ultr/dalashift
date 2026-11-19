@@ -11,14 +11,18 @@ function isInBbox(lon: number, lat: number): boolean {
 
 describe('searchKanoPlaces', () => {
   it('returns prefix matches first', () => {
-    const results = searchKanoPlaces('daw');
+    const results = searchKanoPlaces('daw', 50);
     expect(results.length).toBeGreaterThanOrEqual(2);
     expect(results.map((place) => place.name)).toContain('Dawakin Kudu');
     expect(results.map((place) => place.name)).toContain('Dawakin Tofa');
-    for (const place of results) {
-      const candidates = [place.name, ...place.aliases];
-      expect(candidates.some((candidate) => candidate.toLowerCase().startsWith('daw'))).toBe(true);
-    }
+    const isPrefixMatch = (place: (typeof results)[number]) =>
+      [place.name, ...place.aliases].some((candidate) => candidate.toLowerCase().startsWith('daw'));
+    const prefixCount = results.filter(isPrefixMatch).length;
+    expect(prefixCount).toBeGreaterThan(0);
+    expect(results.map(isPrefixMatch)).toEqual([
+      ...Array<boolean>(prefixCount).fill(true),
+      ...Array<boolean>(results.length - prefixCount).fill(false),
+    ]);
   });
 
   it('finds a place through a common Hausa spelling alias', () => {
@@ -69,10 +73,12 @@ describe('Kano gazetteer', () => {
     expect([...KANO_BBOX]).toEqual([7.693, 10.565, 9.339, 12.575]);
   });
 
-  it('contains all 44 LGAs and 15 major towns', () => {
-    expect(rawGazetteer.places).toHaveLength(59);
+  it('contains all 44 LGAs, 15 major towns and villages across Kano', () => {
+    expect(rawGazetteer.places.length).toBeGreaterThanOrEqual(59);
     expect(rawGazetteer.places.filter((place) => place.kind === 'lga')).toHaveLength(44);
-    expect(rawGazetteer.places.filter((place) => place.kind === 'town')).toHaveLength(15);
+    expect(
+      rawGazetteer.places.filter((place) => place.kind === 'town').length,
+    ).toBeGreaterThanOrEqual(15);
     expect(KANO_PLACES).toHaveLength(rawGazetteer.places.length);
   });
 

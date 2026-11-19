@@ -1,19 +1,62 @@
 {
-  "source": {
-    "title": "Kano State LGA and town gazetteer for offline map search",
-    "url": "https://acresal.gov.ng/states/kano/",
-    "accessed": "2026-11-18",
-    "note": "LGA names follow the 44 local government areas of Kano State. Coordinates are approximate administrative-centre points placed inside each known area, not survey-grade centroids. They exist so offline search can fly the map to the right part of the state. No village, farm or personally identifying coordinates are included. The bounding box 7.693,10.565,9.339,12.575 is the Kano State extent published on the ACReSAL Kano profile. Some metropolitan names appear as both an LGA and a town because they are both an administrative unit and an urban centre. Callers can filter by kind if they only want one of the two."
-  },
+  "source": "Curated Kano LGAs and towns merged with populated places from GeoNames NG.txt (admin1 29, Kano State), filtered to the Kano bounding box.",
   "places": [
-    { "name": "Ajingi", "aliases": ["Ajengi"], "kind": "lga", "lon": 9.05, "lat": 11.98 },
-    { "name": "Albasu", "aliases": ["Albasu"], "kind": "lga", "lon": 9.06, "lat": 11.78 },
-    { "name": "Bagwai", "aliases": ["Bagawi"], "kind": "lga", "lon": 8.18, "lat": 12.15 },
-    { "name": "Bebeji", "aliases": ["Bebeji"], "kind": "lga", "lon": 8.65, "lat": 11.76 },
-    { "name": "Bichi", "aliases": ["Bichi"], "kind": "lga", "lon": 8.32, "lat": 12.3 },
-    { "name": "Bunkure", "aliases": ["Bunkura"], "kind": "lga", "lon": 8.69, "lat": 11.7 },
-    { "name": "Dala", "aliases": ["Dala"], "kind": "lga", "lon": 8.52, "lat": 11.99 },
-    { "name": "Dambatta", "aliases": ["Dambarta"], "kind": "lga", "lon": 8.6, "lat": 12.195 },
+    {
+      "name": "Ajingi",
+      "aliases": ["Ajengi"],
+      "kind": "lga",
+      "lon": 9.05,
+      "lat": 11.98
+    },
+    {
+      "name": "Albasu",
+      "aliases": ["Albasu"],
+      "kind": "lga",
+      "lon": 9.06,
+      "lat": 11.78
+    },
+    {
+      "name": "Bagwai",
+      "aliases": ["Bagawi"],
+      "kind": "lga",
+      "lon": 8.18,
+      "lat": 12.15
+    },
+    {
+      "name": "Bebeji",
+      "aliases": ["Bebeji"],
+      "kind": "lga",
+      "lon": 8.65,
+      "lat": 11.76
+    },
+    {
+      "name": "Bichi",
+      "aliases": ["Bichi"],
+      "kind": "lga",
+      "lon": 8.32,
+      "lat": 12.3
+    },
+    {
+      "name": "Bunkure",
+      "aliases": ["Bunkura"],
+      "kind": "lga",
+      "lon": 8.69,
+      "lat": 11.7
+    },
+    {
+      "name": "Dala",
+      "aliases": ["Dala"],
+      "kind": "lga",
+      "lon": 8.52,
+      "lat": 11.99
+    },
+    {
+      "name": "Dambatta",
+      "aliases": ["Dambarta"],
+      "kind": "lga",
+      "lon": 8.6,
+      "lat": 12.195
+    },
     {
       "name": "Dawakin Kudu",
       "aliases": ["Dawakin Kuda", "Dawa Kudu"],
@@ -21,9 +64,27 @@
       "lon": 8.7,
       "lat": 11.89
     },
-    { "name": "Dawakin Tofa", "aliases": ["Dawa Tofa"], "kind": "lga", "lon": 8.36, "lat": 12.095 },
-    { "name": "Doguwa", "aliases": ["Dugwa", "Riruwai"], "kind": "lga", "lon": 8.7, "lat": 11.46 },
-    { "name": "Fagge", "aliases": ["Fage", "Waje"], "kind": "lga", "lon": 8.545, "lat": 12.02 },
+    {
+      "name": "Dawakin Tofa",
+      "aliases": ["Dawa Tofa"],
+      "kind": "lga",
+      "lon": 8.36,
+      "lat": 12.095
+    },
+    {
+      "name": "Doguwa",
+      "aliases": ["Dugwa", "Riruwai"],
+      "kind": "lga",
+      "lon": 8.7,
+      "lat": 11.46
+    },
+    {
+      "name": "Fagge",
+      "aliases": ["Fage", "Waje"],
+      "kind": "lga",
+      "lon": 8.545,
+      "lat": 12.02
+    },
     {
       "name": "Gabasawa",
       "aliases": ["Gabasawa", "Zakirai"],
@@ -31,7 +92,13 @@
       "lon": 8.88,
       "lat": 12.11
     },
-    { "name": "Garko", "aliases": ["Garko"], "kind": "lga", "lon": 8.5, "lat": 11.7 },
+    {
+      "name": "Garko",
+      "aliases": ["Garko"],
+      "kind": "lga",
+      "lon": 8.5,
+      "lat": 11.7
+    },
     {
       "name": "Garun Mallam",
       "aliases": ["Garan Mallam", "Garun Malam"],
@@ -39,11 +106,41 @@
       "lon": 8.66,
       "lat": 11.88
     },
-    { "name": "Gaya", "aliases": ["Gaiya"], "kind": "lga", "lon": 9.0, "lat": 11.78 },
-    { "name": "Gezawa", "aliases": ["Gezawa"], "kind": "lga", "lon": 8.65, "lat": 12.085 },
-    { "name": "Gwale", "aliases": ["Gwale"], "kind": "lga", "lon": 8.515, "lat": 11.972 },
-    { "name": "Gwarzo", "aliases": ["Gwarzo"], "kind": "lga", "lon": 8.05, "lat": 12.01 },
-    { "name": "Kabo", "aliases": ["Kabo"], "kind": "lga", "lon": 8.46, "lat": 12.3 },
+    {
+      "name": "Gaya",
+      "aliases": ["Gaiya"],
+      "kind": "lga",
+      "lon": 9,
+      "lat": 11.78
+    },
+    {
+      "name": "Gezawa",
+      "aliases": ["Gezawa"],
+      "kind": "lga",
+      "lon": 8.65,
+      "lat": 12.085
+    },
+    {
+      "name": "Gwale",
+      "aliases": ["Gwale"],
+      "kind": "lga",
+      "lon": 8.515,
+      "lat": 11.972
+    },
+    {
+      "name": "Gwarzo",
+      "aliases": ["Gwarzo"],
+      "kind": "lga",
+      "lon": 8.05,
+      "lat": 12.01
+    },
+    {
+      "name": "Kabo",
+      "aliases": ["Kabo"],
+      "kind": "lga",
+      "lon": 8.46,
+      "lat": 12.3
+    },
     {
       "name": "Kano Municipal",
       "aliases": ["Kano Municipal Council", "Kofar Kudu"],
@@ -51,10 +148,34 @@
       "lon": 8.525,
       "lat": 12.002
     },
-    { "name": "Karaye", "aliases": ["Karaye"], "kind": "lga", "lon": 7.98, "lat": 11.93 },
-    { "name": "Kibiya", "aliases": ["Kibiya"], "kind": "lga", "lon": 8.73, "lat": 11.62 },
-    { "name": "Kiru", "aliases": ["Kiru"], "kind": "lga", "lon": 8.74, "lat": 11.85 },
-    { "name": "Kumbotso", "aliases": ["Kumbotso"], "kind": "lga", "lon": 8.575, "lat": 11.925 },
+    {
+      "name": "Karaye",
+      "aliases": ["Karaye"],
+      "kind": "lga",
+      "lon": 7.98,
+      "lat": 11.93
+    },
+    {
+      "name": "Kibiya",
+      "aliases": ["Kibiya"],
+      "kind": "lga",
+      "lon": 8.73,
+      "lat": 11.62
+    },
+    {
+      "name": "Kiru",
+      "aliases": ["Kiru"],
+      "kind": "lga",
+      "lon": 8.74,
+      "lat": 11.85
+    },
+    {
+      "name": "Kumbotso",
+      "aliases": ["Kumbotso"],
+      "kind": "lga",
+      "lon": 8.575,
+      "lat": 11.925
+    },
     {
       "name": "Kunchi",
       "aliases": ["Ghari", "Gari", "Kunci"],
@@ -62,10 +183,34 @@
       "lon": 8.45,
       "lat": 12.26
     },
-    { "name": "Kura", "aliases": ["Kura"], "kind": "lga", "lon": 8.62, "lat": 11.83 },
-    { "name": "Madobi", "aliases": ["Madobi"], "kind": "lga", "lon": 8.69, "lat": 11.94 },
-    { "name": "Makoda", "aliases": ["Makoda"], "kind": "lga", "lon": 8.63, "lat": 12.28 },
-    { "name": "Minjibir", "aliases": ["Minjibir"], "kind": "lga", "lon": 8.58, "lat": 12.155 },
+    {
+      "name": "Kura",
+      "aliases": ["Kura"],
+      "kind": "lga",
+      "lon": 8.62,
+      "lat": 11.83
+    },
+    {
+      "name": "Madobi",
+      "aliases": ["Madobi"],
+      "kind": "lga",
+      "lon": 8.69,
+      "lat": 11.94
+    },
+    {
+      "name": "Makoda",
+      "aliases": ["Makoda"],
+      "kind": "lga",
+      "lon": 8.63,
+      "lat": 12.28
+    },
+    {
+      "name": "Minjibir",
+      "aliases": ["Minjibir"],
+      "kind": "lga",
+      "lon": 8.58,
+      "lat": 12.155
+    },
     {
       "name": "Nassarawa",
       "aliases": ["Nasarawa", "Bompai"],
@@ -73,12 +218,48 @@
       "lon": 8.56,
       "lat": 12.045
     },
-    { "name": "Rano", "aliases": ["Rano"], "kind": "lga", "lon": 8.72, "lat": 11.77 },
-    { "name": "Rimin Gado", "aliases": ["Rimin Gada"], "kind": "lga", "lon": 8.23, "lat": 12.075 },
-    { "name": "Rogo", "aliases": ["Rogo"], "kind": "lga", "lon": 7.86, "lat": 11.82 },
-    { "name": "Shanono", "aliases": ["Shanono"], "kind": "lga", "lon": 8.24, "lat": 12.16 },
-    { "name": "Sumaila", "aliases": ["Sumeila"], "kind": "lga", "lon": 8.55, "lat": 11.58 },
-    { "name": "Takai", "aliases": ["Takai"], "kind": "lga", "lon": 8.915, "lat": 11.96 },
+    {
+      "name": "Rano",
+      "aliases": ["Rano"],
+      "kind": "lga",
+      "lon": 8.72,
+      "lat": 11.77
+    },
+    {
+      "name": "Rimin Gado",
+      "aliases": ["Rimin Gada"],
+      "kind": "lga",
+      "lon": 8.23,
+      "lat": 12.075
+    },
+    {
+      "name": "Rogo",
+      "aliases": ["Rogo"],
+      "kind": "lga",
+      "lon": 7.86,
+      "lat": 11.82
+    },
+    {
+      "name": "Shanono",
+      "aliases": ["Shanono"],
+      "kind": "lga",
+      "lon": 8.24,
+      "lat": 12.16
+    },
+    {
+      "name": "Sumaila",
+      "aliases": ["Sumeila"],
+      "kind": "lga",
+      "lon": 8.55,
+      "lat": 11.58
+    },
+    {
+      "name": "Takai",
+      "aliases": ["Takai"],
+      "kind": "lga",
+      "lon": 8.915,
+      "lat": 11.96
+    },
     {
       "name": "Tarauni",
       "aliases": ["Taruni", "Unguwa Uku"],
@@ -86,12 +267,48 @@
       "lon": 8.565,
       "lat": 11.985
     },
-    { "name": "Tofa", "aliases": ["Tofa"], "kind": "lga", "lon": 8.31, "lat": 12.115 },
-    { "name": "Tsanyawa", "aliases": ["Tsaniya"], "kind": "lga", "lon": 8.28, "lat": 12.24 },
-    { "name": "Tudun Wada", "aliases": ["Tudunwada"], "kind": "lga", "lon": 8.55, "lat": 11.66 },
-    { "name": "Ungogo", "aliases": ["Ungogwa"], "kind": "lga", "lon": 8.55, "lat": 12.07 },
-    { "name": "Warawa", "aliases": ["Warawa"], "kind": "lga", "lon": 8.64, "lat": 11.96 },
-    { "name": "Wudil", "aliases": ["Wodil"], "kind": "lga", "lon": 8.85, "lat": 11.82 },
+    {
+      "name": "Tofa",
+      "aliases": ["Tofa"],
+      "kind": "lga",
+      "lon": 8.31,
+      "lat": 12.115
+    },
+    {
+      "name": "Tsanyawa",
+      "aliases": ["Tsaniya"],
+      "kind": "lga",
+      "lon": 8.28,
+      "lat": 12.24
+    },
+    {
+      "name": "Tudun Wada",
+      "aliases": ["Tudunwada"],
+      "kind": "lga",
+      "lon": 8.55,
+      "lat": 11.66
+    },
+    {
+      "name": "Ungogo",
+      "aliases": ["Ungogwa"],
+      "kind": "lga",
+      "lon": 8.55,
+      "lat": 12.07
+    },
+    {
+      "name": "Warawa",
+      "aliases": ["Warawa"],
+      "kind": "lga",
+      "lon": 8.64,
+      "lat": 11.96
+    },
+    {
+      "name": "Wudil",
+      "aliases": ["Wodil"],
+      "kind": "lga",
+      "lon": 8.85,
+      "lat": 11.82
+    },
     {
       "name": "Kano city",
       "aliases": ["Kano", "Kano City", "Birnin Kano", "Kanu"],
@@ -99,7 +316,13 @@
       "lon": 8.53,
       "lat": 12.002
     },
-    { "name": "Fagge", "aliases": ["Fage", "Waje"], "kind": "town", "lon": 8.545, "lat": 12.02 },
+    {
+      "name": "Fagge",
+      "aliases": ["Fage", "Waje"],
+      "kind": "town",
+      "lon": 8.545,
+      "lat": 12.02
+    },
     {
       "name": "Nassarawa",
       "aliases": ["Nasarawa", "Bompai"],
@@ -121,13 +344,55 @@
       "lon": 8.575,
       "lat": 11.925
     },
-    { "name": "Wudil", "aliases": ["Wodil"], "kind": "town", "lon": 8.85, "lat": 11.82 },
-    { "name": "Gaya", "aliases": ["Gaiya"], "kind": "town", "lon": 9.0, "lat": 11.78 },
-    { "name": "Bichi", "aliases": ["Bichi"], "kind": "town", "lon": 8.32, "lat": 12.3 },
-    { "name": "Dambatta", "aliases": ["Dambarta"], "kind": "town", "lon": 8.6, "lat": 12.195 },
-    { "name": "Gezawa", "aliases": ["Gezawa"], "kind": "town", "lon": 8.65, "lat": 12.085 },
-    { "name": "Gwarzo", "aliases": ["Gwarzo"], "kind": "town", "lon": 8.05, "lat": 12.01 },
-    { "name": "Rano", "aliases": ["Rano"], "kind": "town", "lon": 8.72, "lat": 11.77 },
+    {
+      "name": "Wudil",
+      "aliases": ["Wodil"],
+      "kind": "town",
+      "lon": 8.85,
+      "lat": 11.82
+    },
+    {
+      "name": "Gaya",
+      "aliases": ["Gaiya"],
+      "kind": "town",
+      "lon": 9,
+      "lat": 11.78
+    },
+    {
+      "name": "Bichi",
+      "aliases": ["Bichi"],
+      "kind": "town",
+      "lon": 8.32,
+      "lat": 12.3
+    },
+    {
+      "name": "Dambatta",
+      "aliases": ["Dambarta"],
+      "kind": "town",
+      "lon": 8.6,
+      "lat": 12.195
+    },
+    {
+      "name": "Gezawa",
+      "aliases": ["Gezawa"],
+      "kind": "town",
+      "lon": 8.65,
+      "lat": 12.085
+    },
+    {
+      "name": "Gwarzo",
+      "aliases": ["Gwarzo"],
+      "kind": "town",
+      "lon": 8.05,
+      "lat": 12.01
+    },
+    {
+      "name": "Rano",
+      "aliases": ["Rano"],
+      "kind": "town",
+      "lon": 8.72,
+      "lat": 11.77
+    },
     {
       "name": "Dawakin Tofa",
       "aliases": ["Dawa Tofa"],
@@ -135,7 +400,7201 @@
       "lon": 8.36,
       "lat": 12.095
     },
-    { "name": "Sumaila", "aliases": ["Sumeila"], "kind": "town", "lon": 8.55, "lat": 11.58 },
-    { "name": "Kura", "aliases": ["Kura"], "kind": "town", "lon": 8.62, "lat": 11.83 }
+    {
+      "name": "Sumaila",
+      "aliases": ["Sumeila"],
+      "kind": "town",
+      "lon": 8.55,
+      "lat": 11.58
+    },
+    {
+      "name": "Kura",
+      "aliases": ["Kura"],
+      "kind": "town",
+      "lon": 8.62,
+      "lat": 11.83
+    },
+    {
+      "name": "Zuwo",
+      "aliases": ["Zuwa"],
+      "kind": "town",
+      "lon": 8.20692,
+      "lat": 11.74797
+    },
+    {
+      "name": "Zugace",
+      "aliases": ["Zugachi"],
+      "kind": "town",
+      "lon": 8.85139,
+      "lat": 12.05848
+    },
+    {
+      "name": "Zuga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.14382,
+      "lat": 11.51079
+    },
+    {
+      "name": "Zongo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63911,
+      "lat": 11.38685
+    },
+    {
+      "name": "Ziyara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9313,
+      "lat": 11.35204
+    },
+    {
+      "name": "Zedawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73081,
+      "lat": 12.29577
+    },
+    {
+      "name": "Zawaciki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46491,
+      "lat": 11.91579
+    },
+    {
+      "name": "Zarewa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.81231,
+      "lat": 11.39936
+    },
+    {
+      "name": "Zangon Gulya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95383,
+      "lat": 12.04552
+    },
+    {
+      "name": "Zango",
+      "aliases": ["Zangon"],
+      "kind": "town",
+      "lon": 8.01038,
+      "lat": 11.82528
+    },
+    {
+      "name": "Zakau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43522,
+      "lat": 11.4015
+    },
+    {
+      "name": "Yola",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99514,
+      "lat": 11.66812
+    },
+    {
+      "name": "Yimbu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78222,
+      "lat": 12.23419
+    },
+    {
+      "name": "Yawar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57074,
+      "lat": 11.48311
+    },
+    {
+      "name": "Yauran",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99128,
+      "lat": 11.4594
+    },
+    {
+      "name": "Yaryasa-ta-Yamma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.30754,
+      "lat": 11.33415
+    },
+    {
+      "name": "Yar Tofa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13243,
+      "lat": 12.0793
+    },
+    {
+      "name": "Yarma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.22936,
+      "lat": 11.36384
+    },
+    {
+      "name": "Yar Gaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66168,
+      "lat": 11.89506
+    },
+    {
+      "name": "Yan Turu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.91667,
+      "lat": 11.81667
+    },
+    {
+      "name": "Yan Rawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85977,
+      "lat": 11.82589
+    },
+    {
+      "name": "Yan Mamman",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.03333,
+      "lat": 12.26667
+    },
+    {
+      "name": "Yan Kusa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48831,
+      "lat": 11.91596
+    },
+    {
+      "name": "Yan Kuni",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28258,
+      "lat": 11.95968
+    },
+    {
+      "name": "Yankatsare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62012,
+      "lat": 11.89618
+    },
+    {
+      "name": "Yankamaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90076,
+      "lat": 12.31354
+    },
+    {
+      "name": "Yan Guruza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07109,
+      "lat": 11.90056
+    },
+    {
+      "name": "Yandake",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8291,
+      "lat": 12.24194
+    },
+    {
+      "name": "Yanchibi",
+      "aliases": ["Yanehibi"],
+      "kind": "town",
+      "lon": 7.8948,
+      "lat": 12.23676
+    },
+    {
+      "name": "Yamma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78122,
+      "lat": 12.25534
+    },
+    {
+      "name": "Yalwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3109,
+      "lat": 11.94668
+    },
+    {
+      "name": "Yako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19056,
+      "lat": 11.65273
+    },
+    {
+      "name": "Yadakwari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.41032,
+      "lat": 11.69748
+    },
+    {
+      "name": "Yada Kunya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63311,
+      "lat": 12.08326
+    },
+    {
+      "name": "Wasai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67947,
+      "lat": 12.15258
+    },
+    {
+      "name": "Warwade",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.33119,
+      "lat": 11.48669
+    },
+    {
+      "name": "Wangara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76743,
+      "lat": 12.03334
+    },
+    {
+      "name": "Wali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.14336,
+      "lat": 11.94199
+    },
+    {
+      "name": "Walawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33242,
+      "lat": 11.35939
+    },
+    {
+      "name": "Wak",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3578,
+      "lat": 11.58634
+    },
+    {
+      "name": "Waire",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.23484,
+      "lat": 12.35081
+    },
+    {
+      "name": "Waga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85579,
+      "lat": 12.16254
+    },
+    {
+      "name": "Wada",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0017,
+      "lat": 11.67739
+    },
+    {
+      "name": "Utai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88625,
+      "lat": 11.74538
+    },
+    {
+      "name": "Ungwan Yelwa Daji",
+      "aliases": ["Anguwan Yelwan Daji", "Yelwan Daji"],
+      "kind": "town",
+      "lon": 8.0652,
+      "lat": 11.48577
+    },
+    {
+      "name": "Ungwan Yanoko",
+      "aliases": ["Yanoko"],
+      "kind": "town",
+      "lon": 7.92321,
+      "lat": 11.45354
+    },
+    {
+      "name": "Ungwan Yakubu",
+      "aliases": ["Yakubu"],
+      "kind": "town",
+      "lon": 8.31298,
+      "lat": 11.34837
+    },
+    {
+      "name": "Ungwan Tofa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98229,
+      "lat": 11.78188
+    },
+    {
+      "name": "Ungwan Sundu",
+      "aliases": ["Sundu"],
+      "kind": "town",
+      "lon": 7.76326,
+      "lat": 11.37602
+    },
+    {
+      "name": "Ungwan Sora Gora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35084,
+      "lat": 11.82407
+    },
+    {
+      "name": "Ungwan Shida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83388,
+      "lat": 11.96067
+    },
+    {
+      "name": "Ungwan Sarkin Noma Mara",
+      "aliases": ["Sarkin Noma Mara"],
+      "kind": "town",
+      "lon": 8.17989,
+      "lat": 11.32409
+    },
+    {
+      "name": "Ungwan Salihu",
+      "aliases": ["Salihu"],
+      "kind": "town",
+      "lon": 8.19726,
+      "lat": 11.39408
+    },
+    {
+      "name": "Ungwan Sagondere",
+      "aliases": ["Sagondere"],
+      "kind": "town",
+      "lon": 7.98088,
+      "lat": 11.49096
+    },
+    {
+      "name": "Ungwan Rimi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33107,
+      "lat": 11.97269
+    },
+    {
+      "name": "Ung Rimi",
+      "aliases": ["Ungwan Rimi"],
+      "kind": "town",
+      "lon": 8.56967,
+      "lat": 11.91103
+    },
+    {
+      "name": "Ungwan Rajau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88333,
+      "lat": 11.9
+    },
+    {
+      "name": "Ungwan Oba",
+      "aliases": ["Olia"],
+      "kind": "town",
+      "lon": 8.26573,
+      "lat": 11.32068
+    },
+    {
+      "name": "Ungwan Musa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22017,
+      "lat": 11.58165
+    },
+    {
+      "name": "Ungwan Maryamu",
+      "aliases": ["Maryamu"],
+      "kind": "town",
+      "lon": 7.83442,
+      "lat": 11.33969
+    },
+    {
+      "name": "Ungwan Mallam Mamudu",
+      "aliases": ["Mallam Mamudu"],
+      "kind": "town",
+      "lon": 7.86349,
+      "lat": 11.41721
+    },
+    {
+      "name": "Ungwan Barau",
+      "aliases": ["Mallam Barau", "Ungwan Mallam Barau"],
+      "kind": "town",
+      "lon": 7.74714,
+      "lat": 11.40981
+    },
+    {
+      "name": "Ungwan Mainasara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.8758,
+      "lat": 11.89373
+    },
+    {
+      "name": "Ungwan Maigari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.71667,
+      "lat": 11.51667
+    },
+    {
+      "name": "Ungwan Mahammadu",
+      "aliases": ["Mahammadu"],
+      "kind": "town",
+      "lon": 8.26881,
+      "lat": 11.3572
+    },
+    {
+      "name": "Ungwan Magaji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93333,
+      "lat": 11.81667
+    },
+    {
+      "name": "Ungwan Lema",
+      "aliases": ["Lema"],
+      "kind": "town",
+      "lon": 8.00918,
+      "lat": 11.48339
+    },
+    {
+      "name": "Ungwan Kawari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93333,
+      "lat": 11.8
+    },
+    {
+      "name": "Ungwan Katsinawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9,
+      "lat": 11.88333
+    },
+    {
+      "name": "Ungwan Karo",
+      "aliases": ["Karo"],
+      "kind": "town",
+      "lon": 7.7733,
+      "lat": 11.39487
+    },
+    {
+      "name": "Ungwan Kaka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18465,
+      "lat": 11.62075
+    },
+    {
+      "name": "Ungwan Jaje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93815,
+      "lat": 11.76313
+    },
+    {
+      "name": "Ungwan Hasan",
+      "aliases": ["Hassan", "Ungwan Hassan"],
+      "kind": "town",
+      "lon": 7.71803,
+      "lat": 11.42461
+    },
+    {
+      "name": "Ungwan Haruna",
+      "aliases": ["Haruna"],
+      "kind": "town",
+      "lon": 7.72943,
+      "lat": 11.40541
+    },
+    {
+      "name": "Ungwan Giwa",
+      "aliases": ["Giwa"],
+      "kind": "town",
+      "lon": 7.8144,
+      "lat": 11.34691
+    },
+    {
+      "name": "Ungwan Gagara",
+      "aliases": ["Gangara", "Ungwan Gangara"],
+      "kind": "town",
+      "lon": 7.804,
+      "lat": 11.52752
+    },
+    {
+      "name": "Ungwan Gabas",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.75,
+      "lat": 11.51667
+    },
+    {
+      "name": "Ungwan Gabari",
+      "aliases": ["Gabari"],
+      "kind": "town",
+      "lon": 8.0451,
+      "lat": 11.494
+    },
+    {
+      "name": "Ungwan Dawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33405,
+      "lat": 11.99396
+    },
+    {
+      "name": "Ungwan Dan Nana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.73833,
+      "lat": 11.53025
+    },
+    {
+      "name": "Ungwan Dan Kolo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.73333,
+      "lat": 11.51667
+    },
+    {
+      "name": "Ungwan Bawo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.96848,
+      "lat": 11.96076
+    },
+    {
+      "name": "Ungwan Audu",
+      "aliases": ["Audu"],
+      "kind": "town",
+      "lon": 7.75004,
+      "lat": 11.45532
+    },
+    {
+      "name": "Ungwan Arna",
+      "aliases": ["Arna"],
+      "kind": "town",
+      "lon": 8.27662,
+      "lat": 11.38258
+    },
+    {
+      "name": "Ungwan Amawou",
+      "aliases": ["Amawou"],
+      "kind": "town",
+      "lon": 8.37792,
+      "lat": 11.3551
+    },
+    {
+      "name": "Ungwan Almajiri",
+      "aliases": ["Almajiri"],
+      "kind": "town",
+      "lon": 8.20353,
+      "lat": 11.44355
+    },
+    {
+      "name": "Ungwan Alabo",
+      "aliases": ["Alabo"],
+      "kind": "town",
+      "lon": 7.93597,
+      "lat": 11.40459
+    },
+    {
+      "name": "Unguwar Tsofon Sariki",
+      "aliases": ["Tsofon Sariki"],
+      "kind": "town",
+      "lon": 8.7,
+      "lat": 10.63333
+    },
+    {
+      "name": "Unguwar Nata’ala",
+      "aliases": ["Unguwar Nata'ala", "Unguwan Nata'ala", "Unguwan Nata’ala"],
+      "kind": "town",
+      "lon": 8.52178,
+      "lat": 11.35721
+    },
+    {
+      "name": "Unguwar Makarya Sabuwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.10183,
+      "lat": 11.93417
+    },
+    {
+      "name": "Unguwar Kuka",
+      "aliases": ["Ungwan Kuka"],
+      "kind": "town",
+      "lon": 8.99857,
+      "lat": 11.55649
+    },
+    {
+      "name": "Unguwar Ganinki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.09498,
+      "lat": 11.90214
+    },
+    {
+      "name": "Unguwan Wusama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11809,
+      "lat": 11.77226
+    },
+    {
+      "name": "Unguwan Larawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.17643,
+      "lat": 11.82845
+    },
+    {
+      "name": "Unguwan Kwari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02858,
+      "lat": 11.81185
+    },
+    {
+      "name": "Unguwan Kigo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.04817,
+      "lat": 11.76751
+    },
+    {
+      "name": "Unguwan Gudalai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88652,
+      "lat": 11.25099
+    },
+    {
+      "name": "Unguwan Dabai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07763,
+      "lat": 11.8676
+    },
+    {
+      "name": "Unguwan Bunungu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54467,
+      "lat": 11.35017
+    },
+    {
+      "name": "Danzaki",
+      "aliases": ["Ungua Zaki"],
+      "kind": "town",
+      "lon": 8.6753,
+      "lat": 12.02134
+    },
+    {
+      "name": "Ungua Dogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78912,
+      "lat": 12.3855
+    },
+    {
+      "name": "Ungua Bai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.98258,
+      "lat": 12.04698
+    },
+    {
+      "name": "Turawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02998,
+      "lat": 11.70811
+    },
+    {
+      "name": "Turame",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2809,
+      "lat": 11.33796
+    },
+    {
+      "name": "Tunfafi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02221,
+      "lat": 11.82845
+    },
+    {
+      "name": "Tukue",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51576,
+      "lat": 12.38384
+    },
+    {
+      "name": "Tudun Yola",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46902,
+      "lat": 11.99275
+    },
+    {
+      "name": "Tudun Kaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93124,
+      "lat": 11.73161
+    },
+    {
+      "name": "Tsohurwar Badafi",
+      "aliases": ["Tsohuwar Badafi"],
+      "kind": "town",
+      "lon": 8.25023,
+      "lat": 11.35166
+    },
+    {
+      "name": "Tsida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91145,
+      "lat": 11.42532
+    },
+    {
+      "name": "Tsaure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87546,
+      "lat": 12.09142
+    },
+    {
+      "name": "Tsatstsaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33392,
+      "lat": 11.3459
+    },
+    {
+      "name": "Tsangaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.21667,
+      "lat": 11.61667
+    },
+    {
+      "name": "Tsakuwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64495,
+      "lat": 11.79189
+    },
+    {
+      "name": "Tona",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72951,
+      "lat": 12.31485
+    },
+    {
+      "name": "Tinki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39149,
+      "lat": 12.30388
+    },
+    {
+      "name": "Tete",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.56095,
+      "lat": 11.49114
+    },
+    {
+      "name": "Tatarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38492,
+      "lat": 12.17869
+    },
+    {
+      "name": "Tasaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95937,
+      "lat": 11.41128
+    },
+    {
+      "name": "Tariwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.30943,
+      "lat": 11.59949
+    },
+    {
+      "name": "Targel",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.49091,
+      "lat": 11.37487
+    },
+    {
+      "name": "Tarau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22097,
+      "lat": 11.48676
+    },
+    {
+      "name": "Tarai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67475,
+      "lat": 11.50462
+    },
+    {
+      "name": "Tanagar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69178,
+      "lat": 11.95129
+    },
+    {
+      "name": "Tamburawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.53139,
+      "lat": 11.86927
+    },
+    {
+      "name": "Tamaru",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64774,
+      "lat": 11.39439
+    },
+    {
+      "name": "Takar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57573,
+      "lat": 12.37241
+    },
+    {
+      "name": "Tadwea",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.68333,
+      "lat": 12.36667
+    },
+    {
+      "name": "Tabanni",
+      "aliases": ["Kekaji"],
+      "kind": "town",
+      "lon": 7.85722,
+      "lat": 12.13636
+    },
+    {
+      "name": "Tabani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15639,
+      "lat": 12.24612
+    },
+    {
+      "name": "Sitti",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78279,
+      "lat": 11.28308
+    },
+    {
+      "name": "Shiwaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.04114,
+      "lat": 11.27707
+    },
+    {
+      "name": "Shinkitua",
+      "aliases": ["Shinkitau"],
+      "kind": "town",
+      "lon": 8.25443,
+      "lat": 11.38434
+    },
+    {
+      "name": "Shike",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.655,
+      "lat": 11.49098
+    },
+    {
+      "name": "Shigacawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42166,
+      "lat": 11.82836
+    },
+    {
+      "name": "Shiddar",
+      "aliases": ["Shidar"],
+      "kind": "town",
+      "lon": 8.56657,
+      "lat": 12.37447
+    },
+    {
+      "name": "Sheme",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24028,
+      "lat": 12.39995
+    },
+    {
+      "name": "Shana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73978,
+      "lat": 12.26047
+    },
+    {
+      "name": "Sharawa",
+      "aliases": ["Shallawa"],
+      "kind": "town",
+      "lon": 8.61172,
+      "lat": 12.19617
+    },
+    {
+      "name": "Shafe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2663,
+      "lat": 11.75476
+    },
+    {
+      "name": "Seji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54901,
+      "lat": 11.48476
+    },
+    {
+      "name": "Saye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40109,
+      "lat": 12.27983
+    },
+    {
+      "name": "Sayasaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96672,
+      "lat": 11.71265
+    },
+    {
+      "name": "Saya Saya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66568,
+      "lat": 11.38933
+    },
+    {
+      "name": "Sarkin Shanu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.37322,
+      "lat": 11.45052
+    },
+    {
+      "name": "Sarina",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92365,
+      "lat": 11.58438
+    },
+    {
+      "name": "Sarigikin",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12949,
+      "lat": 11.97012
+    },
+    {
+      "name": "Sarbi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67034,
+      "lat": 12.29199
+    },
+    {
+      "name": "Sansani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63201,
+      "lat": 12.45457
+    },
+    {
+      "name": "Salahawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95254,
+      "lat": 11.93869
+    },
+    {
+      "name": "Sakwaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.24794,
+      "lat": 11.68333
+    },
+    {
+      "name": "Sako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44816,
+      "lat": 11.85065
+    },
+    {
+      "name": "Sakarma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02445,
+      "lat": 11.64269
+    },
+    {
+      "name": "Sakaratsa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38057,
+      "lat": 11.92357
+    },
+    {
+      "name": "Sabuwar Badafi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.1689,
+      "lat": 11.37246
+    },
+    {
+      "name": "Sabon Gida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84448,
+      "lat": 11.25548
+    },
+    {
+      "name": "Sabon Garu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64351,
+      "lat": 11.43911
+    },
+    {
+      "name": "Sabon Gari Kara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93579,
+      "lat": 11.82184
+    },
+    {
+      "name": "Sabon Gari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52237,
+      "lat": 12.02182
+    },
+    {
+      "name": "Sabon Birni",
+      "aliases": ["Ungwan Sabon Birni"],
+      "kind": "town",
+      "lon": 8.03328,
+      "lat": 11.85258
+    },
+    {
+      "name": "Sabaru",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.12258,
+      "lat": 11.97641
+    },
+    {
+      "name": "Ruwantsa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73605,
+      "lat": 12.40982
+    },
+    {
+      "name": "Ruwan Bago",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.75,
+      "lat": 11.4
+    },
+    {
+      "name": "Rurum",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48496,
+      "lat": 11.41375
+    },
+    {
+      "name": "Runji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46542,
+      "lat": 11.39842
+    },
+    {
+      "name": "Rumo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91321,
+      "lat": 11.47609
+    },
+    {
+      "name": "Ruga Duka",
+      "aliases": ["Rugar Duka"],
+      "kind": "town",
+      "lon": 8.43566,
+      "lat": 11.80131
+    },
+    {
+      "name": "Romo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16677,
+      "lat": 12.07316
+    },
+    {
+      "name": "Riyi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.86491,
+      "lat": 11.45973
+    },
+    {
+      "name": "Ririwai",
+      "aliases": ["Riruwai"],
+      "kind": "town",
+      "lon": 8.74128,
+      "lat": 10.74025
+    },
+    {
+      "name": "Rinji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.93376,
+      "lat": 11.43476
+    },
+    {
+      "name": "Ringiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.01033,
+      "lat": 11.24511
+    },
+    {
+      "name": "Rimin Zakara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45241,
+      "lat": 11.99586
+    },
+    {
+      "name": "Rimin Gata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44101,
+      "lat": 11.9688
+    },
+    {
+      "name": "Rimi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99679,
+      "lat": 11.3853
+    },
+    {
+      "name": "Riman Taini",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.953,
+      "lat": 11.99437
+    },
+    {
+      "name": "Rikadawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.31168,
+      "lat": 11.7279
+    },
+    {
+      "name": "Riji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95654,
+      "lat": 11.92843
+    },
+    {
+      "name": "Remi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52382,
+      "lat": 12.26722
+    },
+    {
+      "name": "Rantan",
+      "aliases": ["Ranian"],
+      "kind": "town",
+      "lon": 8.3789,
+      "lat": 11.51567
+    },
+    {
+      "name": "Ranka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3296,
+      "lat": 11.54846
+    },
+    {
+      "name": "Rajau Hairi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.09977,
+      "lat": 11.91514
+    },
+    {
+      "name": "Rafin Dodo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28333,
+      "lat": 11.78333
+    },
+    {
+      "name": "Rafawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.92698,
+      "lat": 11.89287
+    },
+    {
+      "name": "Ponku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79565,
+      "lat": 11.30807
+    },
+    {
+      "name": "Parindaso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85,
+      "lat": 11.88333
+    },
+    {
+      "name": "Paki",
+      "aliases": ["Faiki"],
+      "kind": "town",
+      "lon": 8.1558,
+      "lat": 11.50087
+    },
+    {
+      "name": "Pada",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.89982,
+      "lat": 11.98006
+    },
+    {
+      "name": "Ningawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40639,
+      "lat": 11.82347
+    },
+    {
+      "name": "Naturbe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94142,
+      "lat": 11.75363
+    },
+    {
+      "name": "Mekiya",
+      "aliases": ["Mikiya"],
+      "kind": "town",
+      "lon": 8.87558,
+      "lat": 12.23494
+    },
+    {
+      "name": "Mesado",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.50791,
+      "lat": 12.35055
+    },
+    {
+      "name": "Matugwai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77688,
+      "lat": 11.25453
+    },
+    {
+      "name": "Masu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80787,
+      "lat": 11.19741
+    },
+    {
+      "name": "Massanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24112,
+      "lat": 11.84315
+    },
+    {
+      "name": "Maska",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.08456,
+      "lat": 11.59682
+    },
+    {
+      "name": "Marke",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63072,
+      "lat": 12.38872
+    },
+    {
+      "name": "Mariri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61218,
+      "lat": 11.94684
+    },
+    {
+      "name": "Maraya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.41516,
+      "lat": 11.88621
+    },
+    {
+      "name": "Marake",
+      "aliases": ["Maraki"],
+      "kind": "town",
+      "lon": 8.62644,
+      "lat": 12.41365
+    },
+    {
+      "name": "Malori Faragona",
+      "aliases": ["Malori"],
+      "kind": "town",
+      "lon": 8.52119,
+      "lat": 12.09829
+    },
+    {
+      "name": "Malmo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29018,
+      "lat": 11.38872
+    },
+    {
+      "name": "Mallam Gayere",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19457,
+      "lat": 11.85951
+    },
+    {
+      "name": "Malamawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.86176,
+      "lat": 11.83687
+    },
+    {
+      "name": "Makuntun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.11667,
+      "lat": 11.96667
+    },
+    {
+      "name": "Makuda",
+      "aliases": ["Makoda"],
+      "kind": "town",
+      "lon": 8.43253,
+      "lat": 12.41868
+    },
+    {
+      "name": "Mako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96991,
+      "lat": 11.21166
+    },
+    {
+      "name": "Makeri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02519,
+      "lat": 11.49637
+    },
+    {
+      "name": "Makauraci",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85263,
+      "lat": 11.85009
+    },
+    {
+      "name": "Maiwa Kango",
+      "aliases": ["Malwa Kango"],
+      "kind": "town",
+      "lon": 8.7,
+      "lat": 10.98333
+    },
+    {
+      "name": "Maitsidau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.49245,
+      "lat": 12.35373
+    },
+    {
+      "name": "Maisarake",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60373,
+      "lat": 12.44089
+    },
+    {
+      "name": "Maimakawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.13333,
+      "lat": 11.8
+    },
+    {
+      "name": "Maigarin Damo",
+      "aliases": ["Maigari Damo"],
+      "kind": "town",
+      "lon": 8.32305,
+      "lat": 11.91885
+    },
+    {
+      "name": "Maiganji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57432,
+      "lat": 12.43394
+    },
+    {
+      "name": "Mahuta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60332,
+      "lat": 12.32205
+    },
+    {
+      "name": "Langyal",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40007,
+      "lat": 11.9917
+    },
+    {
+      "name": "Lamire",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82811,
+      "lat": 11.70638
+    },
+    {
+      "name": "Lambu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35389,
+      "lat": 12.0075
+    },
+    {
+      "name": "Lakwaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.86639,
+      "lat": 11.98442
+    },
+    {
+      "name": "Lajawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92409,
+      "lat": 11.87277
+    },
+    {
+      "name": "Laini",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09723,
+      "lat": 12.00549
+    },
+    {
+      "name": "Lahadin Kara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95009,
+      "lat": 11.83333
+    },
+    {
+      "name": "Kyarana",
+      "aliases": ["Kerana"],
+      "kind": "town",
+      "lon": 8.13591,
+      "lat": 11.57921
+    },
+    {
+      "name": "Kyaberi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.11667,
+      "lat": 11.96667
+    },
+    {
+      "name": "Kwasauri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67633,
+      "lat": 12.42795
+    },
+    {
+      "name": "Kwankwaso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.396,
+      "lat": 11.85091
+    },
+    {
+      "name": "Kwan Goro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12396,
+      "lat": 11.62522
+    },
+    {
+      "name": "Kwajali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.98971,
+      "lat": 11.22728
+    },
+    {
+      "name": "Kuyan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42572,
+      "lat": 11.92342
+    },
+    {
+      "name": "Kutumburi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05137,
+      "lat": 11.87532
+    },
+    {
+      "name": "Kutama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87112,
+      "lat": 11.86367
+    },
+    {
+      "name": "Kuru",
+      "aliases": ["Kuro"],
+      "kind": "town",
+      "lon": 8.53561,
+      "lat": 12.17207
+    },
+    {
+      "name": "Kunya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.5325,
+      "lat": 12.22331
+    },
+    {
+      "name": "Kunkurawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.06667,
+      "lat": 11.96667
+    },
+    {
+      "name": "Kundurum",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40153,
+      "lat": 11.81498
+    },
+    {
+      "name": "Kundun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.49617,
+      "lat": 11.53684
+    },
+    {
+      "name": "Kundo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71143,
+      "lat": 12.50992
+    },
+    {
+      "name": "Kumurya",
+      "aliases": ["Garko"],
+      "kind": "town",
+      "lon": 8.7027,
+      "lat": 11.69631
+    },
+    {
+      "name": "Kumbawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87511,
+      "lat": 11.81621
+    },
+    {
+      "name": "Kula",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94047,
+      "lat": 11.39329
+    },
+    {
+      "name": "Kuku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28328,
+      "lat": 12.3719
+    },
+    {
+      "name": "Kuki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.36656,
+      "lat": 11.42621
+    },
+    {
+      "name": "Kuka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35619,
+      "lat": 12.42633
+    },
+    {
+      "name": "Kududufawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79401,
+      "lat": 12.35201
+    },
+    {
+      "name": "Kubarachi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35628,
+      "lat": 11.77312
+    },
+    {
+      "name": "Koya",
+      "aliases": ["Ungwelo-ta-Koyia", "Ungwelo-te-Koyia"],
+      "kind": "town",
+      "lon": 7.95708,
+      "lat": 11.87802
+    },
+    {
+      "name": "Kosawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46823,
+      "lat": 11.76146
+    },
+    {
+      "name": "Kore",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.7425,
+      "lat": 12.35967
+    },
+    {
+      "name": "Kokai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02508,
+      "lat": 12.21747
+    },
+    {
+      "name": "Kogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16919,
+      "lat": 11.62363
+    },
+    {
+      "name": "Kogin Sidda",
+      "aliases": ["Sidda"],
+      "kind": "town",
+      "lon": 9.06667,
+      "lat": 11.53333
+    },
+    {
+      "name": "Kogin Sani",
+      "aliases": ["Sani"],
+      "kind": "town",
+      "lon": 9.01667,
+      "lat": 11.53333
+    },
+    {
+      "name": "Kogin Huguma",
+      "aliases": ["Huguma"],
+      "kind": "town",
+      "lon": 9.31667,
+      "lat": 11.56667
+    },
+    {
+      "name": "Kogin Dabga",
+      "aliases": ["Dabga"],
+      "kind": "town",
+      "lon": 8.09931,
+      "lat": 11.79674
+    },
+    {
+      "name": "Kofa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.26776,
+      "lat": 11.55497
+    },
+    {
+      "name": "Kodame",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9604,
+      "lat": 11.2044
+    },
+    {
+      "name": "Kiyawa",
+      "aliases": ["Kivawa"],
+      "kind": "town",
+      "lon": 8.18776,
+      "lat": 12.11717
+    },
+    {
+      "name": "Kirazare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82049,
+      "lat": 12.13666
+    },
+    {
+      "name": "Kirara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.11667,
+      "lat": 11.96667
+    },
+    {
+      "name": "Kinchau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78119,
+      "lat": 11.95715
+    },
+    {
+      "name": "Kilishi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01036,
+      "lat": 11.68739
+    },
+    {
+      "name": "Gagarawa",
+      "aliases": ["Kerihi"],
+      "kind": "town",
+      "lon": 8.93071,
+      "lat": 12.22744
+    },
+    {
+      "name": "Kazar Dawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21187,
+      "lat": 11.9915
+    },
+    {
+      "name": "Kayu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95154,
+      "lat": 11.90173
+    },
+    {
+      "name": "Kayarda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21151,
+      "lat": 11.5068
+    },
+    {
+      "name": "Kausani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89945,
+      "lat": 11.83944
+    },
+    {
+      "name": "Katsarduwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66289,
+      "lat": 12.33374
+    },
+    {
+      "name": "Katsalle",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.32867,
+      "lat": 11.48646
+    },
+    {
+      "name": "Katriji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79137,
+      "lat": 11.25098
+    },
+    {
+      "name": "Katata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.84982,
+      "lat": 11.90877
+    },
+    {
+      "name": "Katanga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64741,
+      "lat": 11.36711
+    },
+    {
+      "name": "Katakwiri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62668,
+      "lat": 11.37255
+    },
+    {
+      "name": "Karya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12024,
+      "lat": 12.20841
+    },
+    {
+      "name": "Karshi",
+      "aliases": ["Karshe"],
+      "kind": "town",
+      "lon": 8.94783,
+      "lat": 12.23429
+    },
+    {
+      "name": "Karofi Yashi",
+      "aliases": ["Karofin Yashi"],
+      "kind": "town",
+      "lon": 8.34387,
+      "lat": 11.8807
+    },
+    {
+      "name": "Karofi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98851,
+      "lat": 11.76803
+    },
+    {
+      "name": "Karo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70358,
+      "lat": 12.07815
+    },
+    {
+      "name": "Karinge",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.71667,
+      "lat": 11.53333
+    },
+    {
+      "name": "Kargo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.97904,
+      "lat": 11.49428
+    },
+    {
+      "name": "Karfi Ruga",
+      "aliases": ["Karfi"],
+      "kind": "town",
+      "lon": 8.49383,
+      "lat": 11.82192
+    },
+    {
+      "name": "Karfi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.15,
+      "lat": 11.45
+    },
+    {
+      "name": "Kara",
+      "aliases": ["Jama'ar Kasa", "Jama’ar Kasa"],
+      "kind": "town",
+      "lon": 7.96431,
+      "lat": 11.84178
+    },
+    {
+      "name": "Kanwaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.6712,
+      "lat": 12.48066
+    },
+    {
+      "name": "Kanwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42299,
+      "lat": 11.85673
+    },
+    {
+      "name": "Kankan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05427,
+      "lat": 11.60866
+    },
+    {
+      "name": "Kangoro",
+      "aliases": ["Kangora"],
+      "kind": "town",
+      "lon": 8.86782,
+      "lat": 11.15335
+    },
+    {
+      "name": "Kanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99896,
+      "lat": 11.23459
+    },
+    {
+      "name": "Kamakirji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39748,
+      "lat": 11.37643
+    },
+    {
+      "name": "Binuni",
+      "aliases": ["Kalar"],
+      "kind": "town",
+      "lon": 8.92981,
+      "lat": 12.16254
+    },
+    {
+      "name": "Kafu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65883,
+      "lat": 11.48207
+    },
+    {
+      "name": "Kafin Malamai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88366,
+      "lat": 11.66078
+    },
+    {
+      "name": "Kafin Maiyaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20231,
+      "lat": 11.4563
+    },
+    {
+      "name": "Kaifin Maiko",
+      "aliases": ["Kafin Maiko"],
+      "kind": "town",
+      "lon": 8.16569,
+      "lat": 12.03791
+    },
+    {
+      "name": "Kafin Karya",
+      "aliases": ["Kafin Karva", "Zungou Kariya"],
+      "kind": "town",
+      "lon": 9.16667,
+      "lat": 11.98333
+    },
+    {
+      "name": "Kafin Farin Ruwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.2,
+      "lat": 11.41667
+    },
+    {
+      "name": "Kafin Chiri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.86073,
+      "lat": 11.60171
+    },
+    {
+      "name": "Kafin Alhaji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57741,
+      "lat": 11.4972
+    },
+    {
+      "name": "Kafin Agur",
+      "aliases": ["K. Agur"],
+      "kind": "town",
+      "lon": 8.36211,
+      "lat": 11.85985
+    },
+    {
+      "name": "Kafi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95064,
+      "lat": 11.91939
+    },
+    {
+      "name": "Kademi",
+      "aliases": ["Kadem"],
+      "kind": "town",
+      "lon": 8.93526,
+      "lat": 11.77112
+    },
+    {
+      "name": "Kadawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44787,
+      "lat": 11.64572
+    },
+    {
+      "name": "Kadare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94369,
+      "lat": 11.81167
+    },
+    {
+      "name": "Kadane",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.7358,
+      "lat": 12.36782
+    },
+    {
+      "name": "Kadana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.81985,
+      "lat": 11.49637
+    },
+    {
+      "name": "Kadafa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99559,
+      "lat": 11.79255
+    },
+    {
+      "name": "Kachako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.26667,
+      "lat": 11.53333
+    },
+    {
+      "name": "Jumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94918,
+      "lat": 11.76131
+    },
+    {
+      "name": "Juji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28643,
+      "lat": 11.93963
+    },
+    {
+      "name": "Jogana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70106,
+      "lat": 12.02326
+    },
+    {
+      "name": "Joda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.87517,
+      "lat": 11.99743
+    },
+    {
+      "name": "Jigilawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.08454,
+      "lat": 12.19119
+    },
+    {
+      "name": "Jigawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93842,
+      "lat": 11.951
+    },
+    {
+      "name": "Jejin Kudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94937,
+      "lat": 11.36534
+    },
+    {
+      "name": "Jedi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.04133,
+      "lat": 11.55075
+    },
+    {
+      "name": "Jan Kyankyan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88333,
+      "lat": 11.78333
+    },
+    {
+      "name": "Jankollawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83361,
+      "lat": 11.87925
+    },
+    {
+      "name": "Janguza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38111,
+      "lat": 11.95824
+    },
+    {
+      "name": "Jangadagu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88247,
+      "lat": 11.3612
+    },
+    {
+      "name": "Jambahagawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93333,
+      "lat": 11.9
+    },
+    {
+      "name": "Jamaa Kosa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99809,
+      "lat": 11.7767
+    },
+    {
+      "name": "Jali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46288,
+      "lat": 12.18245
+    },
+    {
+      "name": "Jahuri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.05995,
+      "lat": 11.30107
+    },
+    {
+      "name": "Jaga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85681,
+      "lat": 11.902
+    },
+    {
+      "name": "Indabo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79092,
+      "lat": 11.73801
+    },
+    {
+      "name": "Imawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46329,
+      "lat": 11.8002
+    },
+    {
+      "name": "Iliyasawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.89391,
+      "lat": 11.98706
+    },
+    {
+      "name": "Iggi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.26422,
+      "lat": 11.45557
+    },
+    {
+      "name": "Husure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01524,
+      "lat": 11.95568
+    },
+    {
+      "name": "Hugungumai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21959,
+      "lat": 12.45705
+    },
+    {
+      "name": "Hayin Denu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67226,
+      "lat": 11.38756
+    },
+    {
+      "name": "Hawan Dawaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42543,
+      "lat": 11.95585
+    },
+    {
+      "name": "Hamdullahi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.05725,
+      "lat": 11.62967
+    },
+    {
+      "name": "Hago",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83833,
+      "lat": 11.46644
+    },
+    {
+      "name": "Gwazaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45943,
+      "lat": 11.94137
+    },
+    {
+      "name": "Goronmaje",
+      "aliases": ["Gwauran Maje"],
+      "kind": "town",
+      "lon": 8.69204,
+      "lat": 12.52356
+    },
+    {
+      "name": "Gwarmai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40755,
+      "lat": 12.3649
+    },
+    {
+      "name": "Gwarabjawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54164,
+      "lat": 12.4506
+    },
+    {
+      "name": "Gwangwan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.75009,
+      "lat": 11.48733
+    },
+    {
+      "name": "Gwanda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84973,
+      "lat": 11.11107
+    },
+    {
+      "name": "Gwalaida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57241,
+      "lat": 12.46858
+    },
+    {
+      "name": "Gurun Gawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51979,
+      "lat": 11.93117
+    },
+    {
+      "name": "Guruma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78973,
+      "lat": 12.10725
+    },
+    {
+      "name": "Gurum",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97773,
+      "lat": 12.3446
+    },
+    {
+      "name": "Gurjia",
+      "aliases": ["Garjiya", "Gurjiya"],
+      "kind": "town",
+      "lon": 8.71051,
+      "lat": 12.22157
+    },
+    {
+      "name": "Gurduba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.01013,
+      "lat": 12.02486
+    },
+    {
+      "name": "Gupan Tumo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10077,
+      "lat": 11.97477
+    },
+    {
+      "name": "Guna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.81469,
+      "lat": 11.4605
+    },
+    {
+      "name": "Gambawa",
+      "aliases": ["Gumbawa"],
+      "kind": "town",
+      "lon": 8.81274,
+      "lat": 12.23852
+    },
+    {
+      "name": "Gulu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29838,
+      "lat": 11.86224
+    },
+    {
+      "name": "Gujiya",
+      "aliases": ["Gurjiya"],
+      "kind": "town",
+      "lon": 8.56146,
+      "lat": 11.75211
+    },
+    {
+      "name": "Gude",
+      "aliases": ["Gudei", "Gudi"],
+      "kind": "town",
+      "lon": 8.0512,
+      "lat": 11.94874
+    },
+    {
+      "name": "Goza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12915,
+      "lat": 11.93913
+    },
+    {
+      "name": "Garke",
+      "aliases": ["Gorrike"],
+      "kind": "town",
+      "lon": 8.59124,
+      "lat": 12.20851
+    },
+    {
+      "name": "Gorawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88842,
+      "lat": 11.7653
+    },
+    {
+      "name": "Goran Dutse",
+      "aliases": ["Goran Dutsi"],
+      "kind": "town",
+      "lon": 7.87,
+      "lat": 12.15394
+    },
+    {
+      "name": "Gora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.32638,
+      "lat": 11.82001
+    },
+    {
+      "name": "Gomau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94187,
+      "lat": 11.96948
+    },
+    {
+      "name": "Gogori",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.06702,
+      "lat": 12.15237
+    },
+    {
+      "name": "Gogel",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.7725,
+      "lat": 11.92624
+    },
+    {
+      "name": "Godiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13235,
+      "lat": 11.91804
+    },
+    {
+      "name": "Ginkoso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2739,
+      "lat": 11.80639
+    },
+    {
+      "name": "Giginya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.81063,
+      "lat": 11.2501
+    },
+    {
+      "name": "Gidan Usman",
+      "aliases": ["Gidan Usuman", "Usuman"],
+      "kind": "town",
+      "lon": 7.69664,
+      "lat": 11.46603
+    },
+    {
+      "name": "Gidan Umaru",
+      "aliases": ["Umaru"],
+      "kind": "town",
+      "lon": 8.20428,
+      "lat": 11.38097
+    },
+    {
+      "name": "Gidan Tudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95328,
+      "lat": 11.34315
+    },
+    {
+      "name": "Gidan Nayaka",
+      "aliases": ["Nayaka"],
+      "kind": "town",
+      "lon": 8.20236,
+      "lat": 11.40658
+    },
+    {
+      "name": "Gidan Maishinkafa",
+      "aliases": ["Maishinkafa"],
+      "kind": "town",
+      "lon": 8.18478,
+      "lat": 11.42577
+    },
+    {
+      "name": "Jajaye",
+      "aliases": ["Gidan Jajaye"],
+      "kind": "town",
+      "lon": 7.93978,
+      "lat": 11.55863
+    },
+    {
+      "name": "Gidan Gwaja",
+      "aliases": ["Gwaja"],
+      "kind": "town",
+      "lon": 8.19693,
+      "lat": 11.37292
+    },
+    {
+      "name": "Garin Danga",
+      "aliases": ["Gidan Danga"],
+      "kind": "town",
+      "lon": 8.84406,
+      "lat": 12.21017
+    },
+    {
+      "name": "Gidan Buhari",
+      "aliases": ["Buhari"],
+      "kind": "town",
+      "lon": 8.25082,
+      "lat": 11.4148
+    },
+    {
+      "name": "Gidan Bagadu",
+      "aliases": ["Bagudu"],
+      "kind": "town",
+      "lon": 8.09091,
+      "lat": 11.47357
+    },
+    {
+      "name": "Getso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97593,
+      "lat": 11.87353
+    },
+    {
+      "name": "Gediya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91081,
+      "lat": 11.34733
+    },
+    {
+      "name": "Gazana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39666,
+      "lat": 11.79628
+    },
+    {
+      "name": "Gasgainu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63336,
+      "lat": 12.23907
+    },
+    {
+      "name": "Garun Ali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85946,
+      "lat": 11.56672
+    },
+    {
+      "name": "Garum Malam",
+      "aliases": ["Garun Babba"],
+      "kind": "town",
+      "lon": 8.43284,
+      "lat": 11.59944
+    },
+    {
+      "name": "Garshinci",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92024,
+      "lat": 12.08656
+    },
+    {
+      "name": "Garo",
+      "aliases": ["Garo Market"],
+      "kind": "town",
+      "lon": 8.10521,
+      "lat": 11.94961
+    },
+    {
+      "name": "Gargai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38586,
+      "lat": 11.54385
+    },
+    {
+      "name": "Garfa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9231,
+      "lat": 11.54956
+    },
+    {
+      "name": "Garandiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.14977,
+      "lat": 11.64387
+    },
+    {
+      "name": "Gerabi",
+      "aliases": ["Garabi"],
+      "kind": "town",
+      "lon": 8.5114,
+      "lat": 11.49682
+    },
+    {
+      "name": "Gano",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73083,
+      "lat": 11.83045
+    },
+    {
+      "name": "Gani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84118,
+      "lat": 11.36805
+    },
+    {
+      "name": "Gangara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94546,
+      "lat": 11.42126
+    },
+    {
+      "name": "Gandu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62714,
+      "lat": 12.29013
+    },
+    {
+      "name": "Gandarma",
+      "aliases": ["Gandama"],
+      "kind": "town",
+      "lon": 8.94124,
+      "lat": 11.2692
+    },
+    {
+      "name": "Gamoji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.22734,
+      "lat": 11.874
+    },
+    {
+      "name": "Gammo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13021,
+      "lat": 11.88986
+    },
+    {
+      "name": "Gamai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96183,
+      "lat": 11.45897
+    },
+    {
+      "name": "Galadimawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39314,
+      "lat": 11.86402
+    },
+    {
+      "name": "Gala",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95016,
+      "lat": 11.45053
+    },
+    {
+      "name": "Gajigi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85916,
+      "lat": 11.24145
+    },
+    {
+      "name": "Gaiale",
+      "aliases": ["Gajale"],
+      "kind": "town",
+      "lon": 8.26051,
+      "lat": 11.4857
+    },
+    {
+      "name": "Gaida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.47136,
+      "lat": 11.93292
+    },
+    {
+      "name": "Gafasa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.14028,
+      "lat": 11.97056
+    },
+    {
+      "name": "Gaen",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48477,
+      "lat": 11.95396
+    },
+    {
+      "name": "Gadanya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.03557,
+      "lat": 12.09331
+    },
+    {
+      "name": "Fogolawa",
+      "aliases": ["Fagalama", "Fagolawa", "Fogolama"],
+      "kind": "town",
+      "lon": 8.67839,
+      "lat": 12.31894
+    },
+    {
+      "name": "Filatan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.86244,
+      "lat": 11.39301
+    },
+    {
+      "name": "Fayan Fayan",
+      "aliases": ["Fayamfayam"],
+      "kind": "town",
+      "lon": 8.70035,
+      "lat": 12.55
+    },
+    {
+      "name": "Farin Ruwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93303,
+      "lat": 12.18131
+    },
+    {
+      "name": "Farin Dutse",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9932,
+      "lat": 11.35364
+    },
+    {
+      "name": "Faragai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99043,
+      "lat": 11.6648
+    },
+    {
+      "name": "Fanisau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54152,
+      "lat": 12.07864
+    },
+    {
+      "name": "Fanda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.05537,
+      "lat": 11.60344
+    },
+    {
+      "name": "Falange",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.678,
+      "lat": 11.4687
+    },
+    {
+      "name": "Falali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.03685,
+      "lat": 11.46888
+    },
+    {
+      "name": "Fajewa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.08555,
+      "lat": 11.44565
+    },
+    {
+      "name": "Dususu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.75066,
+      "lat": 11.71122
+    },
+    {
+      "name": "Duchi",
+      "aliases": ["Dushi"],
+      "kind": "town",
+      "lon": 7.94521,
+      "lat": 12.01702
+    },
+    {
+      "name": "Durum",
+      "aliases": ["Durun"],
+      "kind": "town",
+      "lon": 8.23036,
+      "lat": 11.90455
+    },
+    {
+      "name": "Durmawa",
+      "aliases": ["Durumawa"],
+      "kind": "town",
+      "lon": 8.25735,
+      "lat": 11.60558
+    },
+    {
+      "name": "Durbunde",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.22463,
+      "lat": 11.53623
+    },
+    {
+      "name": "Durba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71947,
+      "lat": 11.56364
+    },
+    {
+      "name": "Dundubus",
+      "aliases": ["Dundubis"],
+      "kind": "town",
+      "lon": 9.19717,
+      "lat": 11.8458
+    },
+    {
+      "name": "Dunawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.41833,
+      "lat": 12.44834
+    },
+    {
+      "name": "Dumbulum",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01783,
+      "lat": 12.18314
+    },
+    {
+      "name": "Duguji",
+      "aliases": ["Dukuji"],
+      "kind": "town",
+      "lon": 8.53041,
+      "lat": 12.18887
+    },
+    {
+      "name": "Duku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20554,
+      "lat": 11.32577
+    },
+    {
+      "name": "Dugumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9,
+      "lat": 11.96667
+    },
+    {
+      "name": "Dtawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25461,
+      "lat": 11.94119
+    },
+    {
+      "name": "Dorobo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98905,
+      "lat": 11.9817
+    },
+    {
+      "name": "Dore",
+      "aliases": ["Dare"],
+      "kind": "town",
+      "lon": 8.85876,
+      "lat": 11.27897
+    },
+    {
+      "name": "Dorayi Babba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4684,
+      "lat": 11.95378
+    },
+    {
+      "name": "Dorawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8061,
+      "lat": 11.27596
+    },
+    {
+      "name": "Doka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29983,
+      "lat": 11.99274
+    },
+    {
+      "name": "Dodo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83951,
+      "lat": 11.48179
+    },
+    {
+      "name": "Digawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.12514,
+      "lat": 11.97094
+    },
+    {
+      "name": "Deleri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96963,
+      "lat": 11.48427
+    },
+    {
+      "name": "Dederi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05526,
+      "lat": 11.84474
+    },
+    {
+      "name": "Dayi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93333,
+      "lat": 11.63333
+    },
+    {
+      "name": "Dayaso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.73333,
+      "lat": 11.51667
+    },
+    {
+      "name": "Dawanau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42912,
+      "lat": 12.09013
+    },
+    {
+      "name": "Daurawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16681,
+      "lat": 11.65315
+    },
+    {
+      "name": "Darki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92266,
+      "lat": 11.65935
+    },
+    {
+      "name": "Dara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.18369,
+      "lat": 11.94374
+    },
+    {
+      "name": "Dan Zogari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.31124,
+      "lat": 11.83433
+    },
+    {
+      "name": "Dan Zabuwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11042,
+      "lat": 12.34099
+    },
+    {
+      "name": "Dan Soshiya",
+      "aliases": ["Dansosia"],
+      "kind": "town",
+      "lon": 8.07395,
+      "lat": 11.53836
+    },
+    {
+      "name": "Dan Maryama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43622,
+      "lat": 11.86737
+    },
+    {
+      "name": "Danmako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28312,
+      "lat": 11.45833
+    },
+    {
+      "name": "Dan Madadi",
+      "aliases": ["Madadi"],
+      "kind": "town",
+      "lon": 8.05186,
+      "lat": 11.88064
+    },
+    {
+      "name": "Dankwade",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85404,
+      "lat": 12.20663
+    },
+    {
+      "name": "Dari Kada",
+      "aliases": ["Dan Kada"],
+      "kind": "town",
+      "lon": 7.9955,
+      "lat": 11.82997
+    },
+    {
+      "name": "Danjida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35661,
+      "lat": 12.23258
+    },
+    {
+      "name": "Dan Hassan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52445,
+      "lat": 11.78532
+    },
+    {
+      "name": "Danguguwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.394,
+      "lat": 12.05813
+    },
+    {
+      "name": "Dan Gora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15224,
+      "lat": 11.53485
+    },
+    {
+      "name": "Dan Gada",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12769,
+      "lat": 12.01078
+    },
+    {
+      "name": "Dan Farwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.96994,
+      "lat": 11.76231
+    },
+    {
+      "name": "Dando",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95961,
+      "lat": 11.33338
+    },
+    {
+      "name": "Dan Bubo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.23601,
+      "lat": 11.60207
+    },
+    {
+      "name": "Dan Bakoshi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94369,
+      "lat": 12.02566
+    },
+    {
+      "name": "Dan Auta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.47161,
+      "lat": 11.87513
+    },
+    {
+      "name": "Danashina",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18075,
+      "lat": 11.76167
+    },
+    {
+      "name": "Damurna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.30506,
+      "lat": 11.83265
+    },
+    {
+      "name": "Daminawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.96939,
+      "lat": 11.89128
+    },
+    {
+      "name": "Domargu",
+      "aliases": ["Damargu"],
+      "kind": "town",
+      "lon": 8.32779,
+      "lat": 12.26425
+    },
+    {
+      "name": "Dalili",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39542,
+      "lat": 11.76803
+    },
+    {
+      "name": "Dalangashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95509,
+      "lat": 11.81975
+    },
+    {
+      "name": "Dal",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82258,
+      "lat": 11.47072
+    },
+    {
+      "name": "Dakwara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94909,
+      "lat": 11.9144
+    },
+    {
+      "name": "Daho",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.20481,
+      "lat": 11.66728
+    },
+    {
+      "name": "Dagabau",
+      "aliases": ["Dugabau"],
+      "kind": "town",
+      "lon": 8.21057,
+      "lat": 11.79945
+    },
+    {
+      "name": "Dadin Duniya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89295,
+      "lat": 12.16037
+    },
+    {
+      "name": "Dadarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07492,
+      "lat": 12.23298
+    },
+    {
+      "name": "Dadarau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.00739,
+      "lat": 11.89166
+    },
+    {
+      "name": "Daburau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.37111,
+      "lat": 11.8256
+    },
+    {
+      "name": "Dabin Kanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91375,
+      "lat": 11.93663
+    },
+    {
+      "name": "Shangel",
+      "aliases": ["Dabigel"],
+      "kind": "town",
+      "lon": 8.97508,
+      "lat": 12.15519
+    },
+    {
+      "name": "Ciromawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21802,
+      "lat": 11.59773
+    },
+    {
+      "name": "Cirim",
+      "aliases": ["Chirin"],
+      "kind": "town",
+      "lon": 8.52299,
+      "lat": 11.62701
+    },
+    {
+      "name": "Chutar Buki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.31261,
+      "lat": 11.4261
+    },
+    {
+      "name": "Chula",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96711,
+      "lat": 11.98955
+    },
+    {
+      "name": "Chiromawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40373,
+      "lat": 11.63678
+    },
+    {
+      "name": "Chalawa",
+      "aliases": ["Challawa"],
+      "kind": "town",
+      "lon": 8.42173,
+      "lat": 11.90685
+    },
+    {
+      "name": "Buwawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07317,
+      "lat": 11.94951
+    },
+    {
+      "name": "Butubutu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21041,
+      "lat": 11.96601
+    },
+    {
+      "name": "Butauwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42033,
+      "lat": 11.80448
+    },
+    {
+      "name": "Burji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39354,
+      "lat": 11.90491
+    },
+    {
+      "name": "Buraimawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16765,
+      "lat": 11.69303
+    },
+    {
+      "name": "Bunturu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85686,
+      "lat": 11.40287
+    },
+    {
+      "name": "Bul",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59161,
+      "lat": 11.36398
+    },
+    {
+      "name": "Bisi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24581,
+      "lat": 11.31938
+    },
+    {
+      "name": "Birnin Bako",
+      "aliases": ["Bako"],
+      "kind": "town",
+      "lon": 9.12623,
+      "lat": 11.33959
+    },
+    {
+      "name": "Birminawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.83126,
+      "lat": 11.30236
+    },
+    {
+      "name": "Beta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89953,
+      "lat": 11.27412
+    },
+    {
+      "name": "Beli",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.84292,
+      "lat": 11.44065
+    },
+    {
+      "name": "Baushi",
+      "aliases": ["Baushe"],
+      "kind": "town",
+      "lon": 8.63127,
+      "lat": 12.51445
+    },
+    {
+      "name": "Baure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18037,
+      "lat": 11.55023
+    },
+    {
+      "name": "Bauda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.8614,
+      "lat": 11.8847
+    },
+    {
+      "name": "Bataiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.03158,
+      "lat": 11.68494
+    },
+    {
+      "name": "Baskore",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15762,
+      "lat": 11.84274
+    },
+    {
+      "name": "Barkum",
+      "aliases": ["Barkun"],
+      "kind": "town",
+      "lon": 8.64785,
+      "lat": 11.64252
+    },
+    {
+      "name": "Barbaji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98047,
+      "lat": 11.52484
+    },
+    {
+      "name": "Banyata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.75,
+      "lat": 11.46667
+    },
+    {
+      "name": "Bango",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.02005,
+      "lat": 11.42967
+    },
+    {
+      "name": "Balare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92607,
+      "lat": 11.98993
+    },
+    {
+      "name": "Bakwami",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11365,
+      "lat": 12.03026
+    },
+    {
+      "name": "Bakin Kogi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3688,
+      "lat": 11.75398
+    },
+    {
+      "name": "Bakari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.00965,
+      "lat": 11.5087
+    },
+    {
+      "name": "Baji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99467,
+      "lat": 11.43863
+    },
+    {
+      "name": "Bagwaro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.17438,
+      "lat": 11.37547
+    },
+    {
+      "name": "Bagagare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.90184,
+      "lat": 11.40959
+    },
+    {
+      "name": "Badume",
+      "aliases": ["Badumo"],
+      "kind": "town",
+      "lon": 8.31669,
+      "lat": 12.18998
+    },
+    {
+      "name": "Seyi",
+      "aliases": ["Badawa"],
+      "kind": "town",
+      "lon": 8.89542,
+      "lat": 12.26486
+    },
+    {
+      "name": "Badari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9,
+      "lat": 11.81667
+    },
+    {
+      "name": "Babuha",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.56946,
+      "lat": 11.34655
+    },
+    {
+      "name": "Babanruga",
+      "aliases": ["Baba Ruga"],
+      "kind": "town",
+      "lon": 8.51702,
+      "lat": 12.31823
+    },
+    {
+      "name": "Awayo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.09404,
+      "lat": 11.31949
+    },
+    {
+      "name": "Atumbu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2801,
+      "lat": 11.47385
+    },
+    {
+      "name": "Arewawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87843,
+      "lat": 11.95363
+    },
+    {
+      "name": "Awali",
+      "aliases": ["Alwali"],
+      "kind": "town",
+      "lon": 8.3324,
+      "lat": 11.8483
+    },
+    {
+      "name": "Alore",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39153,
+      "lat": 11.75558
+    },
+    {
+      "name": "Albasawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80425,
+      "lat": 11.26306
+    },
+    {
+      "name": "Ajumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52195,
+      "lat": 12.49028
+    },
+    {
+      "name": "Acika",
+      "aliases": ["Achika"],
+      "kind": "town",
+      "lon": 8.96667,
+      "lat": 11.71667
+    },
+    {
+      "name": "Rijiyar Zaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45671,
+      "lat": 11.98307
+    },
+    {
+      "name": "Mai Jama’a",
+      "aliases": ["Mai Jama'a"],
+      "kind": "town",
+      "lon": 8.41405,
+      "lat": 11.93429
+    },
+    {
+      "name": "Ungwan Yamu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43372,
+      "lat": 11.89802
+    },
+    {
+      "name": "Kusuba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40827,
+      "lat": 11.91315
+    },
+    {
+      "name": "Tummawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.32036,
+      "lat": 11.88864
+    },
+    {
+      "name": "Juli",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2948,
+      "lat": 11.89313
+    },
+    {
+      "name": "Agauwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.36511,
+      "lat": 11.87531
+    },
+    {
+      "name": "Kebe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.39936,
+      "lat": 11.88508
+    },
+    {
+      "name": "Rugar Kimaw",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.37417,
+      "lat": 11.86846
+    },
+    {
+      "name": "Ruga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29913,
+      "lat": 11.84683
+    },
+    {
+      "name": "Kazode",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.27286,
+      "lat": 11.85601
+    },
+    {
+      "name": "Dumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.50712,
+      "lat": 12.21803
+    },
+    {
+      "name": "Geza Yangia",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51328,
+      "lat": 12.20738
+    },
+    {
+      "name": "Bawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46041,
+      "lat": 11.83573
+    },
+    {
+      "name": "Yakasai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48327,
+      "lat": 11.79442
+    },
+    {
+      "name": "Geza Ketere",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51003,
+      "lat": 12.18457
+    },
+    {
+      "name": "Kabuge",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54546,
+      "lat": 12.19806
+    },
+    {
+      "name": "Tsakiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.56553,
+      "lat": 12.16571
+    },
+    {
+      "name": "Kantama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59649,
+      "lat": 12.1773
+    },
+    {
+      "name": "Sadauki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46036,
+      "lat": 11.76448
+    },
+    {
+      "name": "Geranya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59194,
+      "lat": 12.19207
+    },
+    {
+      "name": "Bakarare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.5703,
+      "lat": 12.20697
+    },
+    {
+      "name": "Goda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.56035,
+      "lat": 12.21248
+    },
+    {
+      "name": "Sabon Gari Mallam Ladi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.575,
+      "lat": 12.21902
+    },
+    {
+      "name": "Takursawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.5874,
+      "lat": 12.22947
+    },
+    {
+      "name": "Gidan Dan Badamasi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60454,
+      "lat": 12.22743
+    },
+    {
+      "name": "Kwarkiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59866,
+      "lat": 12.24339
+    },
+    {
+      "name": "Pbale Banteka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59957,
+      "lat": 12.21303
+    },
+    {
+      "name": "Dakata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61015,
+      "lat": 12.21586
+    },
+    {
+      "name": "Tsale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61551,
+      "lat": 12.22081
+    },
+    {
+      "name": "Bawuri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61546,
+      "lat": 12.23647
+    },
+    {
+      "name": "Garun Kaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.49637,
+      "lat": 11.76636
+    },
+    {
+      "name": "Sabon Gari Garewa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64573,
+      "lat": 12.23808
+    },
+    {
+      "name": "Danjatun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63778,
+      "lat": 12.22927
+    },
+    {
+      "name": "Sabon Gari Kwanderma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65806,
+      "lat": 12.22283
+    },
+    {
+      "name": "Sabon Gari Rimi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66172,
+      "lat": 12.21596
+    },
+    {
+      "name": "Gwagwata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65462,
+      "lat": 12.21344
+    },
+    {
+      "name": "Tunkunawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67384,
+      "lat": 12.22922
+    },
+    {
+      "name": "Ancaro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.6449,
+      "lat": 12.20212
+    },
+    {
+      "name": "Yola Tofa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65803,
+      "lat": 12.18781
+    },
+    {
+      "name": "Sabon Gari Yanzaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63929,
+      "lat": 12.18096
+    },
+    {
+      "name": "Kadage",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62838,
+      "lat": 12.19255
+    },
+    {
+      "name": "Sabon Gari Bagemu Garji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61821,
+      "lat": 12.18627
+    },
+    {
+      "name": "Sabon Gari Bagurawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62755,
+      "lat": 12.1696
+    },
+    {
+      "name": "Gidan Gabbas",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63783,
+      "lat": 12.16649
+    },
+    {
+      "name": "Dingim",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64823,
+      "lat": 12.16813
+    },
+    {
+      "name": "Galawanga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66371,
+      "lat": 12.16452
+    },
+    {
+      "name": "Jelagu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.68667,
+      "lat": 12.16599
+    },
+    {
+      "name": "Sabon Gari Runfa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69197,
+      "lat": 12.17599
+    },
+    {
+      "name": "Yola Cedi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.675,
+      "lat": 12.1874
+    },
+    {
+      "name": "Canga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71583,
+      "lat": 12.18978
+    },
+    {
+      "name": "Kawo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69697,
+      "lat": 12.20323
+    },
+    {
+      "name": "Kurdu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72149,
+      "lat": 12.21566
+    },
+    {
+      "name": "Sauna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72649,
+      "lat": 12.23564
+    },
+    {
+      "name": "Basuye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69121,
+      "lat": 12.21063
+    },
+    {
+      "name": "Dumi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25151,
+      "lat": 11.76
+    },
+    {
+      "name": "Lautai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69386,
+      "lat": 12.22786
+    },
+    {
+      "name": "Sabon Gari Abdulwahab",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.68038,
+      "lat": 12.23425
+    },
+    {
+      "name": "Beguwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69386,
+      "lat": 12.23412
+    },
+    {
+      "name": "Sabon Gari Madugu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69826,
+      "lat": 12.23006
+    },
+    {
+      "name": "Kera",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51563,
+      "lat": 12.08356
+    },
+    {
+      "name": "Rimaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.55402,
+      "lat": 12.08432
+    },
+    {
+      "name": "Nakurewa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.56641,
+      "lat": 12.10152
+    },
+    {
+      "name": "Afanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57874,
+      "lat": 12.11452
+    },
+    {
+      "name": "San Bauna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59563,
+      "lat": 12.12513
+    },
+    {
+      "name": "Azore",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60586,
+      "lat": 12.11619
+    },
+    {
+      "name": "Kacishiruwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.5501,
+      "lat": 12.13601
+    },
+    {
+      "name": "Acidagora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57139,
+      "lat": 12.14432
+    },
+    {
+      "name": "Madawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57725,
+      "lat": 12.15447
+    },
+    {
+      "name": "Salawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59278,
+      "lat": 12.15813
+    },
+    {
+      "name": "Dukawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60351,
+      "lat": 12.15437
+    },
+    {
+      "name": "Sabon Gari Fako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61934,
+      "lat": 12.15935
+    },
+    {
+      "name": "Gidan Biriti",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62573,
+      "lat": 12.14548
+    },
+    {
+      "name": "Kaleko",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66894,
+      "lat": 12.15993
+    },
+    {
+      "name": "Koya Tadeta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62836,
+      "lat": 12.11771
+    },
+    {
+      "name": "Gigiyun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62389,
+      "lat": 12.10452
+    },
+    {
+      "name": "Baita",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66614,
+      "lat": 12.12748
+    },
+    {
+      "name": "Bangare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.68068,
+      "lat": 12.11841
+    },
+    {
+      "name": "Danmadahun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66005,
+      "lat": 12.09033
+    },
+    {
+      "name": "Ganmawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71384,
+      "lat": 12.0942
+    },
+    {
+      "name": "Zaurawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72507,
+      "lat": 12.10106
+    },
+    {
+      "name": "Dage",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73598,
+      "lat": 12.10013
+    },
+    {
+      "name": "Korawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74247,
+      "lat": 12.1147
+    },
+    {
+      "name": "Iyatanci",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71371,
+      "lat": 12.1164
+    },
+    {
+      "name": "Mesatadu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72346,
+      "lat": 12.12253
+    },
+    {
+      "name": "Wailari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73886,
+      "lat": 12.12366
+    },
+    {
+      "name": "Barwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70669,
+      "lat": 12.13427
+    },
+    {
+      "name": "Mesa Burmi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74237,
+      "lat": 12.14778
+    },
+    {
+      "name": "Bujawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74475,
+      "lat": 12.1322
+    },
+    {
+      "name": "Yan Dutse",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28652,
+      "lat": 12.24194
+    },
+    {
+      "name": "Sabo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28086,
+      "lat": 12.21028
+    },
+    {
+      "name": "Kyauta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.32788,
+      "lat": 12.20589
+    },
+    {
+      "name": "Kawaje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33849,
+      "lat": 12.21455
+    },
+    {
+      "name": "Malla Mawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74871,
+      "lat": 12.00069
+    },
+    {
+      "name": "Kadage Topfa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74139,
+      "lat": 12.00248
+    },
+    {
+      "name": "Sherifawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73616,
+      "lat": 12.00508
+    },
+    {
+      "name": "Gofaru",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74818,
+      "lat": 12.02172
+    },
+    {
+      "name": "Gwandu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74437,
+      "lat": 12.02632
+    },
+    {
+      "name": "Maraya Alhaji Ahmadu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72389,
+      "lat": 12.01217
+    },
+    {
+      "name": "Kanawa Goma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64581,
+      "lat": 12.00319
+    },
+    {
+      "name": "Aujarawa Kurma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65796,
+      "lat": 12.01041
+    },
+    {
+      "name": "Kakara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65066,
+      "lat": 12.01829
+    },
+    {
+      "name": "Danja",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.74767,
+      "lat": 12.04717
+    },
+    {
+      "name": "Tsamia Kara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.72808,
+      "lat": 12.03831
+    },
+    {
+      "name": "Dangwale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70992,
+      "lat": 12.04056
+    },
+    {
+      "name": "Dosai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71836,
+      "lat": 12.02975
+    },
+    {
+      "name": "Madachi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.47422,
+      "lat": 12.19675
+    },
+    {
+      "name": "Garin Kuka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.75033,
+      "lat": 12.087
+    },
+    {
+      "name": "Maraya Kattawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.75199,
+      "lat": 12.06781
+    },
+    {
+      "name": "Agalawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73561,
+      "lat": 12.05697
+    },
+    {
+      "name": "Yan Musa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71818,
+      "lat": 12.05417
+    },
+    {
+      "name": "Maraya Kuka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.73255,
+      "lat": 12.07609
+    },
+    {
+      "name": "Katirije",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69518,
+      "lat": 12.06531
+    },
+    {
+      "name": "Cero",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.68667,
+      "lat": 12.06329
+    },
+    {
+      "name": "Maraya Jele",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71843,
+      "lat": 12.06341
+    },
+    {
+      "name": "Daradou",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70116,
+      "lat": 12.05293
+    },
+    {
+      "name": "Matalawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69255,
+      "lat": 12.04609
+    },
+    {
+      "name": "Matalawa Liman",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.69879,
+      "lat": 12.04677
+    },
+    {
+      "name": "Yamadi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67848,
+      "lat": 12.05738
+    },
+    {
+      "name": "Danbal",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.67758,
+      "lat": 12.07695
+    },
+    {
+      "name": "Babawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65922,
+      "lat": 12.0594
+    },
+    {
+      "name": "Tamawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.64192,
+      "lat": 12.05056
+    },
+    {
+      "name": "Ranawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66066,
+      "lat": 12.04374
+    },
+    {
+      "name": "Kubuta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.66329,
+      "lat": 12.03321
+    },
+    {
+      "name": "Kwasongomi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65884,
+      "lat": 12.03059
+    },
+    {
+      "name": "Zainawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63992,
+      "lat": 12.03192
+    },
+    {
+      "name": "Yan Ali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.61515,
+      "lat": 12.06531
+    },
+    {
+      "name": "Rangaza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.6097,
+      "lat": 12.05647
+    },
+    {
+      "name": "Zaura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.62374,
+      "lat": 12.05899
+    },
+    {
+      "name": "Yankaba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.58036,
+      "lat": 12.01025
+    },
+    {
+      "name": "Jaba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54462,
+      "lat": 12.06116
+    },
+    {
+      "name": "Takurza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.53179,
+      "lat": 12.06425
+    },
+    {
+      "name": "Kunnawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35131,
+      "lat": 12.16758
+    },
+    {
+      "name": "Dungurawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35216,
+      "lat": 12.16204
+    },
+    {
+      "name": "Kwidawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.47821,
+      "lat": 12.16776
+    },
+    {
+      "name": "Dan Dalama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46566,
+      "lat": 12.1497
+    },
+    {
+      "name": "Babban Ruga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.41869,
+      "lat": 12.14452
+    },
+    {
+      "name": "Kwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3722,
+      "lat": 12.14927
+    },
+    {
+      "name": "Chedi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45067,
+      "lat": 12.11267
+    },
+    {
+      "name": "Sabon Gari Bagadawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.40947,
+      "lat": 12.1124
+    },
+    {
+      "name": "Bagadawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4026,
+      "lat": 12.12132
+    },
+    {
+      "name": "Yaratu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29334,
+      "lat": 12.10838
+    },
+    {
+      "name": "Tsarkakiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.35396,
+      "lat": 12.09513
+    },
+    {
+      "name": "Bambarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.36482,
+      "lat": 12.09556
+    },
+    {
+      "name": "Tumfafi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44563,
+      "lat": 12.09748
+    },
+    {
+      "name": "Bankaura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44707,
+      "lat": 12.09266
+    },
+    {
+      "name": "Miltara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45306,
+      "lat": 12.07526
+    },
+    {
+      "name": "Yelwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.34043,
+      "lat": 12.05541
+    },
+    {
+      "name": "Garun Iya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43331,
+      "lat": 12.05564
+    },
+    {
+      "name": "Kwami",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.31616,
+      "lat": 12.0144
+    },
+    {
+      "name": "Duwatsu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25818,
+      "lat": 12.02735
+    },
+    {
+      "name": "Sabon Gari Katsalle",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29237,
+      "lat": 12.00457
+    },
+    {
+      "name": "Kwuha",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.50223,
+      "lat": 12.55593
+    },
+    {
+      "name": "Kakibare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.51434,
+      "lat": 12.5477
+    },
+    {
+      "name": "Jama’a Haro",
+      "aliases": ["Jama'a Haro"],
+      "kind": "town",
+      "lon": 8.52307,
+      "lat": 12.54402
+    },
+    {
+      "name": "Ungua Mallam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.50723,
+      "lat": 12.53973
+    },
+    {
+      "name": "Yawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54179,
+      "lat": 12.54634
+    },
+    {
+      "name": "Kagadama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.58104,
+      "lat": 12.55527
+    },
+    {
+      "name": "Maimazari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.6046,
+      "lat": 12.5645
+    },
+    {
+      "name": "Tasawa Dabba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.63427,
+      "lat": 12.55229
+    },
+    {
+      "name": "Yanyayi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59139,
+      "lat": 12.52838
+    },
+    {
+      "name": "Farare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57862,
+      "lat": 12.52823
+    },
+    {
+      "name": "Incikwalto",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52221,
+      "lat": 12.5201
+    },
+    {
+      "name": "Dunga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.59522,
+      "lat": 12.51849
+    },
+    {
+      "name": "Ungua Jita",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.60037,
+      "lat": 12.50007
+    },
+    {
+      "name": "Zago",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.65647,
+      "lat": 12.50734
+    },
+    {
+      "name": "Balarabe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.70733,
+      "lat": 12.50961
+    },
+    {
+      "name": "Mundu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71298,
+      "lat": 12.51339
+    },
+    {
+      "name": "Ungua Mallam Kolori",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.71414,
+      "lat": 12.5249
+    },
+    {
+      "name": "Birkin",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24273,
+      "lat": 12.4508
+    },
+    {
+      "name": "Malikawan Garu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15232,
+      "lat": 12.39393
+    },
+    {
+      "name": "Malikawan Safari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.14818,
+      "lat": 12.37744
+    },
+    {
+      "name": "Dansire",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13415,
+      "lat": 12.34716
+    },
+    {
+      "name": "Lambar Kunchi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15035,
+      "lat": 12.33934
+    },
+    {
+      "name": "Kwaski",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02134,
+      "lat": 12.31033
+    },
+    {
+      "name": "Kafa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.03728,
+      "lat": 12.27189
+    },
+    {
+      "name": "Dutsen Kafa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05862,
+      "lat": 12.27804
+    },
+    {
+      "name": "Kafa Yau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.06029,
+      "lat": 12.28359
+    },
+    {
+      "name": "Tasan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07401,
+      "lat": 12.28041
+    },
+    {
+      "name": "Rage",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07507,
+      "lat": 12.27466
+    },
+    {
+      "name": "Tsofo Dadarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07401,
+      "lat": 12.26487
+    },
+    {
+      "name": "Yan Gwarzo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15656,
+      "lat": 12.27517
+    },
+    {
+      "name": "Hagawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15938,
+      "lat": 12.26674
+    },
+    {
+      "name": "Rumaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20045,
+      "lat": 12.26583
+    },
+    {
+      "name": "Ganji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3931,
+      "lat": 12.42079
+    },
+    {
+      "name": "Jigba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.47998,
+      "lat": 12.42705
+    },
+    {
+      "name": "Ghana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4821,
+      "lat": 12.39138
+    },
+    {
+      "name": "Koguna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45733,
+      "lat": 12.38137
+    },
+    {
+      "name": "Gwadama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28584,
+      "lat": 12.3832
+    },
+    {
+      "name": "Sabon Ruwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43614,
+      "lat": 12.37129
+    },
+    {
+      "name": "Fagolo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.46601,
+      "lat": 12.36479
+    },
+    {
+      "name": "Mai-Ungwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48604,
+      "lat": 12.37003
+    },
+    {
+      "name": "Kurma Forest Reserve",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48256,
+      "lat": 12.34985
+    },
+    {
+      "name": "Zukumi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38564,
+      "lat": 12.26852
+    },
+    {
+      "name": "Yan-Bundu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.28791,
+      "lat": 12.26817
+    },
+    {
+      "name": "Ungwan Gawo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.08734,
+      "lat": 12.24144
+    },
+    {
+      "name": "Tafahiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0779,
+      "lat": 12.22418
+    },
+    {
+      "name": "Karari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16917,
+      "lat": 12.23433
+    },
+    {
+      "name": "Dadauda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16044,
+      "lat": 12.20521
+    },
+    {
+      "name": "Bunji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01287,
+      "lat": 12.19618
+    },
+    {
+      "name": "Jabar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01867,
+      "lat": 12.18877
+    },
+    {
+      "name": "Dorayi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02598,
+      "lat": 12.19331
+    },
+    {
+      "name": "Manawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.00989,
+      "lat": 12.17499
+    },
+    {
+      "name": "Barebari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.04909,
+      "lat": 12.18347
+    },
+    {
+      "name": "Gamara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.06196,
+      "lat": 12.19194
+    },
+    {
+      "name": "Jama’a",
+      "aliases": ["Jama'a"],
+      "kind": "town",
+      "lon": 8.07679,
+      "lat": 12.18998
+    },
+    {
+      "name": "Salalawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11852,
+      "lat": 12.19638
+    },
+    {
+      "name": "Gozarki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.1276,
+      "lat": 12.1874
+    },
+    {
+      "name": "Jobi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20838,
+      "lat": 12.15869
+    },
+    {
+      "name": "Wurabugga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.1003,
+      "lat": 12.15097
+    },
+    {
+      "name": "Surfan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.00726,
+      "lat": 12.14715
+    },
+    {
+      "name": "Tamilawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0716,
+      "lat": 12.14376
+    },
+    {
+      "name": "Sarkin Iya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0777,
+      "lat": 12.13912
+    },
+    {
+      "name": "Majin Gini",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13396,
+      "lat": 12.14053
+    },
+    {
+      "name": "Adam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20933,
+      "lat": 12.12888
+    },
+    {
+      "name": "Bauje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24142,
+      "lat": 12.11102
+    },
+    {
+      "name": "Kwido",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.03759,
+      "lat": 12.09991
+    },
+    {
+      "name": "Ungwan Yamma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02861,
+      "lat": 12.10516
+    },
+    {
+      "name": "Jobin Gadanya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05333,
+      "lat": 12.07872
+    },
+    {
+      "name": "Bake",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.08729,
+      "lat": 12.07539
+    },
+    {
+      "name": "Rijiyan Danduna",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09067,
+      "lat": 12.07217
+    },
+    {
+      "name": "Godarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09934,
+      "lat": 12.05511
+    },
+    {
+      "name": "Jarmawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13592,
+      "lat": 12.07857
+    },
+    {
+      "name": "Warure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19884,
+      "lat": 12.06339
+    },
+    {
+      "name": "Taura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22982,
+      "lat": 12.07827
+    },
+    {
+      "name": "Liringo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18375,
+      "lat": 12.03241
+    },
+    {
+      "name": "Bori",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09535,
+      "lat": 12.05075
+    },
+    {
+      "name": "Magashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10797,
+      "lat": 12.02787
+    },
+    {
+      "name": "Shakogi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07916,
+      "lat": 12.05118
+    },
+    {
+      "name": "Ungwan Maguzawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.01569,
+      "lat": 12.01616
+    },
+    {
+      "name": "Bala Kuita",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.75938,
+      "lat": 12.41665
+    },
+    {
+      "name": "Sabon Gari Ungua Dogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78744,
+      "lat": 12.39187
+    },
+    {
+      "name": "Garin Dogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76665,
+      "lat": 12.40156
+    },
+    {
+      "name": "Duma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76947,
+      "lat": 12.37911
+    },
+    {
+      "name": "Kwashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77104,
+      "lat": 12.35111
+    },
+    {
+      "name": "Kwaneria Kanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79127,
+      "lat": 12.36756
+    },
+    {
+      "name": "Maifura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78062,
+      "lat": 12.35131
+    },
+    {
+      "name": "Shadokufata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78436,
+      "lat": 12.35247
+    },
+    {
+      "name": "Karangi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80767,
+      "lat": 12.36851
+    },
+    {
+      "name": "Masare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76988,
+      "lat": 12.34309
+    },
+    {
+      "name": "Digilo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8109,
+      "lat": 12.27169
+    },
+    {
+      "name": "Kafamai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.83239,
+      "lat": 12.26478
+    },
+    {
+      "name": "Balagaza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88451,
+      "lat": 12.2553
+    },
+    {
+      "name": "Digawa Sarki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89687,
+      "lat": 12.25469
+    },
+    {
+      "name": "Ungua Dawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.917,
+      "lat": 12.26927
+    },
+    {
+      "name": "Badama Maikeffi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91947,
+      "lat": 12.25726
+    },
+    {
+      "name": "Doga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79812,
+      "lat": 12.22702
+    },
+    {
+      "name": "Mallamawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.83909,
+      "lat": 12.24317
+    },
+    {
+      "name": "Badawa Balakuita",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.90069,
+      "lat": 12.24473
+    },
+    {
+      "name": "Ganderi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89338,
+      "lat": 12.22062
+    },
+    {
+      "name": "Badawa Mairimi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91325,
+      "lat": 12.2464
+    },
+    {
+      "name": "Zakarai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91356,
+      "lat": 12.22632
+    },
+    {
+      "name": "Farin Gidan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94398,
+      "lat": 12.2246
+    },
+    {
+      "name": "Magama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92213,
+      "lat": 12.19988
+    },
+    {
+      "name": "Mazangudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.90634,
+      "lat": 12.19715
+    },
+    {
+      "name": "Sabon Gari Kumbo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8956,
+      "lat": 12.1969
+    },
+    {
+      "name": "Garin Mallamai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88626,
+      "lat": 12.19705
+    },
+    {
+      "name": "Kumbo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88349,
+      "lat": 12.20175
+    },
+    {
+      "name": "Takalmawa Karama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85997,
+      "lat": 12.20043
+    },
+    {
+      "name": "Takalmawa Koma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85281,
+      "lat": 12.18873
+    },
+    {
+      "name": "Takalmawa Tsofoa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84524,
+      "lat": 12.20296
+    },
+    {
+      "name": "Beri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82077,
+      "lat": 12.2028
+    },
+    {
+      "name": "Kadaje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79282,
+      "lat": 12.19504
+    },
+    {
+      "name": "Fangam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80589,
+      "lat": 12.19403
+    },
+    {
+      "name": "Ungua Gaude",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80261,
+      "lat": 12.1806
+    },
+    {
+      "name": "Yautan Kudu",
+      "aliases": ["Yautar Kudu"],
+      "kind": "town",
+      "lon": 8.75982,
+      "lat": 12.19842
+    },
+    {
+      "name": "Zugoh",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77042,
+      "lat": 12.17601
+    },
+    {
+      "name": "Yaranchi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.75584,
+      "lat": 12.16779
+    },
+    {
+      "name": "Tsalle",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82284,
+      "lat": 12.15543
+    },
+    {
+      "name": "Dangarinale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84206,
+      "lat": 12.174
+    },
+    {
+      "name": "Dagar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85256,
+      "lat": 12.16875
+    },
+    {
+      "name": "Digawa Fulani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88863,
+      "lat": 12.1471
+    },
+    {
+      "name": "Fatafata",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9071,
+      "lat": 12.14776
+    },
+    {
+      "name": "Asayaya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9132,
+      "lat": 12.15689
+    },
+    {
+      "name": "Jurun",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95008,
+      "lat": 12.16723
+    },
+    {
+      "name": "Unguwaruku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94459,
+      "lat": 12.15063
+    },
+    {
+      "name": "Karza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95896,
+      "lat": 12.15508
+    },
+    {
+      "name": "Kulumi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.97592,
+      "lat": 12.13489
+    },
+    {
+      "name": "Dabigel",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96043,
+      "lat": 12.14024
+    },
+    {
+      "name": "Jigoro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.93182,
+      "lat": 12.14271
+    },
+    {
+      "name": "Segudida",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9072,
+      "lat": 12.14226
+    },
+    {
+      "name": "Chikawa Azare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.89494,
+      "lat": 12.13525
+    },
+    {
+      "name": "Kakigumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8793,
+      "lat": 12.14115
+    },
+    {
+      "name": "Gumawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.86351,
+      "lat": 12.13721
+    },
+    {
+      "name": "Kagandama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.83016,
+      "lat": 12.14029
+    },
+    {
+      "name": "Nguruma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78081,
+      "lat": 12.11613
+    },
+    {
+      "name": "Sokoti",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76118,
+      "lat": 12.10174
+    },
+    {
+      "name": "Sarari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76093,
+      "lat": 12.09357
+    },
+    {
+      "name": "Daladi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76784,
+      "lat": 12.10316
+    },
+    {
+      "name": "Bare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77824,
+      "lat": 12.08313
+    },
+    {
+      "name": "Magaria",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79035,
+      "lat": 12.09756
+    },
+    {
+      "name": "Jijitar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84317,
+      "lat": 12.1079
+    },
+    {
+      "name": "Kijawal",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94675,
+      "lat": 12.10523
+    },
+    {
+      "name": "Kiawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82854,
+      "lat": 12.07178
+    },
+    {
+      "name": "Tofai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8345,
+      "lat": 12.05598
+    },
+    {
+      "name": "Larbawa Kugur",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77844,
+      "lat": 12.05931
+    },
+    {
+      "name": "Kogar",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77173,
+      "lat": 12.07097
+    },
+    {
+      "name": "Daguzau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.77844,
+      "lat": 12.04024
+    },
+    {
+      "name": "Uran",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80362,
+      "lat": 12.04256
+    },
+    {
+      "name": "Paima",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9409,
+      "lat": 12.04276
+    },
+    {
+      "name": "Tsadawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96996,
+      "lat": 12.04614
+    },
+    {
+      "name": "Gatira",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.97894,
+      "lat": 12.04166
+    },
+    {
+      "name": "Yadaganmo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9792,
+      "lat": 12.02717
+    },
+    {
+      "name": "Yankinta",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.97012,
+      "lat": 12.01789
+    },
+    {
+      "name": "Gedawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95049,
+      "lat": 12.01285
+    },
+    {
+      "name": "Tsigirgiri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95503,
+      "lat": 12.002
+    },
+    {
+      "name": "Yangwan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.88036,
+      "lat": 12.01138
+    },
+    {
+      "name": "Jarkuka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.83651,
+      "lat": 12.01496
+    },
+    {
+      "name": "Marayadudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.8129,
+      "lat": 12.01996
+    },
+    {
+      "name": "Kankam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78843,
+      "lat": 12.02178
+    },
+    {
+      "name": "Kyararaba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.7683,
+      "lat": 12.01416
+    },
+    {
+      "name": "Yan Kamaye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93107,
+      "lat": 12.3275
+    },
+    {
+      "name": "Zorgi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97162,
+      "lat": 12.26324
+    },
+    {
+      "name": "Ungwan Biso",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83224,
+      "lat": 11.95231
+    },
+    {
+      "name": "Zuri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85556,
+      "lat": 11.97746
+    },
+    {
+      "name": "Gando",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.8541,
+      "lat": 11.9613
+    },
+    {
+      "name": "Ungwan Makera",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88013,
+      "lat": 11.94505
+    },
+    {
+      "name": "Jamboriji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90606,
+      "lat": 11.95685
+    },
+    {
+      "name": "Kafin Magaji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9793,
+      "lat": 11.9345
+    },
+    {
+      "name": "Ungwan Danwana",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.92648,
+      "lat": 11.9048
+    },
+    {
+      "name": "Sabon Gwarzo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.89958,
+      "lat": 11.92221
+    },
+    {
+      "name": "Kasa Riji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90035,
+      "lat": 11.91341
+    },
+    {
+      "name": "Zangarmawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88536,
+      "lat": 11.93421
+    },
+    {
+      "name": "Ungwan Dankyandi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.84095,
+      "lat": 11.92889
+    },
+    {
+      "name": "Jaje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.8899,
+      "lat": 11.86233
+    },
+    {
+      "name": "Ungwan Marke",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90538,
+      "lat": 11.88274
+    },
+    {
+      "name": "Dogami",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9346,
+      "lat": 11.84075
+    },
+    {
+      "name": "Jamaa Makuku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97524,
+      "lat": 11.82469
+    },
+    {
+      "name": "Tamarke",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95512,
+      "lat": 11.80718
+    },
+    {
+      "name": "Kwari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87287,
+      "lat": 11.73984
+    },
+    {
+      "name": "Safale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88033,
+      "lat": 11.75822
+    },
+    {
+      "name": "Ungwan Bawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.88245,
+      "lat": 11.72455
+    },
+    {
+      "name": "Kafi Awo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.89842,
+      "lat": 11.74119
+    },
+    {
+      "name": "Dan Gayaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.91951,
+      "lat": 11.73045
+    },
+    {
+      "name": "Ungwan Alhazi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93189,
+      "lat": 11.74796
+    },
+    {
+      "name": "Bauni",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.96527,
+      "lat": 11.77418
+    },
+    {
+      "name": "Rimin",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.96218,
+      "lat": 11.738
+    },
+    {
+      "name": "Zanginawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.9855,
+      "lat": 11.74177
+    },
+    {
+      "name": "Figi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97466,
+      "lat": 11.66921
+    },
+    {
+      "name": "Tubnrawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.95492,
+      "lat": 11.67114
+    },
+    {
+      "name": "Zauna Gari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94496,
+      "lat": 11.71207
+    },
+    {
+      "name": "Dan Zuwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.91864,
+      "lat": 11.6931
+    },
+    {
+      "name": "Dan Leni",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90538,
+      "lat": 11.71246
+    },
+    {
+      "name": "Dadin Kowa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90772,
+      "lat": 11.65379
+    },
+    {
+      "name": "Citama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93051,
+      "lat": 11.64962
+    },
+    {
+      "name": "Adama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93188,
+      "lat": 11.66878
+    },
+    {
+      "name": "Ungwan Randi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94078,
+      "lat": 11.65988
+    },
+    {
+      "name": "Ungwan Dodo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99045,
+      "lat": 11.65715
+    },
+    {
+      "name": "Ungwan Gara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98818,
+      "lat": 11.64099
+    },
+    {
+      "name": "Mayanu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.97783,
+      "lat": 11.61411
+    },
+    {
+      "name": "Ba’awa",
+      "aliases": ["Ba'awa"],
+      "kind": "town",
+      "lon": 7.99,
+      "lat": 11.59631
+    },
+    {
+      "name": "Madatai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99064,
+      "lat": 11.57642
+    },
+    {
+      "name": "Ungwan Madaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.91253,
+      "lat": 11.59885
+    },
+    {
+      "name": "Ungwan Hore",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.77277,
+      "lat": 11.54954
+    },
+    {
+      "name": "Ungwan Ringi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.7843,
+      "lat": 11.55326
+    },
+    {
+      "name": "Tukurwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.79629,
+      "lat": 11.56516
+    },
+    {
+      "name": "Ungwan Paki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.79265,
+      "lat": 11.53773
+    },
+    {
+      "name": "Ungwan Liman",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.82015,
+      "lat": 11.54299
+    },
+    {
+      "name": "Daneji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.85977,
+      "lat": 11.56298
+    },
+    {
+      "name": "Dan Marka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.86831,
+      "lat": 11.53473
+    },
+    {
+      "name": "Ungwan Sarki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.87657,
+      "lat": 11.54745
+    },
+    {
+      "name": "Gowarza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.90245,
+      "lat": 11.56052
+    },
+    {
+      "name": "Ungwan Chiroma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.94723,
+      "lat": 11.53764
+    },
+    {
+      "name": "Darido",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83243,
+      "lat": 11.50367
+    },
+    {
+      "name": "Ungwan Isa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.76813,
+      "lat": 11.49732
+    },
+    {
+      "name": "Ungwan Makashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.73925,
+      "lat": 11.43619
+    },
+    {
+      "name": "Gidan Bingyele",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.78993,
+      "lat": 11.47071
+    },
+    {
+      "name": "Ungwan Mallamawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.93578,
+      "lat": 11.43774
+    },
+    {
+      "name": "Ungwan Shadauro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.99572,
+      "lat": 11.44864
+    },
+    {
+      "name": "Ungwan Kwabe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.98537,
+      "lat": 11.43492
+    },
+    {
+      "name": "Ungwan Kadabo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.92525,
+      "lat": 11.42139
+    },
+    {
+      "name": "Ungwan Kauran Dawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.904,
+      "lat": 11.38724
+    },
+    {
+      "name": "Ungwan Lallau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.74697,
+      "lat": 11.39297
+    },
+    {
+      "name": "Chediya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.73262,
+      "lat": 11.37789
+    },
+    {
+      "name": "Ungwan Ango",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.74425,
+      "lat": 11.36608
+    },
+    {
+      "name": "Ungwan Daudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.78048,
+      "lat": 11.34601
+    },
+    {
+      "name": "Ungwan Dan Magani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.7892,
+      "lat": 11.35455
+    },
+    {
+      "name": "Dan Guzuri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.83407,
+      "lat": 11.36254
+    },
+    {
+      "name": "Ungwan Tamowa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 7.86685,
+      "lat": 11.35909
+    },
+    {
+      "name": "Umb. Baleji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 9.12068,
+      "lat": 11.8773
+    },
+    {
+      "name": "Janbarde",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.04285,
+      "lat": 11.93986
+    },
+    {
+      "name": "Yadau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.08164,
+      "lat": 11.92144
+    },
+    {
+      "name": "Yan Bashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10914,
+      "lat": 11.9142
+    },
+    {
+      "name": "Katsinawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12683,
+      "lat": 11.95107
+    },
+    {
+      "name": "Kanya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.14817,
+      "lat": 11.95832
+    },
+    {
+      "name": "Dan Isa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22271,
+      "lat": 11.93655
+    },
+    {
+      "name": "Akalawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22729,
+      "lat": 11.96968
+    },
+    {
+      "name": "Tudu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10228,
+      "lat": 11.817
+    },
+    {
+      "name": "Yan Medi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.07942,
+      "lat": 11.81986
+    },
+    {
+      "name": "Makada",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02942,
+      "lat": 11.89793
+    },
+    {
+      "name": "Mairuwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.00382,
+      "lat": 11.73775
+    },
+    {
+      "name": "Ungwan Mani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.04373,
+      "lat": 11.74803
+    },
+    {
+      "name": "Mauri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05237,
+      "lat": 11.71783
+    },
+    {
+      "name": "Zare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.05371,
+      "lat": 11.67941
+    },
+    {
+      "name": "Ringin Mauam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0862,
+      "lat": 11.69922
+    },
+    {
+      "name": "Ungwan Dawaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10288,
+      "lat": 11.71515
+    },
+    {
+      "name": "Rangas",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09698,
+      "lat": 11.72908
+    },
+    {
+      "name": "Jama an",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.10986,
+      "lat": 11.75316
+    },
+    {
+      "name": "Kadanji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11881,
+      "lat": 11.68904
+    },
+    {
+      "name": "Mamku",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13914,
+      "lat": 11.68825
+    },
+    {
+      "name": "Kapangaru",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18391,
+      "lat": 11.7296
+    },
+    {
+      "name": "Sagi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18815,
+      "lat": 11.70767
+    },
+    {
+      "name": "Gazau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19151,
+      "lat": 11.70601
+    },
+    {
+      "name": "Zam",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21079,
+      "lat": 11.70876
+    },
+    {
+      "name": "Tsaudawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20457,
+      "lat": 11.6766
+    },
+    {
+      "name": "Dashi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.23534,
+      "lat": 11.7147
+    },
+    {
+      "name": "Yakum",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.26497,
+      "lat": 11.73098
+    },
+    {
+      "name": "Dan Yakubu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2538,
+      "lat": 11.7031
+    },
+    {
+      "name": "Mai Dakin Alkali",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29658,
+      "lat": 11.66528
+    },
+    {
+      "name": "Jobawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.34597,
+      "lat": 11.69436
+    },
+    {
+      "name": "Kuiwa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.36978,
+      "lat": 11.72099
+    },
+    {
+      "name": "Kyan Bawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.38457,
+      "lat": 11.71153
+    },
+    {
+      "name": "Yanaba",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3728,
+      "lat": 11.65444
+    },
+    {
+      "name": "Dan Maura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4109,
+      "lat": 11.71201
+    },
+    {
+      "name": "Shafawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44196,
+      "lat": 11.72209
+    },
+    {
+      "name": "Turedasau Ta Kanawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44286,
+      "lat": 11.69381
+    },
+    {
+      "name": "Turedasau Ta Fulani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.43614,
+      "lat": 11.67235
+    },
+    {
+      "name": "Mudawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44533,
+      "lat": 11.74161
+    },
+    {
+      "name": "Daune",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4849,
+      "lat": 11.73183
+    },
+    {
+      "name": "Bankau",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48392,
+      "lat": 11.7184
+    },
+    {
+      "name": "Iyarawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.49035,
+      "lat": 11.69451
+    },
+    {
+      "name": "Gafan",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.44974,
+      "lat": 11.67361
+    },
+    {
+      "name": "Shiye",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.468,
+      "lat": 11.64506
+    },
+    {
+      "name": "Dan Gajiri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.45245,
+      "lat": 11.61869
+    },
+    {
+      "name": "Dutsen Garma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3597,
+      "lat": 11.63179
+    },
+    {
+      "name": "Maidagare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33252,
+      "lat": 11.63733
+    },
+    {
+      "name": "Yandatsa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.33943,
+      "lat": 11.62796
+    },
+    {
+      "name": "Mallam Bature",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.211,
+      "lat": 11.65315
+    },
+    {
+      "name": "Kamfato",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16829,
+      "lat": 11.60032
+    },
+    {
+      "name": "Kwaian",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.12331,
+      "lat": 11.63554
+    },
+    {
+      "name": "Ungwan Banebari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.1491,
+      "lat": 11.60747
+    },
+    {
+      "name": "Takalafia",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.54021,
+      "lat": 11.4975
+    },
+    {
+      "name": "Jangaru",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.57287,
+      "lat": 11.49041
+    },
+    {
+      "name": "Gidan Barde",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.17623,
+      "lat": 11.39903
+    },
+    {
+      "name": "Gidan Dankaka",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16518,
+      "lat": 11.38485
+    },
+    {
+      "name": "Gidan Lebura",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19435,
+      "lat": 11.36681
+    },
+    {
+      "name": "Gidan Mallam Mati",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19638,
+      "lat": 11.33804
+    },
+    {
+      "name": "Ungwan Maikora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2233,
+      "lat": 11.37839
+    },
+    {
+      "name": "Ungwan Danjuma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20536,
+      "lat": 11.37081
+    },
+    {
+      "name": "Gidan Sarkin Noma",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.24382,
+      "lat": 11.39179
+    },
+    {
+      "name": "Gidan Bawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.22274,
+      "lat": 11.35771
+    },
+    {
+      "name": "Ungwan Mayola",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2434,
+      "lat": 11.33635
+    },
+    {
+      "name": "Ungwan Sulai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2564,
+      "lat": 11.32721
+    },
+    {
+      "name": "Ungwan Jifa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.3454,
+      "lat": 11.35413
+    },
+    {
+      "name": "Ungwan Mallam Sale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.37926,
+      "lat": 11.37737
+    },
+    {
+      "name": "K. Yar Maraya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.98248,
+      "lat": 11.94658
+    },
+    {
+      "name": "Matankari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.09561,
+      "lat": 11.77643
+    },
+    {
+      "name": "Unguwan Taiki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.11203,
+      "lat": 11.78721
+    },
+    {
+      "name": "Kawara",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.13424,
+      "lat": 11.79848
+    },
+    {
+      "name": "Acilafiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.15125,
+      "lat": 11.77801
+    },
+    {
+      "name": "Majemu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.02134,
+      "lat": 11.82486
+    },
+    {
+      "name": "Guraraj",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25348,
+      "lat": 11.71719
+    },
+    {
+      "name": "Kadani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.4927,
+      "lat": 11.7407
+    },
+    {
+      "name": "Baguda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.31622,
+      "lat": 11.64365
+    },
+    {
+      "name": "Ringimawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42154,
+      "lat": 11.66219
+    },
+    {
+      "name": "Barnawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.48622,
+      "lat": 11.60608
+    },
+    {
+      "name": "Karmo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25572,
+      "lat": 11.61781
+    },
+    {
+      "name": "Kabawa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29738,
+      "lat": 11.5431
+    },
+    {
+      "name": "Rimin Nakuda",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.29767,
+      "lat": 11.52601
+    },
+    {
+      "name": "Dundu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.25835,
+      "lat": 11.50654
+    },
+    {
+      "name": "Dan Mako",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2804,
+      "lat": 11.50158
+    },
+    {
+      "name": "Zangaro",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.42276,
+      "lat": 11.5138
+    },
+    {
+      "name": "Dambo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.14889,
+      "lat": 11.73865
+    },
+    {
+      "name": "Zora",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.20861,
+      "lat": 11.72045
+    },
+    {
+      "name": "Limido Kwai",
+      "aliases": ["Lamido Kwai"],
+      "kind": "town",
+      "lon": 8.18676,
+      "lat": 11.67182
+    },
+    {
+      "name": "Maizaure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.21815,
+      "lat": 11.56247
+    },
+    {
+      "name": "Madaki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2107,
+      "lat": 11.56602
+    },
+    {
+      "name": "Madiya",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2161,
+      "lat": 11.57264
+    },
+    {
+      "name": "Kabonli",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.0937,
+      "lat": 11.71198
+    },
+    {
+      "name": "Na’ ria",
+      "aliases": ["Na' ria"],
+      "kind": "town",
+      "lon": 8.78923,
+      "lat": 11.4863
+    },
+    {
+      "name": "Da-Garu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.92592,
+      "lat": 11.44873
+    },
+    {
+      "name": "Unguwan Baure",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.93991,
+      "lat": 11.46387
+    },
+    {
+      "name": "Dalori",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95754,
+      "lat": 11.47556
+    },
+    {
+      "name": "Kadiawo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96376,
+      "lat": 11.48597
+    },
+    {
+      "name": "Pandaran",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95795,
+      "lat": 11.44995
+    },
+    {
+      "name": "Arenza",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99173,
+      "lat": 11.46394
+    },
+    {
+      "name": "Muthutu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99442,
+      "lat": 11.44939
+    },
+    {
+      "name": "Duji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95835,
+      "lat": 11.39313
+    },
+    {
+      "name": "Gwari Maji",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.99241,
+      "lat": 11.42846
+    },
+    {
+      "name": "Kadabo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.94477,
+      "lat": 11.42542
+    },
+    {
+      "name": "Gidan Gala",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84903,
+      "lat": 11.38481
+    },
+    {
+      "name": "Sergi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.80057,
+      "lat": 11.42991
+    },
+    {
+      "name": "Ziga",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79207,
+      "lat": 11.41745
+    },
+    {
+      "name": "Ga Machina",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.78092,
+      "lat": 11.43299
+    },
+    {
+      "name": "Gacha",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.79356,
+      "lat": 11.38671
+    },
+    {
+      "name": "Dendu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.96133,
+      "lat": 11.35529
+    },
+    {
+      "name": "Karchi",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.93099,
+      "lat": 11.33664
+    },
+    {
+      "name": "Gidan Kogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.95403,
+      "lat": 11.3236
+    },
+    {
+      "name": "Kampani",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.9966,
+      "lat": 11.36914
+    },
+    {
+      "name": "Takwabe",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.87389,
+      "lat": 11.27677
+    },
+    {
+      "name": "Masama",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.86464,
+      "lat": 11.2961
+    },
+    {
+      "name": "Gauraki",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84234,
+      "lat": 11.26975
+    },
+    {
+      "name": "Gatari",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.82923,
+      "lat": 11.34894
+    },
+    {
+      "name": "Bido",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.85673,
+      "lat": 11.34887
+    },
+    {
+      "name": "Farimpa",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.86977,
+      "lat": 11.36509
+    },
+    {
+      "name": "Gabare",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.91525,
+      "lat": 11.36928
+    },
+    {
+      "name": "Dubo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.84133,
+      "lat": 11.46576
+    },
+    {
+      "name": "Matuswai",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.76301,
+      "lat": 11.25556
+    },
+    {
+      "name": "Gidan Bagobiri",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.16903,
+      "lat": 11.49288
+    },
+    {
+      "name": "Gidan Habu",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.18393,
+      "lat": 11.47229
+    },
+    {
+      "name": "Gajale",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.23772,
+      "lat": 11.43318
+    },
+    {
+      "name": "Gidan Talle Bamaguje",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.2219,
+      "lat": 11.42468
+    },
+    {
+      "name": "Ungwan Kwari",
+      "aliases": ["Unguwan Kwari"],
+      "kind": "town",
+      "lon": 8.01735,
+      "lat": 11.81939
+    },
+    {
+      "name": "Gidan Rogo",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.19584,
+      "lat": 11.44006
+    },
+    {
+      "name": "Tukuntawa Quarters",
+      "aliases": [],
+      "kind": "town",
+      "lon": 8.52083,
+      "lat": 11.96806
+    }
   ]
 }
