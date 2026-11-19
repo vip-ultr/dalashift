@@ -11,6 +11,7 @@
     "./types": "./types/index.ts",
     "./schemas": "./schemas/index.ts",
     "./constants": "./constants/index.ts",
+    "./geo": "./geo/kano-search.ts",
     "./i18n": "./i18n/messages.ts"
   },
   "scripts": {

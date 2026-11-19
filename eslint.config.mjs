@@ -6,6 +6,10 @@ import baseConfig from '@dalashift/config-eslint';
  * @type {import("eslint").Linter.Config[]}
  */
 export default [
+  {
+    // Vendored, minified third-party worker copied verbatim from maplibre-gl.
+    ignores: ['apps/web/public/maplibre-gl-worker.mjs'],
+  },
   ...baseConfig,
   {
     files: ['**/*.{js,mjs,cjs}'],

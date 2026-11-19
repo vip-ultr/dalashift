@@ -1,0 +1,141 @@
+{
+  "source": {
+    "title": "Kano State LGA and town gazetteer for offline map search",
+    "url": "https://acresal.gov.ng/states/kano/",
+    "accessed": "2026-11-18",
+    "note": "LGA names follow the 44 local government areas of Kano State. Coordinates are approximate administrative-centre points placed inside each known area, not survey-grade centroids. They exist so offline search can fly the map to the right part of the state. No village, farm or personally identifying coordinates are included. The bounding box 7.693,10.565,9.339,12.575 is the Kano State extent published on the ACReSAL Kano profile. Some metropolitan names appear as both an LGA and a town because they are both an administrative unit and an urban centre. Callers can filter by kind if they only want one of the two."
+  },
+  "places": [
+    { "name": "Ajingi", "aliases": ["Ajengi"], "kind": "lga", "lon": 9.05, "lat": 11.98 },
+    { "name": "Albasu", "aliases": ["Albasu"], "kind": "lga", "lon": 9.06, "lat": 11.78 },
+    { "name": "Bagwai", "aliases": ["Bagawi"], "kind": "lga", "lon": 8.18, "lat": 12.15 },
+    { "name": "Bebeji", "aliases": ["Bebeji"], "kind": "lga", "lon": 8.65, "lat": 11.76 },
+    { "name": "Bichi", "aliases": ["Bichi"], "kind": "lga", "lon": 8.32, "lat": 12.3 },
+    { "name": "Bunkure", "aliases": ["Bunkura"], "kind": "lga", "lon": 8.69, "lat": 11.7 },
+    { "name": "Dala", "aliases": ["Dala"], "kind": "lga", "lon": 8.52, "lat": 11.99 },
+    { "name": "Dambatta", "aliases": ["Dambarta"], "kind": "lga", "lon": 8.6, "lat": 12.195 },
+    {
+      "name": "Dawakin Kudu",
+      "aliases": ["Dawakin Kuda", "Dawa Kudu"],
+      "kind": "lga",
+      "lon": 8.7,
+      "lat": 11.89
+    },
+    { "name": "Dawakin Tofa", "aliases": ["Dawa Tofa"], "kind": "lga", "lon": 8.36, "lat": 12.095 },
+    { "name": "Doguwa", "aliases": ["Dugwa", "Riruwai"], "kind": "lga", "lon": 8.7, "lat": 11.46 },
+    { "name": "Fagge", "aliases": ["Fage", "Waje"], "kind": "lga", "lon": 8.545, "lat": 12.02 },
+    {
+      "name": "Gabasawa",
+      "aliases": ["Gabasawa", "Zakirai"],
+      "kind": "lga",
+      "lon": 8.88,
+      "lat": 12.11
+    },
+    { "name": "Garko", "aliases": ["Garko"], "kind": "lga", "lon": 8.5, "lat": 11.7 },
+    {
+      "name": "Garun Mallam",
+      "aliases": ["Garan Mallam", "Garun Malam"],
+      "kind": "lga",
+      "lon": 8.66,
+      "lat": 11.88
+    },
+    { "name": "Gaya", "aliases": ["Gaiya"], "kind": "lga", "lon": 9.0, "lat": 11.78 },
+    { "name": "Gezawa", "aliases": ["Gezawa"], "kind": "lga", "lon": 8.65, "lat": 12.085 },
+    { "name": "Gwale", "aliases": ["Gwale"], "kind": "lga", "lon": 8.515, "lat": 11.972 },
+    { "name": "Gwarzo", "aliases": ["Gwarzo"], "kind": "lga", "lon": 8.05, "lat": 12.01 },
+    { "name": "Kabo", "aliases": ["Kabo"], "kind": "lga", "lon": 8.46, "lat": 12.3 },
+    {
+      "name": "Kano Municipal",
+      "aliases": ["Kano Municipal Council", "Kofar Kudu"],
+      "kind": "lga",
+      "lon": 8.525,
+      "lat": 12.002
+    },
+    { "name": "Karaye", "aliases": ["Karaye"], "kind": "lga", "lon": 7.98, "lat": 11.93 },
+    { "name": "Kibiya", "aliases": ["Kibiya"], "kind": "lga", "lon": 8.73, "lat": 11.62 },
+    { "name": "Kiru", "aliases": ["Kiru"], "kind": "lga", "lon": 8.74, "lat": 11.85 },
+    { "name": "Kumbotso", "aliases": ["Kumbotso"], "kind": "lga", "lon": 8.575, "lat": 11.925 },
+    {
+      "name": "Kunchi",
+      "aliases": ["Ghari", "Gari", "Kunci"],
+      "kind": "lga",
+      "lon": 8.45,
+      "lat": 12.26
+    },
+    { "name": "Kura", "aliases": ["Kura"], "kind": "lga", "lon": 8.62, "lat": 11.83 },
+    { "name": "Madobi", "aliases": ["Madobi"], "kind": "lga", "lon": 8.69, "lat": 11.94 },
+    { "name": "Makoda", "aliases": ["Makoda"], "kind": "lga", "lon": 8.63, "lat": 12.28 },
+    { "name": "Minjibir", "aliases": ["Minjibir"], "kind": "lga", "lon": 8.58, "lat": 12.155 },
+    {
+      "name": "Nassarawa",
+      "aliases": ["Nasarawa", "Bompai"],
+      "kind": "lga",
+      "lon": 8.56,
+      "lat": 12.045
+    },
+    { "name": "Rano", "aliases": ["Rano"], "kind": "lga", "lon": 8.72, "lat": 11.77 },
+    { "name": "Rimin Gado", "aliases": ["Rimin Gada"], "kind": "lga", "lon": 8.23, "lat": 12.075 },
+    { "name": "Rogo", "aliases": ["Rogo"], "kind": "lga", "lon": 7.86, "lat": 11.82 },
+    { "name": "Shanono", "aliases": ["Shanono"], "kind": "lga", "lon": 8.24, "lat": 12.16 },
+    { "name": "Sumaila", "aliases": ["Sumeila"], "kind": "lga", "lon": 8.55, "lat": 11.58 },
+    { "name": "Takai", "aliases": ["Takai"], "kind": "lga", "lon": 8.915, "lat": 11.96 },
+    {
+      "name": "Tarauni",
+      "aliases": ["Taruni", "Unguwa Uku"],
+      "kind": "lga",
+      "lon": 8.565,
+      "lat": 11.985
+    },
+    { "name": "Tofa", "aliases": ["Tofa"], "kind": "lga", "lon": 8.31, "lat": 12.115 },
+    { "name": "Tsanyawa", "aliases": ["Tsaniya"], "kind": "lga", "lon": 8.28, "lat": 12.24 },
+    { "name": "Tudun Wada", "aliases": ["Tudunwada"], "kind": "lga", "lon": 8.55, "lat": 11.66 },
+    { "name": "Ungogo", "aliases": ["Ungogwa"], "kind": "lga", "lon": 8.55, "lat": 12.07 },
+    { "name": "Warawa", "aliases": ["Warawa"], "kind": "lga", "lon": 8.64, "lat": 11.96 },
+    { "name": "Wudil", "aliases": ["Wodil"], "kind": "lga", "lon": 8.85, "lat": 11.82 },
+    {
+      "name": "Kano city",
+      "aliases": ["Kano", "Kano City", "Birnin Kano", "Kanu"],
+      "kind": "town",
+      "lon": 8.53,
+      "lat": 12.002
+    },
+    { "name": "Fagge", "aliases": ["Fage", "Waje"], "kind": "town", "lon": 8.545, "lat": 12.02 },
+    {
+      "name": "Nassarawa",
+      "aliases": ["Nasarawa", "Bompai"],
+      "kind": "town",
+      "lon": 8.56,
+      "lat": 12.045
+    },
+    {
+      "name": "Tarauni",
+      "aliases": ["Taruni", "Unguwa Uku"],
+      "kind": "town",
+      "lon": 8.565,
+      "lat": 11.985
+    },
+    {
+      "name": "Kumbotso",
+      "aliases": ["Kumbotso Town"],
+      "kind": "town",
+      "lon": 8.575,
+      "lat": 11.925
+    },
+    { "name": "Wudil", "aliases": ["Wodil"], "kind": "town", "lon": 8.85, "lat": 11.82 },
+    { "name": "Gaya", "aliases": ["Gaiya"], "kind": "town", "lon": 9.0, "lat": 11.78 },
+    { "name": "Bichi", "aliases": ["Bichi"], "kind": "town", "lon": 8.32, "lat": 12.3 },
+    { "name": "Dambatta", "aliases": ["Dambarta"], "kind": "town", "lon": 8.6, "lat": 12.195 },
+    { "name": "Gezawa", "aliases": ["Gezawa"], "kind": "town", "lon": 8.65, "lat": 12.085 },
+    { "name": "Gwarzo", "aliases": ["Gwarzo"], "kind": "town", "lon": 8.05, "lat": 12.01 },
+    { "name": "Rano", "aliases": ["Rano"], "kind": "town", "lon": 8.72, "lat": 11.77 },
+    {
+      "name": "Dawakin Tofa",
+      "aliases": ["Dawa Tofa"],
+      "kind": "town",
+      "lon": 8.36,
+      "lat": 12.095
+    },
+    { "name": "Sumaila", "aliases": ["Sumeila"], "kind": "town", "lon": 8.55, "lat": 11.58 },
+    { "name": "Kura", "aliases": ["Kura"], "kind": "town", "lon": 8.62, "lat": 11.83 }
+  ]
+}

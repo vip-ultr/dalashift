@@ -64,6 +64,8 @@ const IGNORED_DIRECTORIES = new Set(['node_modules', '.git', '.next', 'dist', 'b
 const VERBATIM_RECORD_PATTERNS = [
   /^docs\/research\/field-interviews\/[^/]+\/transcript\.md$/,
   /^apps\/web\/AGENTS\.md$/,
+  // Vendored, minified third-party worker copied verbatim from maplibre-gl.
+  /^apps\/web\/public\/maplibre-gl-worker\.mjs$/,
 ];
 
 function isVerbatimRecord(relativePath) {
