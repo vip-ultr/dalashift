@@ -14,6 +14,30 @@ the build.
 
 ## [Unreleased]
 
+### Map interaction and place search (19 November 2026)
+
+- Fixed drawn polygons not painting by bundling the MapLibre worker in `apps/web/public/` and setting its URL explicitly.
+- Done and Undo now work while drawing. Done closes and saves the polygon and leaves draw mode; Undo removes the last placed corner through Terra Draw mode-level history. The drawing status bar and its buttons are smaller.
+- All map overlays now use translucent glass, including the Esri attribution. The attribution starts collapsed and opens only when the farmer taps its info button. Removed the decorative chevron from the field pill.
+- Added offline Kano place search backed by 1,085 LGAs, towns and villages (curated data plus GeoNames populated places). Results are ranked, deduplicated by name and fly the camera to the chosen place. The search panel follows the map width on phones and uses a faded placeholder.
+- The map is full-bleed on mobile and taller for easier navigation (62vh, with a 420px minimum and 560px cap). The Layers sheet and icon controls are compact on small screens. Hover tooltips label the search, Layers, zoom, location and draw buttons.
+
+### Interface language
+
+- English remains the default and Hausa is available on every view. Added a 553-key EN/HA dictionary in `packages/shared/i18n/messages.ts` and wired the map, wizard, farms, landing, workspace, reports, authentication, methodology and layout chrome through `useLanguage()`.
+- "Add farm" is translated as "Kara Gona". Planting trigger titles, generated field names and data-state errors follow the active language, including when the language changes after data has loaded.
+- Removed the duplicate language switcher from the dashboard top bar. The sidebar and menu keep the single switcher.
+
+### Mobile form controls
+
+- Water supply is now a dropdown on all devices instead of a stacked segmented control. Select menus and segmented controls are compact on phones while keeping text at 12px or larger.
+- Localised the accessibility skip link.
+
+### Verification
+
+- `pnpm check`, `pnpm validate:style`, `pnpm validate:links`, `pnpm test` (25 shared and 28 web tests) and `pnpm build` all pass.
+- Browser checks at 390, 768 and 1440 widths found no overflow, no sub-12px text, no hydration errors and no console errors.
+
 ### Mapping and Geospatial Visualisation
 
 - Reworked the interactive MapLibre honesty canvas (`honesty-map-canvas.tsx`):
