@@ -660,31 +660,31 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>{t('wizard.waterQuestion')}</Label>
-                  <SegmentedControl
-                    fullWidth
-                    stackOnMobile
-                    className="[&_button]:min-h-11"
-                    ariaLabel={t('wizard.waterQuestion')}
+                  <Label htmlFor="farming-method">{t('wizard.waterQuestion')}</Label>
+                  <Select
                     value={farmingMethod}
                     onValueChange={(val) => {
-                      setFarmingMethod(val);
+                      setFarmingMethod(val as typeof farmingMethod);
                       setWaterSupplyChosen(true);
                       setFieldErrors((errors) => ({ ...errors, waterSupply: undefined }));
                       if (val === 'rainfed') setIrrigationMethod('rainfed');
                       else if (irrigationMethod === 'rainfed') setIrrigationMethod('unknown');
                     }}
-                    options={[
-                      { value: 'rainfed', label: t('wizard.waterOnlyRain') },
-                      {
-                        value: 'mixed',
-                        label: t('wizard.waterRainIrr'),
-                        shortLabel: t('wizard.waterBoth'),
-                      },
-                      { value: 'irrigated', label: t('wizard.waterIrrigation') },
-                      { value: 'unknown', label: t('farms.notSure') },
-                    ]}
-                  />
+                  >
+                    <SelectTrigger
+                      id="farming-method"
+                      aria-label={t('wizard.waterQuestion')}
+                      aria-invalid={Boolean(fieldErrors.waterSupply)}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rainfed">{t('wizard.waterOnlyRain')}</SelectItem>
+                      <SelectItem value="mixed">{t('wizard.waterRainIrr')}</SelectItem>
+                      <SelectItem value="irrigated">{t('wizard.waterIrrigation')}</SelectItem>
+                      <SelectItem value="unknown">{t('farms.notSure')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                   {fieldErrors.waterSupply ? (
                     <p className="text-xs text-[#b42318]">{fieldErrors.waterSupply}</p>
                   ) : null}
@@ -1170,7 +1170,7 @@ export default function NewFarmWizardPage(): React.JSX.Element {
                             <Label>{t('wizard.uncertaintyQuestion')}</Label>
                             <SegmentedControl
                               fullWidth
-                              className="[&_button]:min-h-11"
+                              className="[&_button]:min-h-9"
                               ariaLabel={t('wizard.uncertaintyQuestion')}
                               value={String(dp.locationUncertaintyM ?? 250)}
                               onValueChange={(value) =>
