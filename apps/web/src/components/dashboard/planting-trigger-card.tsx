@@ -39,7 +39,7 @@ export function PlantingTriggerCard({
 
   return (
     <section
-      aria-label="Planting condition and moisture trigger"
+      aria-label={t('trigger.cardAria')}
       className={cn('rounded-2xl border border-border bg-surface-raised p-5 sm:p-6', className)}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -47,23 +47,17 @@ export function PlantingTriggerCard({
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="satellite">
               <Droplets className="size-3.5" />
-              Moisture-Conditioned Planting Trigger
+              {t('trigger.badge')}
             </Badge>
             {farmerStated ? (
               <Badge variant="farmer">
                 <UserCheck className="size-3.5" />
-                Shaped by farmer&apos;s stated rule
+                {t('trigger.shapedByFarmer')}
               </Badge>
             ) : null}
           </div>
-          <h3 className="mt-2 text-lg font-semibold text-ink">
-            When to sow: Condition over calendar date
-          </h3>
-          <p className="mt-1 text-sm text-ink-muted">
-            In northern Nigeria, early rains are often followed by dry spells. DalaShift evaluates
-            soil moisture and rainfall conditions against your stated risk posture rather than
-            guessing a calendar date.
-          </p>
+          <h3 className="mt-2 text-lg font-semibold text-ink">{t('trigger.heading')}</h3>
+          <p className="mt-1 text-sm text-ink-muted">{t('trigger.intro')}</p>
         </div>
       </div>
 
@@ -71,10 +65,10 @@ export function PlantingTriggerCard({
       <div className="mt-4 rounded-xl border-l-4 border-l-brand-primary bg-[#f4f5f6] p-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold tracking-wide text-brand-primary uppercase">
           <Sprout className="size-4 text-brand-primary" />
-          <span>Active Trigger Condition</span>
+          <span>{t('trigger.activeCondition')}</span>
           {farmerStated === activeRecommended ? (
-            <span className="rounded bg-[#fdf6e5] px-2 py-0.5 text-[11px] font-medium normal-case text-[#8e5636]">
-              Matches farmer&apos;s stated rule
+            <span className="rounded bg-[#fdf6e5] px-2 py-0.5 text-xs font-medium normal-case text-[#8e5636]">
+              {t('trigger.matchesFarmer')}
             </span>
           ) : null}
         </div>
@@ -83,12 +77,12 @@ export function PlantingTriggerCard({
         </p>
         {fieldLang === 'ha' ? (
           <p className="mt-0.5 text-xs text-ink-muted">
-            English: {PLANTING_TRIGGER_TITLES[activeRecommended].en}
+            {t('trigger.englishLine', { title: PLANTING_TRIGGER_TITLES[activeRecommended].en })}
           </p>
         ) : null}
         <p className="mt-2 text-sm text-ink">{assessment.condition}</p>
         <p className="mt-1.5 text-xs text-ink-muted">
-          <span className="font-semibold text-ink">Risk trade-off: </span>
+          <span className="font-semibold text-ink">{t('trigger.riskTradeOff')} </span>
           {assessment.riskProfile}
         </p>
       </div>
@@ -96,7 +90,7 @@ export function PlantingTriggerCard({
       {/* Three coherent risk postures side by side */}
       <div className="mt-5">
         <p className="mb-2.5 text-xs font-semibold tracking-wider text-ink-muted uppercase">
-          Compare three moisture-conditioned planting strategies
+          {t('trigger.compareStrategies')}
         </p>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           {PLANTING_TRIGGERS.map((triggerKey) => {
@@ -132,12 +126,14 @@ export function PlantingTriggerCard({
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {isRecommended ? <Badge variant="pass">Selected condition</Badge> : null}
+                    {isRecommended ? (
+                      <Badge variant="pass">{t('trigger.selectedCondition')}</Badge>
+                    ) : null}
                     {isFarmerRule ? (
-                      <Badge variant="farmer">Farmer&apos;s stated rule</Badge>
+                      <Badge variant="farmer">{t('trigger.farmerRule')}</Badge>
                     ) : null}
                     {!isRecommended && !isFarmerRule ? (
-                      <Badge variant="default">Alternative posture</Badge>
+                      <Badge variant="default">{t('trigger.alternativePosture')}</Badge>
                     ) : null}
                   </div>
 
@@ -147,9 +143,10 @@ export function PlantingTriggerCard({
                   <p className="mt-1.5 text-xs leading-relaxed text-ink">{profile.condition}</p>
                 </div>
 
-                <div className="mt-3 border-t border-border/80 pt-2.5 text-[11px] text-ink-muted">
+                <div className="mt-3 border-t border-border/80 pt-2.5 text-xs text-ink-muted">
                   <p>
-                    <strong className="text-ink">Trade-off:</strong> {profile.riskProfile}
+                    <strong className="text-ink">{t('trigger.tradeOff')}</strong>{' '}
+                    {profile.riskProfile}
                   </p>
                 </div>
               </div>
@@ -162,7 +159,7 @@ export function PlantingTriggerCard({
       {assessment.evidence.length > 0 ? (
         <div className="mt-5 border-t border-border pt-4">
           <p className="mb-2 text-xs font-semibold tracking-wider text-ink-muted uppercase">
-            Current Soil Moisture &amp; Rainfall Evidence
+            {t('trigger.evidenceHeading')}
           </p>
           <ul className="space-y-2">
             {assessment.evidence.map((item, idx) => (

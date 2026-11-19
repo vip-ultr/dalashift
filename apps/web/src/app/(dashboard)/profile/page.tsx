@@ -35,6 +35,12 @@ function getApiError(payload: unknown, fallback: string): string {
 
 export default function ProfileSettingsPage(): React.JSX.Element {
   const { t } = useLanguage();
+  const tRef = React.useRef(t);
+  tRef.current = t;
+  const tr = React.useCallback(
+    (id: string, vars?: Record<string, string | number>) => tRef.current(id, vars),
+    [],
+  );
   const [authenticationRequired, setAuthenticationRequired] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
@@ -49,24 +55,22 @@ export default function ProfileSettingsPage(): React.JSX.Element {
         if (response.status === 401) {
           if (active) {
             setAuthenticationRequired(true);
-            setErrorMessage(getApiError(payload, 'Sign in to load profile preferences.'));
+            setErrorMessage(tr('profile.signInLoad'));
           }
           return;
         }
 
         if (!response.ok) {
-          throw new Error(getApiError(payload, 'Unable to load profile preferences.'));
+          throw new Error(getApiError(payload, tr('profile.loadError')));
         }
 
         const parsed = profileResponseSchema.safeParse(payload);
         if (!parsed.success) {
-          throw new Error('The profile response was invalid.');
+          throw new Error(tr('profile.invalidResponse'));
         }
       } catch (error) {
         if (active) {
-          setErrorMessage(
-            error instanceof Error ? error.message : 'Unable to load profile preferences.',
-          );
+          setErrorMessage(error instanceof Error ? error.message : tr('profile.loadError'));
         }
       }
     }
@@ -75,7 +79,7 @@ export default function ProfileSettingsPage(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, []);
+  }, [tr]);
 
   async function handleSignOut(): Promise<void> {
     setErrorMessage(null);
@@ -97,9 +101,7 @@ export default function ProfileSettingsPage(): React.JSX.Element {
             </div>
             <div>
               <h1 className="font-display text-xl font-bold text-[#111315]">{t('nav.settings')}</h1>
-              <p className="text-sm text-[#6b7280]">
-                Choose your language and review coordinate privacy settings.
-              </p>
+              <p className="text-sm text-[#6b7280]">{t('profile.subtitle')}</p>
             </div>
           </div>
 
@@ -108,11 +110,9 @@ export default function ProfileSettingsPage(): React.JSX.Element {
               <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div>
                   <h2 id="language-heading" className="text-sm font-semibold text-[#111315]">
-                    Preferred Language
+                    {t('profile.languageTitle')}
                   </h2>
-                  <p className="text-xs text-[#6b7280]">
-                    Your choice is saved to your profile and applies across the app right away.
-                  </p>
+                  <p className="text-xs text-[#6b7280]">{t('profile.languageBody')}</p>
                 </div>
                 <LanguageSwitcher />
               </div>
@@ -129,14 +129,11 @@ export default function ProfileSettingsPage(): React.JSX.Element {
                     className="flex items-center gap-1.5 text-sm font-semibold text-[#111315]"
                   >
                     <Lock className="h-4 w-4 text-[#0a4232]" aria-hidden="true" />
-                    Coordinate Redaction in Printable Reports
+                    {t('profile.redactionTitle')}
                   </h2>
-                  <p className="text-xs text-[#6b7280]">
-                    Exact GPS coordinates are always omitted from printable and shareable field
-                    sheets. This privacy protection is enforced and cannot be changed here.
-                  </p>
+                  <p className="text-xs text-[#6b7280]">{t('profile.redactionBody')}</p>
                 </div>
-                <Badge variant="Strong">Always Redacted</Badge>
+                <Badge variant="Strong">{t('profile.alwaysRedacted')}</Badge>
               </div>
             </section>
 

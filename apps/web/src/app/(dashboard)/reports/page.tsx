@@ -41,19 +41,24 @@ interface HoldingReports {
 
 export default function ReportsHubPage(): React.JSX.Element {
   const { t } = useLanguage();
+  const tRef = React.useRef(t);
+  tRef.current = t;
+  const tr = React.useCallback(
+    (id: string, vars?: Record<string, string | number>) => tRef.current(id, vars),
+    [],
+  );
   const [state, setState] = React.useState<'loading' | 'ready' | 'error' | 'unauthenticated'>(
     'loading',
   );
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [holdings, setHoldings] = React.useState<HoldingReports[]>([]);
   const [missingSources, setMissingSources] = React.useState<string[]>([]);
-  const [online, setOnline] = React.useState(() =>
-    typeof navigator === 'undefined' ? true : navigator.onLine,
-  );
+  const [online, setOnline] = React.useState(true);
   const activeRef = React.useRef(true);
 
   React.useEffect(() => {
     activeRef.current = true;
+    setOnline(typeof navigator === 'undefined' || navigator.onLine);
     const goOnline = () => setOnline(true);
     const goOffline = () => setOnline(false);
     window.addEventListener('online', goOnline);
@@ -73,10 +78,10 @@ export default function ReportsHubPage(): React.JSX.Element {
         if (activeRef.current) setState('unauthenticated');
         return;
       }
-      if (!farmsResponse.ok) throw new Error('Unable to load your farms.');
+      if (!farmsResponse.ok) throw new Error(tr('farms.loadError'));
       const payload: unknown = await farmsResponse.json();
       const parsed = farmListSchema.safeParse(payload);
-      if (!parsed.success) throw new Error('The server returned farms in an unexpected format.');
+      if (!parsed.success) throw new Error(tr('reports.unexpectedFarms'));
 
       const results = await Promise.all(
         parsed.data.farms.map(async (farm) => {
@@ -89,7 +94,7 @@ export default function ReportsHubPage(): React.JSX.Element {
               return {
                 ...base,
                 reports: [],
-                error: 'Saved reports could not be loaded for this farm.',
+                error: tr('reports.loadFarmReportsError'),
               };
             }
             const body: unknown = await response.json();
@@ -97,13 +102,13 @@ export default function ReportsHubPage(): React.JSX.Element {
             return {
               ...base,
               reports: reportPayload.success ? reportPayload.data.reports : [],
-              error: reportPayload.success ? null : 'Saved reports were in an unexpected format.',
+              error: reportPayload.success ? null : tr('reports.unexpectedReports'),
             };
           } catch {
             return {
               ...base,
               reports: [],
-              error: 'Saved reports could not be loaded for this farm.',
+              error: tr('reports.loadFarmReportsError'),
             };
           }
         }),
@@ -118,11 +123,11 @@ export default function ReportsHubPage(): React.JSX.Element {
       }
     } catch (error) {
       if (activeRef.current) {
-        setErrorMessage(error instanceof Error ? error.message : 'Unable to load reports.');
+        setErrorMessage(error instanceof Error ? error.message : tr('reports.loadReportsError'));
         setState('error');
       }
     }
-  }, []);
+  }, [tr]);
 
   React.useEffect(() => {
     void load();
@@ -132,15 +137,17 @@ export default function ReportsHubPage(): React.JSX.Element {
 
   const viewState: DataViewState = !online
     ? 'offline'
-    : state === 'error'
-      ? holdings.length > 0
-        ? 'stale'
-        : 'error'
-      : state === 'ready' && missingSources.length > 0
-        ? 'partial'
-        : state === 'ready' && reportCount === 0
-          ? 'empty'
-          : 'ready';
+    : state === 'loading'
+      ? 'loading'
+      : state === 'error'
+        ? holdings.length > 0
+          ? 'stale'
+          : 'error'
+        : state === 'ready' && missingSources.length > 0
+          ? 'partial'
+          : state === 'ready' && reportCount === 0
+            ? 'empty'
+            : 'ready';
 
   return (
     <div className="min-h-screen bg-[#f6f4ef] px-4 py-6 sm:px-6 lg:px-8">
@@ -150,10 +157,7 @@ export default function ReportsHubPage(): React.JSX.Element {
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315]">
               {t('reports.title')}
             </h1>
-            <p className="max-w-2xl text-sm text-[#4b5563]">
-              Saved reports and field sheets for your private farms. Exact field coordinates are
-              redacted from every generated report.
-            </p>
+            <p className="max-w-2xl text-sm text-[#4b5563]">{t('reports.subtitle')}</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
             <Link href="/farms/new">
@@ -167,7 +171,7 @@ export default function ReportsHubPage(): React.JSX.Element {
 
         {state === 'unauthenticated' ? (
           <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 text-sm text-[#4b5563]">
-            <p>Sign in to see reports for your farms.</p>
+            <p>{t('reports.signInPrompt')}</p>
             <Link
               href="/login?next=/reports"
               className="mt-3 inline-block font-medium text-[#0a4232] underline"
@@ -180,7 +184,7 @@ export default function ReportsHubPage(): React.JSX.Element {
         <DataStateBoundary
           state={viewState}
           emptyKind="no-data"
-          sourceName="Report service"
+          sourceName={t('state.sourceReport')}
           errorMessage={errorMessage ?? undefined}
           missingSources={missingSources}
           offlineMessage={t('state.offline')}
@@ -208,8 +212,9 @@ export default function ReportsHubPage(): React.JSX.Element {
                         ? t('dashboard.notAvailable')
                         : `${holding.areaHa.toFixed(2)} ha`}
                       {' · '}
-                      {holding.reports.length} saved{' '}
-                      {holding.reports.length === 1 ? 'report' : 'reports'}
+                      {holding.reports.length === 1
+                        ? t('reports.savedOne', { count: holding.reports.length })
+                        : t('reports.savedMany', { count: holding.reports.length })}
                     </p>
                   </div>
                   <Link href={`/farms/${holding.farmId}/reports`}>
@@ -232,9 +237,14 @@ export default function ReportsHubPage(): React.JSX.Element {
                             {report.kind.replaceAll('_', ' ')}
                           </span>
                           <p className="mt-0.5 text-xs text-[#6b7280]">
-                            Generated {new Date(report.generated_at).toLocaleDateString()}
+                            {t('reports.generated', {
+                              date: new Date(report.generated_at).toLocaleDateString(),
+                            })}
                             {report.period_start && report.period_end
-                              ? ` · ${report.period_start} to ${report.period_end}`
+                              ? ` · ${t('reports.periodRange', {
+                                  start: report.period_start,
+                                  end: report.period_end,
+                                })}`
                               : ''}
                           </p>
                         </div>

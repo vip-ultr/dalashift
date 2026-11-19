@@ -28,7 +28,7 @@ import { useLanguage } from '../../i18n/language-provider';
 import {
   formatCropWithHausa,
   formatObservationDate,
-  PLANTING_TRIGGER_TITLES,
+  plantingTriggerTitle,
 } from '../../lib/utilities/format';
 import { HonestyMapCanvas } from '../maps/honesty-map-canvas';
 import { Badge } from '../ui/badge';
@@ -56,25 +56,25 @@ const NO_SELECTION_VALUE = '__none__';
 type WorkspaceSection = 'fields' | 'crops' | 'priorities' | 'advice';
 
 const farmingMethodOptions = [
-  { value: 'rainfed', label: 'Rainfed' },
-  { value: 'mixed', label: 'Mixed season' },
-  { value: 'irrigated', label: 'Irrigated' },
-  { value: 'unknown', label: 'Not sure' },
+  { value: 'rainfed', label: 'farms.rainfed' },
+  { value: 'mixed', label: 'workspace.mixedSeason' },
+  { value: 'irrigated', label: 'farms.irrigated' },
+  { value: 'unknown', label: 'farms.notSure' },
 ] as const;
 
 const irrigationMethodOptions = [
-  { value: 'none', label: 'None' },
-  { value: 'rainfed', label: 'Rainfed' },
-  { value: 'hand_irrigation', label: 'Hand irrigation (buckets)' },
-  { value: 'furrow', label: 'Canal or furrow' },
-  { value: 'sprinkler', label: 'Sprinkler' },
-  { value: 'drip', label: 'Drip irrigation' },
-  { value: 'well', label: 'Borehole or tube well' },
-  { value: 'river', label: 'River or stream' },
-  { value: 'borehole', label: 'Borehole' },
-  { value: 'canal', label: 'Canal' },
-  { value: 'other', label: 'Other' },
-  { value: 'unknown', label: 'Not sure' },
+  { value: 'none', label: 'workspace.irrNone' },
+  { value: 'rainfed', label: 'farms.rainfed' },
+  { value: 'hand_irrigation', label: 'workspace.irrHand' },
+  { value: 'furrow', label: 'workspace.irrFurrow' },
+  { value: 'sprinkler', label: 'wizard.irrSprinkler' },
+  { value: 'drip', label: 'workspace.irrDrip' },
+  { value: 'well', label: 'workspace.irrWell' },
+  { value: 'river', label: 'workspace.irrRiver' },
+  { value: 'borehole', label: 'wizard.irrBoreholePlain' },
+  { value: 'canal', label: 'wizard.irrCanalPlain' },
+  { value: 'other', label: 'wizard.irrOther' },
+  { value: 'unknown', label: 'farms.notSure' },
 ] as const;
 
 const farmResponseSchema = z.object({
@@ -199,27 +199,36 @@ function isOlderThanSevenDays(isoDate: string): boolean {
   return Number.isFinite(parsed) && Date.now() - parsed > SEVEN_DAYS_MS;
 }
 
-async function readJson<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
+type Translator = (id: string, vars?: Record<string, string | number>) => string;
+
+async function readJson<T>(response: Response, schema: z.ZodType<T>, t: Translator): Promise<T> {
   let payload: unknown;
   try {
     payload = await response.json();
   } catch {
-    throw new Error('The server returned an invalid response.');
+    throw new Error(t('state.invalidResponse'));
   }
   if (!response.ok) {
     const parsedError = errorResponseSchema.safeParse(payload);
     throw new Error(
-      parsedError.success ? parsedError.data.error : `Request failed (${response.status}).`,
+      parsedError.success
+        ? parsedError.data.error
+        : t('state.requestFailed', { status: response.status }),
     );
   }
   const parsed = schema.safeParse(payload);
   if (!parsed.success) {
-    throw new Error('The server returned farm data in an unexpected format.');
+    throw new Error(t('state.unexpectedFarmData'));
   }
   return parsed.data;
 }
 
-async function mutate(url: string, method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', body?: unknown) {
+async function mutate(
+  url: string,
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  t: Translator,
+  body?: unknown,
+) {
   const response = await fetch(url, {
     method,
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
@@ -233,13 +242,15 @@ async function mutate(url: string, method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', 
       // Ignore unreadable error bodies.
     }
     const parsed = errorResponseSchema.safeParse(payload);
-    throw new Error(parsed.success ? parsed.data.error : `Request failed (${response.status}).`);
+    throw new Error(
+      parsed.success ? parsed.data.error : t('state.requestFailed', { status: response.status }),
+    );
   }
 }
 
-function cropName(crop: FarmResponse['crops'][number]['crop']): string {
-  if (!crop) return 'Crop name unavailable';
-  return Array.isArray(crop) ? (crop[0]?.name ?? 'Crop name unavailable') : crop.name;
+function cropName(crop: FarmResponse['crops'][number]['crop'], t: Translator): string {
+  if (!crop) return t('workspace.cropNameUnavailable');
+  return Array.isArray(crop) ? (crop[0]?.name ?? t('workspace.cropNameUnavailable')) : crop.name;
 }
 
 export function RegisteredFarmWorkspace({
@@ -296,7 +307,7 @@ export function RegisteredFarmWorkspace({
 
   const refreshFarm = React.useCallback(async () => {
     const response = await fetch(`/api/farms/${farmId}`, { cache: 'no-store' });
-    const data = await readJson(response, farmResponseSchema);
+    const data = await readJson(response, farmResponseSchema, t);
     setFarmData(data);
     setSelectedParcelId((current) =>
       data.parcels.some((p) => p.id === current) ? current : (data.parcels[0]?.id ?? null),
@@ -311,18 +322,18 @@ export function RegisteredFarmWorkspace({
       notes: data.priorities?.notes ?? '',
     });
     return data;
-  }, [farmId]);
+  }, [farmId, t]);
 
   const loadFarmAndCatalog = React.useCallback(async () => {
     return Promise.allSettled([
       fetch(`/api/farms/${farmId}`, { cache: 'no-store' }).then((response) =>
-        readJson(response, farmResponseSchema),
+        readJson(response, farmResponseSchema, t),
       ),
       fetch('/api/catalog/crops', { cache: 'no-store' }).then((response) =>
-        readJson(response, catalogResponseSchema),
+        readJson(response, catalogResponseSchema, t),
       ),
     ]);
-  }, [farmId]);
+  }, [farmId, t]);
 
   const applyFarmAndCatalog = React.useCallback(
     (results: Awaited<ReturnType<typeof loadFarmAndCatalog>>) => {
@@ -345,19 +356,17 @@ export function RegisteredFarmWorkspace({
         setErrorMessage(
           farmResult.reason instanceof Error
             ? farmResult.reason.message
-            : 'Unable to load this farm right now.',
+            : t('workspace.errLoadFarm'),
         );
       }
       if (catalogResult.status === 'fulfilled') {
         setCatalog(catalogResult.value.crops);
         setCatalogError(null);
       } else {
-        setCatalogError(
-          'The crop catalog could not be loaded. Your saved crops and parcels are still here, but adding a catalog crop may not work until it is available again.',
-        );
+        setCatalogError(t('workspace.errCatalog'));
       }
     },
-    [],
+    [t],
   );
 
   const refreshWorkspace = React.useCallback(async () => {
@@ -420,25 +429,23 @@ export function RegisteredFarmWorkspace({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parcelId: selectedParcelId }),
       });
-      setComparison(await readJson(response, comparisonResponseSchema));
+      setComparison(await readJson(response, comparisonResponseSchema, t));
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Unable to assess this farm right now.',
-      );
+      setErrorMessage(error instanceof Error ? error.message : t('workspace.errAssess'));
     } finally {
       setRunning(false);
     }
   };
 
   const handleMutationError = (error: unknown) => {
-    setErrorMessage(error instanceof Error ? error.message : 'The change could not be saved.');
+    setErrorMessage(error instanceof Error ? error.message : t('workspace.errSave'));
   };
 
   const handleSelectTrigger = async (trigger: PlantingTrigger) => {
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/priorities`, 'PUT', {
+      await mutate(`/api/farms/${farmId}/priorities`, 'PUT', t, {
         goals: priorityDraft.goals,
         plantingTrigger: trigger,
         riskTolerance:
@@ -458,15 +465,13 @@ export function RegisteredFarmWorkspace({
   const handleChoosePlannedCrop = async (code: string, name: string) => {
     const catalogCrop = catalog.find((item) => item.code === code);
     if (!catalogCrop) {
-      setErrorMessage(
-        `The crop catalog does not contain ${name}. Add it as a custom record instead.`,
-      );
+      setErrorMessage(t('workspace.errCropNotInCatalog', { name }));
       return;
     }
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/crops`, 'POST', {
+      await mutate(`/api/farms/${farmId}/crops`, 'POST', t, {
         parcelId: selectedParcelId,
         cropId: catalogCrop.id,
         status: 'planned',
@@ -483,13 +488,13 @@ export function RegisteredFarmWorkspace({
 
   const handleAddCrop = async () => {
     if (!newCrop.cropId) {
-      setErrorMessage('Choose a crop from the catalog first.');
+      setErrorMessage(t('workspace.errChooseCropFirst'));
       return;
     }
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/crops`, 'POST', {
+      await mutate(`/api/farms/${farmId}/crops`, 'POST', t, {
         parcelId: selectedParcelId,
         cropId: newCrop.cropId,
         status: newCrop.status,
@@ -513,7 +518,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/crops/${recordId}`, 'PUT', {
+      await mutate(`/api/farms/${farmId}/crops/${recordId}`, 'PUT', t, {
         parcelId: record.parcel_id,
         cropId: record.crop_id,
         status: patch.status ?? record.status,
@@ -531,7 +536,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/crops/${recordId}`, 'DELETE');
+      await mutate(`/api/farms/${farmId}/crops/${recordId}`, 'DELETE', t);
       await refreshFarm();
     } catch (error) {
       handleMutationError(error);
@@ -545,7 +550,7 @@ export function RegisteredFarmWorkspace({
     const latitude = Number(newParcel.latitude);
     const uncertainty = Number(newParcel.uncertainty);
     if (!newParcel.name.trim()) {
-      setErrorMessage('Enter a parcel name.');
+      setErrorMessage(t('workspace.errEnterParcelName'));
       return;
     }
     if (drawnGeometry?.type !== 'Polygon') {
@@ -555,14 +560,14 @@ export function RegisteredFarmWorkspace({
         Math.abs(longitude) > 180 ||
         Math.abs(latitude) > 90
       ) {
-        setErrorMessage('Enter valid longitude and latitude, or draw a polygon on the map.');
+        setErrorMessage(t('workspace.errEnterCoordinates'));
         return;
       }
     }
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/parcels`, 'POST', {
+      await mutate(`/api/farms/${farmId}/parcels`, 'POST', t, {
         name: newParcel.name.trim(),
         geometry:
           drawnGeometry?.type === 'Polygon'
@@ -594,7 +599,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/parcels/${parcelId}`, 'PATCH', patch);
+      await mutate(`/api/farms/${farmId}/parcels/${parcelId}`, 'PATCH', t, patch);
       await refreshFarm();
     } catch (error) {
       handleMutationError(error);
@@ -607,7 +612,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/parcels/${parcelId}`, 'DELETE');
+      await mutate(`/api/farms/${farmId}/parcels/${parcelId}`, 'DELETE', t);
       if (selectedParcelId === parcelId) setSelectedParcelId(null);
       setComparison(null);
       await refreshFarm();
@@ -622,7 +627,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}/priorities`, 'PUT', {
+      await mutate(`/api/farms/${farmId}/priorities`, 'PUT', t, {
         goals: priorityDraft.goals,
         plantingTrigger: priorityDraft.plantingTrigger || null,
         riskTolerance:
@@ -651,13 +656,13 @@ export function RegisteredFarmWorkspace({
 
   const handleSaveFarm = async () => {
     if (!farmDraft.name.trim()) {
-      setErrorMessage('Enter a farm name.');
+      setErrorMessage(t('workspace.errEnterFarmName'));
       return;
     }
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}`, 'PATCH', {
+      await mutate(`/api/farms/${farmId}`, 'PATCH', t, {
         name: farmDraft.name.trim(),
         farmingMethod: farmDraft.farmingMethod,
         irrigationMethod: farmDraft.irrigationMethod,
@@ -676,7 +681,7 @@ export function RegisteredFarmWorkspace({
     setBusy(true);
     setErrorMessage(null);
     try {
-      await mutate(`/api/farms/${farmId}`, 'DELETE');
+      await mutate(`/api/farms/${farmId}`, 'DELETE', t);
       setDeleteFarmOpen(false);
       router.push('/farms');
     } catch (error) {
@@ -750,12 +755,12 @@ export function RegisteredFarmWorkspace({
           <p className="font-semibold text-[#b42318]">{errorMessage}</p>
           {errorMessage?.includes('Authentication') ? (
             <Link href="/login" className="mt-3 inline-block font-medium text-[#0a4232] underline">
-              Sign in to view this farm
+              {t('workspace.signInToView')}
             </Link>
           ) : null}
         </div>
         <Link href="/farms" className="text-sm font-medium text-[#0a4232] underline">
-          Return to farms
+          {t('workspace.returnToFarms')}
         </Link>
       </div>
     );
@@ -791,15 +796,20 @@ export function RegisteredFarmWorkspace({
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="flex flex-col justify-between gap-4 rounded-xl border border-[#e5e7eb] bg-white p-5 sm:flex-row sm:items-center">
           <div>
-            <Badge variant="Strong">Your Farm</Badge>
+            <Badge variant="Strong">{t('workspace.yourFarm')}</Badge>
             <h1 className="mt-2 font-display text-2xl font-bold text-[#111315]">
               {farmData.farm.name}
             </h1>
             <p className="mt-1 text-sm text-[#4b5563]">
               {farmData.farm.area_ha === null
-                ? 'Area unavailable'
-                : `${farmData.farm.area_ha.toFixed(2)} ha holding`}{' '}
-              · {farmData.parcels.length} {farmData.parcels.length === 1 ? 'parcel' : 'parcels'}
+                ? t('workspace.areaUnavailable')
+                : t('workspace.holdingArea', { area: farmData.farm.area_ha.toFixed(2) })}{' '}
+              · {farmData.parcels.length}{' '}
+              {t(
+                farmData.parcels.length === 1
+                  ? 'workspace.parcelCountOne'
+                  : 'workspace.parcelCountMany',
+              )}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -810,13 +820,13 @@ export function RegisteredFarmWorkspace({
                 ) : (
                   <Sprout className="size-4" aria-hidden="true" />
                 )}
-                {running ? 'Assessing parcel…' : t('workspace.runAssessment')}
+                {running ? t('workspace.assessing') : t('workspace.runAssessment')}
               </Button>
             </div>
             <div className="self-end">
               <Link href={`/farms/${farmId}/reports`}>
                 <Button type="button" variant="secondary">
-                  Reports
+                  {t('nav.reports')}
                 </Button>
               </Link>
             </div>
@@ -825,8 +835,8 @@ export function RegisteredFarmWorkspace({
 
         <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e5e7eb] bg-white px-5 py-3">
           <div>
-            <h2 className="text-sm font-semibold text-[#374151]">Farm settings</h2>
-            <p className="text-xs text-[#6b7280]">Change farm details or remove this farm.</p>
+            <h2 className="text-sm font-semibold text-[#374151]">{t('workspace.farmSettings')}</h2>
+            <p className="text-xs text-[#6b7280]">{t('workspace.farmSettingsBody')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button type="button" variant="secondary" size="sm" onClick={openEditFarm}>
@@ -858,7 +868,7 @@ export function RegisteredFarmWorkspace({
 
         {busy ? (
           <p role="status" className="text-xs text-[#6b7280]">
-            Saving changes…
+            {t('workspace.savingChanges')}
           </p>
         ) : null}
 
@@ -879,8 +889,8 @@ export function RegisteredFarmWorkspace({
           >
             <span className="inline-flex items-center gap-1.5">
               <Clock className="size-4 shrink-0" aria-hidden="true" />
-              Some field information is from {formatObservationDate(oldestObservationAt)} and may be
-              out of date. {refreshing ? 'Refreshing now…' : null}
+              {t('workspace.staleInfo', { date: formatObservationDate(oldestObservationAt) })}{' '}
+              {refreshing ? t('workspace.refreshingNow') : null}
             </span>
             <button
               type="button"
@@ -897,7 +907,7 @@ export function RegisteredFarmWorkspace({
         <div className="space-y-3">
           <SegmentedControl
             fullWidth
-            ariaLabel="Farm workspace sections"
+            ariaLabel={t('workspace.sectionsAria')}
             panelIdPrefix={sectionPrefix}
             value={activeSection}
             onValueChange={setActiveSection}
@@ -911,7 +921,7 @@ export function RegisteredFarmWorkspace({
           <p className="text-sm text-[#4b5563]">
             {t('workspace.workingOn')}:{' '}
             <span className="font-semibold text-[#111315]">
-              {selectedParcel?.name ?? 'no field selected'}
+              {selectedParcel?.name ?? t('workspace.noFieldSelected')}
             </span>
           </p>
         </div>
@@ -960,14 +970,16 @@ export function RegisteredFarmWorkspace({
                         <span className="block font-semibold">{parcel.name}</span>
                         <span className="text-xs text-[#4b5563]">
                           {parcel.area_ha === null
-                            ? `GPS point, ±${parcel.location_uncertainty_m ?? 500} m`
+                            ? t('workspace.gpsPointChip', {
+                                uncertainty: parcel.location_uncertainty_m ?? 500,
+                              })
                             : `${parcel.area_ha.toFixed(2)} ha`}
                         </span>
                       </button>
                       {editingParcel && editingParcel.id === parcel.id ? (
                         <div className="flex flex-wrap items-end gap-2 border-t border-[#e5e7eb] pt-2">
                           <input
-                            aria-label={`Field name for ${parcel.name}`}
+                            aria-label={t('workspace.fieldNameFor', { name: parcel.name })}
                             value={editingParcel.name}
                             onChange={(event) =>
                               setEditingParcel({ ...editingParcel, name: event.target.value })
@@ -979,7 +991,7 @@ export function RegisteredFarmWorkspace({
                               type="number"
                               min={1}
                               max={5000}
-                              aria-label={`Uncertainty for ${parcel.name}`}
+                              aria-label={t('workspace.uncertaintyFor', { name: parcel.name })}
                               value={editingParcel.uncertainty}
                               onChange={(event) =>
                                 setEditingParcel({
@@ -1047,10 +1059,7 @@ export function RegisteredFarmWorkspace({
                 <h3 className="mt-2 text-sm font-semibold text-[#111315]">
                   {t('state.emptyFields')}
                 </h3>
-                <p className="mt-1 text-xs text-[#6b7280]">
-                  Add a GPS point or draw a boundary below to start receiving satellite
-                  intelligence.
-                </p>
+                <p className="mt-1 text-xs text-[#6b7280]">{t('workspace.emptyFieldsBody')}</p>
               </div>
             )}
 
@@ -1058,15 +1067,15 @@ export function RegisteredFarmWorkspace({
               <h2 className="font-semibold">{t('workspace.addField')}</h2>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <Label>Parcel name</Label>
+                  <Label>{t('workspace.parcelName')}</Label>
                   <Input
                     value={newParcel.name}
                     onChange={(event) => setNewParcel({ ...newParcel, name: event.target.value })}
-                    placeholder="e.g. North Field"
+                    placeholder={t('workspace.parcelNamePlaceholder')}
                   />
                 </div>
                 <div>
-                  <Label>Longitude (°E)</Label>
+                  <Label>{t('workspace.longitude')}</Label>
                   <Input
                     type="number"
                     step="0.00001"
@@ -1078,7 +1087,7 @@ export function RegisteredFarmWorkspace({
                   />
                 </div>
                 <div>
-                  <Label>Latitude (°N)</Label>
+                  <Label>{t('workspace.latitude')}</Label>
                   <Input
                     type="number"
                     step="0.00001"
@@ -1090,7 +1099,7 @@ export function RegisteredFarmWorkspace({
                   />
                 </div>
                 <div>
-                  <Label>Uncertainty (m)</Label>
+                  <Label>{t('workspace.uncertainty')}</Label>
                   <Input
                     type="number"
                     min={1}
@@ -1114,11 +1123,11 @@ export function RegisteredFarmWorkspace({
                   }}
                 >
                   <Pencil className="size-3.5" aria-hidden="true" />
-                  {isDrawing ? 'Drawing: tap corners, then press Done' : 'Draw a new field'}
+                  {isDrawing ? t('workspace.drawingHint') : t('workspace.drawNewField')}
                 </Button>
                 {drawnGeometry ? (
                   <span className="text-xs text-brand-primary">
-                    Field boundary captured. Check its size above, then add it.
+                    {t('workspace.boundaryCaptured')}
                   </span>
                 ) : null}
                 <Button type="button" size="sm" onClick={() => void handleAddParcel()}>
@@ -1137,7 +1146,7 @@ export function RegisteredFarmWorkspace({
             aria-labelledby={`${sectionPrefix}-tab-crops`}
             className="rounded-xl border border-[#e5e7eb] bg-white p-5"
           >
-            <h2 className="font-semibold">Crops you recorded</h2>
+            <h2 className="font-semibold">{t('workspace.cropsRecorded')}</h2>
             {farmData.crops.length > 0 ? (
               <ul className="mt-3 space-y-3">
                 {farmData.crops.map((record) => (
@@ -1146,12 +1155,14 @@ export function RegisteredFarmWorkspace({
                     className="space-y-2 border-b border-[#e5e7eb] pb-2 last:border-0"
                   >
                     <div className="flex items-center justify-between gap-2 text-sm">
-                      <span>{cropName(record.crop)}</span>
+                      <span>{cropName(record.crop, t)}</span>
                       <button
                         type="button"
                         onClick={() => setPendingDeleteCropId(record.id)}
                         className="rounded p-1 text-[#b42318] hover:bg-[#fdeceb]"
-                        aria-label={`Delete ${cropName(record.crop)} record`}
+                        aria-label={t('workspace.deleteRecordFor', {
+                          name: cropName(record.crop, t),
+                        })}
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
                       </button>
@@ -1163,13 +1174,15 @@ export function RegisteredFarmWorkspace({
                           void handleUpdateCrop(record.id, { status: value })
                         }
                       >
-                        <SelectTrigger aria-label={`Status for ${cropName(record.crop)}`}>
+                        <SelectTrigger
+                          aria-label={t('workspace.statusFor', { name: cropName(record.crop, t) })}
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="previous">Previous</SelectItem>
-                          <SelectItem value="current">Current</SelectItem>
-                          <SelectItem value="planned">Planned</SelectItem>
+                          <SelectItem value="previous">{t('workspace.statusPrevious')}</SelectItem>
+                          <SelectItem value="current">{t('workspace.statusCurrent')}</SelectItem>
+                          <SelectItem value="planned">{t('workspace.statusPlanned')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <Select
@@ -1178,15 +1191,21 @@ export function RegisteredFarmWorkspace({
                           void handleUpdateCrop(record.id, { season: value })
                         }
                       >
-                        <SelectTrigger aria-label={`Season for ${cropName(record.crop)}`}>
+                        <SelectTrigger
+                          aria-label={t('workspace.seasonFor', { name: cropName(record.crop, t) })}
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="rainy">Rainy</SelectItem>
-                          <SelectItem value="dry">Dry</SelectItem>
-                          <SelectItem value="harmattan">Harmattan</SelectItem>
-                          <SelectItem value="year_round">Year round</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="rainy">{t('workspace.seasonRainy')}</SelectItem>
+                          <SelectItem value="dry">{t('workspace.seasonDry')}</SelectItem>
+                          <SelectItem value="harmattan">
+                            {t('workspace.seasonHarmattan')}
+                          </SelectItem>
+                          <SelectItem value="year_round">
+                            {t('workspace.seasonYearRound')}
+                          </SelectItem>
+                          <SelectItem value="unknown">{t('workspace.seasonUnknown')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1199,12 +1218,12 @@ export function RegisteredFarmWorkspace({
 
             <div className="mt-4 space-y-2 border-t border-[#e5e7eb] pt-3">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-[#6b7280]">
-                Add a crop
+                {t('workspace.addACrop')}
               </h3>
               <p className="text-xs text-[#4b5563]">
-                Adding a crop to:{' '}
+                {t('workspace.addingCropTo', { name: '' })}
                 <span className="font-semibold text-[#111315]">
-                  {selectedParcel?.name ?? 'no field selected'}
+                  {selectedParcel?.name ?? t('workspace.noFieldSelected')}
                 </span>
               </p>
               {catalogError ? (
@@ -1218,11 +1237,13 @@ export function RegisteredFarmWorkspace({
                   setNewCrop({ ...newCrop, cropId: value === NO_SELECTION_VALUE ? '' : value })
                 }
               >
-                <SelectTrigger aria-label="Crop to add">
-                  <SelectValue placeholder="Choose a catalog crop" />
+                <SelectTrigger aria-label={t('workspace.cropToAddAria')}>
+                  <SelectValue placeholder={t('workspace.chooseCatalogCrop')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={NO_SELECTION_VALUE}>Choose a catalog crop</SelectItem>
+                  <SelectItem value={NO_SELECTION_VALUE}>
+                    {t('workspace.chooseCatalogCrop')}
+                  </SelectItem>
                   {catalog.map((item) => (
                     <SelectItem key={item.id} value={item.id}>
                       {formatCropWithHausa(item.code, language === 'ha')}
@@ -1235,32 +1256,32 @@ export function RegisteredFarmWorkspace({
                   value={newCrop.status}
                   onValueChange={(value) => setNewCrop({ ...newCrop, status: value })}
                 >
-                  <SelectTrigger aria-label="Crop status">
+                  <SelectTrigger aria-label={t('workspace.cropStatusAria')}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="previous">Previous</SelectItem>
-                    <SelectItem value="current">Current</SelectItem>
-                    <SelectItem value="planned">Planned</SelectItem>
+                    <SelectItem value="previous">{t('workspace.statusPrevious')}</SelectItem>
+                    <SelectItem value="current">{t('workspace.statusCurrent')}</SelectItem>
+                    <SelectItem value="planned">{t('workspace.statusPlanned')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select
                   value={newCrop.season}
                   onValueChange={(value) => setNewCrop({ ...newCrop, season: value })}
                 >
-                  <SelectTrigger aria-label="Crop season">
+                  <SelectTrigger aria-label={t('workspace.cropSeasonAria')}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="rainy">Rainy</SelectItem>
-                    <SelectItem value="dry">Dry</SelectItem>
-                    <SelectItem value="unknown">Unknown</SelectItem>
+                    <SelectItem value="rainy">{t('workspace.seasonRainy')}</SelectItem>
+                    <SelectItem value="dry">{t('workspace.seasonDry')}</SelectItem>
+                    <SelectItem value="unknown">{t('workspace.seasonUnknown')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <Button type="button" size="sm" onClick={() => void handleAddCrop()}>
                 <Plus className="size-3.5" aria-hidden="true" />
-                Add crop record
+                {t('workspace.addCropRecord')}
               </Button>
             </div>
           </section>
@@ -1273,16 +1294,18 @@ export function RegisteredFarmWorkspace({
             aria-labelledby={`${sectionPrefix}-tab-priorities`}
             className="rounded-xl border border-[#e5e7eb] bg-white p-5"
           >
-            <h2 className="font-semibold">Stated priorities</h2>
+            <h2 className="font-semibold">{t('workspace.statedPriorities')}</h2>
             <p className="mt-1 text-xs text-[#6b7280]">
               {farmData.priorities?.planting_trigger
-                ? (PLANTING_TRIGGER_TITLES[
-                    farmData.priorities.planting_trigger as keyof typeof PLANTING_TRIGGER_TITLES
-                  ]?.en ?? farmData.priorities.planting_trigger.replaceAll('_', ' '))
-                : 'No planting rule recorded'}
+                ? plantingTriggerTitle(
+                    farmData.priorities.planting_trigger,
+                    language,
+                    farmData.priorities.planting_trigger.replaceAll('_', ' '),
+                  )
+                : t('workspace.noPlantingRule')}
             </p>
             <div className="mt-3 space-y-2">
-              <Label>Management goals</Label>
+              <Label>{t('workspace.managementGoals')}</Label>
               <div className="flex flex-wrap gap-1.5">
                 {FARMER_GOALS.map((goal) => {
                   const checked = priorityDraft.goals.includes(goal);
@@ -1298,7 +1321,7 @@ export function RegisteredFarmWorkspace({
                             : [...draft.goals, goal],
                         }))
                       }
-                      className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                      className={`rounded-full border px-2.5 py-1 text-xs ${
                         checked
                           ? 'border-[#0a4232] bg-[#0a4232] text-white'
                           : 'border-[#e5e7eb] bg-[#f4f5f6] text-[#374151]'
@@ -1310,7 +1333,7 @@ export function RegisteredFarmWorkspace({
                 })}
               </div>
               <div>
-                <Label>Planting trigger</Label>
+                <Label>{t('wizard.plantingTriggerLabel')}</Label>
                 <Select
                   value={priorityDraft.plantingTrigger}
                   onValueChange={(value) =>
@@ -1320,21 +1343,21 @@ export function RegisteredFarmWorkspace({
                     })
                   }
                 >
-                  <SelectTrigger aria-label="Planting trigger">
-                    <SelectValue placeholder="Not recorded" />
+                  <SelectTrigger aria-label={t('wizard.plantingTriggerLabel')}>
+                    <SelectValue placeholder={t('farms.notRecorded')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_SELECTION_VALUE}>Not recorded</SelectItem>
+                    <SelectItem value={NO_SELECTION_VALUE}>{t('farms.notRecorded')}</SelectItem>
                     {PLANTING_TRIGGERS.map((trigger) => (
                       <SelectItem key={trigger} value={trigger}>
-                        {PLANTING_TRIGGER_TITLES[trigger].en}
+                        {plantingTriggerTitle(trigger, language, trigger)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="risk-tolerance">Risk tolerance (0 to 1)</Label>
+                <Label htmlFor="risk-tolerance">{t('workspace.riskTolerance')}</Label>
                 <Input
                   id="risk-tolerance"
                   type="number"
@@ -1348,7 +1371,7 @@ export function RegisteredFarmWorkspace({
                 />
               </div>
               <div>
-                <Label htmlFor="priority-notes">Notes</Label>
+                <Label htmlFor="priority-notes">{t('workspace.notes')}</Label>
                 <textarea
                   id="priority-notes"
                   value={priorityDraft.notes}
@@ -1360,7 +1383,7 @@ export function RegisteredFarmWorkspace({
                 />
               </div>
               <Button type="button" size="sm" onClick={() => void handleSavePriorities()}>
-                Save priorities
+                {t('workspace.savePriorities')}
               </Button>
             </div>
           </section>
@@ -1375,14 +1398,18 @@ export function RegisteredFarmWorkspace({
             {comparison && suitabilityComparison && triggerAssessment ? (
               <section className="space-y-4">
                 <header className="rounded-xl border border-[#e5e7eb] bg-white p-5">
-                  <Badge variant="Neutral">Ruleset {comparison.comparison.rulesetVersion}</Badge>
-                  <h2 className="mt-2 text-xl font-semibold">Parcel comparison</h2>
+                  <Badge variant="Neutral">
+                    {t('workspace.ruleset', { version: comparison.comparison.rulesetVersion })}
+                  </Badge>
+                  <h2 className="mt-2 text-xl font-semibold">{t('workspace.parcelComparison')}</h2>
                   <p className="mt-1 text-sm text-[#4b5563]">
                     {comparison.comparison.rankingBasis}
                   </p>
                   <p className="mt-3 text-sm font-medium">
-                    Seasonal rainfall: {comparison.seasonalOutlook.rainfallToDate.valueMm} mm
-                    observed against {comparison.seasonalOutlook.rainfallToDate.normalMm} mm normal.
+                    {t('workspace.seasonalRainfall', {
+                      value: comparison.seasonalOutlook.rainfallToDate.valueMm,
+                      normal: comparison.seasonalOutlook.rainfallToDate.normalMm,
+                    })}
                   </p>
                   <p className="mt-1 text-xs text-[#6b7280]">
                     {comparison.seasonalOutlook.framingNote}
@@ -1405,7 +1432,7 @@ export function RegisteredFarmWorkspace({
                 {[...comparison.comparison.limitations, ...comparison.seasonalOutlook.limitations]
                   .length > 0 ? (
                   <div className="rounded-xl border border-[#e5e7eb] bg-white p-5">
-                    <h3 className="font-semibold">What the data cannot tell us</h3>
+                    <h3 className="font-semibold">{t('workspace.dataLimits')}</h3>
                     <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-[#4b5563]">
                       {[
                         ...comparison.comparison.limitations,
@@ -1420,8 +1447,8 @@ export function RegisteredFarmWorkspace({
             ) : (
               <p className="rounded-xl border border-[#e5e7eb] bg-white p-5 text-sm text-[#4b5563]">
                 {selectedParcel
-                  ? `Run an assessment for ${selectedParcel.name} to see the trigger, crop shortlist and seasonal outlook.`
-                  : 'Add parcel geometry to run an assessment.'}
+                  ? t('workspace.runAssessmentFor', { name: selectedParcel.name })
+                  : t('workspace.addGeometryToAssess')}
               </p>
             )}
           </div>
@@ -1431,11 +1458,11 @@ export function RegisteredFarmWorkspace({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t('workspace.editFarm')}</DialogTitle>
-              <DialogDescription>Update the details you recorded for this farm.</DialogDescription>
+              <DialogDescription>{t('workspace.editFarmDescription')}</DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="edit-farm-name">Farm name</Label>
+                <Label htmlFor="edit-farm-name">{t('wizard.farmNameLabel')}</Label>
                 <Input
                   id="edit-farm-name"
                   value={farmDraft.name}
@@ -1443,43 +1470,43 @@ export function RegisteredFarmWorkspace({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Water supply regime</Label>
+                <Label>{t('workspace.waterSupplyRegime')}</Label>
                 <Select
                   value={farmDraft.farmingMethod}
                   onValueChange={(value) => setFarmDraft({ ...farmDraft, farmingMethod: value })}
                 >
-                  <SelectTrigger aria-label="Water supply regime">
+                  <SelectTrigger aria-label={t('workspace.waterSupplyRegime')}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {farmingMethodOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Water source</Label>
+                <Label>{t('wizard.waterSourceLabel')}</Label>
                 <Select
                   value={farmDraft.irrigationMethod}
                   onValueChange={(value) => setFarmDraft({ ...farmDraft, irrigationMethod: value })}
                 >
-                  <SelectTrigger aria-label="Water source">
+                  <SelectTrigger aria-label={t('wizard.waterSourceLabel')}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {irrigationMethodOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="edit-farm-soil">Notes about your soil</Label>
+                <Label htmlFor="edit-farm-soil">{t('wizard.notesLabel')}</Label>
                 <textarea
                   id="edit-farm-soil"
                   value={farmDraft.soilNotes}
@@ -1511,9 +1538,7 @@ export function RegisteredFarmWorkspace({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t('workspace.deleteFarm')}</DialogTitle>
-              <DialogDescription>
-                Delete this farm and all its fields? This cannot be undone.
-              </DialogDescription>
+              <DialogDescription>{t('workspace.deleteFarmDescription')}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button
@@ -1545,10 +1570,8 @@ export function RegisteredFarmWorkspace({
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete field</DialogTitle>
-              <DialogDescription>
-                Delete this field and its boundary? This cannot be undone.
-              </DialogDescription>
+              <DialogTitle>{t('workspace.deleteFieldTitle')}</DialogTitle>
+              <DialogDescription>{t('workspace.deleteFieldDescription')}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button
@@ -1584,8 +1607,8 @@ export function RegisteredFarmWorkspace({
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete crop record</DialogTitle>
-              <DialogDescription>Delete this crop record? This cannot be undone.</DialogDescription>
+              <DialogTitle>{t('workspace.deleteCropTitle')}</DialogTitle>
+              <DialogDescription>{t('workspace.deleteCropDescription')}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button

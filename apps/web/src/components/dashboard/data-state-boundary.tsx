@@ -3,6 +3,7 @@
 import { AlertTriangle, Clock, Inbox, RefreshCw, WifiOff } from 'lucide-react';
 import type { ReactNode } from 'react';
 
+import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
 import { formatObservationDate } from '../../lib/utilities/format';
 import { Button } from '../ui/button';
@@ -43,7 +44,7 @@ export interface DataStateBoundaryProps {
 export function DataStateBoundary({
   state,
   emptyKind = 'no-data',
-  sourceName = 'Environmental data service',
+  sourceName,
   lastObservedAt,
   errorMessage,
   onRetry,
@@ -54,12 +55,15 @@ export function DataStateBoundary({
   missingSources,
   offlineMessage,
 }: DataStateBoundaryProps) {
+  const { t } = useLanguage();
+  const resolvedSourceName = sourceName ?? t('state.sourceEnvironmental');
+
   if (state === 'loading') {
     return (
       <div
         role="status"
         aria-live="polite"
-        aria-label="Loading field analysis"
+        aria-label={t('state.loadingAria')}
         className={cn('space-y-4 rounded-xl border border-border bg-surface-raised p-5', className)}
       >
         <div className="flex items-center justify-between gap-4">
@@ -81,20 +85,20 @@ export function DataStateBoundary({
     const copy =
       emptyKind === 'no-crops'
         ? {
-            title: 'No crops added for this field yet',
-            body: 'Add the crops you grow now or plan to grow next season. DalaShift will compare your rotation options against your current practice.',
-            action: primaryActionLabel ?? 'Add field crops',
+            title: t('state.emptyNoCropsTitle'),
+            body: t('state.emptyNoCropsBody'),
+            action: primaryActionLabel ?? t('state.emptyNoCropsAction'),
           }
         : emptyKind === 'no-parcels'
           ? {
-              title: 'No fields added for this farm yet',
-              body: 'Add a field by placing a pin on the map or drawing its boundary to start your analysis.',
-              action: primaryActionLabel ?? 'Add a field',
+              title: t('state.emptyNoParcelsTitle'),
+              body: t('state.emptyNoParcelsBody'),
+              action: primaryActionLabel ?? t('workspace.addField'),
             }
           : {
-              title: 'No saved observations for this field yet',
-              body: 'Open the field and refresh to load rainfall, soil moisture and climate records for this location.',
-              action: primaryActionLabel ?? 'Fetch observations',
+              title: t('state.emptyNoDataTitle'),
+              body: t('state.emptyNoDataBody'),
+              action: primaryActionLabel ?? t('state.emptyNoDataAction'),
             };
 
     return (
@@ -129,16 +133,13 @@ export function DataStateBoundary({
           <AlertTriangle className="mt-0.5 size-5 shrink-0 text-[#c0392b]" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-[#c0392b]">
-              We cannot reach {sourceName} right now
+              {t('state.errorTitle', { sourceName: resolvedSourceName })}
             </h3>
-            <p className="mt-1 text-sm text-ink">
-              {errorMessage ??
-                'We could not reach the service just now. Your farm and field records are saved and safe. Try again in a few minutes.'}
-            </p>
+            <p className="mt-1 text-sm text-ink">{errorMessage ?? t('state.errorBody')}</p>
             {onRetry ? (
               <Button variant="secondary" size="xs" onClick={onRetry} className="mt-3">
                 <RefreshCw className="size-3.5" />
-                Try again
+                {t('state.retry')}
               </Button>
             ) : null}
           </div>
@@ -157,8 +158,7 @@ export function DataStateBoundary({
       >
         <span className="inline-flex items-center gap-1.5">
           <Clock className="size-3.5 shrink-0" />
-          Showing saved observations from {formatObservationDate(lastObservedAt)}. Connect to the
-          internet and refresh to check for newer data.
+          {t('state.staleBanner', { date: formatObservationDate(lastObservedAt) })}
         </span>
         {onRetry ? (
           <button
@@ -167,13 +167,13 @@ export function DataStateBoundary({
             className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
           >
             <RefreshCw className="size-3" />
-            Refresh now
+            {t('state.refreshNow')}
           </button>
         ) : null}
       </div>
     );
   } else if (state === 'partial') {
-    const missing = missingSources?.length ? missingSources.join(', ') : 'some sources';
+    const missing = missingSources?.length ? missingSources.join(', ') : t('state.someSources');
     banner = (
       <div
         role="status"
@@ -181,7 +181,7 @@ export function DataStateBoundary({
       >
         <span className="inline-flex items-center gap-1.5">
           <AlertTriangle className="size-3.5 shrink-0" />
-          We could not load details for: {missing}. Everything else is shown below.
+          {t('state.partialBanner', { missing })}
         </span>
         {onRetry ? (
           <button
@@ -190,7 +190,7 @@ export function DataStateBoundary({
             className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
           >
             <RefreshCw className="size-3" />
-            Try again
+            {t('state.retry')}
           </button>
         ) : null}
       </div>
@@ -203,8 +203,7 @@ export function DataStateBoundary({
       >
         <span className="inline-flex items-center gap-1.5">
           <WifiOff className="size-3.5 shrink-0" />
-          {offlineMessage ??
-            'You are offline. We are showing the data saved on this device. Reconnect to load the latest information.'}
+          {offlineMessage ?? t('state.offlineDefault')}
         </span>
         {onRetry ? (
           <button
@@ -213,7 +212,7 @@ export function DataStateBoundary({
             className="inline-flex cursor-pointer items-center gap-1 font-semibold text-ink underline-offset-2 hover:underline"
           >
             <RefreshCw className="size-3" />
-            Try again
+            {t('state.retry')}
           </button>
         ) : null}
       </div>

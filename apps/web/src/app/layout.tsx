@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 import { ServiceWorkerRegistrar } from '../components/layout/service-worker-registrar';
+import { SkipLink } from '../components/layout/skip-link';
 import { LanguageProvider } from '../i18n/language-provider';
 
 /**
@@ -27,7 +28,10 @@ const geologica = localFont({
 
 const DESCRIPTION = 'Climate-informed crop rotation decisions for rain-fed farmers.';
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'DalaShift',
     template: '%s | DalaShift',
@@ -75,15 +79,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${geologica.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${geologica.variable}`}
+    >
       <body>
         <LanguageProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-surface-card focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-primary focus:shadow-md"
-          >
-            Skip to main content
-          </a>
+          <SkipLink />
           <main id="main-content">{children}</main>
           <ServiceWorkerRegistrar />
         </LanguageProvider>

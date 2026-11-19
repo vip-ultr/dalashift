@@ -52,7 +52,9 @@ describe('profile preferences page', () => {
 
     render(<ProfileSettingsPage />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Authentication required.');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Sign in to load profile preferences.',
+    );
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
   });
 

@@ -55,22 +55,22 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
 
     const accountIdentifier = identifier.trim();
     if (!accountIdentifier || !password) {
-      setErrorMessage('Please enter your phone number or email and password.');
+      setErrorMessage(t('auth.errMissingCredentials'));
       return;
     }
 
     if (password.length < 6) {
-      setErrorMessage('Your password must be at least 6 characters long.');
+      setErrorMessage(t('auth.errPasswordShort'));
       return;
     }
 
     if (mode === 'register' && !fullName.trim()) {
-      setErrorMessage('Please enter your full name.');
+      setErrorMessage(t('auth.errMissingName'));
       return;
     }
 
     if (mode === 'register' && !consentAccepted) {
-      setErrorMessage('Please accept the privacy notice to create an account.');
+      setErrorMessage(t('auth.errConsent'));
       return;
     }
 
@@ -100,7 +100,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
           'error' in result &&
           typeof result.error === 'string'
             ? result.error
-            : 'Unable to access your account. Please try again.';
+            : t('auth.errAccountAccess');
         setErrorMessage(message);
         return;
       }
@@ -113,7 +113,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
         safeNextPath(nextUrl) ?? (mode === 'register' ? '/farms/new' : '/dashboard');
       router.push(destination);
     } catch {
-      setErrorMessage('Unable to connect to the account service. Please try again.');
+      setErrorMessage(t('auth.errConnect'));
     } finally {
       setSubmitting(false);
     }
@@ -128,8 +128,8 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
             <Image
               src="/brand/logo-horizontal.svg"
               alt="DalaShift"
-              width={140}
-              height={32}
+              width={391}
+              height={100}
               priority
               className="h-8 w-auto"
             />
@@ -148,7 +148,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
           <div className="mt-5">
             <SegmentedControl
               fullWidth
-              ariaLabel="Authentication mode"
+              ariaLabel={t('auth.modeAria')}
               value={mode}
               onValueChange={handleModeSwitch}
               options={[
@@ -239,7 +239,7 @@ export function AuthCard({ initialMode }: AuthCardProps): React.JSX.Element {
             >
               <span>
                 {submitting
-                  ? 'Please wait...'
+                  ? t('auth.pleaseWait')
                   : mode === 'login'
                     ? t('auth.signInAction')
                     : t('auth.createAccountAction')}

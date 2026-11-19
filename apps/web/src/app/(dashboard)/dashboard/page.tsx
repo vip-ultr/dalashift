@@ -12,7 +12,7 @@ import {
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { useLanguage } from '../../../i18n/language-provider';
-import { PLANTING_TRIGGER_TITLES } from '../../../lib/utilities/format';
+import { plantingTriggerTitle } from '../../../lib/utilities/format';
 
 const farmListResponseSchema = z.object({
   farms: z.array(
@@ -35,18 +35,23 @@ const profileResponseSchema = z.object({
 });
 
 export default function DashboardOverviewPage(): React.JSX.Element {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tRef = React.useRef(t);
+  tRef.current = t;
+  const tr = React.useCallback(
+    (id: string, vars?: Record<string, string | number>) => tRef.current(id, vars),
+    [],
+  );
   const [farms, setFarms] = React.useState<z.infer<typeof farmListResponseSchema>['farms']>([]);
-  const [userName, setUserName] = React.useState<string>('Farmer');
+  const [userName, setUserName] = React.useState<string>(t('dashboard.farmer'));
   const [loading, setLoading] = React.useState(true);
   const [fetchError, setFetchError] = React.useState<string | null>(null);
-  const [online, setOnline] = React.useState(() =>
-    typeof navigator === 'undefined' ? true : navigator.onLine,
-  );
+  const [online, setOnline] = React.useState(true);
   const activeRef = React.useRef(true);
 
   React.useEffect(() => {
     activeRef.current = true;
+    setOnline(typeof navigator === 'undefined' || navigator.onLine);
     const goOnline = () => setOnline(true);
     const goOffline = () => setOnline(false);
     window.addEventListener('online', goOnline);
@@ -72,7 +77,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
 
       const farmsRes = await fetch('/api/farms', { cache: 'no-store' });
       if (!farmsRes.ok) {
-        let detail = `Unable to load your farms (${farmsRes.status}).`;
+        let detail = tr('dashboard.loadFarmsFailed', { status: farmsRes.status });
         try {
           const body: unknown = await farmsRes.json();
           if (
@@ -92,8 +97,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
       const farmsData: unknown = await farmsRes.json();
       const parsedFarms = farmListResponseSchema.safeParse(farmsData);
       if (!parsedFarms.success) {
-        if (activeRef.current)
-          setFetchError('The server returned farm data in an unexpected format.');
+        if (activeRef.current) setFetchError(tr('state.unexpectedFarmData'));
         return;
       }
       if (activeRef.current) {
@@ -103,14 +107,12 @@ export default function DashboardOverviewPage(): React.JSX.Element {
     } catch (error) {
       console.error('Failed to load dashboard data', error);
       if (activeRef.current) {
-        setFetchError(
-          error instanceof Error ? error.message : 'Unable to load your dashboard right now.',
-        );
+        setFetchError(error instanceof Error ? error.message : tr('dashboard.loadDashboard'));
       }
     } finally {
       if (activeRef.current) setLoading(false);
     }
-  }, []);
+  }, [tr]);
 
   React.useEffect(() => {
     void load();
@@ -125,11 +127,8 @@ export default function DashboardOverviewPage(): React.JSX.Element {
   const triggerTitle = React.useMemo(() => {
     const raw = firstFarm?.planting_trigger;
     if (!raw) return null;
-    return (
-      PLANTING_TRIGGER_TITLES[raw as keyof typeof PLANTING_TRIGGER_TITLES]?.en ??
-      raw.replaceAll('_', ' ')
-    );
-  }, [firstFarm]);
+    return plantingTriggerTitle(raw, language, raw.replaceAll('_', ' '));
+  }, [firstFarm, language]);
 
   const dataReady = farms.length > 0 && !fetchError && online;
   const viewState: DataViewState = !online
@@ -154,7 +153,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
           : '0';
   const holdingDetail =
     farms.length > 0
-      ? `${totalRegisteredArea.toFixed(1)} ha total land area`
+      ? t('dashboard.totalLandArea', { area: totalRegisteredArea.toFixed(1) })
       : loading
         ? t('state.loading')
         : fetchError || !online
@@ -167,24 +166,20 @@ export default function DashboardOverviewPage(): React.JSX.Element {
       ? (triggerTitle ?? t('dashboard.notAvailable'))
       : t('dashboard.notAvailable');
   const triggerDetail = dataReady
-    ? `For ${firstFarm?.name ?? 'your first farm'}`
+    ? t('dashboard.forFarm', { name: firstFarm?.name ?? t('dashboard.firstFarm') })
     : loading
       ? t('state.loading')
       : fetchError
         ? t('state.error')
         : !online
-          ? 'You are offline'
+          ? t('dashboard.offlineShort')
           : t('dashboard.noFarms');
 
-  const gridsValue = dataReady ? 'ISRIC & SMAP' : t('dashboard.notAvailable');
-  const gridsDetail = dataReady
-    ? '250 m soil baseline with ~9 km soil moisture'
-    : 'Grid details not loaded';
+  const gridsValue = dataReady ? t('dashboard.gridsValue') : t('dashboard.notAvailable');
+  const gridsDetail = dataReady ? t('dashboard.gridsDetail') : t('dashboard.gridsNotLoaded');
 
-  const privacyValue = dataReady ? 'Protected' : t('dashboard.notAvailable');
-  const privacyDetail = dataReady
-    ? 'Row-Level Security active on your farm records'
-    : 'Status not loaded';
+  const privacyValue = dataReady ? t('dashboard.privacyValue') : t('dashboard.notAvailable');
+  const privacyDetail = dataReady ? t('dashboard.privacyDetail') : t('dashboard.statusNotLoaded');
 
   return (
     <div className="min-h-screen bg-[#fafafb] px-4 py-6 sm:px-6 lg:px-8">
@@ -194,11 +189,13 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             <h1 className="font-display text-2xl font-bold tracking-tight text-[#111315] sm:text-3xl">
               {t('dashboard.title')}
             </h1>
-            <p className="text-sm text-[#4b5563]">Welcome back, {userName}</p>
+            <p className="text-sm text-[#4b5563]">
+              {t('dashboard.welcomeBack', { name: userName })}
+            </p>
           </div>
 
           <div className="flex shrink-0 flex-wrap items-center gap-2.5">
-            <Badge variant="Strong">2026 Wet Season</Badge>
+            <Badge variant="Strong">{t('farms.wetSeason')}</Badge>
             <Link href="/farms/new">
               <Button variant="primary" size="md">
                 <Plus className="h-4 w-4" aria-hidden="true" />
@@ -231,14 +228,14 @@ export default function DashboardOverviewPage(): React.JSX.Element {
               </dd>
             </div>
             <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
-              <dt className="text-sm text-[#4b5563]">Soil &amp; climate grids</dt>
+              <dt className="text-sm text-[#4b5563]">{t('dashboard.soilClimateGrids')}</dt>
               <dd className="tabular">
                 <span className="block text-base font-semibold text-[#111827]">{gridsValue}</span>
                 <span className="block text-xs text-[#6b7280]">{gridsDetail}</span>
               </dd>
             </div>
             <div className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-6">
-              <dt className="text-sm text-[#4b5563]">Data privacy</dt>
+              <dt className="text-sm text-[#4b5563]">{t('dashboard.dataPrivacy')}</dt>
               <dd className="tabular">
                 <span className="block text-base font-semibold text-[#111827]">{privacyValue}</span>
                 <span className="block text-xs text-[#6b7280]">{privacyDetail}</span>
@@ -265,7 +262,7 @@ export default function DashboardOverviewPage(): React.JSX.Element {
             className="mt-4"
             state={viewState}
             emptyKind="no-data"
-            sourceName="Farm service"
+            sourceName={t('state.sourceFarmService')}
             errorMessage={fetchError ?? undefined}
             offlineMessage={t('state.offline')}
             onRetry={() => {
@@ -286,16 +283,20 @@ export default function DashboardOverviewPage(): React.JSX.Element {
                     <div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-bold text-[#111315]">{farm.name}</span>
-                        <Badge variant="pass">Active</Badge>
+                        <Badge variant="pass">{t('dashboard.active')}</Badge>
                       </div>
                       <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6b7280]">
                         <MapPin className="h-3.5 w-3.5 text-[#6b7280]" aria-hidden="true" />
                         <span>
-                          {farm.area_ha ? `${farm.area_ha.toFixed(2)} ha` : 'Area pending'}
+                          {farm.area_ha
+                            ? `${farm.area_ha.toFixed(2)} ha`
+                            : t('dashboard.areaPending')}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-[#6b7280]">
-                        Farming method: {farm.farming_method || 'Rainfed'}
+                        {t('dashboard.farmingMethod', {
+                          method: farm.farming_method || t('farms.rainfed'),
+                        })}
                       </p>
                     </div>
                     <div className="mt-4 border-t border-[#e5e7eb] pt-3">

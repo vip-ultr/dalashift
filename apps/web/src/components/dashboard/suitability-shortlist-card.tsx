@@ -46,7 +46,7 @@ export function SuitabilityShortlistCard({
       return (
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
           <ListOrdered className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-          Best match on the information we have
+          {t('shortlist.rankFirst')}
         </span>
       );
     }
@@ -54,38 +54,28 @@ export function SuitabilityShortlistCard({
       return (
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
           <Scale className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-          These options are tied on the information we have
+          {t('shortlist.rankTied')}
         </span>
       );
     }
     return (
       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted">
         <List className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-        Another option
+        {t('shortlist.rankOther')}
       </span>
     );
   };
 
   return (
-    <section
-      aria-label="Prospective crop suitability shortlist"
-      className={cn('space-y-4', className)}
-    >
+    <section aria-label={t('shortlist.cardAria')} className={cn('space-y-4', className)}>
       {/* Indistinguishable Spread / Tie Rule Callout */}
       {hasTies ? (
         <div className="rounded-2xl border border-[#b9770e]/35 bg-[#fdf6e5] p-4 text-sm text-ink">
           <div className="flex items-start gap-3">
             <Scale className="mt-0.5 size-5 shrink-0 text-[#8e5636]" />
             <div>
-              <h3 className="font-semibold text-[#8e5636]">
-                Multiple candidate crops are tied on the available regional data
-              </h3>
-              <p className="mt-1 text-xs leading-relaxed text-ink">
-                The rainfall and temperature records for this parcel come from regional grid cells
-                (5.5 km to 55 km), so they cannot separate these top crops on climate alone. Specify
-                whether you have access to supplementary irrigation or select your primary
-                household/market priority to sharpen the comparison.
-              </p>
+              <h3 className="font-semibold text-[#8e5636]">{t('shortlist.tieTitle')}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-ink">{t('shortlist.tieBody')}</p>
             </div>
           </div>
         </div>
@@ -94,7 +84,7 @@ export function SuitabilityShortlistCard({
       <div className="rounded-xl border border-border bg-surface-raised p-4 text-xs text-ink-muted">
         <div className="flex items-center gap-2 font-semibold text-ink">
           <Info className="size-4 text-[#3d6382]" />
-          <span>Shortlist ordering basis</span>
+          <span>{t('shortlist.orderingBasis')}</span>
         </div>
         <p className="mt-1">{comparison.rankingBasis}</p>
       </div>
@@ -140,7 +130,11 @@ export function SuitabilityShortlistCard({
                   <h4 className="text-lg font-semibold text-ink">{cropName}</h4>
                   {hausaInfo ? (
                     <span className="text-xs font-medium text-[#8e5636]">
-                      ({fieldLang === 'ha' ? hausaInfo.hausa : `Hausa: ${hausaInfo.hausa}`})
+                      (
+                      {fieldLang === 'ha'
+                        ? hausaInfo.hausa
+                        : t('shortlist.hausaPrefix', { name: hausaInfo.hausa })}
+                      )
                     </span>
                   ) : null}
                 </div>
@@ -160,8 +154,8 @@ export function SuitabilityShortlistCard({
                 ) : null}
 
                 {strategy.informationGaps.length > 0 ? (
-                  <div className="mt-3 rounded-lg bg-[#f4f5f6] p-2.5 text-[11px] text-ink-muted">
-                    <strong className="text-ink">Information gap: </strong>
+                  <div className="mt-3 rounded-lg bg-[#f4f5f6] p-2.5 text-xs text-ink-muted">
+                    <strong className="text-ink">{t('shortlist.informationGap')} </strong>
                     {strategy.informationGaps[0]}
                   </div>
                 ) : null}
@@ -178,12 +172,12 @@ export function SuitabilityShortlistCard({
                     {isSelected ? (
                       <>
                         <Check className="size-4" />
-                        Registered as planned crop
+                        {t('shortlist.registered')}
                       </>
                     ) : (
                       <>
                         <Sprout className="size-4 text-[#0a4232]" />
-                        Choose {cropName} as planned crop
+                        {t('shortlist.chooseCrop', { cropName })}
                       </>
                     )}
                   </Button>
