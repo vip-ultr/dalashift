@@ -143,9 +143,9 @@ export function SuitabilityShortlistCard({
 
                 <p className="mt-2 text-xs leading-relaxed text-ink-muted">{strategy.rationale}</p>
 
-                {leg?.assessment.dimensions.length ? (
+                {leg?.assessment?.dimensions?.length ? (
                   <div className="mt-3 space-y-2">
-                    {leg.assessment.dimensions.slice(0, 3).map((dim) => (
+                    {(leg.assessment.dimensions ?? []).slice(0, 3).map((dim) => (
                       <DimensionThresholdRow
                         key={dim.dimension}
                         dimension={dim}
@@ -155,7 +155,7 @@ export function SuitabilityShortlistCard({
                   </div>
                 ) : null}
 
-                {strategy.informationGaps.length > 0 ? (
+                {(strategy.informationGaps ?? []).length > 0 ? (
                   <div className="mt-3 rounded-lg bg-[#f4f5f6] p-2.5 text-xs text-ink-muted">
                     <strong className="text-ink">{t('shortlist.informationGap')} </strong>
                     {strategy.informationGaps[0]}
