@@ -121,7 +121,9 @@ export function SuitabilityShortlistCard({
 
                 <p className="mt-1.5 text-xs leading-relaxed text-ink-muted">
                   <span className="font-semibold text-ink">
-                    {t(EVIDENCE_STRENGTH_IDS[strategy.evidenceStrength])}
+                    {t(
+                      EVIDENCE_STRENGTH_IDS[strategy.evidenceStrength] ?? 'verdict.strongEvidence',
+                    )}
                   </span>
                   {evidenceDetail ? `, ${evidenceDetail}` : '.'}
                 </p>

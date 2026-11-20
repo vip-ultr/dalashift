@@ -26,6 +26,7 @@ function isPreferredLanguage(value: unknown): value is PreferredLanguage {
  * the interface. "reports.noPdf" becomes "Reports no Pdf".
  */
 function humanize(id: string): string {
+  if (!id) return '';
   const spaced = id.replace(/[._]/g, ' ').trim();
   if (!spaced) return id;
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
@@ -36,6 +37,7 @@ function translate(
   language: PreferredLanguage,
   vars?: Record<string, string | number>,
 ): string {
+  if (!id) return '';
   const entry = messages[id];
   const template = entry ? (language === 'ha' ? entry.ha : entry.en) : humanize(id);
   if (!vars) return template;
