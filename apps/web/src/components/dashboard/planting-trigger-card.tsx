@@ -11,7 +11,7 @@ import { CloudRain, Compass, Droplets, Sprout, UserCheck } from 'lucide-react';
 
 import { useLanguage } from '../../i18n/language-provider';
 import { cn } from '../../lib/utilities/cn';
-import { formatMetricValue, PLANTING_TRIGGER_TITLES } from '../../lib/utilities/format';
+import { formatMetricValue, plantingTriggerTitle } from '../../lib/utilities/format';
 import { Badge } from '../ui/badge';
 
 export interface PlantingTriggerCardProps {
@@ -77,7 +77,9 @@ export function PlantingTriggerCard({
         </p>
         {fieldLang === 'ha' ? (
           <p className="mt-0.5 text-xs text-ink-muted">
-            {t('trigger.englishLine', { title: PLANTING_TRIGGER_TITLES[activeRecommended].en })}
+            {t('trigger.englishLine', {
+              title: plantingTriggerTitle(activeRecommended, 'en', activeRecommended),
+            })}
           </p>
         ) : null}
         <p className="mt-2 text-sm text-ink">{assessment.condition}</p>
