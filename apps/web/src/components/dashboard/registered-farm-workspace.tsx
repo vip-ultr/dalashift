@@ -1429,14 +1429,16 @@ export function RegisteredFarmWorkspace({
                   onSelectPlannedCrop={(code, name) => void handleChoosePlannedCrop(code, name)}
                 />
 
-                {[...comparison.comparison.limitations, ...comparison.seasonalOutlook.limitations]
-                  .length > 0 ? (
+                {[
+                  ...(comparison.comparison.limitations ?? []),
+                  ...(comparison.seasonalOutlook.limitations ?? []),
+                ].length > 0 ? (
                   <div className="rounded-xl border border-[#e5e7eb] bg-white p-5">
                     <h3 className="font-semibold">{t('workspace.dataLimits')}</h3>
                     <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-[#4b5563]">
                       {[
-                        ...comparison.comparison.limitations,
-                        ...comparison.seasonalOutlook.limitations,
+                        ...(comparison.comparison.limitations ?? []),
+                        ...(comparison.seasonalOutlook.limitations ?? []),
                       ].map((limitation, index) => (
                         <li key={`${limitation.statement}-${index}`}>{limitation.statement}</li>
                       ))}
